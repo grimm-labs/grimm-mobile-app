@@ -5,19 +5,19 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
 import { Button, FocusAwareStatusBar, Text, View } from '@/ui';
 
 export default function GenerateSeedPhrase() {
   const router = useRouter();
-  const [seedPhrase, setSeedPhrase] = useSeedPhrase();
+  const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [showSeed, setShowSeed] = useState(false);
 
   useEffect(() => {
     const initSeedPhrase = async () => {
-      if (seedPhrase === undefined) {
-        const mnemonic = await new Mnemonic().create(WordCount.WORDS12);
-        setSeedPhrase(mnemonic.asString());
+      if (mnemonic === undefined) {
+        setMnemonic(
+          (await new Mnemonic().create(WordCount.WORDS12)).asString()
+        );
       }
     };
 
@@ -51,7 +51,7 @@ export default function GenerateSeedPhrase() {
             </Text>
             <View>
               <View className="flex-row flex-wrap justify-around">
-                {seedPhrase?.split(' ').map((word, index) => (
+                {mnemonic?.split(' ').map((word, index) => (
                   <View
                     key={index}
                     className="mb-8 w-1/2 flex-row items-center px-1"
@@ -83,7 +83,12 @@ export default function GenerateSeedPhrase() {
           />
           <Button
             label="Continue"
-            onPress={() => router.push('/auth/seed-phrase-confirmation')}
+            onPress={() =>
+              router.push({
+                pathname: '/auth/seed-phrase-confirmation',
+                params: { mnemonic },
+              })
+            }
             fullWidth={true}
             variant="secondary"
             textClassName="text-base text-white"

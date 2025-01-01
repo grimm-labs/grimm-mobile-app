@@ -1,3 +1,12 @@
+import {
+  DatabaseConfig,
+  Descriptor,
+  DescriptorSecretKey,
+  Mnemonic,
+  Wallet,
+} from 'bdk-rn';
+import type { Network } from 'bdk-rn/lib/lib/enums';
+import { KeychainKind } from 'bdk-rn/lib/lib/enums';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
@@ -20,3 +29,44 @@ export const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
 
   return store;
 };
+
+export async function createWallet(mnemonic: string, network: Network) {
+  try {
+    // Créer un mnémonique à partir de la seed phrase
+    const mnemonicInstance = await new Mnemonic().fromString(mnemonic);
+
+    // Créer une clé secrète de descripteur
+    const descriptorSecretKey = await new DescriptorSecretKey().create(
+      network,
+      mnemonicInstance
+    );
+
+    // Créer les descripteurs externes et internes (BIP84)
+    const externalDescriptor = await new Descriptor().newBip84(
+      descriptorSecretKey,
+      KeychainKind.External,
+      network
+    );
+    const internalDescriptor = await new Descriptor().newBip84(
+      descriptorSecretKey,
+      KeychainKind.Internal,
+      network
+    );
+
+    // Configuration de la base de données
+    const dbConfig = await new DatabaseConfig().memory();
+
+    // Créer le portefeuille
+    const wallet = await new Wallet().create(
+      externalDescriptor,
+      internalDescriptor,
+      network,
+      dbConfig
+    );
+
+    return wallet; // Retourne le portefeuille créé
+  } catch (error) {
+    console.error('Error creating wallet:', error);
+    throw new Error('Failed to create wallet');
+  }
+}

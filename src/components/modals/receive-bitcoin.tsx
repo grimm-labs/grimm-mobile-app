@@ -1,41 +1,51 @@
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import { AddressIndex, Network } from 'bdk-rn/lib/lib/enums';
+import React, { useEffect, useState } from 'react';
 import { Text, TouchableHighlight, View } from 'react-native';
 import QRCodeStyled from 'react-native-qrcode-styled';
 
-import { showSuccessMessage } from '@/ui';
+import { createWallet } from '@/core';
+import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
+import { Pressable, showSuccessMessage } from '@/ui';
 
 type Props = {
   onClose: () => void;
 };
 
 export const ReceiveBitcoinModal = ({ onClose }: Props) => {
-  const address = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+  const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
+  const [address, setAddress] = useState<string>();
   const copyAdress = () => {
     showSuccessMessage('Bitcoin address copied!');
   };
 
+  useEffect(() => {
+    const x = async () => {
+      if (seedPhrase) {
+        const wallet = await createWallet(seedPhrase, Network.Testnet);
+        const addressInfo = await wallet.getAddress(AddressIndex.New);
+        const nAddress = await addressInfo.address.asString();
+        console.log(nAddress);
+        setAddress(nAddress);
+      }
+    };
+    x();
+  }, [seedPhrase]);
+
   return (
     <View className="flex-1 bg-white p-5">
       <View className="flex flex-row items-center justify-between">
-        <Ionicons name="close" size={24} color="gray" onPress={onClose} />
-        <View className="flex flex-row items-center rounded-xl bg-primary-500 p-2">
-          <Text className="font-medium text-white">Done</Text>
-          <Ionicons
-            name="checkmark"
-            size={20}
-            color="white"
-            onPress={onClose}
-          />
-        </View>
+        <Pressable className="p-2" onPress={onClose}>
+          <Ionicons name="close" size={24} color="gray" />
+        </Pressable>
       </View>
       {/* QR Code */}
       <View className="my-4 flex">
-        <Text className="mb-4 text-center text-xl font-medium text-neutral-500">
+        <Text className="mb-4 text-center text-xl font-medium text-gray-500">
           Receive Bitcoin
         </Text>
-        <Text className="text-center text-base font-medium text-neutral-500">
+        <Text className="text-center text-base font-medium text-gray-700">
           Scan the QR code to send funds to this address
         </Text>
       </View>
@@ -89,7 +99,7 @@ export const ReceiveBitcoinModal = ({ onClose }: Props) => {
 
       {/* Warning Message */}
       <View className="mx-2 flex-row items-center rounded-xl bg-orange-100 p-4">
-        <Text className="text-sm text-orange-800">
+        <Text className="text-sm text-orange-700">
           Please check the address before completing the transaction. on-chain
           transactions may take several minutes to be confirmed.
         </Text>

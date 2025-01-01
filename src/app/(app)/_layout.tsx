@@ -3,11 +3,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
 
-import { useAuth } from '@/core';
 import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
 
 export default function TabLayout() {
-  const status = useAuth.use.status();
   const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
 
   const hideSplash = useCallback(async () => {
@@ -15,14 +13,13 @@ export default function TabLayout() {
   }, []);
 
   useEffect(() => {
-    if (status !== 'idle') {
-      setTimeout(() => {
-        hideSplash();
-      }, 1000);
-    }
-  }, [hideSplash, status]);
+    setTimeout(() => {
+      hideSplash();
+    }, 1000);
+  }, [hideSplash]);
 
-  if (seedPhrase?.length === 0 || status === 'signOut') {
+  if (seedPhrase?.length === 0) {
+    console.log(seedPhrase);
     return <Redirect href="/onboarding" />;
   }
 

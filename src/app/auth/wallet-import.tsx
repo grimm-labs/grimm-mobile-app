@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unstable-nested-components */
+import { Mnemonic } from 'bdk-rn';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 
@@ -12,15 +14,16 @@ export default function WalletImport() {
   useSoftKeyboardEffect();
   const [_seedPhrase, setSeedPhrase] = useSeedPhrase();
 
-  const onSubmit: PrivateKeyFormProps['onSubmit'] = ({ value }) => {
-    if (value) {
+  const onSubmit: PrivateKeyFormProps['onSubmit'] = async ({ value }) => {
+    try {
+      const _mnemonic = await new Mnemonic().fromString(value);
+      setSeedPhrase(_mnemonic.asString());
+      router.push('/auth/wallet-preparation');
+    } catch (ex) {
       showErrorMessage(
         'The 12 words entered are invalid. Please check and try again.'
       );
-      return;
     }
-    setSeedPhrase(value);
-    router.push('/auth/wallet-preparation');
   };
 
   return (
