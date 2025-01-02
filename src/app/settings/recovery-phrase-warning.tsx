@@ -6,6 +6,11 @@ import { SafeAreaView } from 'react-native';
 
 import { FocusAwareStatusBar, Pressable, Text, View } from '@/ui';
 
+interface WarningTypes {
+  text: string;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+}
+
 export default function MnemonicWarning() {
   const router = useRouter();
 
@@ -17,7 +22,7 @@ export default function MnemonicWarning() {
     router.push('settings/recovery-phrase');
   };
 
-  const warnings = [
+  const warnings: WarningTypes[] = [
     {
       text: 'Anyone with the recovery phrase has full, irrevocable access to all associated wallet funds.',
       icon: 'alert-circle-outline',

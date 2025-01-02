@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import Slider from '@react-native-community/slider'; // Installez-le : npm install @react-native-community/slider
 import { Stack } from 'expo-router';
@@ -114,7 +115,7 @@ export default function TransactionVerificationScreen() {
               </Text>
               <View className="flex h-[60px] justify-center rounded-full bg-gray-500">
                 <Slider
-                  style={{ width: '100%', height: '60px' }}
+                  style={{ width: '100%' }}
                   minimumValue={0}
                   maximumValue={1}
                   step={0.0001}

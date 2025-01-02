@@ -30,7 +30,7 @@ export default function Settings() {
             <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">
               General
             </Text>
-            <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 px-2 py-4">
+            <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem
                 icon="globe"
                 title="Networks"

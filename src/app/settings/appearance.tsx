@@ -6,11 +6,18 @@ import { SafeAreaView } from 'react-native';
 import { FocusAwareStatusBar, Pressable, Text, View } from '@/ui';
 
 interface ThemeOptionProps {
+  name?: string;
   theme: string;
   description: string;
   icon: React.ComponentProps<typeof Ionicons>['name'];
   isSelected: boolean;
   onPress: () => void;
+}
+
+interface ThemeTypes {
+  name: string;
+  description: string;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
 }
 
 const ThemeOption: React.FC<ThemeOptionProps> = ({
@@ -39,7 +46,7 @@ const ThemeOption: React.FC<ThemeOptionProps> = ({
 export default function ThemeSelector() {
   const [selectedTheme, setSelectedTheme] = useState<string>('System');
 
-  const themes = [
+  const themes: ThemeTypes[] = [
     {
       name: 'System',
       description: 'Let Grimm App visually match your device settings.',
@@ -65,6 +72,7 @@ export default function ThemeSelector() {
             title: 'Appearance',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

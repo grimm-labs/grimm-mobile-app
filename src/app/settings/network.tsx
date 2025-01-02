@@ -52,6 +52,7 @@ export default function NetworkSwitcher() {
             title: 'Network',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />
@@ -69,7 +70,7 @@ export default function NetworkSwitcher() {
             onPress={() => selectNetwork('testnet')}
           />
         </View>
-        <View className="mt-6 px-4">
+        <View className="mt-6">
           <Text className="text-sm text-gray-600">
             You should most likely be on mainnet. Devnet is a test network for
             developers and does not have real BTC on it.

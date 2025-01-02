@@ -11,22 +11,23 @@ import {
 
 export default function Activity() {
   return (
-    <SafeAreaView>
-      <View className="flex h-full">
+    <SafeAreaView className="h-full flex-1 border">
+      <View className="flex">
         <FocusAwareStatusBar />
         <View className="flex border-b border-neutral-100 px-4 py-3">
           <FocusAwareStatusBar />
           <Text className="text-2xl font-bold text-gray-800">Activity</Text>
         </View>
+      </View>
+      <View className="flex">
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
-          className="flex"
+          className="h-full"
         >
-          <View className="mt-10">
+          <View className="flex items-center justify-center">
             <BlankContent
               title="All your transaction will be here"
-              subtitle="Get started by making your first deposit"
               icon="pie-chart"
             />
           </View>

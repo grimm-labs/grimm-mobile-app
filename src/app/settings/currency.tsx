@@ -52,6 +52,7 @@ export default function CurrencySelector() {
             title: 'Currency Selector',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

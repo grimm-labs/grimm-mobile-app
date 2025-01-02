@@ -39,6 +39,7 @@ export default function LanguageSelector() {
             title: 'Language Selector',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />
