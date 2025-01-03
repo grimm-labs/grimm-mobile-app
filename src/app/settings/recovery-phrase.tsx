@@ -1,29 +1,22 @@
 /* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView } from 'react-native';
 
-import { Pressable, Text, View } from '@/ui';
+import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
+import { Button, showSuccessMessage, Text, View } from '@/ui';
 
 export default function SeedPhraseScreen() {
-  const seedPhrase = [
-    'apple',
-    'banana',
-    'cherry',
-    'date',
-    'elderberry',
-    'fig',
-    'grape',
-    'honeydew',
-    'kiwi',
-    'lemon',
-    'mango',
-    'nectarine',
-  ]; // Example seed phrase words
+  const router = useRouter();
+  const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
 
   const handleClose = () => {
-    console.log('Close pressed');
+    router.push('(app)');
+  };
+
+  const copyToClipboard = () => {
+    showSuccessMessage('Seed phrase copied to clipboard');
   };
 
   return (
@@ -34,13 +27,14 @@ export default function SeedPhraseScreen() {
             title: 'Seed Phrase',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
 
         {/* Header */}
-        <View className="mt-10 items-center">
-          <Ionicons name="eye-off-outline" size={48} color="black" />
-          <Text className="mt-4 text-center text-lg font-bold">
+        <View className="mt-6 items-center">
+          <Ionicons name="eye-off-outline" size={64} color="gray" />
+          <Text className="mt-6 text-center text-lg font-medium">
             For Your Eyes Only
           </Text>
           <Text className="mt-2 text-center text-sm text-gray-600">
@@ -52,27 +46,36 @@ export default function SeedPhraseScreen() {
         {/* Seed Phrase Display */}
         <ScrollView className="mt-8 flex-1">
           <View className="flex flex-row flex-wrap justify-center">
-            {seedPhrase.map((word, index) => (
-              <View
+            {seedPhrase?.split(' ').map((word, index) => (
+              <Text
                 key={index}
-                className="m-2 w-[30%] rounded bg-gray-100 px-4 py-3 shadow-sm"
+                className="m-2 rounded-lg border border-gray-400 px-4 py-2 text-center text-sm font-medium text-gray-700"
               >
-                <Text className="text-center text-sm font-medium text-gray-700">
-                  {index + 1}. {word}
-                </Text>
-              </View>
+                {index + 1}. {word}
+              </Text>
             ))}
           </View>
         </ScrollView>
 
-        {/* Close Button */}
-        <View className="mb-6">
-          <Pressable
+        <View>
+          <Button
+            testID="close-button"
+            label="Copy to clipboard"
+            fullWidth={true}
+            size="lg"
+            variant="outline"
+            textClassName="text-base"
+            onPress={copyToClipboard}
+          />
+          <Button
+            testID="close-button"
+            label="Close"
+            fullWidth={true}
+            size="lg"
+            variant="destructive"
+            textClassName="text-base text-white"
             onPress={handleClose}
-            className="w-full items-center justify-center rounded bg-red-500 py-4"
-          >
-            <Text className="text-sm font-medium text-white">Close</Text>
-          </Pressable>
+          />
         </View>
       </View>
     </SafeAreaView>

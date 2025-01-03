@@ -4,7 +4,7 @@ import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { FocusAwareStatusBar, Pressable, Text, View } from '@/ui';
+import { Button, FocusAwareStatusBar, Text, View } from '@/ui';
 
 interface WarningTypes {
   text: string;
@@ -15,7 +15,7 @@ export default function MnemonicWarning() {
   const router = useRouter();
 
   const handleCancel = () => {
-    console.log('Cancel pressed');
+    router.back();
   };
 
   const handleProceed = () => {
@@ -45,17 +45,18 @@ export default function MnemonicWarning() {
             title: 'Recovery Phrase',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />
         <View>
           {/* Warning Header */}
-          <View className="mt-10 items-center">
-            <Ionicons name="warning-outline" size={48} color="red" />
-            <Text className="mt-4 text-center text-lg font-bold text-red-500">
+          <View className="mt-6 items-center">
+            <Ionicons name="warning-outline" size={64} color="red" />
+            <Text className="mt-6 text-center text-xl font-medium text-red-500">
               Attention
             </Text>
-            <Text className="mt-4 text-center text-sm font-medium text-gray-600">
+            <Text className="mt-4 text-center text-sm text-gray-600">
               Please read the following carefully before viewing your recovery
               phrase.
             </Text>
@@ -71,7 +72,9 @@ export default function MnemonicWarning() {
                 key={index}
                 className="flex flex-row items-center space-x-4"
               >
-                <Ionicons name={icon} size={24} color="black" />
+                <View className="m-3">
+                  <Ionicons name={icon} size={35} color="gray" />
+                </View>
                 <Text className="flex-1 text-sm text-gray-700">{text}</Text>
               </View>
             ))}
@@ -79,19 +82,26 @@ export default function MnemonicWarning() {
         </View>
 
         {/* Action Buttons */}
-        <View className="mb-6 mt-10 flex-row justify-between">
-          <Pressable
+        <View className="flex-col justify-between">
+          <Button
+            testID="login-button"
+            label="Cancel"
+            fullWidth={true}
+            size="lg"
+            variant="outline"
+            className="mb-4"
+            textClassName="text-base"
             onPress={handleCancel}
-            className="mr-2 flex-1 items-center justify-center rounded bg-gray-300 py-3"
-          >
-            <Text className="text-sm font-medium text-gray-700">Cancel</Text>
-          </Pressable>
-          <Pressable
+          />
+          <Button
+            testID="login-button"
+            label="Proceed"
+            fullWidth={true}
+            size="lg"
+            variant="secondary"
+            textClassName="text-base text-white"
             onPress={handleProceed}
-            className="ml-2 flex-1 items-center justify-center rounded bg-green-500 py-3"
-          >
-            <Text className="text-sm font-medium text-white">Proceed</Text>
-          </Pressable>
+          />
         </View>
       </View>
     </SafeAreaView>

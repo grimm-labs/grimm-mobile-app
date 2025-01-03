@@ -18,8 +18,7 @@ export default function TabLayout() {
     }, 1000);
   }, [hideSplash]);
 
-  if (seedPhrase?.length === 0) {
-    console.log(seedPhrase);
+  if (seedPhrase === undefined || seedPhrase.length === 0) {
     return <Redirect href="/onboarding" />;
   }
 

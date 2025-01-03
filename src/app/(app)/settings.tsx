@@ -26,7 +26,7 @@ export default function Settings() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
         >
-          <View className="mb-6 mt-2">
+          <View className="my-6">
             <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">
               General
             </Text>

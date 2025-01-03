@@ -56,13 +56,13 @@ export default function GenerateSeedPhrase() {
                     key={index}
                     className="mb-8 w-1/2 flex-row items-center px-1"
                   >
-                    <View className="w-full flex-row items-center rounded-lg border border-gray-300 bg-gray-200 p-2">
+                    <View className="w-full flex-row items-center rounded-lg border border-gray-300 bg-gray-200 px-2 py-3">
                       <View className="h-6 w-6 flex-row items-center justify-center rounded-lg bg-primary-600">
-                        <Text className="text-sm font-bold text-white">
+                        <Text className="text-base font-bold text-white">
                           {index + 1}
                         </Text>
                       </View>
-                      <Text className="ml-2 text-sm font-medium">
+                      <Text className="ml-2 text-base font-medium">
                         {showSeed ? word : '•••••••'}
                       </Text>
                     </View>
