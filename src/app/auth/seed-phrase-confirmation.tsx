@@ -8,7 +8,6 @@ import { useSoftKeyboardEffect } from '@/core/keyboard';
 import {
   Button,
   FocusAwareStatusBar,
-  Pressable,
   showErrorMessage,
   Text,
   TouchableOpacity,
@@ -69,24 +68,12 @@ export default function SeedPhraseConfirmation() {
           title: '',
           headerShown: true,
           headerShadowVisible: false,
-          headerRight: () => (
-            <Pressable
-              testID="need-help-button"
-              onPress={() => {
-                router.push('need-help');
-              }}
-            >
-              <Text className="text-base font-medium text-primary-600">
-                Need help?
-              </Text>
-            </Pressable>
-          ),
         }}
       />
       <FocusAwareStatusBar />
-      <View className="flex-1 justify-between px-4 pb-6">
+      <View className="mb-6 flex-1 justify-between px-4 pt-6">
         <View>
-          <Text testID="otp-title" className="mb-4 text-2xl">
+          <Text testID="otp-title" className="mb-4 text-4xl">
             Seed phrase confirmation
           </Text>
           <Text testID="otp-description" className="mb-6 text-sm text-gray-600">

@@ -1,19 +1,32 @@
 /* eslint-disable max-lines-per-function */
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  TextInput,
-} from 'react-native';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import * as z from 'zod';
 
-import { Pressable, Text, View } from '@/ui';
+import { Button, ControlledInput, Text, View } from '@/ui';
+
+const schema = z.object({
+  bitcoinAddress: z.string({ required_error: 'Enter a valid Bitcoin address' }),
+});
+
+export type FormType = z.infer<typeof schema>;
+
+export type EnterAddressFormProps = {
+  onSubmit?: SubmitHandler<FormType>;
+};
 
 export default function EnterBitcoinAddressScreen() {
+  const { _handleSubmit, control, _watch } = useForm<FormType>({
+    resolver: zodResolver(schema),
+  });
+
   const router = useRouter();
   const [address, setAddress] = useState('');
+
+  // const formValues = watch(['phoneNumber']);
 
   const handleScanQRCode = () => {
     console.log('Scan QR Code pressed');
@@ -40,6 +53,7 @@ export default function EnterBitcoinAddressScreen() {
             title: 'Send Bitcoin',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
 
@@ -56,53 +70,56 @@ export default function EnterBitcoinAddressScreen() {
         {/* Input Section */}
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          className="mt-8 flex-1"
+          className="flex-1"
         >
           <View className="mb-4">
-            <TextInput
-              value={address}
-              onChangeText={setAddress}
-              placeholder="Enter or paste address here"
-              className="w-full rounded border border-gray-300 bg-gray-100 px-4 py-3 text-sm"
+            <ControlledInput
+              testID="phoneNumber"
+              control={control}
+              name="bitcoinAddress"
+              placeholder="Bitcoin address"
+              placeholderClassName="text-base"
+              textContentType="telephoneNumber"
             />
-          </View>
-
-          <View className="mt-4 flex flex-row justify-between">
-            {/* Scan QR Code Button */}
-            <Pressable
-              onPress={handleScanQRCode}
-              className="flex flex-row items-center rounded-full border border-gray-300 px-4 py-2"
-            >
-              <Ionicons name="qr-code-outline" size={14} color="black" />
-              <Text className="ml-2 text-sm font-medium text-gray-800">
-                Scan QR Code
-              </Text>
-            </Pressable>
-
-            {/* Paste Address Button */}
-            <Pressable
-              onPress={handlePasteAddress}
-              className="flex flex-row items-center rounded-full border border-gray-300 px-4 py-2"
-            >
-              <Ionicons name="clipboard-outline" size={14} color="black" />
-              <Text className="ml-2 text-sm font-medium text-gray-800">
-                Paste Address
-              </Text>
-            </Pressable>
           </View>
         </KeyboardAvoidingView>
 
         {/* Continue Button */}
-        <View className="mb-6">
-          <Pressable
-            onPress={handleContinue}
-            disabled={!address.trim()}
-            className={`w-full items-center justify-center rounded border py-4 ${
-              address.trim() ? 'bg-blue-500' : 'bg-gray-300'
-            }`}
-          >
-            <Text className="text-sm font-medium">Continue</Text>
-          </Pressable>
+        <View>
+          <View className="flex-col justify-between">
+            <Button
+              testID="login-button"
+              label="Paste Address"
+              fullWidth={true}
+              size="lg"
+              variant="link"
+              className="mb-4"
+              textClassName="text-base"
+              icon="clipboard-outline"
+              onPress={handleScanQRCode}
+            />
+            <Button
+              testID="login-button"
+              label="Scan QR Code"
+              fullWidth={true}
+              size="lg"
+              variant="outline"
+              className="mb-4"
+              textClassName="text-base"
+              icon="qr-code-outline"
+              onPress={handlePasteAddress}
+            />
+            <Button
+              testID="login-button"
+              label="Continue"
+              fullWidth={true}
+              size="lg"
+              variant="secondary"
+              textClassName="text-base text-white"
+              onPress={handleContinue}
+              disabled={false}
+            />
+          </View>
         </View>
       </View>
     </SafeAreaView>

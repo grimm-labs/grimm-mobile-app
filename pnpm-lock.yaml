@@ -131,9 +131,9 @@ importers:
       react-native-mmkv:
         specifier: 2.6.3
         version: 2.6.3(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
-      react-native-qrcode-styled:
-        specifier: ^0.3.3
-        version: 0.3.3(react-native-svg@15.2.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
+      react-native-qrcode-svg:
+        specifier: ^6.3.12
+        version: 6.3.12(react-native-svg@15.2.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
       react-native-randombytes:
         specifier: ^3.6.1
         version: 3.6.1
@@ -6740,13 +6740,12 @@ packages:
       react: '*'
       react-native: '>=0.71.0'
 
-  react-native-qrcode-styled@0.3.3:
-    resolution: {integrity: sha512-DjxFhFAJBY3y2FEBbWSpwtPaSjsEc5RutTHejxzfRNuyTzg1f5thplGyON8yx0kbi6h0h+57s8cH4aSFGj1mQg==}
-    engines: {node: '>= 16.0.0'}
+  react-native-qrcode-svg@6.3.12:
+    resolution: {integrity: sha512-7Bx23ZdFNJJdVXyW9BJmFWdI5kccjnpotzmL3exkV0irUKTmj51jesxpn5sqtgVdYFE4IUVoGzdS+8qg6Ua9BA==}
     peerDependencies:
       react: '*'
-      react-native: '*'
-      react-native-svg: '*'
+      react-native: '>=0.63.4'
+      react-native-svg: '>=13.2.0'
 
   react-native-randombytes@3.6.1:
     resolution: {integrity: sha512-qxkwMbOZ0Hff1V7VqpaWrR6ItkA+oF6bnI79Qp9F3Tk8WBsdKDi6m1mi3dEdFWePoRLrhJ2L03rU0yabst1tVw==}
@@ -7588,6 +7587,10 @@ packages:
 
   text-decoder@1.2.0:
     resolution: {integrity: sha512-n1yg1mOj9DNpk3NeZOx7T6jchTbyJS3i3cucbNN6FcdPriMZx7NsgrGpWWdWZZGxD7ES1XB+3uoqHMgOKaN+fg==}
+
+  text-encoding@0.7.0:
+    resolution: {integrity: sha512-oJQ3f1hrOnbRLOcwKz0Liq2IcrvDeZRHXhd9RgLrsT+DjWY/nty1Hi7v3dtkaEYbPYe0mUoOfzRrMwfXXwgPUA==}
+    deprecated: no longer maintained
 
   text-extensions@1.9.0:
     resolution: {integrity: sha512-wiBrwC1EhBelW12Zy26JeOUkQ5mRu+5o8rpsJk5+2t+Y5vE7e842qtZDQ2g1NpX/29HdyFeJ4nSIhI47ENSxlQ==}
@@ -16694,13 +16697,14 @@ snapshots:
       react: 18.2.0
       react-native: 0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)
 
-  react-native-qrcode-styled@0.3.3(react-native-svg@15.2.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0):
+  react-native-qrcode-svg@6.3.12(react-native-svg@15.2.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0):
     dependencies:
+      prop-types: 15.8.1
       qrcode: 1.5.4
       react: 18.2.0
-      react-fast-compare: 3.2.2
       react-native: 0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)
       react-native-svg: 15.2.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
+      text-encoding: 0.7.0
 
   react-native-randombytes@3.6.1:
     dependencies:
@@ -17695,6 +17699,8 @@ snapshots:
   text-decoder@1.2.0:
     dependencies:
       b4a: 1.6.6
+
+  text-encoding@0.7.0: {}
 
   text-extensions@1.9.0: {}
 

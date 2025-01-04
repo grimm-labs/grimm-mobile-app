@@ -1,49 +1,20 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
-import Slider from '@react-native-community/slider'; // Installez-le : npm install @react-native-community/slider
 import { Stack } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, SafeAreaView, View } from 'react-native';
+
+import SlideToConfirm from '@/components/slide-to-confirm';
+import { Text } from '@/ui';
 
 export default function TransactionVerificationScreen() {
-  const [sliderValue, setSliderValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleTransactionSend = () => {
     setIsLoading(true);
 
-    // Simule une requête de transaction
     setTimeout(() => {
-      setIsLoading(false);
       Alert.alert('Success', 'Transaction sent successfully!');
-      setSliderValue(0); // Réinitialiser le slider
-    }, 3000); // Simule un délai de 3 secondes
-  };
-
-  const highlightAddress = (content: string) => {
-    if (!content || content.length <= 8) {
-      return (
-        <Text className="text-base font-bold text-gray-800">{content}</Text>
-      );
-    }
-
-    const firstPart = content.slice(0, 4); // Les 4 premiers caractères
-    const middleText = content.slice(4, -4); // Le texte du milieu
-    const lastPart = content.slice(-4); // Les 4 derniers caractères
-
-    return (
-      <Text>
-        <Text className="font-extrabold">{firstPart}</Text>
-        <Text ellipsizeMode="middle">{middleText}</Text>
-        <Text className="font-extrabold">{lastPart}</Text>
-      </Text>
-    );
+    }, 3000);
   };
 
   return (
@@ -51,54 +22,55 @@ export default function TransactionVerificationScreen() {
       <View className="h-full flex-1 px-4">
         <Stack.Screen
           options={{
-            title: 'Send Bitcoin',
+            title: 'Confirm transaction',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
-        {/* Détails de la transaction */}
         <View className="my-6">
-          <View className="mb-4">
-            <Text className="mb-2 text-lg font-extrabold">Destination</Text>
-            <View className="rounded-lg bg-gray-200 px-3 py-5">
-              {highlightAddress(
-                '1Lbcfr7sAHTD9CHTD9CgdQo3HTMTkV8gdQo3HTMTkV8LK4ZnX71'
-              )}
+          <View className="mb-8">
+            <Text className="mb-2 text-xl font-extrabold">Destination</Text>
+            <View className="rounded-xl bg-gray-200 px-3 py-5">
+              <Text className="text-center text-base font-medium text-gray-800">
+                1Lbcfr7sAHTD9CHTD9CgdQo3HTMTkV8gdQo3HTMTkV8LK4ZnX71
+              </Text>
             </View>
           </View>
-          <View className="mb-4">
-            <Text className="mb-2 font-extrabold">From</Text>
-            <View className="flex flex-row items-center rounded-lg bg-gray-200 p-3">
-              <View className="mr-4 rounded bg-primary-500 ">
+          <View className="mb-8">
+            <Text className="mb-2 text-xl font-extrabold">From</Text>
+            <View className="flex flex-row items-center rounded-xl bg-gray-200 p-3">
+              <View className="mr-4 rounded-lg bg-primary-600 ">
                 <Text className="p-2 font-extrabold text-white">BTC</Text>
               </View>
               <View>
-                <Text className="text-base font-bold text-gray-800">
+                <Text className="text-xl font-bold text-gray-800">
                   $2,000.50
                 </Text>
-                <Text className="text-sm font-medium text-gray-800">
-                  1,400,294 SAT
+                <Text className="text-lg font-medium text-gray-800">
+                  1,400,294 sats
                 </Text>
               </View>
             </View>
           </View>
-          <View className="mb-4">
-            <Text className="mb-2 font-extrabold">Amount</Text>
-            <View className="rounded-lg bg-gray-200 p-3">
-              <Text className="text-base font-bold text-gray-800">
-                $2000.50
-              </Text>
-              <Text className="text-sm font-medium text-gray-800">
-                1400 SAT
+          <View className="mb-8">
+            <Text className="mb-2 text-xl font-extrabold">Amount</Text>
+            <View className="rounded-xl bg-gray-200 p-3">
+              <Text className="text-xl font-bold text-gray-800">$2000.50</Text>
+              <Text className="text-lg font-medium text-gray-800">
+                1400 sats
               </Text>
             </View>
           </View>
           <View>
-            <Text className="mb-2 font-extrabold">Fee</Text>
-            <View className="rounded-lg bg-gray-200 p-3">
-              <Text className="text-base font-bold text-gray-800">$0.50</Text>
-              <Text className="text-sm font-medium text-gray-800">
-                1400 SAT
+            <Text className="mb-2 text-xl font-extrabold">Fee</Text>
+            <View className="rounded-xl bg-gray-200 p-3">
+              <Text className="text-xl font-bold text-gray-800">
+                $0.50
+                <Text className="text-xl font-medium text-gray-800">
+                  {' '}
+                  (1400 sats)
+                </Text>
               </Text>
             </View>
           </View>
@@ -107,31 +79,15 @@ export default function TransactionVerificationScreen() {
         {/* Slider pour envoyer */}
         <View className="flex-1 justify-end">
           {isLoading ? (
-            <ActivityIndicator size="large" color="#4CAF50" />
-          ) : (
-            <View>
-              <Text className="mb-2 text-center text-sm text-gray-500">
-                Slide to send transaction
-              </Text>
-              <View className="flex h-[60px] justify-center rounded-full bg-gray-500">
-                <Slider
-                  style={{ width: '100%' }}
-                  minimumValue={0}
-                  maximumValue={1}
-                  step={0.0001}
-                  value={sliderValue}
-                  onValueChange={setSliderValue}
-                  minimumTrackTintColor="red"
-                  maximumTrackTintColor="yellow"
-                  thumbTintColor="green"
-                  onResponderRelease={(event) => {
-                    console.log('release: ', event);
-                  }}
-                  onSlidingComplete={(value) => {
-                    if (value === 1) handleTransactionSend();
-                  }}
-                />
+            <View className="flex h-[60px] items-center justify-center rounded-full bg-gray-200">
+              <View className="flex flex-row">
+                <Text className="mr-2 text-base text-gray-500">Confirming</Text>
+                <ActivityIndicator size="small" color="gray" />
               </View>
+            </View>
+          ) : (
+            <View className="flex h-[60px] justify-center">
+              <SlideToConfirm onConfirm={handleTransactionSend} />
             </View>
           )}
         </View>
