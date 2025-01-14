@@ -10,29 +10,31 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		2653A88F65C64EA4ABF60769 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCC5FD460F7402487171773 /* Roboto-Regular.ttf */; };
 		292A71378620D5235D11FF51 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 55322CEF50C878AC465BC4E2 /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		4FB4A30B826E4A37835CEA20 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 10EF9AB3B7ED4CC18A6848E8 /* Roboto-ThinItalic.ttf */; };
+		557F88D1D6554DD2997F1C27 /* Roboto-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7BE4E34AA78495084557750 /* Roboto-BoldItalic.ttf */; };
+		577B787D8DAE4509986F8215 /* Roboto-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 706FD399E19B4229A9562096 /* Roboto-Black.ttf */; };
+		57919997272746DE88CD68DA /* Roboto-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A584B640634242A6A17FFC58 /* Roboto-MediumItalic.ttf */; };
+		5D889BBA19E945EAA4F5C60D /* Roboto-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 779AE17EF8574A8D9D2B36C9 /* Roboto-BlackItalic.ttf */; };
 		67F5BBC57301404B812166AD /* Inter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4D82199535342E4AA95ED4A /* Inter.ttf */; };
+		7106E8F7AB69489ABA817B00 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5210C8C2BE594F639F50EEB8 /* Roboto-Bold.ttf */; };
 		75A97B8F316D456087E87B30 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0519DD0DD572410F8BAEFA0A /* noop-file.swift */; };
 		96905EF65AED1B983A6B3ABC /* libPods-GrimmMobileApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-GrimmMobileApp.a */; };
-		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
-		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		577B787D8DAE4509986F8215 /* Roboto-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 706FD399E19B4229A9562096 /* Roboto-Black.ttf */; };
-		5D889BBA19E945EAA4F5C60D /* Roboto-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 779AE17EF8574A8D9D2B36C9 /* Roboto-BlackItalic.ttf */; };
-		7106E8F7AB69489ABA817B00 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5210C8C2BE594F639F50EEB8 /* Roboto-Bold.ttf */; };
-		557F88D1D6554DD2997F1C27 /* Roboto-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7BE4E34AA78495084557750 /* Roboto-BoldItalic.ttf */; };
 		98F0D97A7C1A4E5FB01CE9C4 /* Roboto-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D322E6D40A5941A79CBB51E7 /* Roboto-Italic.ttf */; };
-		C22C9F5F8A0A4637A73BDD97 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 023C8844D3CA4E939138AFB4 /* Roboto-Light.ttf */; };
 		A24C9A4305424411B6A5D431 /* Roboto-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 42DF3997A68F4AF6B3E62858 /* Roboto-LightItalic.ttf */; };
+		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		B6862914D92040ABBC72315B /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 82C5FE8C434D44A0861791FD /* Roboto-Medium.ttf */; };
-		57919997272746DE88CD68DA /* Roboto-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A584B640634242A6A17FFC58 /* Roboto-MediumItalic.ttf */; };
-		2653A88F65C64EA4ABF60769 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BCC5FD460F7402487171773 /* Roboto-Regular.ttf */; };
+		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		C22C9F5F8A0A4637A73BDD97 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 023C8844D3CA4E939138AFB4 /* Roboto-Light.ttf */; };
 		DF689D96A4174ABAB8B3FFBD /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 699BD5CF92E24A8F846C5150 /* Roboto-Thin.ttf */; };
-		4FB4A30B826E4A37835CEA20 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 10EF9AB3B7ED4CC18A6848E8 /* Roboto-ThinItalic.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		023C8844D3CA4E939138AFB4 /* Roboto-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Light.ttf"; path = "../assets/fonts/Roboto/Roboto-Light.ttf"; sourceTree = "<group>"; };
 		0519DD0DD572410F8BAEFA0A /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "GrimmMobileApp/noop-file.swift"; sourceTree = "<group>"; };
+		10EF9AB3B7ED4CC18A6848E8 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* GrimmMobileApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrimmMobileApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = GrimmMobileApp/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = GrimmMobileApp/AppDelegate.mm; sourceTree = "<group>"; };
@@ -40,27 +42,25 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GrimmMobileApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = GrimmMobileApp/main.m; sourceTree = "<group>"; };
 		41033BD10B3143188C5CD4E1 /* GrimmMobileApp-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "GrimmMobileApp-Bridging-Header.h"; path = "GrimmMobileApp/GrimmMobileApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		42DF3997A68F4AF6B3E62858 /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-LightItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
+		5210C8C2BE594F639F50EEB8 /* Roboto-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Bold.ttf"; path = "../assets/fonts/Roboto/Roboto-Bold.ttf"; sourceTree = "<group>"; };
 		55322CEF50C878AC465BC4E2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = GrimmMobileApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-GrimmMobileApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GrimmMobileApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		699BD5CF92E24A8F846C5150 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Thin.ttf"; path = "../assets/fonts/Roboto/Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		6C2E3173556A471DD304B334 /* Pods-GrimmMobileApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GrimmMobileApp.debug.xcconfig"; path = "Target Support Files/Pods-GrimmMobileApp/Pods-GrimmMobileApp.debug.xcconfig"; sourceTree = "<group>"; };
+		706FD399E19B4229A9562096 /* Roboto-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Black.ttf"; path = "../assets/fonts/Roboto/Roboto-Black.ttf"; sourceTree = "<group>"; };
+		779AE17EF8574A8D9D2B36C9 /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BlackItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BlackItalic.ttf"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-GrimmMobileApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GrimmMobileApp.release.xcconfig"; path = "Target Support Files/Pods-GrimmMobileApp/Pods-GrimmMobileApp.release.xcconfig"; sourceTree = "<group>"; };
+		82C5FE8C434D44A0861791FD /* Roboto-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Medium.ttf"; path = "../assets/fonts/Roboto/Roboto-Medium.ttf"; sourceTree = "<group>"; };
+		8BCC5FD460F7402487171773 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../assets/fonts/Roboto/Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		A4D82199535342E4AA95ED4A /* Inter.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Inter.ttf; path = ../assets/fonts/Inter.ttf; sourceTree = "<group>"; };
+		A584B640634242A6A17FFC58 /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-MediumItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-MediumItalic.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = GrimmMobileApp/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		D322E6D40A5941A79CBB51E7 /* Roboto-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Italic.ttf"; path = "../assets/fonts/Roboto/Roboto-Italic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F7BE4E34AA78495084557750 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BoldItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-GrimmMobileApp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		706FD399E19B4229A9562096 /* Roboto-Black.ttf */ = {isa = PBXFileReference; name = "Roboto-Black.ttf"; path = "../assets/fonts/Roboto/Roboto-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		779AE17EF8574A8D9D2B36C9 /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; name = "Roboto-BlackItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BlackItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		5210C8C2BE594F639F50EEB8 /* Roboto-Bold.ttf */ = {isa = PBXFileReference; name = "Roboto-Bold.ttf"; path = "../assets/fonts/Roboto/Roboto-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F7BE4E34AA78495084557750 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; name = "Roboto-BoldItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D322E6D40A5941A79CBB51E7 /* Roboto-Italic.ttf */ = {isa = PBXFileReference; name = "Roboto-Italic.ttf"; path = "../assets/fonts/Roboto/Roboto-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		023C8844D3CA4E939138AFB4 /* Roboto-Light.ttf */ = {isa = PBXFileReference; name = "Roboto-Light.ttf"; path = "../assets/fonts/Roboto/Roboto-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		42DF3997A68F4AF6B3E62858 /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; name = "Roboto-LightItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-LightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		82C5FE8C434D44A0861791FD /* Roboto-Medium.ttf */ = {isa = PBXFileReference; name = "Roboto-Medium.ttf"; path = "../assets/fonts/Roboto/Roboto-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A584B640634242A6A17FFC58 /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; name = "Roboto-MediumItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-MediumItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8BCC5FD460F7402487171773 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; name = "Roboto-Regular.ttf"; path = "../assets/fonts/Roboto/Roboto-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		699BD5CF92E24A8F846C5150 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; name = "Roboto-Thin.ttf"; path = "../assets/fonts/Roboto/Roboto-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		10EF9AB3B7ED4CC18A6848E8 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -420,7 +420,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.grimmmobileapp.development;
-				PRODUCT_NAME = "GrimmMobileApp";
+				PRODUCT_NAME = GrimmMobileApp;
 				SWIFT_OBJC_BRIDGING_HEADER = "GrimmMobileApp/GrimmMobileApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -448,7 +448,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.grimmmobileapp.development;
-				PRODUCT_NAME = "GrimmMobileApp";
+				PRODUCT_NAME = GrimmMobileApp;
 				SWIFT_OBJC_BRIDGING_HEADER = "GrimmMobileApp/GrimmMobileApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

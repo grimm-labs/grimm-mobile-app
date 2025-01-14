@@ -8,16 +8,17 @@ import { Text } from '@/ui';
 
 export type NumericVirtualKeyboardProps = {
   onPress?: (value: number) => void;
+  allowDotKey?: boolean;
 };
 
 export const NumericVirtualKeyboard = ({
   onPress = () => {
     console.log('submit');
   },
+  allowDotKey,
 }: NumericVirtualKeyboardProps) => {
   return (
-    <View className="justify-between px-4 pb-6">
-      <View>
+    <View className="flex-1 justify-between px-2">
         <View className="mb-4 flex-row justify-around">
           {[1, 2, 3].map((num, index) => (
             <View key={index}>
@@ -26,7 +27,7 @@ export const NumericVirtualKeyboard = ({
                 className="m-1 flex h-20 w-20 items-center justify-center rounded-full bg-gray-200"
                 onPress={() => onPress(num)}
               >
-                <Text className="text-lg font-medium text-gray-900">{num}</Text>
+                <Text className="text-2xl font-medium text-gray-900">{num}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -39,7 +40,7 @@ export const NumericVirtualKeyboard = ({
                 className="m-1 flex h-20 w-20 items-center justify-center rounded-full bg-gray-200"
                 onPress={() => onPress(num)}
               >
-                <Text className="text-lg font-medium text-gray-900">{num}</Text>
+                <Text className="text-2xl font-medium text-gray-900">{num}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -52,7 +53,7 @@ export const NumericVirtualKeyboard = ({
                 className="m-1 flex h-20 w-20 items-center justify-center rounded-full bg-gray-200"
                 onPress={() => onPress(num)}
               >
-                <Text className="text-lg font-medium text-gray-900">{num}</Text>
+                <Text className="text-2xl font-medium text-gray-900">{num}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -61,9 +62,13 @@ export const NumericVirtualKeyboard = ({
           <View>
             <TouchableOpacity
               key={'EMPTY'}
-              className="m-1 flex h-20 w-20 items-center justify-center rounded-full"
-              onPress={() => { }}
-            />
+              className={`flex h-20 w-20 items-center justify-center rounded-full ${allowDotKey ? 'bg-gray-200' : ''}`}
+              onPress={allowDotKey ? () => onPress(-2): () => {}}
+            >
+            { allowDotKey && (
+              <Text className="text-3xl font-bold text-gray-900">•</Text>
+            ) }
+            </TouchableOpacity>
           </View>
           <View>
             <TouchableOpacity
@@ -71,7 +76,7 @@ export const NumericVirtualKeyboard = ({
               className="m-1 flex h-20 w-20 items-center justify-center rounded-full bg-gray-200"
               onPress={() => onPress(0)}
             >
-              <Text className="text-lg font-medium text-gray-900">0</Text>
+              <Text className="text-2xl font-medium text-gray-900">0</Text>
             </TouchableOpacity>
           </View>
           <View>
@@ -82,10 +87,9 @@ export const NumericVirtualKeyboard = ({
                 onPress(-1);
               }}
             >
-              <FontAwesome6 name="delete-left" size={22} color="white" />
+              <FontAwesome6 name="delete-left" size={24} color="white" />
             </TouchableOpacity>
           </View>
-        </View>
       </View>
     </View>
   );

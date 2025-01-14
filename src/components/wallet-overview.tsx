@@ -2,14 +2,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
 
-import { ReceiveBitcoinModal } from './modals/receive-bitcoin';
-
 export const WalletOverview = () => {
-  const _router = useRouter();
+  const router = useRouter();
   const [balanceUnit, setBalanceUnit] = useState('SAT');
   const [balance, _setBalance] = useState({
     sats: 2_398_423,
@@ -17,8 +15,6 @@ export const WalletOverview = () => {
     usd: 59_564.29,
   });
   const [isBalanceHide, setIsBalanceHide] = useHideBalance();
-  const [isReceiveBitcoinModalOpen, setIsReceiveBitcoinModalOpen] =
-    useState(false);
 
   const toggleBalanceVisibility = async () => {
     setIsBalanceHide(!isBalanceHide);
@@ -29,7 +25,7 @@ export const WalletOverview = () => {
   };
 
   const formatBalance = () => {
-    if (!isBalanceHide) return '********';
+    if (isBalanceHide) return '********';
 
     if (balanceUnit === 'SAT') {
       return `${balance.sats.toLocaleString()} SAT`;
@@ -61,12 +57,15 @@ export const WalletOverview = () => {
           </Text>
         </Pressable>
         <Text className="text-center text-lg text-gray-700">
-          {isBalanceHide ? `$${balance.usd.toLocaleString()}` : '********'}
+          {isBalanceHide ? '********' : `$${balance.usd.toLocaleString()}`}
         </Text>
       </View>
       <View className="flex flex-row justify-around space-x-1">
         <View className="flex items-center justify-center">
-          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white">
+          <Pressable
+            className="mb-2 rounded-full bg-primary-600 p-3 text-white"
+            onPress={() => router.push('send/enter-address')}
+          >
             <Ionicons name="arrow-up-outline" size={28} color="white" />
           </Pressable>
           <Text className="text-sm font-medium">Send</Text>
@@ -74,7 +73,7 @@ export const WalletOverview = () => {
         <View className="flex items-center justify-center">
           <Pressable
             className="mb-2 rounded-full bg-primary-600 p-3 text-white"
-            onPress={() => setIsReceiveBitcoinModalOpen(true)}
+            onPress={() => router.push('receive')}
           >
             <Ionicons name="add" size={28} color="white" />
           </Pressable>
@@ -87,16 +86,6 @@ export const WalletOverview = () => {
           <Text className="text-sm font-medium">Scan</Text>
         </View>
       </View>
-      <Modal
-        visible={isReceiveBitcoinModalOpen}
-        onRequestClose={() => setIsReceiveBitcoinModalOpen(false)}
-        animationType="slide"
-        presentationStyle="pageSheet"
-      >
-        <ReceiveBitcoinModal
-          onClose={() => setIsReceiveBitcoinModalOpen(false)}
-        />
-      </Modal>
     </View>
   );
 };

@@ -1,33 +1,34 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable max-lines-per-function */
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
 import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
 import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { getItem } from '@/core/storage';
 import {
   Button,
   FocusAwareStatusBar,
-  Pressable,
   showErrorMessage,
   Text,
   TouchableOpacity,
   View,
 } from '@/ui';
 
+type SearchParams = {
+  mnemonic: string;
+};
+
 export default function SeedPhraseConfirmation() {
-  const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
-
-  const generatedMnemonic = getItem<string[]>('seed-phrase');
-  const router = useRouter();
-  useSoftKeyboardEffect();
-
+  const { mnemonic } = useLocalSearchParams<SearchParams>();
   const [shuffledMnemonic, setShuffledMnemonic] = useState<string[]>([]);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
+  const router = useRouter();
+  const [_seedPhrase, setSeedPhrase] = useSeedPhrase();
+
+  useSoftKeyboardEffect();
 
   useEffect(() => {
-    const shuffled = seedPhrase?.split(' ').sort(() => 0.5 - Math.random());
+    const shuffled = mnemonic?.split(' ').sort(() => 0.5 - Math.random());
     if (shuffled) {
       setShuffledMnemonic(shuffled);
     }
@@ -44,11 +45,13 @@ export default function SeedPhraseConfirmation() {
   };
 
   const verifyMnemonic = () => {
-    if (selectedWords.length === 12) {
+    const mnemonicAsArray = mnemonic?.split(' ');
+    if (mnemonicAsArray && selectedWords.length === 12) {
       const isCorrect = selectedWords.every(
-        (word, index) => word === generatedMnemonic[index]
+        (word, index) => word === mnemonicAsArray[index]
       );
       if (isCorrect) {
+        setSeedPhrase(mnemonic);
         router.push('/auth/wallet-preparation');
       } else {
         showErrorMessage(
@@ -65,24 +68,12 @@ export default function SeedPhraseConfirmation() {
           title: '',
           headerShown: true,
           headerShadowVisible: false,
-          headerRight: () => (
-            <Pressable
-              testID="need-help-button"
-              onPress={() => {
-                router.push('need-help');
-              }}
-            >
-              <Text className="text-base font-medium text-primary-600">
-                Need help?
-              </Text>
-            </Pressable>
-          ),
         }}
       />
       <FocusAwareStatusBar />
-      <View className="flex-1 justify-between px-4 pb-6">
+      <View className="mb-6 flex-1 justify-between px-4 pt-6">
         <View>
-          <Text testID="otp-title" className="mb-4 text-2xl">
+          <Text testID="otp-title" className="mb-4 text-4xl">
             Seed phrase confirmation
           </Text>
           <Text testID="otp-description" className="mb-6 text-sm text-gray-600">

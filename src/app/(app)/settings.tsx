@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import { useRouter } from 'expo-router';
 import React from 'react';
 
 import { SettingsItem } from '@/components/settings-item';
@@ -12,6 +13,8 @@ import {
 } from '@/ui';
 
 export default function Settings() {
+  const router = useRouter();
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex">
@@ -23,30 +26,30 @@ export default function Settings() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
         >
-          <View className="mb-6 mt-2">
+          <View className="my-6">
             <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">
               General
             </Text>
-            <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 px-2 py-4">
+            <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem
                 icon="globe"
                 title="Networks"
                 subtitle="Manage and configure your networks"
-                onPress={() => console.log('Networks pressed')}
+                onPress={() => router.push('settings/network')}
               />
 
               <SettingsItem
                 icon="language"
                 title="Language"
                 subtitle="Select your preferred app language"
-                onPress={() => console.log('Language pressed')}
+                onPress={() => router.push('settings/language')}
               />
 
               <SettingsItem
                 icon="logo-euro"
                 title="Currency"
                 subtitle="Choose your default display currency"
-                onPress={() => console.log('Currency pressed')}
+                onPress={() => router.push('settings/currency')}
               />
             </View>
           </View>
@@ -67,7 +70,7 @@ export default function Settings() {
                 icon="key"
                 title="Backup Key"
                 subtitle="Secure and manage your wallet recovery key"
-                onPress={() => console.log('Backup Key pressed')}
+                onPress={() => router.push('settings/recovery-phrase-warning')}
               />
 
               <SettingsItem
@@ -94,7 +97,7 @@ export default function Settings() {
                 icon="color-palette"
                 title="Appearance"
                 subtitle="Switch between light and dark modes"
-                onPress={() => console.log('Appearance pressed')}
+                onPress={() => router.push('settings/appearance')}
               />
 
               <SettingsItem
@@ -106,7 +109,10 @@ export default function Settings() {
             </View>
           </View>
           <View className="m-4">
-            <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4">
+            <Pressable
+              className="rounded-xl border border-neutral-200 bg-neutral-100 p-4"
+              onPress={() => router.push('need-help')}
+            >
               <Text className="text-center font-bold text-green-600">
                 Help & Support
               </Text>

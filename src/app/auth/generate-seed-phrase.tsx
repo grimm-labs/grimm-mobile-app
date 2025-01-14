@@ -5,19 +5,21 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
-import { Button, FocusAwareStatusBar, Text, View } from '@/ui';
+import { Button, Checkbox, FocusAwareStatusBar, Text, View } from '@/ui';
 
 export default function GenerateSeedPhrase() {
   const router = useRouter();
-  const [seedPhrase, setSeedPhrase] = useSeedPhrase();
+  const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [showSeed, setShowSeed] = useState(false);
+  const [isBackup, setIsBackup] = React.useState(false);
+  const [isUnderstand, setIsUnderstand] = React.useState(false);
 
   useEffect(() => {
     const initSeedPhrase = async () => {
-      if (seedPhrase === undefined) {
-        const mnemonic = await new Mnemonic().create(WordCount.WORDS12);
-        setSeedPhrase(mnemonic.asString());
+      if (mnemonic === undefined) {
+        setMnemonic(
+          (await new Mnemonic().create(WordCount.WORDS12)).asString()
+        );
       }
     };
 
@@ -34,47 +36,65 @@ export default function GenerateSeedPhrase() {
           headerShadowVisible: false,
         }}
       />
-      <View className="flex h-full justify-between px-4">
+      <View className="h-full flex-1 justify-between px-4 pt-6">
         <FocusAwareStatusBar />
         <View className="flex-1">
           <View>
-            <Text testID="otp-title" className="mb-4 text-2xl">
-              Setup your secure seed phrase
+            <Text testID="otp-title" className="mb-4 text-4xl">
+              Seed phrase
             </Text>
             <Text
               testID="otp-description"
               className="mb-6 text-sm text-gray-600"
             >
               Save your secret recovery phrase. Write it down on a paper to keep
-              it in a safe place. You'll asked to re-enter your secret recovery
-              phrase in the next step.
+              it in a safe place.
             </Text>
             <View>
               <View className="flex-row flex-wrap justify-around">
-                {seedPhrase?.split(' ').map((word, index) => (
+                {mnemonic?.split(' ').map((word, index) => (
                   <View
                     key={index}
-                    className="mb-8 w-1/2 flex-row items-center px-1"
+                    className="mb-8 w-1/3 flex-row items-center px-1"
                   >
-                    <View className="w-full flex-row items-center rounded-lg border border-gray-300 bg-gray-200 p-2">
-                      <View className="h-6 w-6 flex-row items-center justify-center rounded-lg bg-primary-600">
-                        <Text className="text-sm font-bold text-white">
-                          {index + 1}
-                        </Text>
-                      </View>
-                      <Text className="ml-2 text-sm font-medium">
-                        {showSeed ? word : '•••••••'}
+                    <View className="w-full flex-row items-center rounded-lg border border-gray-400 px-4 py-3">
+                      <Text
+                        key={index}
+                        className="text-center text-base font-medium text-gray-700"
+                      >
+                        {showSeed ? `${index + 1}. ${word}` : '•••••••'}
                       </Text>
                     </View>
                   </View>
                 ))}
+              </View>
+              <View>
+                <Checkbox.Root
+                  checked={isBackup}
+                  onChange={(value) => setIsBackup(value)}
+                  accessibilityLabel="I have backup my seed phrase"
+                  className="pb-2"
+                >
+                  <Checkbox.Icon checked={isBackup} />
+                  <Checkbox.Label text="I have backup my seed phrase" />
+                </Checkbox.Root>
+                <View className="my-2" />
+                <Checkbox.Root
+                  checked={isUnderstand}
+                  onChange={(value) => setIsUnderstand(value)}
+                  accessibilityLabel="I have backup my seed phrase"
+                  className="pb-2"
+                >
+                  <Checkbox.Icon checked={isUnderstand} />
+                  <Checkbox.Label text="I understand if I loose my recovery key, I won't be able to access my wallet." />
+                </Checkbox.Root>
               </View>
             </View>
           </View>
         </View>
         <View>
           <Button
-            label={showSeed ? 'Hide Seed Phrase' : 'Show Seed Phrase'}
+            label={showSeed ? 'Hide Words' : 'Show Words'}
             fullWidth={true}
             variant="link"
             textClassName="text-base text-primary-600 font-medium"
@@ -83,11 +103,17 @@ export default function GenerateSeedPhrase() {
           />
           <Button
             label="Continue"
-            onPress={() => router.push('/auth/seed-phrase-confirmation')}
+            onPress={() =>
+              router.push({
+                pathname: '/auth/seed-phrase-confirmation',
+                params: { mnemonic },
+              })
+            }
             fullWidth={true}
             variant="secondary"
             textClassName="text-base text-white"
             size="lg"
+            disabled={!(isUnderstand && isBackup)}
           />
         </View>
       </View>

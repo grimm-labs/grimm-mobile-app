@@ -90,40 +90,49 @@ export const PinSetupFormWithVirtualKeyboard = ({
   const displayPin = step === 'create' ? pin : confirmPin;
 
   return (
-    <View className="flex-1 justify-between px-4 pb-6">
-      <View className="my-8">
-        <Text className="pb-2 text-center text-2xl">
-          {step === 'create' ? 'Create a PIN code' : 'Confirm the PIN code'}
-        </Text>
-        <Text className="mx-10 pb-6 text-center text-sm text-gray-600">
-          {step === 'create'
-            ? 'Please create a 6-digit PIN code'
-            : 'Confirm your PIN code'}
-        </Text>
-        <Animated.View style={[{ transform: [{ translateX: shakeAnim }] }]}>
-          <View className="my-10 flex-row justify-center space-x-2">
-            {Array(6)
-              .fill('')
-              .map((_, index) => (
-                <View
-                  key={index}
-                  className={`mx-2 flex h-10 w-10 items-center justify-center rounded-full border-2 ${
-                    displayPin.length > index
-                      ? 'border-primary-600 bg-primary-600'
-                      : 'border-gray-300'
-                  }`}
-                />
-              ))}
-          </View>
-        </Animated.View>
-      </View>
-      <View>
-        <TouchableOpacity className="mb-6" onPress={handleResetPin}>
-          <Text className="text-center text-base font-medium text-primary-600">
-            Retry the PIN code
+    <View className="flex-1 justify-between">
+      <View className="flex h-2/5 items-center justify-center">
+        <View className="px-8">
+          <Text className="pb-2 text-center text-3xl">
+            {step === 'create' ? 'Create a PIN code' : 'Confirm the PIN code'}
           </Text>
-        </TouchableOpacity>
-        <NumericVirtualKeyboard onPress={handleKeyPress} />
+          <Text className="mx-10 pb-6 text-center text-sm text-gray-600">
+            {step === 'create'
+              ? 'Please create a 6-digit PIN code'
+              : 'Confirm your PIN code'}
+          </Text>
+          <Animated.View style={[{ transform: [{ translateX: shakeAnim }] }]}>
+            <View className="my-10 flex-row justify-center space-x-2">
+              {Array(6)
+                .fill('')
+                .map((_, index) => (
+                  <View
+                    key={index}
+                    className={`mx-2 flex h-10 w-10 items-center justify-center rounded-full border ${
+                      displayPin.length > index
+                        ? 'border-primary-600 bg-primary-600'
+                        : 'border-gray-300'
+                    }`}
+                  />
+                ))}
+            </View>
+          </Animated.View>
+          <View>
+            <TouchableOpacity className="mb-6" onPress={handleResetPin}>
+              <Text className="text-center text-base font-medium text-primary-600">
+                Retry the PIN code
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+      <View className="flex-1">
+        <View className="flex-1 py-8">
+          <NumericVirtualKeyboard
+            onPress={handleKeyPress}
+            allowDotKey={false}
+          />
+        </View>
         <Button
           testID="pin-submit-button"
           label={step === 'create' ? 'Continue' : 'Confirm'}
