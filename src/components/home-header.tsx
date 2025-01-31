@@ -22,7 +22,7 @@ const HomeHeader = () => {
       >
         <Ionicons name="notifications-outline" size={24} color="gray" />
         {notificationCount > 0 && (
-          <View className="absolute -right-0.5 -top-1 h-3 w-3 items-center justify-center rounded-full bg-green-500" />
+          <View className="absolute -right-0.5 -top-1 h-3 w-3 items-center justify-center rounded-full bg-green-600" />
         )}
       </Pressable>
     </View>
