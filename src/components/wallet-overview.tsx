@@ -5,14 +5,15 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
+import { colors } from '@/ui';
 
 export const WalletOverview = () => {
   const router = useRouter();
   const [balanceUnit, setBalanceUnit] = useState('SAT');
   const [balance, _setBalance] = useState({
-    sats: 2_398_423,
-    btc: 0.02398423,
-    usd: 59_564.29,
+    sats: 200011050,
+    btc: 2.03493929,
+    usd: 129775358,
   });
   const [isBalanceHide, setIsBalanceHide] = useHideBalance();
 
@@ -38,7 +39,7 @@ export const WalletOverview = () => {
     <View className="mx-4 mt-2 rounded-lg">
       <View className="flex-row items-center justify-center">
         <Text className="mr-2 text-center text-base font-medium text-neutral-500">
-          Available balance
+          Total balance
         </Text>
         <View className="flex-row space-x-2">
           <Pressable onPress={toggleBalanceVisibility}>
@@ -56,9 +57,21 @@ export const WalletOverview = () => {
             {formatBalance()}
           </Text>
         </Pressable>
-        <Text className="text-center text-lg text-gray-700">
-          {isBalanceHide ? '********' : `$${balance.usd.toLocaleString()}`}
-        </Text>
+        <View className="mb-4">
+          <Text className="text-center text-lg font-medium text-gray-600">
+            {isBalanceHide ? '********' : `XAF ${balance.usd.toLocaleString()}`}
+          </Text>
+        </View>
+        <View className="flex flex-row items-center justify-center">
+          <Ionicons
+            name="arrow-up-circle"
+            size={16}
+            color={colors.success[600]}
+          />
+          <Text className="ml-2 text-center text-sm font-medium text-success-600">
+            XAF 139,300 (+5.53%)
+          </Text>
+        </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">
         <View className="flex items-center justify-center">

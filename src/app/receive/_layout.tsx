@@ -38,7 +38,7 @@ export default function NotificationsScreen() {
       <View className="flex h-full justify-between px-4">
         <Stack.Screen
           options={{
-            title: 'Receive Bitcoin',
+            title: 'Receive BTC',
             headerShown: true,
             headerShadowVisible: false,
             headerBackTitleVisible: false,
@@ -47,10 +47,10 @@ export default function NotificationsScreen() {
 
         {/* Header */}
         <View className="">
-          <Text className="my-2 text-center text-lg font-bold text-gray-600">
+          {/* <Text className="my-2 text-center text-lg font-bold text-gray-600">
             This address only accepts Bitcoin
-          </Text>
-          <Text className="my-2 text-center text-base text-gray-600">
+          </Text> */}
+          <Text className="text-normal my-2 text-center text-gray-600">
             Scan the QR code to send funds to this address{' '}
           </Text>
         </View>
@@ -61,28 +61,29 @@ export default function NotificationsScreen() {
           className="flex-1"
         >
           <View className="">
-            <View className="items-center justify-center py-10">
+            <View className="mx-10 items-center justify-center py-10">
               <QRCode
-                size={220}
+                size={260}
                 value={address}
                 logo={require('@/assets/images/on-chain-icon.png')}
-                logoSize={50}
+                logoSize={60}
                 logoBackgroundColor="transparent"
               />
             </View>
           </View>
-          <View className="mb-2">
-            <Text
-              ellipsizeMode="middle"
-              className="my-4 text-center text-lg font-bold text-gray-800"
-            >
-              {address}
+          <View className="mx-10">
+            <Text className="text-normal my-2 text-center text-gray-600">
+              Scan BTC address to send payment or copy wallet address below
             </Text>
+            <View className="mb-2">
+              <Text
+                ellipsizeMode="middle"
+                className="my-4 text-center text-lg text-gray-600"
+              >
+                {address}
+              </Text>
+            </View>
           </View>
-          <Text className="my-2 text-center text-base text-gray-600">
-            Sending other assets than Bitcoin will result in permanent loss of
-            funds. Please check the address before completing the transaction.
-          </Text>
         </KeyboardAvoidingView>
 
         {/* Continue Button */}
@@ -90,7 +91,7 @@ export default function NotificationsScreen() {
           <View className="flex-col justify-between">
             <Button
               testID="login-button"
-              label="Share"
+              label="Share BTC Address"
               fullWidth={true}
               size="lg"
               variant="outline"

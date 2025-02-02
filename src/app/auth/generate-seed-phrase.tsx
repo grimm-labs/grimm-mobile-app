@@ -36,7 +36,7 @@ export default function GenerateSeedPhrase() {
           headerShadowVisible: false,
         }}
       />
-      <View className="h-full flex-1 justify-between px-4 pt-6">
+      <View className="h-full justify-between px-4 pt-6">
         <FocusAwareStatusBar />
         <View className="flex-1">
           <View>
@@ -60,7 +60,7 @@ export default function GenerateSeedPhrase() {
                     <View className="w-full flex-row items-center rounded-lg border border-gray-400 px-4 py-3">
                       <Text
                         key={index}
-                        className="text-center text-base font-medium text-gray-700"
+                        className="text-center text-base font-medium text-gray-600"
                       >
                         {showSeed ? `${index + 1}. ${word}` : '•••••••'}
                       </Text>
@@ -113,7 +113,7 @@ export default function GenerateSeedPhrase() {
             variant="secondary"
             textClassName="text-base text-white"
             size="lg"
-            disabled={!(isUnderstand && isBackup)}
+            disabled={!(isUnderstand && isBackup && showSeed)}
           />
         </View>
       </View>

@@ -9,6 +9,7 @@ type Props = {
   name: string;
   symbol: string;
   amount: number;
+  fiat: string;
   type: WalletType;
 };
 
@@ -25,7 +26,7 @@ const getWalletIcon = (type: WalletType) => {
   }
 };
 
-export const WalletView = ({ name, symbol, amount, type }: Props) => {
+export const WalletView = ({ name, symbol, amount, type, fiat }: Props) => {
   const walletIcon = getWalletIcon(type);
   const [isBalanceHide, _setIsBalanceHide] = useHideBalance();
 
@@ -53,7 +54,7 @@ export const WalletView = ({ name, symbol, amount, type }: Props) => {
                 {amount}
               </Text>
               <Text className="text-right text-sm font-medium text-gray-600">
-                $34,600.92
+                XAF {fiat}
               </Text>
             </View>
           )}

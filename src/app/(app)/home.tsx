@@ -13,7 +13,8 @@ import { SafeAreaView, ScrollView, Text, View } from '@/ui';
 
 export default function Home() {
   const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
-  const [balance, _setBalance] = useState<Balance>();
+  const [_balance, _setBalance] = useState<Balance>();
+
   useEffect(() => {
     if (seedPhrase) {
       const blockchainConfig: BlockchainElectrumConfig = {
@@ -53,8 +54,9 @@ export default function Home() {
               <WalletView
                 name="Bitcoin"
                 symbol="BTC"
-                amount={balance?.confirmed || 0}
+                amount={1.52000394}
                 type="On-chain"
+                fiat="98,629,528"
               />
               <Text className="my-4 text-base font-medium text-neutral-500">
                 Lightning
@@ -63,8 +65,9 @@ export default function Home() {
                 <WalletView
                   name="Bitcoin Lighning"
                   symbol="BTC"
-                  amount={0.30923849}
+                  amount={0.50000391}
                   type="Lightning"
+                  fiat="32,444,093"
                 />
               </View>
             </View>

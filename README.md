@@ -1,6 +1,7 @@
 <h1 align="center">
   <img alt="logo" src="./assets/icon.png" width="124px" style="border-radius:10px"/><br/>
-Mobile App </h1>
+  Grimm App
+</h1>
 
 > This Project is based on [Obytes starter](https://starter.obytes.com)
 
