@@ -19,7 +19,7 @@ export type EnterAddressFormProps = {
 };
 
 export default function EnterBitcoinAddressScreen() {
-  const { _handleSubmit, control, _watch } = useForm<FormType>({
+  const { control } = useForm<FormType>({
     resolver: zodResolver(schema),
   });
 

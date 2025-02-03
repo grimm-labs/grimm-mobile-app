@@ -1,17 +1,27 @@
+/* eslint-disable max-lines-per-function */
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
+import { useRouter } from 'expo-router';
+import examples from 'libphonenumber-js/examples.mobile.json';
+import type { CountryCode } from 'libphonenumber-js/mobile';
+import parsePhoneNumberFromString, {
+  getExampleNumber,
+} from 'libphonenumber-js/mobile';
+import React, { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   TouchableWithoutFeedback,
 } from 'react-native';
 import * as z from 'zod';
 
-import { Button, ControlledInput, Text, View } from '@/ui';
-import { CountrySelect } from '@/ui/country-select';
+import countriesList from '@/assets/data/countries.json';
+import { CountryManager } from '@/core';
+import { useSelectedCountry } from '@/core/hooks/use-selected-country';
+import { Button, ControlledInput, Image, Text, View } from '@/ui';
 
 const schema = z.object({
   phoneNumber: z
@@ -33,9 +43,27 @@ export const SignInForm = ({
   const { handleSubmit, control, watch } = useForm<FormType>({
     resolver: zodResolver(schema),
   });
+  const countryManager = new CountryManager(countriesList);
+
+  const getPlaceholderPhoneNumber = (countryCode: CountryCode) =>
+    getExampleNumber(countryCode, examples)?.formatNational();
 
   const formValues = watch(['phoneNumber']);
-  const isButtonEnabled = formValues[0]?.length >= 9;
+
+  const _isButtonEnabled = formValues[0]?.length >= 9;
+
+  const [selectedCountry, _setSelectedCountry] = useSelectedCountry();
+  const parseSelectedCountry = countryManager.getCountryByCode(
+    selectedCountry || ''
+  );
+  const [isPhoneNumberValid, setIsPhoneNumberValid] = useState<boolean>(false);
+
+  const router = useRouter();
+
+  const _validatePhoneNumber = (number: string, countryCode: CountryCode) => {
+    const parsedNumber = parsePhoneNumberFromString(number, countryCode);
+    setIsPhoneNumberValid(parsedNumber ? parsedNumber.isValid() : false);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -56,18 +84,36 @@ export const SignInForm = ({
             </Text>
             <View className="mb-4 flex-row">
               <View>
-                <CountrySelect
-                  countryCode="CM"
-                  countryPhoneCode="+237"
-                  onPress={() => console.log('Hi')}
-                />
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: '/auth/select-country',
+                      params: {
+                        selectedCountryName: `${parseSelectedCountry?.name.common}`,
+                      },
+                    })
+                  }
+                >
+                  <View className="flex flex-row items-center justify-center rounded-xl border border-primary-600 p-2">
+                    <Image
+                      style={{ width: 32, height: 32 }}
+                      className="rounded-full"
+                      contentFit="fill"
+                      source={{
+                        uri: parseSelectedCountry?.flag,
+                      }}
+                    />
+                  </View>
+                </Pressable>
               </View>
               <View className="ml-4 flex-1">
                 <ControlledInput
                   testID="phoneNumber"
                   control={control}
                   name="phoneNumber"
-                  placeholder="6XX XX XX XX"
+                  placeholder={getPlaceholderPhoneNumber(
+                    selectedCountry as CountryCode
+                  )}
                   placeholderClassName="text-xs"
                   textContentType="telephoneNumber"
                   keyboardType="number-pad"
@@ -85,7 +131,7 @@ export const SignInForm = ({
             textClassName="text-base text-white"
             className="mb-4"
             onPress={handleSubmit(onSubmit)}
-            disabled={!isButtonEnabled}
+            disabled={!isPhoneNumberValid}
           />
         </KeyboardAvoidingView>
       </View>

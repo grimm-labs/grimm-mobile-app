@@ -1,6 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, SafeAreaView, Text, View } from 'react-native';
+import { SafeAreaView, Text, View } from 'react-native';
 
 import { Button, FocusAwareStatusBar, Image } from '@/ui';
 
@@ -15,18 +15,6 @@ export default function Onboarding() {
             title: '',
             headerShown: true,
             headerShadowVisible: false,
-            headerRight: () => (
-              <Pressable
-                testID="need-help-button"
-                onPress={() => {
-                  router.push('need-help');
-                }}
-              >
-                <Text className="text-base font-medium text-primary-600">
-                  Languages
-                </Text>
-              </Pressable>
-            ),
           }}
         />
         <FocusAwareStatusBar />
