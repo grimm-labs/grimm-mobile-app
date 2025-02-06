@@ -1,3 +1,4 @@
+import type { Balance } from 'bdk-rn/lib/classes/Bindings';
 import * as React from 'react';
 
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
@@ -8,9 +9,8 @@ type WalletType = 'On-chain' | 'Lightning' | 'Liquid';
 type Props = {
   name: string;
   symbol: string;
-  amount: number;
-  fiat: string;
   type: WalletType;
+  balance: Balance;
 };
 
 const getWalletIcon = (type: WalletType) => {
@@ -24,7 +24,7 @@ const getWalletIcon = (type: WalletType) => {
   }
 };
 
-export const WalletView = ({ name, symbol, amount, type, fiat }: Props) => {
+export const WalletView = ({ name, symbol, type, balance }: Props) => {
   const walletIcon = getWalletIcon(type);
   const [isBalanceHide, _setIsBalanceHide] = useHideBalance();
 
@@ -44,8 +44,8 @@ export const WalletView = ({ name, symbol, amount, type, fiat }: Props) => {
             <Text className="text-right text-lg font-semibold text-gray-900">********</Text>
           ) : (
             <View>
-              <Text className="text-right text-base font-semibold text-gray-900">{amount}</Text>
-              <Text className="text-right text-sm font-medium text-gray-600">XAF {fiat}</Text>
+              <Text className="text-right text-base font-semibold text-gray-900">{balance.total.toFixed(8)}</Text>
+              <Text className="text-right text-sm font-medium text-gray-600">XAF 0</Text>
             </View>
           )}
         </View>

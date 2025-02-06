@@ -57,20 +57,15 @@ export default function EnterBitcoinAddressScreen() {
             headerBackTitleVisible: false,
           }}
         />
-
         <ScreenTitle title="Enter bitcoin address" />
         <View className="mb-4" />
         <ScreenSubtitle subtitle="Provide a valid Bitcoin address or invoice to send funds" />
         <View className="mb-4" />
-
-        {/* Input Section */}
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
           <View className="mb-4">
             <ControlledInput testID="phoneNumber" control={control} name="bitcoinAddress" placeholder="Bitcoin address or invoice" placeholderClassName="text-base" textContentType="telephoneNumber" />
           </View>
         </KeyboardAvoidingView>
-
-        {/* Continue Button */}
         <View>
           <View className="flex-col justify-between">
             <Button testID="login-button" label="Paste Address" fullWidth={true} size="lg" variant="link" className="mb-4" textClassName="text-base" icon="clipboard-outline" onPress={handleScanQRCode} />
