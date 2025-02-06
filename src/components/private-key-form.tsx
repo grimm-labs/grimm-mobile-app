@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';

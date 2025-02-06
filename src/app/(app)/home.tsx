@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { Blockchain } from 'bdk-rn';
 import type { Balance } from 'bdk-rn/lib/classes/Bindings';
 import type { BlockchainElectrumConfig } from 'bdk-rn/lib/lib/enums';

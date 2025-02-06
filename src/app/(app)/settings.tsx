@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { useRouter } from 'expo-router';
 import React from 'react';
 

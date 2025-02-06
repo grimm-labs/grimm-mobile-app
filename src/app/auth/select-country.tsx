@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
