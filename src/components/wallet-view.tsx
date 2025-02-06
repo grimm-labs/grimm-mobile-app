@@ -19,8 +19,6 @@ const getWalletIcon = (type: WalletType) => {
       return require('../assets/images/on-chain-icon.png');
     case 'Lightning':
       return require('../assets/images/lightning-icon.png');
-    case 'Liquid':
-      return require('../assets/images/liquid-icon.png');
     default:
       return require('../assets/images/on-chain-icon.png');
   }
@@ -37,25 +35,17 @@ export const WalletView = ({ name, symbol, amount, type, fiat }: Props) => {
         <View>
           <Text className="text-base font-semibold text-gray-800">{name}</Text>
           <View className="flex-row items-center">
-            <Text className="mr-1 text-sm font-medium text-gray-600">
-              {symbol}
-            </Text>
+            <Text className="mr-1 text-sm font-medium text-gray-600">{symbol}</Text>
             <Text className="text-xs text-gray-500">({type})</Text>
           </View>
         </View>
         <View>
           {isBalanceHide ? (
-            <Text className="text-right text-lg font-semibold text-gray-900">
-              ********
-            </Text>
+            <Text className="text-right text-lg font-semibold text-gray-900">********</Text>
           ) : (
             <View>
-              <Text className="text-right text-base font-semibold text-gray-900">
-                {amount}
-              </Text>
-              <Text className="text-right text-sm font-medium text-gray-600">
-                XAF {fiat}
-              </Text>
+              <Text className="text-right text-base font-semibold text-gray-900">{amount}</Text>
+              <Text className="text-right text-sm font-medium text-gray-600">XAF {fiat}</Text>
             </View>
           )}
         </View>

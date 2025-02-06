@@ -1,10 +1,13 @@
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
+import { SafeAreaView, View } from 'react-native';
 
 import type { OtpFormProps } from '@/components/otp-confirmation-form';
 import { OtpConfirmationForm } from '@/components/otp-confirmation-form';
+import { ScreenSubtitle } from '@/components/screen-subtitle';
+import { ScreenTitle } from '@/components/screen-title';
 import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { FocusAwareStatusBar, Pressable, Text } from '@/ui';
+import { FocusAwareStatusBar } from '@/ui';
 
 export default function Login() {
   const router = useRouter();
@@ -15,28 +18,22 @@ export default function Login() {
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: '',
-          headerShown: true,
-          headerShadowVisible: false,
-          headerRight: () => (
-            <Pressable
-              testID="need-help-button"
-              onPress={() => {
-                router.push('need-help');
-              }}
-            >
-              <Text className="text-base font-medium text-primary-600">
-                Need help?
-              </Text>
-            </Pressable>
-          ),
-        }}
-      />
-      <FocusAwareStatusBar />
-      <OtpConfirmationForm onSubmit={onSubmit} />
-    </>
+    <SafeAreaView>
+      <View className="flex h-full justify-between px-4">
+        <Stack.Screen
+          options={{
+            title: '',
+            headerShown: true,
+            headerShadowVisible: false,
+          }}
+        />
+        <FocusAwareStatusBar />
+        <ScreenTitle title="OTP Confirmation" />
+        <View className="mb-4" />
+        <ScreenSubtitle subtitle="Please enter the code you received via SMS" />
+        <View className="mb-4" />
+        <OtpConfirmationForm onSubmit={onSubmit} />
+      </View>
+    </SafeAreaView>
   );
 }

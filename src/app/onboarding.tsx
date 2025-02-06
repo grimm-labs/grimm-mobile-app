@@ -2,7 +2,7 @@ import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, Text, View } from 'react-native';
 
-import { Button, FocusAwareStatusBar, Image } from '@/ui';
+import { Button, FocusAwareStatusBar } from '@/ui';
 
 export default function Onboarding() {
   const router = useRouter();
@@ -18,21 +18,9 @@ export default function Onboarding() {
           }}
         />
         <FocusAwareStatusBar />
-        <View className="flex-1 items-center justify-center">
-          <Image
-            source={require('@/assets/images/wallet.jpg')}
-            className="h-1/2 w-1/2"
-          />
-          <Text className="mt-5 text-center text-3xl font-bold">
-            Secure. Simple. Seamless.
-          </Text>
-          <Text className="mt-5 text-center text-3xl">
-            Welcome to Grimm Wallet
-          </Text>
-          <Text className="mt-5 text-center text-lg font-medium text-gray-600">
-            Safely store, send, receive, and exchange your tokens effortlessly,
-            all in one place.
-          </Text>
+        <View className="flex-1 items-center justify-end pb-6">
+          <Text className="mt-5 text-center text-3xl font-light">Welcome to Grimm App</Text>
+          <Text className="mt-4 text-center font-light text-gray-600">Safely store, send, receive, and exchange your tokens effortlessly, all in one place.</Text>
         </View>
         <View>
           <Button
@@ -45,15 +33,8 @@ export default function Onboarding() {
             textClassName="text-base text-white"
             size="lg"
           />
-          <Text className="mt-2 text-center text-base text-gray-600">
-            By Continuing, You agree to the{' '}
-            <Text className="font-medium text-primary-600 underline">
-              Terms of Service
-            </Text>{' '}
-            &{' '}
-            <Text className="font-medium text-primary-600 underline">
-              Privacy Policy
-            </Text>
+          <Text className="mt-4 text-center text-base font-light text-gray-600">
+            By Continuing, You agree to the <Text className="text-primary-600 underline">Terms of Service</Text> & <Text className="text-primary-600 underline">Privacy Policy</Text>
           </Text>
         </View>
       </View>
