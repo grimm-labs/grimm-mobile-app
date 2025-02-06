@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import type { PressableProps, View } from 'react-native';
@@ -8,11 +7,10 @@ import { tv } from 'tailwind-variants';
 
 const button = tv({
   slots: {
-    container:
-      'my-2 flex flex-row items-center justify-center rounded-full px-4',
+    container: 'flex flex-row items-center justify-center rounded-full px-4',
     label: 'font-inter text-base font-semibold',
     indicator: 'h-6 text-white',
-    icon: 'mr-2', // Ajout du slot pour l'icône
+    icon: 'mr-2',
   },
 
   variants: {
@@ -109,75 +107,30 @@ interface Props extends ButtonVariants, Omit<PressableProps, 'disabled'> {
 }
 
 export const Button = React.forwardRef<View, Props>(
-  (
-    {
-      label: text,
-      loading = false,
-      variant = 'default',
-      disabled = false,
-      size = 'default',
-      className = '',
-      testID,
-      textClassName = '',
-      icon,
-      iconPosition = 'left',
-      ...props
-    },
-    ref
-  ) => {
-    const styles = React.useMemo(
-      () => button({ variant, disabled, size }),
-      [variant, disabled, size]
-    );
+  ({ label: text, loading = false, variant = 'default', disabled = false, size = 'default', className = '', testID, textClassName = '', icon, iconPosition = 'left', ...props }, ref) => {
+    const styles = React.useMemo(() => button({ variant, disabled, size }), [variant, disabled, size]);
 
     const renderIcon = () => {
       if (!icon) return null;
 
-      const iconColor =
-        variant === 'default'
-          ? disabled
-            ? '#6B7280'
-            : '#FFFFFF'
-          : disabled
-          ? '#6B7280'
-          : '#000000';
+      const iconColor = variant === 'default' ? (disabled ? '#6B7280' : '#FFFFFF') : disabled ? '#6B7280' : '#000000';
 
-      return (
-        <Ionicons
-          name={icon}
-          size={16}
-          color={iconColor}
-          className={styles.icon()}
-        />
-      );
+      return <Ionicons name={icon} size={16} color={iconColor} className={styles.icon()} />;
     };
 
     return (
-      <Pressable
-        disabled={disabled || loading}
-        className={styles.container({ className })}
-        {...props}
-        ref={ref}
-        testID={testID}
-      >
+      <Pressable disabled={disabled || loading} className={styles.container({ className })} {...props} ref={ref} testID={testID}>
         {props.children ? (
           props.children
         ) : (
           <>
             {loading ? (
-              <ActivityIndicator
-                size="small"
-                className={styles.indicator()}
-                testID={testID ? `${testID}-activity-indicator` : undefined}
-              />
+              <ActivityIndicator size="small" className={styles.indicator()} testID={testID ? `${testID}-activity-indicator` : undefined} />
             ) : (
               <>
                 {iconPosition === 'left' && renderIcon()}
                 {text && (
-                  <Text
-                    testID={testID ? `${testID}-label` : undefined}
-                    className={styles.label({ className: textClassName })}
-                  >
+                  <Text testID={testID ? `${testID}-label` : undefined} className={styles.label({ className: textClassName })}>
                     {text}
                   </Text>
                 )}

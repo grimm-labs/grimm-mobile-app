@@ -27,24 +27,12 @@ export const LanguageItem = () => {
     []
   );
 
-  const selectedLanguage = React.useMemo(
-    () => langs.find((lang) => lang.value === language),
-    [language, langs]
-  );
+  const selectedLanguage = React.useMemo(() => langs.find((lang) => lang.value === language), [language, langs]);
 
   return (
     <>
-      <Item
-        text="settings.language"
-        value={selectedLanguage?.label}
-        onPress={modal.present}
-      />
-      <Options
-        ref={modal.ref}
-        options={langs}
-        onSelect={onSelect}
-        value={selectedLanguage?.value}
-      />
+      <Item text="settings.language" value={selectedLanguage?.label} onPress={modal.present} />
+      <Options ref={modal.ref} options={langs} onSelect={onSelect} value={selectedLanguage?.value} />
     </>
   );
 };

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React from 'react';
@@ -32,9 +31,7 @@ const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
 
 export default function NeedHelp() {
   const makeSupportCall = () => {
-    Linking.openURL('tel:+2348033333333').catch((err) =>
-      console.error('Error making phone call', err)
-    );
+    Linking.openURL('tel:+2348033333333').catch((err) => console.error('Error making phone call', err));
   };
 
   return (
@@ -49,11 +46,7 @@ export default function NeedHelp() {
         />
         <FocusAwareStatusBar />
         <View className="mb-6">
-          <Item
-            title="Talk to us"
-            icon="call-outline"
-            onPress={makeSupportCall}
-          />
+          <Item title="Talk to us" icon="call-outline" onPress={makeSupportCall} />
           <Item
             title="Send us an E-mail"
             icon="mail-outline"
@@ -85,9 +78,7 @@ export default function NeedHelp() {
         </View>
         <View className="mx-4">
           <View className="mb-4 border-b-[0.5px] border-gray-300">
-            <Text className="my-6 text-sm font-medium">
-              Customer Service Hours(UTC +1:00)
-            </Text>
+            <Text className="my-6 text-sm font-medium">Customer Service Hours(UTC +1:00)</Text>
           </View>
           <View className="mb-4 flex flex-row justify-between">
             <Text className="text-sm font-medium">Mon-Fri</Text>
@@ -98,12 +89,8 @@ export default function NeedHelp() {
             <Text>9:00-12:00hrs</Text>
           </View>
           <View className="mb-4 flex flex-row justify-between">
-            <Text className="text-sm font-medium">
-              Sunday & Public Holidays
-            </Text>
-            <Text className="text-sm font-extrabold text-danger-600">
-              Closed
-            </Text>
+            <Text className="text-sm font-medium">Sunday & Public Holidays</Text>
+            <Text className="text-sm font-extrabold text-danger-600">Closed</Text>
           </View>
         </View>
       </View>

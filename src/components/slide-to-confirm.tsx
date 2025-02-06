@@ -1,15 +1,8 @@
-/* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SLIDER_WIDTH = SCREEN_WIDTH - 32;
@@ -20,10 +13,7 @@ interface SlideToConfirmProps {
   confirmThreshold?: number;
 }
 
-const SlideToConfirm: React.FC<SlideToConfirmProps> = ({
-  onConfirm,
-  confirmThreshold = 0.9,
-}) => {
+const SlideToConfirm: React.FC<SlideToConfirmProps> = ({ onConfirm, confirmThreshold = 0.9 }) => {
   const translateX = useSharedValue(0);
   const isDragging = useSharedValue(false);
 
@@ -46,10 +36,7 @@ const SlideToConfirm: React.FC<SlideToConfirmProps> = ({
     },
     onActive: (event, context) => {
       const newValue = context.startX + event.translationX;
-      translateX.value = Math.max(
-        0,
-        Math.min(newValue, SLIDER_WIDTH - KNOB_SIZE)
-      );
+      translateX.value = Math.max(0, Math.min(newValue, SLIDER_WIDTH - KNOB_SIZE));
     },
     onEnd: () => {
       isDragging.value = false;
@@ -73,18 +60,10 @@ const SlideToConfirm: React.FC<SlideToConfirmProps> = ({
   return (
     <View className="">
       <View className="h-[60px] w-full justify-center overflow-hidden rounded-full bg-gray-100">
-        <Animated.View
-          className="absolute left-0 h-full rounded-full bg-primary-600 opacity-30"
-          style={progressStyle}
-        />
-        <Text className="absolute w-full text-center text-sm font-medium text-gray-500">
-          Slide to confirm transaction
-        </Text>
+        <Animated.View className="absolute left-0 h-full rounded-full bg-primary-600 opacity-30" style={progressStyle} />
+        <Text className="absolute w-full text-center text-sm font-medium text-gray-500">Slide to confirm transaction</Text>
         <PanGestureHandler onGestureEvent={panGestureHandler}>
-          <Animated.View
-            className="absolute h-[60px] w-[60px] items-center justify-center rounded-full bg-primary-600"
-            style={sliderStyle}
-          >
+          <Animated.View className="absolute h-[60px] w-[60px] items-center justify-center rounded-full bg-primary-600" style={sliderStyle}>
             <Ionicons name="arrow-forward-sharp" size={22} color="white" />
           </Animated.View>
         </PanGestureHandler>

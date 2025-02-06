@@ -62,6 +62,7 @@
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.7",
     "i18next": "^22.5.1",
+    "libphonenumber-js": "^1.11.19",
     "lodash.memoize": "^4.1.2",
     "moti": "^0.28.1",
     "nativewind": "^4.0.36",

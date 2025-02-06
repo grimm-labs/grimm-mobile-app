@@ -1,29 +1,31 @@
 /* eslint-disable max-lines-per-function */
-import { AddressIndex, Network } from 'bdk-rn/lib/lib/enums';
+import { Network } from 'bdk-rn/lib/lib/enums';
+import { AddressIndex } from 'bdk-rn/lib/lib/enums';
 import { Stack } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
-import { createWallet } from '@/core';
+import { createWallet, useSelectedBitcoinNetwork } from '@/core';
 import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
 import { Button, showSuccessMessage, Text, View } from '@/ui';
 
 export default function NotificationsScreen() {
   const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
   const [address, setAddress] = useState<string>();
+  const [selectedBitcoinNetwork, _setSelectedBitcoinNetwork] = useSelectedBitcoinNetwork();
 
   useEffect(() => {
     const x = async () => {
       if (seedPhrase) {
-        const wallet = await createWallet(seedPhrase, Network.Testnet);
+        const wallet = await createWallet(seedPhrase, selectedBitcoinNetwork as Network);
         const addressInfo = await wallet.getAddress(AddressIndex.New);
         const newAddress = await addressInfo.address.asString();
         setAddress(newAddress);
       }
     };
     x();
-  }, [seedPhrase]);
+  }, [seedPhrase, selectedBitcoinNetwork]);
 
   const handleCopyAdress = () => {
     showSuccessMessage('Bitcoin address copied!');
@@ -46,40 +48,26 @@ export default function NotificationsScreen() {
         />
 
         {/* Header */}
-        <View className="">
-          {/* <Text className="my-2 text-center text-lg font-bold text-gray-600">
-            This address only accepts Bitcoin
-          </Text> */}
-          <Text className="text-normal my-2 text-center text-gray-600">
-            Scan the QR code to send funds to this address{' '}
-          </Text>
+        <View>
+          <Text className="text-normal my-4 text-center text-gray-600">Scan the QR code to send funds to this address </Text>
+          {selectedBitcoinNetwork === Network.Testnet && (
+            <View className="my-4 rounded-lg bg-danger-500 px-3 py-4">
+              <Text className="font-light text-white">You are currently on the testnet network, do not send any real Bitcoin to this address, otherwise it will be lost forever.</Text>
+            </View>
+          )}
         </View>
 
         {/* Input Section */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          className="flex-1"
-        >
-          <View className="">
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+          <View>
             <View className="mx-10 items-center justify-center py-10">
-              <QRCode
-                size={260}
-                value={address}
-                logo={require('@/assets/images/on-chain-icon.png')}
-                logoSize={60}
-                logoBackgroundColor="transparent"
-              />
+              <QRCode size={260} value={address} logo={require('@/assets/images/on-chain-icon.png')} logoSize={60} logoBackgroundColor="transparent" />
             </View>
           </View>
           <View className="mx-10">
-            <Text className="text-normal my-2 text-center text-gray-600">
-              Scan BTC address to send payment or copy wallet address below
-            </Text>
+            <Text className="text-normal my-2 text-center text-gray-600">Scan BTC address to send payment or copy wallet address below</Text>
             <View className="mb-2">
-              <Text
-                ellipsizeMode="middle"
-                className="my-4 text-center text-lg text-gray-600"
-              >
+              <Text ellipsizeMode="middle" className="my-4 text-center text-lg text-gray-600">
                 {address}
               </Text>
             </View>
@@ -89,27 +77,8 @@ export default function NotificationsScreen() {
         {/* Continue Button */}
         <View>
           <View className="flex-col justify-between">
-            <Button
-              testID="login-button"
-              label="Share BTC Address"
-              fullWidth={true}
-              size="lg"
-              variant="outline"
-              className="mb-4"
-              textClassName="text-base"
-              onPress={handleShareAddress}
-              icon="share"
-            />
-            <Button
-              testID="login-button"
-              label="Copy Address"
-              fullWidth={true}
-              size="lg"
-              variant="secondary"
-              textClassName="text-base text-white"
-              onPress={handleCopyAdress}
-              disabled={false}
-            />
+            <Button testID="login-button" label="Share BTC Address" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={handleShareAddress} icon="share" />
+            <Button testID="login-button" label="Copy Address" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleCopyAdress} disabled={false} />
           </View>
         </View>
       </View>

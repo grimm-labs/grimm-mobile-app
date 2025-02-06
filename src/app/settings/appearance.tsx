@@ -20,13 +20,7 @@ interface ThemeTypes {
   icon: React.ComponentProps<typeof Ionicons>['name'];
 }
 
-const ThemeOption: React.FC<ThemeOptionProps> = ({
-  theme,
-  description,
-  icon,
-  isSelected,
-  onPress,
-}) => (
+const ThemeOption: React.FC<ThemeOptionProps> = ({ theme, description, icon, isSelected, onPress }) => (
   <Pressable onPress={onPress}>
     <View className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 py-4">
       <View className="flex flex-row items-center">
@@ -36,9 +30,7 @@ const ThemeOption: React.FC<ThemeOptionProps> = ({
           <Text className="text-xs text-gray-500">{description}</Text>
         </View>
       </View>
-      {isSelected && (
-        <Ionicons name="checkmark-outline" size={24} color="green" />
-      )}
+      {isSelected && <Ionicons name="checkmark-outline" size={24} color="green" />}
     </View>
   </Pressable>
 );
@@ -78,14 +70,7 @@ export default function ThemeSelector() {
         <FocusAwareStatusBar />
         <View className="mt-6">
           {themes.map(({ name, description, icon }) => (
-            <ThemeOption
-              key={name}
-              theme={name}
-              description={description}
-              icon={icon}
-              isSelected={selectedTheme === name}
-              onPress={() => setSelectedTheme(name)}
-            />
+            <ThemeOption key={name} theme={name} description={description} icon={icon} isSelected={selectedTheme === name} onPress={() => setSelectedTheme(name)} />
           ))}
         </View>
       </View>

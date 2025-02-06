@@ -15,10 +15,7 @@ const createAppWrapper = () => {
   );
 };
 
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) => {
+const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
   const Wrapper = createAppWrapper(); // make sure we have a new wrapper for each render
   return render(ui, { wrapper: Wrapper, ...options });
 };

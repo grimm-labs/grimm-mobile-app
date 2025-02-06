@@ -20,15 +20,8 @@ export default function NotificationsScreen() {
         <FocusAwareStatusBar />
         <View className="mb-6 flex-1">
           <View className="flex-1 items-center justify-center">
-            <Ionicons
-              name="balloon-outline"
-              size={60}
-              color="gray"
-              className="mb-8"
-            />
-            <Text className="text-base text-gray-500">
-              Circulate, there is nothing to show
-            </Text>
+            <Ionicons name="balloon-outline" size={60} color="gray" className="mb-8" />
+            <Text className="text-base text-gray-500">Circulate, there is nothing to show</Text>
           </View>
         </View>
       </View>

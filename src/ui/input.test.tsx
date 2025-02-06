@@ -32,9 +32,7 @@ describe('Input component ', () => {
   it('should render the placeholder correctly ', () => {
     render(<Input testID="input" placeholder="Enter your username" />);
     expect(screen.getByTestId('input')).toBeOnTheScreen();
-    expect(
-      screen.getByPlaceholderText('Enter your username')
-    ).toBeOnTheScreen();
+    expect(screen.getByPlaceholderText('Enter your username')).toBeOnTheScreen();
   });
 
   it('should render the label correctly ', () => {
@@ -48,29 +46,16 @@ describe('Input component ', () => {
     render(<Input testID="input" error="This is an error message" />);
     expect(screen.getByTestId('input')).toBeOnTheScreen();
 
-    expect(screen.getByTestId('input-error')).toHaveTextContent(
-      'This is an error message'
-    );
+    expect(screen.getByTestId('input-error')).toHaveTextContent('This is an error message');
   });
   it('should render the label, error message & placeholder correctly ', () => {
-    render(
-      <Input
-        testID="input"
-        label="Username"
-        placeholder="Enter your username"
-        error="This is an error message"
-      />
-    );
+    render(<Input testID="input" label="Username" placeholder="Enter your username" error="This is an error message" />);
     expect(screen.getByTestId('input')).toBeOnTheScreen();
 
     expect(screen.getByTestId('input-label')).toHaveTextContent('Username');
     expect(screen.getByTestId('input-error')).toBeOnTheScreen();
-    expect(screen.getByTestId('input-error')).toHaveTextContent(
-      'This is an error message'
-    );
-    expect(
-      screen.getByPlaceholderText('Enter your username')
-    ).toBeOnTheScreen();
+    expect(screen.getByTestId('input-error')).toHaveTextContent('This is an error message');
+    expect(screen.getByPlaceholderText('Enter your username')).toBeOnTheScreen();
   });
 
   it('should trigger onFocus event correctly ', () => {

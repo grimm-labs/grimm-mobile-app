@@ -1,10 +1,5 @@
 import * as React from 'react';
-import type {
-  Control,
-  FieldValues,
-  Path,
-  RegisterOptions,
-} from 'react-hook-form';
+import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import type { TextInput, TextInputProps } from 'react-native';
 import { I18nManager, StyleSheet, View } from 'react-native';
@@ -16,10 +11,9 @@ import { Text } from './text';
 
 const inputTv = tv({
   slots: {
-    container: 'mb-2',
+    container: 'mb-0',
     label: 'text-grey-100 mb-1 text-lg dark:text-neutral-100',
-    input:
-      'mt-0 border-b-[1.3px] border-primary-600 py-3 font-inter text-base font-medium leading-5 dark:bg-neutral-800 dark:text-white',
+    input: 'font-inter mt-0 rounded-xl border border-primary-600 p-2 py-4 text-base font-medium leading-5 dark:bg-neutral-800 dark:text-white',
   },
 
   variants: {
@@ -53,10 +47,7 @@ export interface NInputProps extends TextInputProps {
   error?: string;
 }
 
-type TRule = Omit<
-  RegisterOptions,
-  'valueAsNumber' | 'valueAsDate' | 'setValueAs'
->;
+type TRule = Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>;
 
 export type RuleType<T> = { [name in keyof T]: TRule };
 export type InputControllerType<T extends FieldValues> = {
@@ -65,9 +56,7 @@ export type InputControllerType<T extends FieldValues> = {
   rules?: TRule;
 };
 
-interface ControlledInputProps<T extends FieldValues>
-  extends NInputProps,
-    InputControllerType<T> {}
+interface ControlledInputProps<T extends FieldValues> extends NInputProps, InputControllerType<T> {}
 
 export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
   const { label, error, testID, ...inputProps } = props;
@@ -88,10 +77,7 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
   return (
     <View className={styles.container()}>
       {label && (
-        <Text
-          testID={testID ? `${testID}-label` : undefined}
-          className={styles.label()}
-        >
+        <Text testID={testID ? `${testID}-label` : undefined} className={styles.label()}>
           {label}
         </Text>
       )}
@@ -103,17 +89,10 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
         onBlur={onBlur}
         onFocus={onFocus}
         {...inputProps}
-        style={StyleSheet.flatten([
-          { writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' },
-          { textAlign: I18nManager.isRTL ? 'right' : 'left' },
-          inputProps.style,
-        ])}
+        style={StyleSheet.flatten([{ writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }, { textAlign: I18nManager.isRTL ? 'right' : 'left' }, inputProps.style])}
       />
       {error && (
-        <Text
-          testID={testID ? `${testID}-error` : undefined}
-          className="mt-1 text-sm text-danger-400 dark:text-danger-600"
-        >
+        <Text testID={testID ? `${testID}-error` : undefined} className="mt-1 text-sm text-danger-400 dark:text-danger-600">
           {error}
         </Text>
       )}
@@ -122,20 +101,9 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
 });
 
 // only used with react-hook-form
-export function ControlledInput<T extends FieldValues>(
-  props: ControlledInputProps<T>
-) {
+export function ControlledInput<T extends FieldValues>(props: ControlledInputProps<T>) {
   const { name, control, rules, ...inputProps } = props;
 
   const { field, fieldState } = useController({ control, name, rules });
-  return (
-    <Input
-      ref={field.ref}
-      autoCapitalize="none"
-      onChangeText={field.onChange}
-      value={(field.value as string) || ''}
-      {...inputProps}
-      error={fieldState.error?.message}
-    />
-  );
+  return <Input ref={field.ref} autoCapitalize="none" onChangeText={field.onChange} value={(field.value as string) || ''} {...inputProps} error={fieldState.error?.message} />;
 }

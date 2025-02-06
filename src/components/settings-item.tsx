@@ -11,10 +11,7 @@ type Props = {
 
 export const SettingsItem = ({ icon, title, subtitle, onPress }: Props) => {
   return (
-    <Pressable
-      onPress={onPress}
-      className="mb-4 flex-row items-center rounded py-2"
-    >
+    <Pressable onPress={onPress} className="mb-4 flex-row items-center rounded py-2">
       <View className="mr-1 rounded-full p-2">
         <Ionicons name={icon} size={20} color="gray" />
       </View>

@@ -2,17 +2,13 @@
 /* eslint-disable max-lines-per-function */
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native';
 
+import { ScreenSubtitle } from '@/components/screen-subtitle';
+import { ScreenTitle } from '@/components/screen-title';
 import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
 import { useSoftKeyboardEffect } from '@/core/keyboard';
-import {
-  Button,
-  FocusAwareStatusBar,
-  showErrorMessage,
-  Text,
-  TouchableOpacity,
-  View,
-} from '@/ui';
+import { Button, FocusAwareStatusBar, showErrorMessage, Text, TouchableOpacity, View } from '@/ui';
 
 type SearchParams = {
   mnemonic: string;
@@ -47,82 +43,58 @@ export default function SeedPhraseConfirmation() {
   const verifyMnemonic = () => {
     const mnemonicAsArray = mnemonic?.split(' ');
     if (mnemonicAsArray && selectedWords.length === 12) {
-      const isCorrect = selectedWords.every(
-        (word, index) => word === mnemonicAsArray[index]
-      );
+      const isCorrect = selectedWords.every((word, index) => word === mnemonicAsArray[index]);
       if (isCorrect) {
         setSeedPhrase(mnemonic);
-        router.push('/auth/wallet-preparation');
+        router.push('(app)');
       } else {
-        showErrorMessage(
-          'The words are not in the same order as they were generated'
-        );
+        showErrorMessage('The words are not in the same order as they were generated');
       }
     }
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: '',
-          headerShown: true,
-          headerShadowVisible: false,
-        }}
-      />
-      <FocusAwareStatusBar />
-      <View className="mb-6 flex-1 justify-between px-4 pt-6">
-        <View>
-          <Text testID="otp-title" className="mb-4 text-4xl">
-            Seed phrase confirmation
-          </Text>
-          <Text testID="otp-description" className="mb-6 text-sm text-gray-600">
-            Select each word in the order it was presented to you.
-          </Text>
+    <SafeAreaView>
+      <View className="flex h-full justify-between px-4">
+        <Stack.Screen
+          options={{
+            title: '',
+            headerShown: true,
+            headerShadowVisible: false,
+          }}
+        />
+        <FocusAwareStatusBar />
+        <ScreenTitle title="Seed phrase confirmation" />
+        <View className="mb-4" />
+        <ScreenSubtitle subtitle="Select each word in the order it was presented to you" />
+        <View className="mb-4" />
+        <View className="flex-1 justify-between">
           <View>
             <View className="mb-4 flex flex-row flex-wrap justify-evenly rounded border-[1.5px] border-dashed border-gray-300 p-2">
               {selectedWords.map((word, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleWordPress(word)}
-                  className="m-2 rounded-full bg-primary-700 px-5 py-3"
-                >
+                <TouchableOpacity key={index} onPress={() => handleWordPress(word)} className="m-2 rounded-full bg-primary-700 px-5 py-3">
                   <Text className="text-sm font-medium text-white">
                     {index + 1}. {word}
                   </Text>
                 </TouchableOpacity>
               ))}
               {selectedWords.length === 0 ? (
-                <View className="my-4 w-full items-center justify-center">
-                  <Text className="text-sm text-gray-600">
-                    Words will be displayed here in order
-                  </Text>
+                <View className="my-8 w-full items-center justify-center">
+                  <Text className="text-sm text-gray-600">Words will be displayed here in order</Text>
                 </View>
               ) : undefined}
             </View>
             <View className="mb-4 flex flex-row flex-wrap justify-evenly">
               {shuffledMnemonic.map((word, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleWordPress(word)}
-                  className="my-2 mr-2 rounded-full border border-primary-200 px-5 py-3"
-                >
+                <TouchableOpacity key={index} onPress={() => handleWordPress(word)} className="my-2 mr-2 rounded-full border border-primary-200 px-5 py-3">
                   <Text className="ont-medium text-sm text-black">{word}</Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
+          <Button label="Confirm" onPress={verifyMnemonic} fullWidth={true} variant="secondary" textClassName="text-base text-white font-medium" size="lg" disabled={selectedWords.length !== 12} />
         </View>
-        <Button
-          label="Confirm"
-          onPress={verifyMnemonic}
-          fullWidth={true}
-          variant="secondary"
-          textClassName="text-base text-white font-medium"
-          size="lg"
-          disabled={selectedWords.length !== 12}
-        />
       </View>
-    </>
+    </SafeAreaView>
   );
 }

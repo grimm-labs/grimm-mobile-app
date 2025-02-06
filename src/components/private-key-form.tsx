@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';
@@ -27,48 +28,21 @@ export const PrivateImportForm = ({
   });
 
   const formValues = watch(['value']);
-  const isButtonEnabled =
-    formValues[0]?.split(' ').filter((word) => word.trim() !== '').length ===
-    12;
+  const isButtonEnabled = formValues[0]?.split(' ').filter((word) => word.trim() !== '').length === 12;
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-    >
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <View className="flex-1 justify-between px-4 pb-4">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1 }}
-          keyboardVerticalOffset={90}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} keyboardVerticalOffset={90}>
           <View className="flex-1">
-            <Text className="pb-2 text-2xl">Enter your seed phrase</Text>
-            <Text className="pb-4 text-sm text-gray-600">
-              Please enter the 12 words of your private key with each word
-              separated by a space to restore your wallet.
-            </Text>
+            <Text className="mb-4 text-2xl font-bold text-gray-600">Enter your seed phrase</Text>
+            <Text className="pb-4 text-sm text-gray-600">Please enter the 12 words of your private key with each word separated by a space to restore your wallet.</Text>
             <View className="flex">
-              <ControlledInput
-                testID={`private-key-word`}
-                control={control}
-                name="value"
-                placeholder="Enter your seed phrase here"
-                multiline={true}
-              />
+              <ControlledInput testID={`private-key-word`} control={control} name="value" placeholder="Enter your seed phrase here" multiline={true} />
             </View>
           </View>
           <View>
-            <Button
-              testID="private-key-submit-button"
-              label="Confirm"
-              fullWidth={true}
-              size="lg"
-              variant="secondary"
-              textClassName="text-base text-white"
-              onPress={handleSubmit(onSubmit)}
-              disabled={!isButtonEnabled}
-            />
+            <Button testID="private-key-submit-button" label="Confirm" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} disabled={!isButtonEnabled} />
           </View>
         </KeyboardAvoidingView>
       </View>

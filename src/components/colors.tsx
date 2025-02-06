@@ -24,13 +24,7 @@ const Color = ({ name }: { name: ColorName }) => {
       <Text className="font-medium">{name.toUpperCase()}</Text>
       <View className="flex-row flex-wrap content-between justify-around ">
         {Object.entries(colors[name]).map(([key, value]) => {
-          return (
-            <ColorCard
-              key={`${colors[name]}-${key}`}
-              value={key}
-              color={value}
-            />
-          );
+          return <ColorCard key={`${colors[name]}-${key}`} value={key} color={value} />;
         })}
       </View>
     </View>
@@ -40,10 +34,7 @@ const Color = ({ name }: { name: ColorName }) => {
 const ColorCard = ({ color, value }: { value: string; color: string }) => {
   return (
     <View className="flex-1">
-      <View
-        className="h-14 w-full rounded-sm"
-        style={{ backgroundColor: color }}
-      />
+      <View className="h-14 w-full rounded-sm" style={{ backgroundColor: color }} />
       <Text className="text-sm">{value}</Text>
     </View>
   );

@@ -32,9 +32,7 @@ export default function TransactionVerificationScreen() {
           <View className="mb-8">
             <Text className="mb-2 text-xl font-extrabold">Destination</Text>
             <View className="rounded-xl bg-gray-200 px-3 py-5">
-              <Text className="text-center text-base font-medium text-gray-800">
-                1Lbcfr7sAHTD9CHTD9CgdQo3HTMTkV8gdQo3HTMTkV8LK4ZnX71
-              </Text>
+              <Text className="text-center text-base font-medium text-gray-800">1Lbcfr7sAHTD9CHTD9CgdQo3HTMTkV8gdQo3HTMTkV8LK4ZnX71</Text>
             </View>
           </View>
           <View className="mb-8">
@@ -44,12 +42,8 @@ export default function TransactionVerificationScreen() {
                 <Text className="p-2 font-extrabold text-white">BTC</Text>
               </View>
               <View>
-                <Text className="text-xl font-bold text-gray-800">
-                  $2,000.50
-                </Text>
-                <Text className="text-lg font-medium text-gray-800">
-                  1,400,294 sats
-                </Text>
+                <Text className="text-xl font-bold text-gray-800">$2,000.50</Text>
+                <Text className="text-lg font-medium text-gray-800">1,400,294 sats</Text>
               </View>
             </View>
           </View>
@@ -57,9 +51,7 @@ export default function TransactionVerificationScreen() {
             <Text className="mb-2 text-xl font-extrabold">Amount</Text>
             <View className="rounded-xl bg-gray-200 p-3">
               <Text className="text-xl font-bold text-gray-800">$2000.50</Text>
-              <Text className="text-lg font-medium text-gray-800">
-                1400 sats
-              </Text>
+              <Text className="text-lg font-medium text-gray-800">1400 sats</Text>
             </View>
           </View>
           <View>
@@ -67,10 +59,7 @@ export default function TransactionVerificationScreen() {
             <View className="rounded-xl bg-gray-200 p-3">
               <Text className="text-xl font-bold text-gray-800">
                 $0.50
-                <Text className="text-xl font-medium text-gray-800">
-                  {' '}
-                  (1400 sats)
-                </Text>
+                <Text className="text-xl font-medium text-gray-800"> (1400 sats)</Text>
               </Text>
             </View>
           </View>

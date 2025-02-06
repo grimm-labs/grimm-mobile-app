@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
@@ -40,103 +41,34 @@ export default function EnterBitcoinAmountScreen() {
         <View className="my-2 flex h-48 items-center justify-center ">
           {/* Conteneur du montant */}
           <View className="w-4/5 px-4 py-6">
-            <Text className="text-center text-base font-medium text-gray-600">
-              Selected Currency({currency})
-            </Text>
+            <Text className="text-center text-base font-medium text-gray-600">Selected Currency({currency})</Text>
             <Pressable className="my-6" onPress={handleCurrencySwitch}>
-              <Text
-                className="text-center text-5xl font-bold text-gray-900"
-                style={{ fontSize: 50 }}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.3}
-              >
-                {currency}{' '}
-                {amount
-                  ? new Intl.NumberFormat('en-EN').format(Number(amount))
-                  : '0'}
+              <Text className="text-center text-5xl font-bold text-gray-900" style={{ fontSize: 50 }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.3}>
+                {currency} {amount ? new Intl.NumberFormat('en-EN').format(Number(amount)) : '0'}
               </Text>
             </Pressable>
-            <Text className="text-center text-base font-medium text-gray-600">
-              0.00000000 BTC
-            </Text>
+            <Text className="text-center text-base font-medium text-gray-600">0.00000000 BTC</Text>
           </View>
         </View>
         <View className="flex-1">
           <View>
-            <Pressable
-              onPress={handleCurrencySwitch}
-              className="mb-4 flex-row items-center self-center "
-            >
-              <Text className="ml-2 text-sm font-medium text-gray-500">
-                click on text to switch between USD and SAT
-              </Text>
+            <Pressable onPress={handleCurrencySwitch} className="mb-4 flex-row items-center self-center ">
+              <Text className="ml-2 text-sm font-medium text-gray-500">click on text to switch between USD and SAT</Text>
             </Pressable>
 
             <View className="my-4 flex-row items-center justify-between rounded-full bg-gray-200 p-6">
-              <Pressable
-                onPress={() => handleSpeedSelection('slow')}
-                className={`flex-row items-center rounded-full px-4 py-2 ${
-                  speed === 'slow'
-                    ? 'rounded-full bg-primary-600 text-white'
-                    : 'bg-white'
-                }`}
-              >
-                <Ionicons
-                  name="timer-outline"
-                  size={20}
-                  color={speed === 'slow' ? 'white' : 'black'}
-                />
-                <Text
-                  className={`ml-2 text-base font-medium ${
-                    speed === 'slow' ? 'text-white' : 'text-black'
-                  }`}
-                >
-                  Slow
-                </Text>
+              <Pressable onPress={() => handleSpeedSelection('slow')} className={`flex-row items-center rounded-full px-4 py-2 ${speed === 'slow' ? 'rounded-full bg-primary-600 text-white' : 'bg-white'}`}>
+                <Ionicons name="timer-outline" size={20} color={speed === 'slow' ? 'white' : 'black'} />
+                <Text className={`ml-2 text-base font-medium ${speed === 'slow' ? 'text-white' : 'text-black'}`}>Slow</Text>
               </Pressable>
-              <Pressable
-                onPress={() => handleSpeedSelection('normal')}
-                className={`flex-row items-center rounded-full px-3 py-2 ${
-                  speed === 'normal'
-                    ? 'rounded-full bg-primary-600'
-                    : 'bg-white'
-                }`}
-              >
-                <Ionicons
-                  name="speedometer-outline"
-                  size={20}
-                  color={speed === 'normal' ? 'white' : 'black'}
-                />
-                <Text
-                  className={`ml-3 text-base font-medium ${
-                    speed === 'normal' ? 'text-white' : 'text-black'
-                  }`}
-                >
-                  Normal
-                </Text>
+              <Pressable onPress={() => handleSpeedSelection('normal')} className={`flex-row items-center rounded-full px-3 py-2 ${speed === 'normal' ? 'rounded-full bg-primary-600' : 'bg-white'}`}>
+                <Ionicons name="speedometer-outline" size={20} color={speed === 'normal' ? 'white' : 'black'} />
+                <Text className={`ml-3 text-base font-medium ${speed === 'normal' ? 'text-white' : 'text-black'}`}>Normal</Text>
               </Pressable>
 
-              <Pressable
-                onPress={() => handleSpeedSelection('fast')}
-                className={`flex-row items-center rounded-full px-4 py-2 ${
-                  speed === 'fast'
-                    ? 'rounded-full bg-primary-600 text-white'
-                    : 'bg-white'
-                }`}
-              >
-                <Ionicons
-                  name="rocket-outline"
-                  size={20}
-                  color={speed === 'fast' ? 'white' : 'black'}
-                />
-                <Text
-                  className={`ml-3 text-base font-medium ${
-                    speed === 'fast' ? 'text-white' : 'text-black'
-                  }`}
-                >
-                  Fast
-                </Text>
+              <Pressable onPress={() => handleSpeedSelection('fast')} className={`flex-row items-center rounded-full px-4 py-2 ${speed === 'fast' ? 'rounded-full bg-primary-600 text-white' : 'bg-white'}`}>
+                <Ionicons name="rocket-outline" size={20} color={speed === 'fast' ? 'white' : 'black'} />
+                <Text className={`ml-3 text-base font-medium ${speed === 'fast' ? 'text-white' : 'text-black'}`}>Fast</Text>
               </Pressable>
             </View>
           </View>
@@ -156,16 +88,7 @@ export default function EnterBitcoinAmountScreen() {
               />
             </View>
             <View className="">
-              <Button
-                testID="login-button"
-                label="Continue"
-                fullWidth={true}
-                size="lg"
-                variant="secondary"
-                textClassName="text-base text-white"
-                onPress={handleContinue}
-                disabled={!(Number(amount.trim()) > 0)}
-              />
+              <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} disabled={!(Number(amount.trim()) > 0)} />
             </View>
           </View>
         </View>

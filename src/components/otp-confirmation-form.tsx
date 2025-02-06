@@ -1,18 +1,15 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Vibration,
-} from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Vibration } from 'react-native';
 import * as z from 'zod';
 
-import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
+import { Button, ControlledInput, Pressable, View } from '@/ui';
+
+import { ScreenSubtitle } from './screen-subtitle';
 
 const OTP_EXPIRATION_TIME = 90;
 
@@ -40,14 +37,7 @@ export const OtpConfirmationForm = ({
     resolver: zodResolver(otpSchema),
   });
 
-  const otpValues = watch([
-    'otpInputOne',
-    'otpInputTwo',
-    'otpInputThree',
-    'otpInputFour',
-    'otpInputFive',
-    'otpInputSix',
-  ]);
+  const otpValues = watch(['otpInputOne', 'otpInputTwo', 'otpInputThree', 'otpInputFour', 'otpInputFive', 'otpInputSix']);
   const isButtonEnabled = otpValues.every((value) => value?.length === 1);
 
   const [secondsLeft, setSecondsLeft] = useState(OTP_EXPIRATION_TIME);
@@ -72,86 +62,46 @@ export const OtpConfirmationForm = ({
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${secs
-      .toString()
-      .padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 justify-between px-4 pb-6">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1 }}
-          keyboardVerticalOffset={90}
-        >
+      <View className="flex-1 justify-between">
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} keyboardVerticalOffset={90}>
           <View className="flex-1">
-            <Text testID="otp-title" className="pb-2 text-center text-2xl">
-              Temporary code
-            </Text>
-            <Text testID="otp-description" className="pb-6 text-center text-sm">
-              Please enter the code you received via SMS
-            </Text>
-
-            <View className="flex-row flex-wrap justify-around">
-              {[
-                'otpInputOne',
-                'otpInputTwo',
-                'otpInputThree',
-                'otpInputFour',
-                'otpInputFive',
-                'otpInputSix',
-              ].map((field, index) => (
-                <View key={index} className="mb-4 w-[10%]">
-                  <ControlledInput
-                    control={control}
-                    name={field as keyof OtpFormType}
-                    maxLength={1}
-                    keyboardType="number-pad"
-                    textContentType="oneTimeCode"
-                    style={{ textAlign: 'center' }}
-                  />
+            <View className="flex-row flex-wrap justify-around rounded-xl">
+              {['otpInputOne', 'otpInputTwo', 'otpInputThree', 'otpInputFour', 'otpInputFive', 'otpInputSix'].map((field, index) => (
+                <View key={index} className="w-[10%]">
+                  <ControlledInput control={control} name={field as keyof OtpFormType} maxLength={1} keyboardType="number-pad" textContentType="oneTimeCode" style={{ textAlign: 'center' }} />
                 </View>
               ))}
             </View>
-
-            {!canRetry && (
-              <Pressable
-                onPress={() => {
-                  Vibration.vibrate(100);
-                }}
-              >
-                <Text className="mt-4 text-center text-sm text-gray-500">
-                  Resend the verification code in {formatTime(secondsLeft)}
-                </Text>
-              </Pressable>
-            )}
-            {canRetry && (
-              <Pressable
-                onPress={() => {
-                  setSecondsLeft(OTP_EXPIRATION_TIME * (retryCount + 1));
-                  setRetryCount((prev) => prev + 1);
-                  setCanRetry(false);
-                }}
-                className="mt-4"
-              >
-                <Text className="text-center text-sm text-gray-500">
-                  Resend the verification code
-                </Text>
-              </Pressable>
-            )}
+            <View className="mt-4">
+              {!canRetry && (
+                <Pressable
+                  onPress={() => {
+                    Vibration.vibrate(100);
+                  }}
+                >
+                  <ScreenSubtitle subtitle={`Resend the verification code in ${formatTime(secondsLeft)}`} />
+                </Pressable>
+              )}
+              {canRetry && (
+                <Pressable
+                  onPress={() => {
+                    setSecondsLeft(OTP_EXPIRATION_TIME * (retryCount + 1));
+                    setRetryCount((prev) => prev + 1);
+                    setCanRetry(false);
+                  }}
+                >
+                  <ScreenSubtitle subtitle="Resend the verification code" />
+                </Pressable>
+              )}
+            </View>
           </View>
           <View>
-            <Button
-              testID="otp-submit-button"
-              label="Verify"
-              fullWidth={true}
-              size="lg"
-              variant="secondary"
-              textClassName="text-base text-white"
-              onPress={handleSubmit(onSubmit)}
-              disabled={!isButtonEnabled}
-            />
+            <Button testID="otp-submit-button" label="Verify" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} disabled={!isButtonEnabled} />
           </View>
         </KeyboardAvoidingView>
       </View>

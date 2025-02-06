@@ -53,13 +53,8 @@ export default function MnemonicWarning() {
           {/* Warning Header */}
           <View className="mt-6 items-center">
             <Ionicons name="warning-outline" size={64} color="red" />
-            <Text className="mt-6 text-center text-xl font-medium text-red-500">
-              Attention
-            </Text>
-            <Text className="mt-4 text-center text-sm text-gray-600">
-              Please read the following carefully before viewing your recovery
-              phrase.
-            </Text>
+            <Text className="mt-6 text-center text-xl font-medium text-red-500">Attention</Text>
+            <Text className="mt-4 text-center text-sm text-gray-600">Please read the following carefully before viewing your recovery phrase.</Text>
           </View>
 
           {/* Horizontal Divider */}
@@ -68,10 +63,7 @@ export default function MnemonicWarning() {
           {/* Warning List */}
           <View className="mt-6 space-y-6">
             {warnings.map(({ text, icon }, index) => (
-              <View
-                key={index}
-                className="flex flex-row items-center space-x-4"
-              >
+              <View key={index} className="flex flex-row items-center space-x-4">
                 <View className="m-3">
                   <Ionicons name={icon} size={35} color="gray" />
                 </View>
@@ -83,25 +75,8 @@ export default function MnemonicWarning() {
 
         {/* Action Buttons */}
         <View className="flex-col justify-between">
-          <Button
-            testID="login-button"
-            label="Cancel"
-            fullWidth={true}
-            size="lg"
-            variant="outline"
-            className="mb-4"
-            textClassName="text-base"
-            onPress={handleCancel}
-          />
-          <Button
-            testID="login-button"
-            label="Proceed"
-            fullWidth={true}
-            size="lg"
-            variant="secondary"
-            textClassName="text-base text-white"
-            onPress={handleProceed}
-          />
+          <Button testID="login-button" label="Cancel" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={handleCancel} />
+          <Button testID="login-button" label="Proceed" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleProceed} />
         </View>
       </View>
     </SafeAreaView>
