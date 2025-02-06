@@ -29,9 +29,7 @@ export default function TabLayout() {
         options={{
           headerShown: false,
           title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home" size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Ionicons name="home" size={22} color={color} />,
           tabBarTestID: 'home-tab',
         }}
       />
@@ -40,9 +38,7 @@ export default function TabLayout() {
         options={{
           title: 'Activity',
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="pie-chart" size={26} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Ionicons name="pie-chart" size={26} color={color} />,
           tabBarTestID: 'activity-tab',
         }}
       />
@@ -51,9 +47,7 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="cog" size={26} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Ionicons name="cog" size={26} color={color} />,
           tabBarTestID: 'settings-tab',
         }}
       />

@@ -28,10 +28,7 @@
  *
  */
 
-import type {
-  BottomSheetBackdropProps,
-  BottomSheetModalProps,
-} from '@gorhom/bottom-sheet';
+import type { BottomSheetBackdropProps, BottomSheetModalProps } from '@gorhom/bottom-sheet';
 import { BottomSheetModal, useBottomSheet } from '@gorhom/bottom-sheet';
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
@@ -54,47 +51,17 @@ export const useModal = () => {
   return { ref, present, dismiss };
 };
 
-export const Modal = React.forwardRef(
-  (
-    {
-      snapPoints: _snapPoints = ['60%'],
-      detached = false,
-      ...props
-    }: ModalProps,
-    ref: ModalRef
-  ) => {
-    const detachedProps = React.useMemo(
-      () => getDetachedProps(detached),
-      [detached]
-    );
-    const modal = useModal();
-    const snapPoints = React.useMemo(() => _snapPoints, [_snapPoints]);
+export const Modal = React.forwardRef(({ snapPoints: _snapPoints = ['60%'], detached = false, ...props }: ModalProps, ref: ModalRef) => {
+  const detachedProps = React.useMemo(() => getDetachedProps(detached), [detached]);
+  const modal = useModal();
+  const snapPoints = React.useMemo(() => _snapPoints, [_snapPoints]);
 
-    React.useImperativeHandle(
-      ref,
-      () => (modal.ref.current as BottomSheetModal) || null
-    );
+  React.useImperativeHandle(ref, () => (modal.ref.current as BottomSheetModal) || null);
 
-    const renderHandleComponent = React.useCallback(
-      () => (
-        <View className="mb-8 mt-4 h-4 w-20 self-center rounded-lg bg-gray-300 dark:bg-gray-700" />
-      ),
-      []
-    );
+  const renderHandleComponent = React.useCallback(() => <View className="mb-8 mt-4 h-4 w-20 self-center rounded-lg bg-gray-300 dark:bg-gray-700" />, []);
 
-    return (
-      <BottomSheetModal
-        {...props}
-        {...detachedProps}
-        ref={modal.ref}
-        index={0}
-        snapPoints={snapPoints}
-        backdropComponent={props.backdropComponent || renderBackdrop}
-        handleComponent={renderHandleComponent}
-      />
-    );
-  }
-);
+  return <BottomSheetModal {...props} {...detachedProps} ref={modal.ref} index={0} snapPoints={snapPoints} backdropComponent={props.backdropComponent || renderBackdrop} handleComponent={renderHandleComponent} />;
+});
 
 /**
  * Custom Backdrop
@@ -115,9 +82,7 @@ const CustomBackdrop = ({ style }: BottomSheetBackdropProps) => {
   );
 };
 
-export const renderBackdrop = (props: BottomSheetBackdropProps) => (
-  <CustomBackdrop {...props} />
-);
+export const renderBackdrop = (props: BottomSheetBackdropProps) => <CustomBackdrop {...props} />;
 
 /**
  *

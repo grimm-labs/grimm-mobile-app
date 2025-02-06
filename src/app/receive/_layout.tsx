@@ -50,36 +50,20 @@ export default function NotificationsScreen() {
           {/* <Text className="my-2 text-center text-lg font-bold text-gray-600">
             This address only accepts Bitcoin
           </Text> */}
-          <Text className="text-normal my-2 text-center text-gray-600">
-            Scan the QR code to send funds to this address{' '}
-          </Text>
+          <Text className="text-normal my-2 text-center text-gray-600">Scan the QR code to send funds to this address </Text>
         </View>
 
         {/* Input Section */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          className="flex-1"
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
           <View className="">
             <View className="mx-10 items-center justify-center py-10">
-              <QRCode
-                size={260}
-                value={address}
-                logo={require('@/assets/images/on-chain-icon.png')}
-                logoSize={60}
-                logoBackgroundColor="transparent"
-              />
+              <QRCode size={260} value={address} logo={require('@/assets/images/on-chain-icon.png')} logoSize={60} logoBackgroundColor="transparent" />
             </View>
           </View>
           <View className="mx-10">
-            <Text className="text-normal my-2 text-center text-gray-600">
-              Scan BTC address to send payment or copy wallet address below
-            </Text>
+            <Text className="text-normal my-2 text-center text-gray-600">Scan BTC address to send payment or copy wallet address below</Text>
             <View className="mb-2">
-              <Text
-                ellipsizeMode="middle"
-                className="my-4 text-center text-lg text-gray-600"
-              >
+              <Text ellipsizeMode="middle" className="my-4 text-center text-lg text-gray-600">
                 {address}
               </Text>
             </View>
@@ -89,27 +73,8 @@ export default function NotificationsScreen() {
         {/* Continue Button */}
         <View>
           <View className="flex-col justify-between">
-            <Button
-              testID="login-button"
-              label="Share BTC Address"
-              fullWidth={true}
-              size="lg"
-              variant="outline"
-              className="mb-4"
-              textClassName="text-base"
-              onPress={handleShareAddress}
-              icon="share"
-            />
-            <Button
-              testID="login-button"
-              label="Copy Address"
-              fullWidth={true}
-              size="lg"
-              variant="secondary"
-              textClassName="text-base text-white"
-              onPress={handleCopyAdress}
-              disabled={false}
-            />
+            <Button testID="login-button" label="Share BTC Address" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={handleShareAddress} icon="share" />
+            <Button testID="login-button" label="Copy Address" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleCopyAdress} disabled={false} />
           </View>
         </View>
       </View>

@@ -1,13 +1,7 @@
 import React from 'react';
 
 import { BlankContent } from '@/components/blank-content';
-import {
-  FocusAwareStatusBar,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-} from '@/ui';
+import { FocusAwareStatusBar, SafeAreaView, ScrollView, Text, View } from '@/ui';
 
 export default function Activity() {
   return (
@@ -17,16 +11,9 @@ export default function Activity() {
           <FocusAwareStatusBar />
           <Text className="text-2xl font-bold text-gray-800">Activity</Text>
         </View>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 40 }}
-          className="h-full"
-        >
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }} className="h-full">
           <View className="h-full flex-1 items-center justify-center pt-8">
-            <BlankContent
-              title="All your transaction will be here"
-              icon="pie-chart"
-            />
+            <BlankContent title="All your transaction will be here" icon="pie-chart" />
           </View>
         </ScrollView>
       </View>

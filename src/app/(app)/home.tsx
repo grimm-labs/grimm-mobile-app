@@ -39,36 +39,16 @@ export default function Home() {
     <SafeAreaView className="flex-1">
       <View className="flex">
         <HomeHeader />
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 40 }}
-          className="flex"
-        >
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }} className="flex">
           <WalletOverview />
           <View className="my-4" />
           <View>
             <View className="mx-4">
-              <Text className="mb-4 text-base font-medium text-neutral-500">
-                On-chain
-              </Text>
-              <WalletView
-                name="Bitcoin"
-                symbol="BTC"
-                amount={1.52000394}
-                type="On-chain"
-                fiat="98,629,528"
-              />
-              <Text className="my-4 text-base font-medium text-neutral-500">
-                Lightning
-              </Text>
+              <Text className="mb-4 text-base font-medium text-neutral-500">On-chain</Text>
+              <WalletView name="Bitcoin" symbol="BTC" amount={1.52000394} type="On-chain" fiat="98,629,528" />
+              <Text className="my-4 text-base font-medium text-neutral-500">Lightning</Text>
               <View className="space-x-2">
-                <WalletView
-                  name="Bitcoin Lighning"
-                  symbol="BTC"
-                  amount={0.50000391}
-                  type="Lightning"
-                  fiat="32,444,093"
-                />
+                <WalletView name="Bitcoin Lighning" symbol="BTC" amount={0.50000391} type="Lightning" fiat="32,444,093" />
               </View>
             </View>
           </View>

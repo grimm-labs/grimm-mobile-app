@@ -24,17 +24,8 @@ module.exports = {
     // Configuration for TypeScript files
     {
       files: ['**/*.ts', '**/*.tsx', '**/*.js'],
-      plugins: [
-        '@typescript-eslint',
-        'unused-imports',
-        'tailwindcss',
-        'simple-import-sort',
-      ],
-      extends: [
-        'plugin:tailwindcss/recommended',
-        '@react-native-community',
-        'plugin:prettier/recommended',
-      ],
+      plugins: ['@typescript-eslint', 'unused-imports', 'tailwindcss', 'simple-import-sort'],
+      extends: ['plugin:tailwindcss/recommended', '@react-native-community', 'plugin:prettier/recommended'],
       parserOptions: {
         project: './tsconfig.json',
       },

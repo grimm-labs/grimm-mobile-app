@@ -38,6 +38,5 @@ const _useSettings = create<SettingsState>((set, get) => ({
 }));
 
 export const useSettings = createSelectors(_useSettings);
-export const setNetwork = (value: NetworkType) =>
-  _useSettings.getState().setNetwork(value);
+export const setNetwork = (value: NetworkType) => _useSettings.getState().setNetwork(value);
 export const hydrateSettings = () => _useSettings.getState().hydrate();

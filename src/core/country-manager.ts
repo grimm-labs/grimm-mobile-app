@@ -39,13 +39,9 @@ export class CountryManager {
     return this.countries[code] || null;
   }
 
-  searchCountryByName(
-    name: string
-  ): { code: string; name: string; flag: string; callingCode: string }[] {
+  searchCountryByName(name: string): { code: string; name: string; flag: string; callingCode: string }[] {
     return Object.entries(this.countries)
-      .filter(([_, data]) =>
-        data.name.common.toLowerCase().includes(name.toLowerCase())
-      )
+      .filter(([_, data]) => data.name.common.toLowerCase().includes(name.toLowerCase()))
       .map(([code, data]) => ({
         code,
         name: data.name.common,
@@ -62,9 +58,7 @@ export class CountryManager {
     return this.countries[code]?.flag || null;
   }
 
-  getCountriesByRegion(
-    region: string
-  ): { code: string; name: string; flag: string; callingCode: string }[] {
+  getCountriesByRegion(region: string): { code: string; name: string; flag: string; callingCode: string }[] {
     return Object.entries(this.countries)
       .filter(([_, data]) => data.region.toLowerCase() === region.toLowerCase())
       .map(([code, data]) => ({

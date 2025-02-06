@@ -1,5 +1,3 @@
-/* eslint-disable max-lines-per-function */
-
 import React from 'react';
 
 import { cleanup, fireEvent, render, screen } from '@/core/test-utils';
@@ -17,28 +15,14 @@ describe('Select component ', () => {
   ];
   it('should render correctly ', () => {
     const onSelect = jest.fn();
-    render(
-      <Select
-        label="Select options"
-        options={options}
-        onSelect={onSelect}
-        testID="select"
-      />
-    );
+    render(<Select label="Select options" options={options} onSelect={onSelect} testID="select" />);
     expect(screen.getByTestId('select-trigger')).toBeOnTheScreen();
     expect(screen.getByTestId('select-label')).toBeOnTheScreen();
   });
 
   it('should render the label correctly ', () => {
     const onSelect = jest.fn();
-    render(
-      <Select
-        label="Select"
-        options={options}
-        onSelect={onSelect}
-        testID="select"
-      />
-    );
+    render(<Select label="Select" options={options} onSelect={onSelect} testID="select" />);
     expect(screen.getByTestId('select-trigger')).toBeOnTheScreen();
     expect(screen.getByTestId('select-label')).toBeOnTheScreen();
     expect(screen.getByTestId('select-label')).toHaveTextContent('Select');
@@ -46,31 +30,14 @@ describe('Select component ', () => {
 
   it('should render the error correctly ', () => {
     const onSelect = jest.fn();
-    render(
-      <Select
-        label="Select"
-        options={options}
-        onSelect={onSelect}
-        testID="select"
-        error="Please select an option"
-      />
-    );
+    render(<Select label="Select" options={options} onSelect={onSelect} testID="select" error="Please select an option" />);
     expect(screen.getByTestId('select-trigger')).toBeOnTheScreen();
     expect(screen.getByTestId('select-error')).toBeOnTheScreen();
-    expect(screen.getByTestId('select-error')).toHaveTextContent(
-      'Please select an option'
-    );
+    expect(screen.getByTestId('select-error')).toHaveTextContent('Please select an option');
   });
 
   it('should open options modal on press', () => {
-    render(
-      <Select
-        label="Select"
-        options={options}
-        testID="select"
-        placeholder="Select an option"
-      />
-    );
+    render(<Select label="Select" options={options} testID="select" placeholder="Select an option" />);
 
     const selectTrigger = screen.getByTestId('select-trigger');
     fireEvent.press(selectTrigger);

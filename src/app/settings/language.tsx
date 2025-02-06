@@ -11,17 +11,11 @@ interface LanguageOptionProps {
   onPress: () => void;
 }
 
-const LanguageOption: React.FC<LanguageOptionProps> = ({
-  language,
-  isSelected,
-  onPress,
-}) => (
+const LanguageOption: React.FC<LanguageOptionProps> = ({ language, isSelected, onPress }) => (
   <Pressable onPress={onPress}>
     <View className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 py-4">
       <Text className="text-sm font-medium">{language}</Text>
-      {isSelected && (
-        <Ionicons name="checkmark-outline" size={24} color="green" />
-      )}
+      {isSelected && <Ionicons name="checkmark-outline" size={24} color="green" />}
     </View>
   </Pressable>
 );
@@ -45,12 +39,7 @@ export default function LanguageSelector() {
         <FocusAwareStatusBar />
         <View className="mt-6">
           {languages.map((language) => (
-            <LanguageOption
-              key={language}
-              language={language}
-              isSelected={selectedLanguage === language}
-              onPress={() => setSelectedLanguage(language)}
-            />
+            <LanguageOption key={language} language={language} isSelected={selectedLanguage === language} onPress={() => setSelectedLanguage(language)} />
           ))}
         </View>
       </View>
