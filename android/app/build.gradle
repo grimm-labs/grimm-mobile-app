@@ -109,9 +109,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.grimmmobileapp.development'
+    namespace 'com.grimmmobileapp.staging'
     defaultConfig {
-        applicationId 'com.grimmmobileapp.development'
+        applicationId 'com.grimmmobileapp.staging'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

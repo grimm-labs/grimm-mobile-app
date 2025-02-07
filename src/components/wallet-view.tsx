@@ -44,8 +44,8 @@ export const WalletView = ({ name, symbol, type, balance }: Props) => {
             <Text className="text-right text-lg font-semibold text-gray-900">********</Text>
           ) : (
             <View>
-              <Text className="text-right text-base font-semibold text-gray-900">{balance.total.toFixed(8)}</Text>
-              <Text className="text-right text-sm font-medium text-gray-600">XAF 0</Text>
+              <Text className="text-right text-base font-semibold text-gray-900">{balance.total.toFixed(8)} BTC</Text>
+              <Text className="text-right text-sm font-medium text-gray-600">XAF 0.00</Text>
             </View>
           )}
         </View>

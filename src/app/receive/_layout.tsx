@@ -52,7 +52,7 @@ export default function NotificationsScreen() {
           <Text className="text-normal my-4 text-center text-gray-600">Scan the QR code to send funds to this address </Text>
           {selectedBitcoinNetwork === Network.Testnet && (
             <View className="my-4 rounded-lg bg-danger-500 px-3 py-4">
-              <Text className="font-light text-white">You are currently on the testnet network, do not send any real Bitcoin to this address, otherwise it will be lost forever.</Text>
+              <Text className="font-light text-white">You are currently on the testnet network, do not send any real bitcoin to this address, otherwise it will be lost forever.</Text>
             </View>
           )}
         </View>
@@ -61,10 +61,10 @@ export default function NotificationsScreen() {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
           <View>
             <View className="mx-10 items-center justify-center py-10">
-              <QRCode size={260} value={address} logo={require('@/assets/images/on-chain-icon.png')} logoSize={60} logoBackgroundColor="transparent" />
+              <QRCode size={220} value={address} logo={require('@/assets/images/on-chain-icon.png')} logoSize={60} logoBackgroundColor="transparent" />
             </View>
           </View>
-          <View className="mx-10">
+          <View className="mx-5">
             <Text className="text-normal my-2 text-center text-gray-600">Scan BTC address to send payment or copy wallet address below</Text>
             <View className="mb-2">
               <Text ellipsizeMode="middle" className="my-4 text-center text-lg text-gray-600">

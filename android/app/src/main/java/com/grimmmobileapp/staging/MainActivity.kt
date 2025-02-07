@@ -1,4 +1,4 @@
-package com.grimmmobileapp.development
+package com.grimmmobileapp.staging
 
 import android.os.Build
 import android.os.Bundle

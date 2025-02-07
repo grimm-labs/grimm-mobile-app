@@ -36,8 +36,8 @@ require('dotenv').config({
 const BUNDLE_ID = 'com.grimmmobileapp'; // ios bundle id
 const PACKAGE = 'com.grimmmobileapp'; // android package name
 const NAME = 'GrimmMobileApp'; // app name
-const EXPO_ACCOUNT_OWNER = 'expo-owner'; // expo account owner
-const EAS_PROJECT_ID = 'c3e1075b-6fe7-4686-aa49-35b46a229044'; // eas project id
+const EXPO_ACCOUNT_OWNER = 'grimm-technologies'; // expo account owner
+const EAS_PROJECT_ID = '64373569-be43-4db2-ace8-1f2b9f81448c'; // eas project id
 const SCHEME = 'GrimmMobileApp'; // app scheme
 
 /**

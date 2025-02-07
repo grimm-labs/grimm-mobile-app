@@ -50,7 +50,7 @@ export const WalletOverview = ({ balance }: WalletOverviewProps) => {
           <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{formatBalance()}</Text>
         </Pressable>
         <View className="mb-4">
-          <Text className="text-center text-lg font-medium text-gray-600">{isBalanceHide ? '********' : `XAF 0`}</Text>
+          <Text className="text-center text-lg font-medium text-gray-600">{isBalanceHide ? '********' : `XAF 0.00`}</Text>
         </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">
@@ -67,7 +67,7 @@ export const WalletOverview = ({ balance }: WalletOverviewProps) => {
           <Text className="text-sm font-medium">Receive</Text>
         </View>
         <View className="flex items-center justify-center">
-          <Pressable className="mb-2 rounded-full bg-neutral-700 p-3 text-white">
+          <Pressable className="mb-2 rounded-full bg-neutral-700 p-3 text-white" onPress={() => router.push('scan-qr')}>
             <Ionicons name="scan" size={28} color="white" />
           </Pressable>
           <Text className="text-sm font-medium">Scan QR</Text>

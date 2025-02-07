@@ -4,7 +4,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 
-import { Text } from '@/ui';
+import { Text } from '@/ui/text';
 
 export type NumericVirtualKeyboardProps = {
   onPress?: (value: number) => void;

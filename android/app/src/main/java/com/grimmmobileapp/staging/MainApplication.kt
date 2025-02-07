@@ -1,4 +1,4 @@
-package com.grimmmobileapp.development
+package com.grimmmobileapp.staging
 
 import android.app.Application
 import android.content.res.Configuration
