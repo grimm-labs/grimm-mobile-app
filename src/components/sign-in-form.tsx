@@ -57,9 +57,9 @@ export const SignInForm = ({ onSubmit }: SignInFormProps) => {
             <View className="mb-4 flex-row">
               <View>
                 <Pressable onPress={() => router.push('/auth/select-country')}>
-                  <View className="flex flex-row items-center justify-center rounded-xl border border-primary-600 p-2">
+                  <View className="flex flex-row items-center justify-center rounded border-b-2 border-gray-600 p-2">
                     <Image
-                      style={{ width: 34, height: 34 }}
+                      style={{ width: 32, height: 32 }}
                       className="rounded-full"
                       contentFit="fill"
                       source={{
@@ -78,6 +78,7 @@ export const SignInForm = ({ onSubmit }: SignInFormProps) => {
                   placeholderClassName="text-xs"
                   textContentType="telephoneNumber"
                   keyboardType="number-pad"
+                  disabled={true}
                 />
               </View>
             </View>

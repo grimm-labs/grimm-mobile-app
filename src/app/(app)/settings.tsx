@@ -23,7 +23,8 @@ export default function Settings() {
 
               <SettingsItem icon="language" title="Language" subtitle="Select your preferred app language" onPress={() => router.push('settings/language')} />
 
-              <SettingsItem icon="logo-euro" title="Currency" subtitle="Choose your default display currency" onPress={() => router.push('settings/currency')} />
+              <SettingsItem icon="logo-usd" title="Currency" subtitle="Choose your default display currency" onPress={() => router.push('settings/currency')} />
+              <SettingsItem icon="options-sharp" title="Bitcoin Units" subtitle="Choose between BTC and SAT" onPress={() => router.push('settings/bitcoin-unit')} />
             </View>
           </View>
 

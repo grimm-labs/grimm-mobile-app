@@ -4,7 +4,7 @@ import { KeychainKind } from 'bdk-rn/lib/lib/enums';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
-import countries from '@/assets/data/countries.json';
+import countries from '@/assets/data/available-countries.json';
 
 import { CountryManager } from './country-manager';
 

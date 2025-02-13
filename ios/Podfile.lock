@@ -1245,6 +1245,27 @@ PODS:
     - React-debug
   - react-native-get-random-values (1.11.0):
     - React-Core
+  - react-native-keyboard-controller (1.16.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-mmkv (2.6.3):
     - MMKV (>= 1.2.13)
     - React-Core
@@ -1650,6 +1671,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
@@ -1807,6 +1829,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-keyboard-controller:
+    :path: "../node_modules/react-native-keyboard-controller"
   react-native-mmkv:
     :path: "../node_modules/react-native-mmkv"
   react-native-randombytes:
@@ -1938,6 +1962,7 @@ SPEC CHECKSUMS:
   React-logger: bbd09ad59f304e718962b2867534204710873bd9
   React-Mapbuffer: da4470fdf42b2e389efbc4e7af958bf96e921a0b
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
+  react-native-keyboard-controller: 573c72fb3756644fed072c631110eca7606fb1ae
   react-native-mmkv: 46d9ba09943259b81ca8863e8ebc732bb3febee5
   react-native-randombytes: 3c8f3e89d12487fd03a2f966c288d495415fc116
   react-native-restart: 0bc732f4461709022a742bb29bcccf6bbc5b4863

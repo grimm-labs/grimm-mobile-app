@@ -13,6 +13,11 @@ export default function Login() {
   useSoftKeyboardEffect();
   const router = useRouter();
 
+  // const { data, isPending, isError } = useGetOtp({
+  //   //@ts-ignore
+  //   variables: { phoneNumber: '' },
+  // });
+
   const onSubmit: SignInFormProps['onSubmit'] = () => {
     router.push('/auth/otp-confirmation');
   };

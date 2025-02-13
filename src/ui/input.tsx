@@ -13,13 +13,13 @@ const inputTv = tv({
   slots: {
     container: 'mb-0',
     label: 'text-grey-100 mb-1 text-lg dark:text-neutral-100',
-    input: 'font-inter mt-0 rounded-xl border border-primary-600 p-2 py-4 text-base font-medium leading-5 dark:bg-neutral-800 dark:text-white',
+    input: 'font-inter mt-0 rounded border-b-2 border-gray-600 p-2 py-4 text-base font-medium leading-5 dark:bg-neutral-800 dark:text-white',
   },
 
   variants: {
     focused: {
       true: {
-        input: 'border-primary-600',
+        input: 'border-success-600',
       },
     },
     error: {
@@ -30,7 +30,7 @@ const inputTv = tv({
     },
     disabled: {
       true: {
-        input: 'bg-neutral-200',
+        input: 'bg-neutral-100',
       },
     },
   },

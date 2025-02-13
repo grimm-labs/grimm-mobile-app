@@ -42,6 +42,7 @@ export default function NeedHelp() {
             title: 'Help & Support',
             headerShown: true,
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
 
-import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
+import { useSeedPhrase } from '@/core';
 
 export default function TabLayout() {
   const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
@@ -18,7 +18,7 @@ export default function TabLayout() {
     }, 1000);
   }, [hideSplash]);
 
-  if (seedPhrase === undefined || seedPhrase.length === 0) {
+  if (seedPhrase === undefined) {
     return <Redirect href="/onboarding" />;
   }
 
@@ -29,7 +29,7 @@ export default function TabLayout() {
         options={{
           headerShown: false,
           title: 'Home',
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={22} color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="home" size={26} color={color} />,
           tabBarTestID: 'home-tab',
         }}
       />

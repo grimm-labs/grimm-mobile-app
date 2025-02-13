@@ -16,14 +16,13 @@ export default function ScanQrScreen() {
   const [_permission, _requestPermission] = useCameraPermissions();
   const [hasPermission, setHasPermission] = useState<boolean>(false);
 
-  // if (!permission) {
-  //   // Camera permissions are still loading.
-  //   return <View />;
-  // }
-
   const checkCameraPermission = async () => {
     const permissionResponse = await Camera.requestCameraPermissionsAsync();
     setHasPermission(permissionResponse.granted);
+  };
+
+  const toggleCameraFacing = () => {
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   };
 
   useEffect(() => {
@@ -31,7 +30,6 @@ export default function ScanQrScreen() {
   }, []);
 
   if (!hasPermission) {
-    // Camera permissions are not granted yet.
     return (
       <SafeAreaView>
         <View className="flex h-full justify-between px-4">
@@ -68,10 +66,6 @@ export default function ScanQrScreen() {
       </SafeAreaView>
     );
   }
-
-  const toggleCameraFacing = () => {
-    setFacing((current) => (current === 'back' ? 'front' : 'back'));
-  };
 
   return (
     <SafeAreaView>

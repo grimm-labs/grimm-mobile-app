@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/react-in-jsx-scope */
+
 import 'react-native-get-random-values';
 
 import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
@@ -9,6 +9,7 @@ import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { APIProvider } from '@/api';
 import { hydrateAuth, loadSelectedTheme } from '@/core';
@@ -19,22 +20,21 @@ export { ErrorBoundary } from 'expo-router';
 // Import  global CSS file
 import '../../global.css';
 
+import React from 'react';
+
 export const unstable_settings = {
   initialRouteName: '(app)',
 };
 
 hydrateAuth();
 loadSelectedTheme();
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const navigationRef = useNavigationContainerRef();
   useReactNavigationDevTools(navigationRef);
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
   return (
     <Providers>
       <Stack>
@@ -50,14 +50,16 @@ function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
   return (
     <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
-      <ThemeProvider value={theme}>
-        <APIProvider>
-          <BottomSheetModalProvider>
-            {children}
-            <FlashMessage position="top" style={{ zIndex: 1000 }} />
-          </BottomSheetModalProvider>
-        </APIProvider>
-      </ThemeProvider>
+      <KeyboardProvider>
+        <ThemeProvider value={theme}>
+          <APIProvider>
+            <BottomSheetModalProvider>
+              {children}
+              <FlashMessage position="top" style={{ zIndex: 1000 }} />
+            </BottomSheetModalProvider>
+          </APIProvider>
+        </ThemeProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }
