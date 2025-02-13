@@ -12,7 +12,7 @@ export default function PinCodeCreation() {
   useSoftKeyboardEffect();
 
   const onSubmit: PinSetupFormProps['onSubmit'] = () => {
-    router.push('/auth/generate-seed-phrase');
+    router.push('/auth/create-or-import-wallet');
   };
 
   return (

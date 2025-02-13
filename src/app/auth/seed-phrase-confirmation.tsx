@@ -79,8 +79,8 @@ export default function SeedPhraseConfirmation() {
                 </TouchableOpacity>
               ))}
               {selectedWords.length === 0 ? (
-                <View className="my-8 w-full items-center justify-center">
-                  <Text className="text-sm text-gray-600">Words will be displayed here in order</Text>
+                <View className="w-full items-center justify-center py-10">
+                  <Text className="font=light text-base text-gray-600">Words will be displayed here in order</Text>
                 </View>
               ) : undefined}
             </View>

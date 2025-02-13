@@ -24,7 +24,7 @@ export default function SelectCountry() {
   const renderItem = ({ item }: RenderItemData) => {
     return (
       <TouchableOpacity
-        className="mb-4 flex flex-row items-center border-b border-gray-200 pb-2 "
+        className="mb-4 flex flex-row items-center border-b border-gray-200 pb-2"
         onPress={() => {
           setSelectedCountryCode(item.code);
           router.back();
@@ -33,7 +33,7 @@ export default function SelectCountry() {
         <View className="flex-1 flex-row items-center">
           <Image style={{ width: 35, height: 28 }} className="rounded" contentFit="fill" source={{ uri: item.flag }} />
           <View className="ml-2 flex flex-col">
-            <Text className="text-lg font-light text-gray-700">{item.name}</Text>
+            <Text className="text-lg font-medium text-gray-700">{item.name}</Text>
             <Text className="text-sm text-gray-500">+{item.callingCode}</Text>
           </View>
         </View>

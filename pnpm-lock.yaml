@@ -50,6 +50,9 @@ importers:
       expo-build-properties:
         specifier: ~0.12.3
         version: 0.12.3(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5)))
+      expo-camera:
+        specifier: ^15.0.16
+        version: 15.0.16(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5)))
       expo-constants:
         specifier: ~16.0.2
         version: 16.0.2(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5)))
@@ -131,6 +134,9 @@ importers:
       react-native-get-random-values:
         specifier: ^1.11.0
         version: 1.11.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))
+      react-native-keyboard-controller:
+        specifier: ^1.16.2
+        version: 1.16.2(react-native-reanimated@3.10.1(@babel/core@7.24.5)(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
       react-native-mmkv:
         specifier: 2.6.3
         version: 2.6.3(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
@@ -3905,6 +3911,11 @@ packages:
     peerDependencies:
       expo: '*'
 
+  expo-camera@15.0.16:
+    resolution: {integrity: sha512-FLE02DMqkjwsb7IugKAqQvBe6s+TCQeb5LupO1+r//wAhBwmHncOrc6zV95ZEC2f9PTPK34nFH/s8CDGiVzIAA==}
+    peerDependencies:
+      expo: '*'
+
   expo-constants@16.0.2:
     resolution: {integrity: sha512-9tNY3OVO0jfiMzl7ngb6IOyR5VFzNoN5OOazUWoeGfmMqVB5kltTemRvKraK9JRbBKIw+SOYLEmF0sEqgFZ6OQ==}
     peerDependencies:
@@ -6739,6 +6750,19 @@ packages:
     resolution: {integrity: sha512-geuw/bli83+tOg8UpoioLk1H1aEy0wnMDusWkCazsyH6fSk6qzmgaZ2cRyyJRU8s2tG87HctZFKGTkyYzcUcfA==}
     peerDependencies:
       react-native: '>=0.42.0'
+
+  react-native-is-edge-to-edge@1.1.6:
+    resolution: {integrity: sha512-1pHnFTlBahins6UAajXUqeCOHew9l9C2C8tErnpGC3IyLJzvxD+TpYAixnCbrVS52f7+NvMttbiSI290XfwN0w==}
+    peerDependencies:
+      react: '>=18.2.0'
+      react-native: '>=0.73.0'
+
+  react-native-keyboard-controller@1.16.2:
+    resolution: {integrity: sha512-G/+uTklyd4rkjmC81V45vbFffhGdzwWJQAt0/nRC43MT6yZQubI6WZx5mfx49TZaM7gLSyTyEobPkI/LBReW/A==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+      react-native-reanimated: '>=3.0.0'
 
   react-native-mmkv@2.6.3:
     resolution: {integrity: sha512-CkLAU5EX18eDw0Q+h6qEXPvynb+NVDu54cOY3h4h9VUhaaflfAmGWBJRQCBQz5M0VdnS8utjgJNryTAWKUTqpw==}
@@ -13355,6 +13379,11 @@ snapshots:
       expo: 51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))
       semver: 7.6.2
 
+  expo-camera@15.0.16(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))):
+    dependencies:
+      expo: 51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))
+      invariant: 2.2.4
+
   expo-constants@16.0.2(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))):
     dependencies:
       '@expo/config': 9.0.2
@@ -16699,6 +16728,18 @@ snapshots:
   react-native-iphone-screen-helper@2.1.1(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)):
     dependencies:
       react-native: 0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)
+
+  react-native-is-edge-to-edge@1.1.6(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+      react-native: 0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)
+
+  react-native-keyboard-controller@1.16.2(react-native-reanimated@3.10.1(@babel/core@7.24.5)(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+      react-native: 0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)
+      react-native-is-edge-to-edge: 1.1.6(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
+      react-native-reanimated: 3.10.1(@babel/core@7.24.5)(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
 
   react-native-mmkv@2.6.3(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0):
     dependencies:

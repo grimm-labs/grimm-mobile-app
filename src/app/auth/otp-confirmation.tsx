@@ -7,7 +7,7 @@ import { OtpConfirmationForm } from '@/components/otp-confirmation-form';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
 import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { FocusAwareStatusBar } from '@/ui';
+import { FocusAwareStatusBar, Text } from '@/ui';
 
 export default function Login() {
   const router = useRouter();
@@ -28,9 +28,11 @@ export default function Login() {
           }}
         />
         <FocusAwareStatusBar />
-        <ScreenTitle title="OTP Confirmation" />
+        <ScreenTitle title="Verify phone number" />
         <View className="mb-4" />
-        <ScreenSubtitle subtitle="Please enter the code you received via SMS" />
+        <ScreenSubtitle subtitle="We sent a 6 digit code to +237 690 27 07 20" />
+        <View className="mb-4" />
+        <Text className="text-lg font-bold underline">Change number</Text>
         <View className="mb-4" />
         <OtpConfirmationForm onSubmit={onSubmit} />
       </View>

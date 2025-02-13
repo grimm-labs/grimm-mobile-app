@@ -6,6 +6,7 @@ import type { Network } from 'bdk-rn/lib/lib/enums';
 import React, { useEffect, useState } from 'react';
 
 import HomeHeader from '@/components/home-header';
+import { QuickActions } from '@/components/quick-actions';
 import { WalletOverview } from '@/components/wallet-overview';
 import { WalletView } from '@/components/wallet-view';
 import { createWallet, useSelectedBitcoinNetwork } from '@/core';
@@ -42,17 +43,21 @@ export default function Home() {
     <SafeAreaView className="h-full flex-1">
       <View className="flex">
         <HomeHeader />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }} className="flex">
-          <WalletOverview balance={balance} />
-          <View className="my-4" />
-          <View>
-            <View className="mx-4">
-              <Text className="mb-4 text-base font-medium text-neutral-500">On-chain</Text>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 70 }} className="flex">
+          <View className="m-4">
+            <WalletOverview balance={balance} />
+          </View>
+          <View />
+          <View className="mx-4">
+            <QuickActions />
+            <View className="mb-4" />
+            <View className="mb-4">
+              <Text className="mb-2 text-xl font-bold">On-chain</Text>
               <WalletView name="Bitcoin" symbol="BTC" type="On-chain" balance={balance} />
-              <Text className="my-4 text-base font-medium text-neutral-500">Lightning</Text>
-              <View className="space-x-2">
-                <WalletView name="Bitcoin Lighning" symbol="BTC" type="Lightning" balance={balance} />
-              </View>
+            </View>
+            <View>
+              <Text className="mb-2 text-lg font-bold text-neutral-700">Lightning</Text>
+              <WalletView name="Bitcoin Lighning" symbol="BTC" type="Lightning" balance={balance} />
             </View>
           </View>
         </ScrollView>

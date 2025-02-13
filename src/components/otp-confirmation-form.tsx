@@ -7,19 +7,12 @@ import { useForm } from 'react-hook-form';
 import { Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Vibration } from 'react-native';
 import * as z from 'zod';
 
-import { Button, ControlledInput, Pressable, View } from '@/ui';
+import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
 
-import { ScreenSubtitle } from './screen-subtitle';
-
-const OTP_EXPIRATION_TIME = 90;
+const OTP_EXPIRATION_TIME = 60;
 
 const otpSchema = z.object({
-  otpInputOne: z.string().length(1, 'Required'),
-  otpInputTwo: z.string().length(1, 'Required'),
-  otpInputThree: z.string().length(1, 'Required'),
-  otpInputFour: z.string().length(1, 'Required'),
-  otpInputFive: z.string().length(1, 'Required'),
-  otpInputSix: z.string().length(1, 'Required'),
+  code: z.string().length(6, 'Required'),
 });
 
 export type OtpFormType = z.infer<typeof otpSchema>;
@@ -37,8 +30,8 @@ export const OtpConfirmationForm = ({
     resolver: zodResolver(otpSchema),
   });
 
-  const otpValues = watch(['otpInputOne', 'otpInputTwo', 'otpInputThree', 'otpInputFour', 'otpInputFive', 'otpInputSix']);
-  const isButtonEnabled = otpValues.every((value) => value?.length === 1);
+  const otpValues = watch(['code']);
+  const isButtonEnabled = otpValues[0]?.length === 6;
 
   const [secondsLeft, setSecondsLeft] = useState(OTP_EXPIRATION_TIME);
   const [canRetry, setCanRetry] = useState(false);
@@ -70,12 +63,8 @@ export const OtpConfirmationForm = ({
       <View className="flex-1 justify-between">
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} keyboardVerticalOffset={90}>
           <View className="flex-1">
-            <View className="flex-row flex-wrap justify-around rounded-xl">
-              {['otpInputOne', 'otpInputTwo', 'otpInputThree', 'otpInputFour', 'otpInputFive', 'otpInputSix'].map((field, index) => (
-                <View key={index} className="w-[10%]">
-                  <ControlledInput control={control} name={field as keyof OtpFormType} maxLength={1} keyboardType="number-pad" textContentType="oneTimeCode" style={{ textAlign: 'center' }} />
-                </View>
-              ))}
+            <View>
+              <ControlledInput control={control} name="code" maxLength={6} keyboardType="number-pad" placeholder="Enter 6 digit number" />
             </View>
             <View className="mt-4">
               {!canRetry && (
@@ -84,7 +73,7 @@ export const OtpConfirmationForm = ({
                     Vibration.vibrate(100);
                   }}
                 >
-                  <ScreenSubtitle subtitle={`Resend the verification code in ${formatTime(secondsLeft)}`} />
+                  <Text className="text-center">Resend the verification code in {formatTime(secondsLeft)}</Text>
                 </Pressable>
               )}
               {canRetry && (
@@ -95,13 +84,15 @@ export const OtpConfirmationForm = ({
                     setCanRetry(false);
                   }}
                 >
-                  <ScreenSubtitle subtitle="Resend the verification code" />
+                  <Text className="text-center">
+                    Didn't get a code? <Text className="text-lg font-bold text-success-600 underline">Resend Code</Text>
+                  </Text>
                 </Pressable>
               )}
             </View>
           </View>
           <View>
-            <Button testID="otp-submit-button" label="Verify" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} disabled={!isButtonEnabled} />
+            <Button testID="otp-submit-button" label="Verify code" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} disabled={!isButtonEnabled} />
           </View>
         </KeyboardAvoidingView>
       </View>

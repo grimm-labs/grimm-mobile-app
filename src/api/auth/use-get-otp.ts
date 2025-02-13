@@ -9,7 +9,7 @@ type Variables = { phoneNumber: string };
 export const useGetOtp = createMutation<GetOtpResponse, Variables, AxiosError>({
   mutationFn: async (variables) =>
     client({
-      url: 'auth/get-otp',
+      url: 'auth/get-verification-code',
       method: 'POST',
       data: variables,
     }).then((response) => response.data),

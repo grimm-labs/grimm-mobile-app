@@ -2,6 +2,7 @@ import type { Balance } from 'bdk-rn/lib/classes/Bindings';
 import * as React from 'react';
 
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
+import { useSelectedBitcoinUnit } from '@/core/hooks/use-selected-bitcoin-unit';
 import { Image, Text, View } from '@/ui';
 
 type WalletType = 'On-chain' | 'Lightning' | 'Liquid';
@@ -27,6 +28,7 @@ const getWalletIcon = (type: WalletType) => {
 export const WalletView = ({ name, symbol, type, balance }: Props) => {
   const walletIcon = getWalletIcon(type);
   const [isBalanceHide, _setIsBalanceHide] = useHideBalance();
+  const [selectedBitcoinUnit, _setSelectedBitcoinUnit] = useSelectedBitcoinUnit();
 
   return (
     <View className="flex flex-row items-center rounded border border-neutral-200 bg-neutral-100 p-3">
@@ -44,8 +46,10 @@ export const WalletView = ({ name, symbol, type, balance }: Props) => {
             <Text className="text-right text-lg font-semibold text-gray-900">********</Text>
           ) : (
             <View>
-              <Text className="text-right text-base font-semibold text-gray-900">{balance.total.toFixed(8)}</Text>
-              <Text className="text-right text-sm font-medium text-gray-600">XAF 0</Text>
+              <Text className="text-right text-base font-semibold text-gray-900">
+                {balance.total.toFixed(8)} {selectedBitcoinUnit}
+              </Text>
+              <Text className="text-right text-sm font-medium text-gray-600">XAF 0.00</Text>
             </View>
           )}
         </View>
