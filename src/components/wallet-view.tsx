@@ -1,6 +1,7 @@
 import type { Balance } from 'bdk-rn/lib/classes/Bindings';
 import * as React from 'react';
 
+import { useSelectedFiatCurrency } from '@/core';
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
 import { useSelectedBitcoinUnit } from '@/core/hooks/use-selected-bitcoin-unit';
 import { Image, Text, View } from '@/ui';
@@ -26,6 +27,7 @@ const getWalletIcon = (type: WalletType) => {
 };
 
 export const WalletView = ({ name, symbol, type, balance }: Props) => {
+  const [selectedFiatCurrency, _setSelectedFiatCurrency] = useSelectedFiatCurrency();
   const walletIcon = getWalletIcon(type);
   const [isBalanceHide, _setIsBalanceHide] = useHideBalance();
   const [selectedBitcoinUnit, _setSelectedBitcoinUnit] = useSelectedBitcoinUnit();
@@ -49,7 +51,7 @@ export const WalletView = ({ name, symbol, type, balance }: Props) => {
               <Text className="text-right text-base font-semibold text-gray-900">
                 {balance.total.toFixed(8)} {selectedBitcoinUnit}
               </Text>
-              <Text className="text-right text-sm font-medium text-gray-600">XAF 0.00</Text>
+              <Text className="text-right text-sm font-medium text-gray-600">{selectedFiatCurrency} 0.00</Text>
             </View>
           )}
         </View>

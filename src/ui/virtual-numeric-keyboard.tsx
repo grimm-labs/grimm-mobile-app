@@ -19,7 +19,7 @@ export const NumericVirtualKeyboard = ({
 }: NumericVirtualKeyboardProps) => {
   return (
     <View className="flex-1 justify-between px-2">
-        <View className="mb-4 flex-row justify-around">
+        <View className="mb-2 flex-row justify-around">
           {[1, 2, 3].map((num, index) => (
             <View key={index}>
               <TouchableOpacity
@@ -32,7 +32,7 @@ export const NumericVirtualKeyboard = ({
             </View>
           ))}
         </View>
-        <View className="mb-4 flex-row justify-around">
+        <View className="mb-2 flex-row justify-around">
           {[4, 5, 6].map((num, index) => (
             <View key={index}>
               <TouchableOpacity
@@ -45,7 +45,7 @@ export const NumericVirtualKeyboard = ({
             </View>
           ))}
         </View>
-        <View className="mb-4 flex-row justify-around">
+        <View className="mb-2 flex-row justify-around">
           {[7, 8, 9].map((num, index) => (
             <View key={index}>
               <TouchableOpacity
@@ -62,7 +62,7 @@ export const NumericVirtualKeyboard = ({
           <View>
             <TouchableOpacity
               key={'EMPTY'}
-              className={`flex h-20 w-20 items-center justify-center rounded-full ${allowDotKey ? 'bg-gray-200' : ''}`}
+              className={`m-1 flex h-20 w-20 items-center justify-center rounded-full ${allowDotKey ? 'bg-gray-200' : ''}`}
               onPress={allowDotKey ? () => onPress(-2): () => {}}
             >
             { allowDotKey && (

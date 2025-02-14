@@ -1,8 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
 import { SafeAreaView } from 'react-native';
 
+import { useSelectedFiatCurrency } from '@/core';
 import { FocusAwareStatusBar, Pressable, Text, View } from '@/ui';
 
 interface CurrencyOptionProps {
@@ -25,16 +26,12 @@ const CurrencyOption: React.FC<CurrencyOptionProps> = ({ currency, description, 
 );
 
 export default function CurrencySelector() {
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('XAF');
+  const [selectedFiatCurrency, setSelectedFiatCurrency] = useSelectedFiatCurrency();
 
   const currencies = [
     { code: 'XAF', description: 'Central African CFA Franc' },
     { code: 'XOF', description: 'West African CFA Franc' },
-    { code: 'EUR', description: 'Euro' },
-    { code: 'USD', description: 'United States Dollar' },
     { code: 'KES', description: 'Kenyan Shilling' },
-    { code: 'ZAR', description: 'South African Rand' },
-    { code: 'MAD', description: 'Moroccan Dirham' },
   ];
 
   return (
@@ -51,7 +48,7 @@ export default function CurrencySelector() {
         <FocusAwareStatusBar />
         <View className="mt-6">
           {currencies.map(({ code, description }) => (
-            <CurrencyOption key={code} currency={code} description={description} isSelected={selectedCurrency === code} onPress={() => setSelectedCurrency(code)} />
+            <CurrencyOption key={code} currency={code} description={description} isSelected={selectedFiatCurrency === code} onPress={() => setSelectedFiatCurrency(code)} />
           ))}
         </View>
       </View>

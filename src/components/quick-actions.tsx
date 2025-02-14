@@ -23,9 +23,9 @@ const actions: Action[] = [
 
 export const QuickActions = () => {
   return (
-    <View className="rounded-lg bg-neutral-100 p-3">
+    <View className="mt-4 rounded-lg border border-neutral-200 bg-neutral-100 p-3">
       <View className="mb-3 flex flex-row items-center justify-between">
-        <Text className="text-xl font-bold">Quick Actions</Text>
+        <Text className="text-lg font-bold">Quick Actions</Text>
       </View>
       <View className="flex flex-row flex-wrap justify-between">
         {actions.map((action, index) => (

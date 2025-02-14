@@ -1,12 +1,32 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
+import { Alert } from 'react-native';
 
 import { SettingsItem } from '@/components/settings-item';
-import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/ui';
+import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/ui';
 
 export default function Settings() {
   const router = useRouter();
+  const [isFadeIdEnabled, setIsFaceIdEnabled] = React.useState(false);
+
+  const signOut = () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: () => {
+          // Sign out logic
+        },
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -35,13 +55,26 @@ export default function Settings() {
 
               <SettingsItem icon="key" title="Backup Key" subtitle="Secure and manage your wallet recovery key" onPress={() => router.push('settings/recovery-phrase-warning')} />
 
-              <SettingsItem icon="finger-print" title="Enable Biometric Auth" subtitle="Use Face ID or Fingerprint for quick access" onPress={() => console.log('Biometric Auth pressed')} />
+              <Pressable className="mb-4 flex-row items-center rounded py-2">
+                <View className="mr-1 rounded-full p-2">
+                  <Ionicons name="scan-sharp" size={20} color="gray" />
+                </View>
+                <View className="ml-2 flex-1">
+                  <Text className="text-base font-medium text-gray-800">Enable Face ID</Text>
+                  <Text className="text-sm text-gray-500">Use Face ID for quick access</Text>
+                </View>
+                <View>
+                  <Switch.Root checked={isFadeIdEnabled} onChange={setIsFaceIdEnabled} accessibilityLabel="switch" className="pb-2">
+                    <Switch.Icon checked={isFadeIdEnabled} />
+                  </Switch.Root>
+                </View>
+              </Pressable>
             </View>
           </View>
           <View className="mb-6">
             <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">Preferences</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-              <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => console.log('Notifications pressed')} />
+              <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => router.push('settings/notifications')} />
 
               <SettingsItem icon="color-palette" title="Appearance" subtitle="Switch between light and dark modes" onPress={() => router.push('settings/appearance')} />
 
@@ -55,7 +88,7 @@ export default function Settings() {
           </View>
 
           <View className="mx-4 mb-4">
-            <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4">
+            <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4" onPress={signOut}>
               <Text className="text-center font-bold text-red-600">Sign Out</Text>
             </Pressable>
           </View>

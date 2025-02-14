@@ -1,10 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Balance } from 'bdk-rn/lib/classes/Bindings';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
+import { WalletView } from '@/components/wallet-view';
 import { Button, NumericVirtualKeyboard, Pressable, Text, View } from '@/ui';
 
 export default function EnterBitcoinAmountScreen() {
@@ -12,6 +14,7 @@ export default function EnterBitcoinAmountScreen() {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState<'USD' | 'SAT'>('USD');
   const [speed, setSpeed] = useState<'slow' | 'normal' | 'fast'>('normal');
+  const [balance, _setBalance] = useState<Balance>(new Balance(0, 0, 0, 0, 0.3433));
 
   const handleContinue = () => {
     router.push('send/transaction-verification');
@@ -56,7 +59,7 @@ export default function EnterBitcoinAmountScreen() {
               <Text className="ml-2 text-sm font-medium text-gray-500">click on text to switch between USD and SAT</Text>
             </Pressable>
 
-            <View className="my-4 flex-row items-center justify-between rounded-full bg-gray-200 p-6">
+            <View className="my-4 flex-row items-center justify-between rounded-lg border border-neutral-200 bg-neutral-100 p-6">
               <Pressable onPress={() => handleSpeedSelection('slow')} className={`flex-row items-center rounded-full px-4 py-2 ${speed === 'slow' ? 'rounded-full bg-primary-600 text-white' : 'bg-white'}`}>
                 <Ionicons name="timer-outline" size={20} color={speed === 'slow' ? 'white' : 'black'} />
                 <Text className={`ml-2 text-base font-medium ${speed === 'slow' ? 'text-white' : 'text-black'}`}>Slow</Text>
@@ -73,7 +76,8 @@ export default function EnterBitcoinAmountScreen() {
             </View>
           </View>
           <View className="flex-1 justify-end">
-            <View className="my-2 flex-1">
+            <WalletView name="Bitcoin" symbol="BTC" type="On-chain" balance={balance} />
+            <View className="my-4 flex-1">
               <NumericVirtualKeyboard
                 onPress={(value) => {
                   if (value === -1) {
