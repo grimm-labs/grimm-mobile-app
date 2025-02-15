@@ -77,8 +77,6 @@ export default function Settings() {
               <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => router.push('settings/notifications')} />
 
               <SettingsItem icon="color-palette" title="Appearance" subtitle="Switch between light and dark modes" onPress={() => router.push('settings/appearance')} />
-
-              <SettingsItem icon="shield" title="Privacy" subtitle="Manage data sharing and privacy controls" onPress={() => console.log('Privacy pressed')} />
             </View>
           </View>
           <View className="m-4">

@@ -1,5 +1,5 @@
-import { DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, Wallet } from 'bdk-rn';
-import type { Network } from 'bdk-rn/lib/lib/enums';
+import { Blockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, Wallet } from 'bdk-rn';
+import type { BlockchainElectrumConfig, Network } from 'bdk-rn/lib/lib/enums';
 import { KeychainKind } from 'bdk-rn/lib/lib/enums';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
@@ -43,4 +43,21 @@ export const getCountryManager = () => {
 
 export const convertBtcToSats = (btc: number) => {
   return btc * 100_000_000;
+};
+
+export const convertSatsToBtc = (sats: number): number => {
+  return parseFloat((sats / 100_000_000).toFixed(8));
+};
+
+export const getBlockchainConfig = (): BlockchainElectrumConfig => ({
+  url: 'ssl://electrum.blockstream.info:60002',
+  sock5: null,
+  retry: 5,
+  timeout: 5,
+  stopGap: 100,
+  validateDomain: false,
+});
+
+export const getBlockchain = async (config: BlockchainElectrumConfig = getBlockchainConfig()) => {
+  return await new Blockchain().create(config);
 };

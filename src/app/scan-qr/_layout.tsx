@@ -4,7 +4,7 @@ import type { BarcodeScanningResult, CameraType, FlashMode } from 'expo-camera';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Linking, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, SafeAreaView, TouchableOpacity, View } from 'react-native';
 
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
@@ -84,41 +84,24 @@ export default function ScanQrScreen() {
       <Stack.Screen
         options={{
           title: 'Scan QR',
-          headerShown: false,
+          headerShown: true,
           headerShadowVisible: false,
           headerBackTitleVisible: false,
         }}
       />
       <FocusAwareStatusBar />
-
-      {/* Header avec boutons Fermer et Flash */}
-      <View className="absolute left-5 top-5 z-10">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="close" size={32} color="white" />
-        </TouchableOpacity>
-      </View>
-      <View className="absolute right-5 top-5 z-10">
-        <TouchableOpacity onPress={toggleFlash}>
-          <Ionicons name={flash === 'off' ? 'flash-off' : 'flash'} size={32} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Camera */}
       <View className="flex-1 items-center justify-center">
-        <CameraView facing={facing} flash={flash} barcodeScannerSettings={{ barcodeTypes: ['qr'] }} onBarcodeScanned={qrCodeScanned} className="flex h-full w-full items-center justify-center">
-          {/* QR Code Scanner Guide */}
-          <View className="absolute left-1/4 top-1/4 h-1/4 w-1/2 rounded-lg border-4 border-blue-500 opacity-75" />
-
-          {/* Instruction Text */}
-          <View className="rounded-lg border border-white">
-            <Text className="absolute bottom-1/2 px-4 text-center text-lg text-white">Place the QR code in the center to scan a Bitcoin address or invoice.</Text>
-          </View>
+        <CameraView facing={facing} flash={flash} barcodeScannerSettings={{ barcodeTypes: ['qr'] }} onBarcodeScanned={qrCodeScanned} className="h-full w-full flex-1 items-center justify-center border border-danger-500">
+          <View className="h-48 w-48 rounded-xl border-2 border-white" />
         </CameraView>
       </View>
 
-      <View className="absolute bottom-10 left-1/2 -translate-x-1/2">
-        <TouchableOpacity onPress={toggleCameraFacing} className="rounded-full bg-gray-800 p-4">
-          <Ionicons name="camera-reverse" size={32} color="white" />
+      <View className="flex w-full flex-row justify-center space-x-4">
+        <TouchableOpacity onPress={toggleCameraFacing} className="mr-2 rounded-full bg-gray-800 p-5">
+          <Ionicons name="camera-reverse" size={26} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleFlash} className="ml-2 rounded-full bg-gray-800 p-5">
+          <Ionicons name={flash === 'off' ? 'flash-off' : 'flash'} size={26} color="white" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

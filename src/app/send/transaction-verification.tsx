@@ -1,19 +1,23 @@
 /* eslint-disable max-lines-per-function */
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, SafeAreaView, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, View } from 'react-native';
 
 import SlideToConfirm from '@/components/slide-to-confirm';
 import { Text } from '@/ui';
 
 export default function TransactionVerificationScreen() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleTransactionSend = () => {
     setIsLoading(true);
 
     setTimeout(() => {
-      Alert.alert('Success', 'Transaction sent successfully!');
+      router.push({
+        pathname: 'send/final-status',
+        params: { status: 'success' },
+      });
     }, 3000);
   };
 

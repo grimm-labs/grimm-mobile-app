@@ -1,7 +1,7 @@
 import type { Balance } from 'bdk-rn/lib/classes/Bindings';
 import * as React from 'react';
 
-import { useSelectedFiatCurrency } from '@/core';
+import { convertSatsToBtc, useSelectedFiatCurrency } from '@/core';
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
 import { useSelectedBitcoinUnit } from '@/core/hooks/use-selected-bitcoin-unit';
 import { Image, Text, View } from '@/ui';
@@ -32,6 +32,16 @@ export const WalletView = ({ name, symbol, type, balance }: Props) => {
   const [isBalanceHide, _setIsBalanceHide] = useHideBalance();
   const [selectedBitcoinUnit, _setSelectedBitcoinUnit] = useSelectedBitcoinUnit();
 
+  const formatBalance = (): string => {
+    if (isBalanceHide) return '********';
+
+    if (selectedBitcoinUnit === 'SAT') {
+      return `${balance.total} SAT`;
+    } else {
+      return `${convertSatsToBtc(balance.total)} BTC`;
+    }
+  };
+
   return (
     <View className="flex flex-row items-center rounded border border-neutral-200 bg-neutral-100 p-3">
       <Image className="mr-4 h-12 w-12 rounded-full" source={walletIcon} />
@@ -48,9 +58,7 @@ export const WalletView = ({ name, symbol, type, balance }: Props) => {
             <Text className="text-right text-lg font-semibold text-gray-900">********</Text>
           ) : (
             <View>
-              <Text className="text-right text-base font-semibold text-gray-900">
-                {balance.total.toFixed(8)} {selectedBitcoinUnit}
-              </Text>
+              <Text className="text-right text-base font-semibold text-gray-900">{formatBalance()}</Text>
               <Text className="text-right text-sm font-medium text-gray-600">{selectedFiatCurrency} 0.00</Text>
             </View>
           )}

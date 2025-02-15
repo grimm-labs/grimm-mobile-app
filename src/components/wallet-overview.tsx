@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { convertBtcToSats, useSelectedFiatCurrency } from '@/core';
+import { convertSatsToBtc, useSelectedFiatCurrency } from '@/core';
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
 import { useSelectedBitcoinUnit } from '@/core/hooks/use-selected-bitcoin-unit';
 
@@ -19,36 +19,32 @@ export const WalletOverview = ({ balance }: WalletOverviewProps) => {
   const [isBalanceHide, setIsBalanceHide] = useHideBalance();
   const [selectedBitcoinUnit, _setSelectedBitcoinUnit] = useSelectedBitcoinUnit();
 
-  const toggleBalanceVisibility = async () => {
-    setIsBalanceHide(!isBalanceHide);
-  };
-
-  const toggleBalanceUnit = () => {
-    setIsBalanceHide(!isBalanceHide);
-  };
-
-  const formatBalance = () => {
+  const formatBalance = (): string => {
     if (isBalanceHide) return '********';
 
     if (selectedBitcoinUnit === 'SAT') {
-      return `${convertBtcToSats(balance.total)} SAT`;
+      return `${balance.total} SAT`;
     } else {
-      return `${balance.total.toFixed(8)} BTC`;
+      return `${convertSatsToBtc(balance.total)} BTC`;
     }
   };
 
   return (
     <View className="">
       <View className="flex-row items-center justify-center">
-        <Text className="mr-2 text-center text-base font-medium text-neutral-500">Total balance</Text>
+        <Text className="mr-2 text-center text-lg font-medium">Total balance</Text>
         <View className="flex-row space-x-2">
-          <Pressable onPress={toggleBalanceVisibility}>
+          <Pressable
+            onPress={() => {
+              setIsBalanceHide(!isBalanceHide);
+            }}
+          >
             <Ionicons name={isBalanceHide ? 'eye-off' : 'eye'} size={16} color="gray" />
           </Pressable>
         </View>
       </View>
       <View className="py-6">
-        <Pressable onPress={toggleBalanceUnit}>
+        <Pressable onPress={() => setIsBalanceHide(!isBalanceHide)}>
           <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{formatBalance()}</Text>
         </Pressable>
         <View className="mb-4">

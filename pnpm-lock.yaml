@@ -92,6 +92,9 @@ importers:
       lodash.memoize:
         specifier: ^4.1.2
         version: 4.1.2
+      lottie-react-native:
+        specifier: 6.7.0
+        version: 6.7.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
       moti:
         specifier: ^0.28.1
         version: 0.28.1(react-dom@18.2.0(react@18.2.0))(react-native-reanimated@3.10.1(@babel/core@7.24.5)(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react@18.2.0)
@@ -5585,6 +5588,22 @@ packages:
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
+
+  lottie-react-native@6.7.0:
+    resolution: {integrity: sha512-doiF/36LaKkzo0XkgUIK8egxALNY6jGjCI4szpRuwop15LTW3DFtIA2L3pusNdaH7oM797aSH5UylIJw2k+Hgw==}
+    peerDependencies:
+      '@dotlottie/react-player': ^1.6.1
+      '@lottiefiles/react-lottie-player': ^3.5.3
+      react: '*'
+      react-native: '>=0.46'
+      react-native-windows: '>=0.63.x'
+    peerDependenciesMeta:
+      '@dotlottie/react-player':
+        optional: true
+      '@lottiefiles/react-lottie-player':
+        optional: true
+      react-native-windows:
+        optional: true
 
   lowercase-keys@1.0.1:
     resolution: {integrity: sha512-G2Lj61tXDnVFFOi8VZds+SoQjtQC3dgokKdDG2mTm1tx4m50NUHBOZSBwQQHyy0V12A0JTG4icfZQH+xPyh8VA==}
@@ -15451,6 +15470,11 @@ snapshots:
   loose-envify@1.4.0:
     dependencies:
       js-tokens: 4.0.0
+
+  lottie-react-native@6.7.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+      react-native: 0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)
 
   lowercase-keys@1.0.1: {}
 
