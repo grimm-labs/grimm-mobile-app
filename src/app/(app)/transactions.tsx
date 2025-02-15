@@ -63,7 +63,6 @@ export default function Activity() {
 
   const fetchTransactions = useCallback(async () => {
     if (seedPhrase) {
-      console.log('selectedBitcoinNetwork', selectedBitcoinNetwork);
       const wallet = await createWallet(seedPhrase, selectedBitcoinNetwork as Network);
       const blockchain = await getBlockchain(getBlockchainConfig());
       await wallet.sync(blockchain);

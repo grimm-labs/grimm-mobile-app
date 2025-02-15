@@ -1,8 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable max-lines-per-function */
+
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback } from 'react-native';
@@ -26,55 +25,10 @@ const seedSchema = z.object({
 });
 
 type SeedFormType = z.infer<typeof seedSchema>;
+export type ImportSeedScreenFormProps = { onSubmit: SubmitHandler<SeedFormType> };
 
-export const ImportSeedScreenForm = () => {
-  const router = useRouter();
-
-  const {
-    control,
-    handleSubmit,
-    formState: { isValid },
-  } = useForm<SeedFormType>({
-    resolver: zodResolver(seedSchema),
-    mode: 'onChange',
-    defaultValues: {
-      word1: '',
-      word2: '',
-      word3: '',
-      word4: '',
-      word5: '',
-      word6: '',
-      word7: '',
-      word8: '',
-      word9: '',
-      word10: '',
-      word11: '',
-      word12: '',
-    },
-  });
-
-  // Fonction appelée quand l’utilisateur appuie sur "Importer"
-  const onSubmit: SubmitHandler<SeedFormType> = useCallback(
-    (data) => {
-      // data contient les 12 mots saisis
-      // Exemple :
-      // {
-      //   word1: 'mot1',
-      //   word2: 'mot2',
-      //   ...
-      //   word12: 'mot12'
-      // }
-
-      // TODO: insérer ici la logique pour importer le wallet
-      //       via ta librairie Bitcoin ou Lightning.
-      console.log('Seed words:', data);
-
-      // Après la validation ou l’import, tu peux rediriger l’utilisateur
-      // vers un écran de confirmation ou un dashboard, par exemple :
-      router.push('/home');
-    },
-    [router]
-  );
+export const ImportSeedScreenForm = ({ onSubmit }: ImportSeedScreenFormProps) => {
+  const { control, handleSubmit } = useForm<SeedFormType>({ resolver: zodResolver(seedSchema) });
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -124,7 +78,7 @@ export const ImportSeedScreenForm = () => {
               </View>
             </View>
           </View>
-          <Button label="Import" textClassName="text-white" fullWidth={true} size="lg" variant="secondary" onPress={handleSubmit(onSubmit)} disabled={!isValid} />
+          <Button label="Import" textClassName="text-white" fullWidth={true} size="lg" variant="secondary" onPress={handleSubmit(onSubmit)} disabled={!z.isValid} />
         </KeyboardAvoidingView>
       </View>
     </TouchableWithoutFeedback>
