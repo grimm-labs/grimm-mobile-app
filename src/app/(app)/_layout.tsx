@@ -34,12 +34,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="activity"
+        name="transactions"
         options={{
-          title: 'Activity',
+          title: 'Transactions',
           headerShown: false,
-          tabBarIcon: ({ color }) => <Ionicons name="pie-chart" size={26} color={color} />,
-          tabBarTestID: 'activity-tab',
+          tabBarIcon: ({ color }) => <Ionicons name="receipt" size={26} color={color} />,
+          tabBarTestID: 'transactions-tab',
         }}
       />
       <Tabs.Screen
@@ -47,7 +47,7 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           headerShown: false,
-          tabBarIcon: ({ color }) => <Ionicons name="cog" size={26} color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="settings" size={26} color={color} />,
           tabBarTestID: 'settings-tab',
         }}
       />

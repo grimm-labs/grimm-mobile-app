@@ -2,8 +2,9 @@ import * as React from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import type { TextInput, TextInputProps } from 'react-native';
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { I18nManager, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TextInput as NTextInput } from 'react-native';
+// Utilisation d'une icône comme exemple
 import { tv } from 'tailwind-variants';
 
 import colors from './colors';
@@ -11,9 +12,10 @@ import { Text } from './text';
 
 const inputTv = tv({
   slots: {
-    container: 'mb-0',
+    container: 'mb-0 flex-row items-center',
     label: 'text-grey-100 mb-1 text-lg dark:text-neutral-100',
-    input: 'font-inter mt-0 rounded border-b-2 border-gray-600 p-2 py-4 text-base font-medium leading-5 dark:bg-neutral-800 dark:text-white',
+    input: 'font-inter mt-0 flex-1 rounded border-b-2 border-gray-600 p-2 py-4 text-base font-medium leading-5 dark:bg-neutral-800 dark:text-white',
+    icon: 'ml-2', // Espace entre l'input et l'icône
   },
 
   variants: {
@@ -45,6 +47,8 @@ export interface NInputProps extends TextInputProps {
   label?: string;
   disabled?: boolean;
   error?: string;
+  icon?: React.ReactNode; // Nouvelle propriété pour l'icône
+  onIconPress?: () => void; // Fonction à appeler lors du clic sur l'icône
 }
 
 type TRule = Omit<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>;
@@ -59,7 +63,7 @@ export type InputControllerType<T extends FieldValues> = {
 interface ControlledInputProps<T extends FieldValues> extends NInputProps, InputControllerType<T> {}
 
 export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
-  const { label, error, testID, ...inputProps } = props;
+  const { label, error, testID, icon, onIconPress, ...inputProps } = props;
   const [isFocussed, setIsFocussed] = React.useState(false);
   const onBlur = React.useCallback(() => setIsFocussed(false), []);
   const onFocus = React.useCallback(() => setIsFocussed(true), []);
@@ -81,16 +85,23 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
           {label}
         </Text>
       )}
-      <NTextInput
-        testID={testID}
-        ref={ref}
-        placeholderTextColor={colors.neutral[400]}
-        className={styles.input()}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        {...inputProps}
-        style={StyleSheet.flatten([{ writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }, { textAlign: I18nManager.isRTL ? 'right' : 'left' }, inputProps.style])}
-      />
+      <View className="w-full flex-row items-center">
+        <NTextInput
+          testID={testID}
+          ref={ref}
+          placeholderTextColor={colors.neutral[400]}
+          className={styles.input()}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          {...inputProps}
+          style={StyleSheet.flatten([{ writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }, { textAlign: I18nManager.isRTL ? 'right' : 'left' }, inputProps.style])}
+        />
+        {icon && (
+          <TouchableOpacity onPress={onIconPress} className={styles.icon()}>
+            {icon}
+          </TouchableOpacity>
+        )}
+      </View>
       {error && (
         <Text testID={testID ? `${testID}-error` : undefined} className="mt-1 text-sm text-danger-400 dark:text-danger-600">
           {error}

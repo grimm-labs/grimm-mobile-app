@@ -7,12 +7,14 @@ import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
 import { WalletView } from '@/components/wallet-view';
+import { useSelectedFiatCurrency } from '@/core';
 import { Button, NumericVirtualKeyboard, Pressable, Text, View } from '@/ui';
 
 export default function EnterBitcoinAmountScreen() {
   const router = useRouter();
+  const [selectedFiatCurrency, _setSelectedFiatCurrency] = useSelectedFiatCurrency();
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<'USD' | 'SAT'>('USD');
+  const [currency, setCurrency] = useState<string>('SAT');
   const [speed, setSpeed] = useState<'slow' | 'normal' | 'fast'>('normal');
   const [balance, _setBalance] = useState<Balance>(new Balance(0, 0, 0, 0, 0.3433));
 
@@ -23,7 +25,7 @@ export default function EnterBitcoinAmountScreen() {
   };
 
   const handleCurrencySwitch = () => {
-    setCurrency((prev) => (prev === 'USD' ? 'SAT' : 'USD'));
+    setCurrency((prev) => (prev === selectedFiatCurrency ? 'SAT' : selectedFiatCurrency));
   };
 
   const handleSpeedSelection = (selectedSpeed: 'slow' | 'normal' | 'fast') => {
@@ -56,7 +58,7 @@ export default function EnterBitcoinAmountScreen() {
         <View className="flex-1">
           <View>
             <Pressable onPress={handleCurrencySwitch} className="mb-4 flex-row items-center self-center ">
-              <Text className="ml-2 text-sm font-medium text-gray-500">click on text to switch between USD and SAT</Text>
+              <Text className="ml-2 text-sm font-medium text-gray-500">click on text to switch between {selectedFiatCurrency} and SAT</Text>
             </Pressable>
 
             <View className="my-4 flex-row items-center justify-between rounded-lg border border-neutral-200 bg-neutral-100 p-6">

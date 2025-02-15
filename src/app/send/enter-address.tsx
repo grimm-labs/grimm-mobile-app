@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
@@ -7,7 +8,7 @@ import * as z from 'zod';
 
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, ControlledInput, View } from '@/ui';
+import { Button, colors, ControlledInput, View } from '@/ui';
 
 const schema = z.object({
   bitcoinAddress: z.string({ required_error: 'Enter a valid Bitcoin address' }),
@@ -36,10 +37,6 @@ export default function EnterBitcoinAddressScreen() {
     setValue('bitcoinAddress', qrCode || '', { shouldValidate: false });
   }, [qrCode, setValue]);
 
-  const handlePasteAddress = () => {
-    setValue('bitcoinAddress', 'bc1qexamplepasteaddress123456', { shouldValidate: false });
-  };
-
   const handleContinue = () => {
     router.push('send/enter-amount');
   };
@@ -61,13 +58,20 @@ export default function EnterBitcoinAddressScreen() {
         <View className="mb-4" />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
           <View className="mb-4">
-            <ControlledInput testID="phoneNumber" control={control} name="bitcoinAddress" placeholder="Bitcoin address or invoice" placeholderClassName="text-base" textContentType="telephoneNumber" />
+            <ControlledInput
+              testID="phoneNumber"
+              control={control}
+              name="bitcoinAddress"
+              placeholder="Bitcoin address or invoice"
+              placeholderClassName="text-base"
+              textContentType="telephoneNumber"
+              icon={<Ionicons name="qr-code" size={26} color={colors.primary[600]} />}
+              onIconPress={() => handleScanQRCode()}
+            />
           </View>
         </KeyboardAvoidingView>
         <View>
           <View className="flex-col justify-between">
-            <Button testID="login-button" label="Paste Address" fullWidth={true} size="lg" variant="link" className="mb-4" textClassName="text-base" icon="clipboard-outline" onPress={handlePasteAddress} />
-            <Button testID="login-button" label="Scan QR Code" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" icon="qr-code-outline" onPress={handleScanQRCode} />
             <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} disabled={false} />
           </View>
         </View>
