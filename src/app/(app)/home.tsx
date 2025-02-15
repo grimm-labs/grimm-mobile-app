@@ -46,13 +46,10 @@ export default function Home() {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 70 }} className="flex">
           <View className="m-4">
             <WalletOverview balance={balance} />
-          </View>
-          <View />
-          <View className="mx-4">
             <QuickActions />
             <View className="mb-4" />
             <View className="mb-4">
-              <Text className="mb-2 text-xl font-bold">On-chain</Text>
+              <Text className="mb-2 text-lg font-bold">On-chain</Text>
               <WalletView name="Bitcoin" symbol="BTC" type="On-chain" balance={balance} />
             </View>
             <View>

@@ -23,7 +23,7 @@ const LanguageOption: React.FC<LanguageOptionProps> = ({ language, isSelected, o
 export default function LanguageSelector() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('Français');
 
-  const languages = ['Français', 'English', 'العربية', '中文'];
+  const languages = ['Français', 'English'];
 
   return (
     <SafeAreaView>

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import * as z from 'zod';
@@ -19,31 +19,29 @@ export type EnterAddressFormProps = {
   onSubmit?: SubmitHandler<FormType>;
 };
 
+type SearchParams = {
+  qrCode?: string;
+};
+
 export default function EnterBitcoinAddressScreen() {
-  const { control } = useForm<FormType>({
-    resolver: zodResolver(schema),
-  });
-
+  const { qrCode } = useLocalSearchParams<SearchParams>();
   const router = useRouter();
-  const [address, setAddress] = useState('');
-
-  // const formValues = watch(['phoneNumber']);
+  const { control, setValue } = useForm<FormType>({ resolver: zodResolver(schema) });
 
   const handleScanQRCode = () => {
-    console.log('Scan QR Code pressed');
-    // Logic to open QR scanner
+    router.push('scan-qr');
   };
 
+  useEffect(() => {
+    setValue('bitcoinAddress', qrCode || '', { shouldValidate: false });
+  }, [qrCode, setValue]);
+
   const handlePasteAddress = () => {
-    console.log('Paste address pressed');
-    // Logic to paste address (mock example)
-    setAddress('bc1qexamplepasteaddress123456');
+    setValue('bitcoinAddress', 'bc1qexamplepasteaddress123456', { shouldValidate: false });
   };
 
   const handleContinue = () => {
-    console.log('Continue pressed with address:', address);
     router.push('send/enter-amount');
-    // Logic to proceed with the entered address
   };
 
   return (
@@ -68,8 +66,8 @@ export default function EnterBitcoinAddressScreen() {
         </KeyboardAvoidingView>
         <View>
           <View className="flex-col justify-between">
-            <Button testID="login-button" label="Paste Address" fullWidth={true} size="lg" variant="link" className="mb-4" textClassName="text-base" icon="clipboard-outline" onPress={handleScanQRCode} />
-            <Button testID="login-button" label="Scan QR Code" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" icon="qr-code-outline" onPress={handlePasteAddress} />
+            <Button testID="login-button" label="Paste Address" fullWidth={true} size="lg" variant="link" className="mb-4" textClassName="text-base" icon="clipboard-outline" onPress={handlePasteAddress} />
+            <Button testID="login-button" label="Scan QR Code" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" icon="qr-code-outline" onPress={handleScanQRCode} />
             <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} disabled={false} />
           </View>
         </View>

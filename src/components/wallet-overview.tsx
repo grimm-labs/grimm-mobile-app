@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { convertBtcToSats } from '@/core';
+import { convertBtcToSats, useSelectedFiatCurrency } from '@/core';
 import { useHideBalance } from '@/core/hooks/use-hide-balance';
 import { useSelectedBitcoinUnit } from '@/core/hooks/use-selected-bitcoin-unit';
 
@@ -14,16 +14,17 @@ type WalletOverviewProps = {
 
 export const WalletOverview = ({ balance }: WalletOverviewProps) => {
   const router = useRouter();
+  const [selectedFiatCurrency, _setSelectedFiatCurrency] = useSelectedFiatCurrency();
 
   const [isBalanceHide, setIsBalanceHide] = useHideBalance();
-  const [selectedBitcoinUnit, setSelectedBitcoinUnit] = useSelectedBitcoinUnit();
+  const [selectedBitcoinUnit, _setSelectedBitcoinUnit] = useSelectedBitcoinUnit();
 
   const toggleBalanceVisibility = async () => {
     setIsBalanceHide(!isBalanceHide);
   };
 
   const toggleBalanceUnit = () => {
-    setSelectedBitcoinUnit((current) => (current === 'SAT' ? 'BTC' : 'SAT'));
+    setIsBalanceHide(!isBalanceHide);
   };
 
   const formatBalance = () => {
@@ -51,7 +52,7 @@ export const WalletOverview = ({ balance }: WalletOverviewProps) => {
           <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{formatBalance()}</Text>
         </Pressable>
         <View className="mb-4">
-          <Text className="text-center text-lg font-medium text-gray-600">{isBalanceHide ? '********' : `XAF 0.00`}</Text>
+          <Text className="text-center text-lg font-medium text-gray-600">{isBalanceHide ? '********' : `${selectedFiatCurrency} 0.00`}</Text>
         </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">

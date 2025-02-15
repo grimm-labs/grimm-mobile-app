@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
-import type { CameraType } from 'expo-camera';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import type { BarcodeScanningResult, CameraType, FlashMode } from 'expo-camera';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -10,11 +11,11 @@ import { ScreenTitle } from '@/components/screen-title';
 import { Button, FocusAwareStatusBar } from '@/ui';
 
 export default function ScanQrScreen() {
-  // Permission caméra
   const router = useRouter();
   const [facing, setFacing] = useState<CameraType>('back');
   const [_permission, _requestPermission] = useCameraPermissions();
   const [hasPermission, setHasPermission] = useState<boolean>(false);
+  const [flash, setFlash] = useState<FlashMode>('off');
 
   const checkCameraPermission = async () => {
     const permissionResponse = await Camera.requestCameraPermissionsAsync();
@@ -23,6 +24,17 @@ export default function ScanQrScreen() {
 
   const toggleCameraFacing = () => {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
+  };
+
+  const toggleFlash = () => {
+    setFlash((prev) => (prev === 'off' ? 'on' : 'off'));
+  };
+
+  const qrCodeScanned = ({ data }: BarcodeScanningResult) => {
+    router.push({
+      pathname: 'send/enter-address',
+      params: { qrData: data },
+    });
   };
 
   useEffect(() => {
@@ -68,114 +80,47 @@ export default function ScanQrScreen() {
   }
 
   return (
-    <SafeAreaView>
-      <View className="flex h-full justify-between">
-        <Stack.Screen
-          options={{
-            title: 'Scan QR',
-            headerShown: true,
-            headerShadowVisible: false,
-            headerBackTitleVisible: false,
-          }}
-        />
-        <FocusAwareStatusBar />
-        <View className="border">
-          <CameraView facing={facing} barcodeScannerSettings={{ barcodeTypes: ['qr'] }}>
-            <View className="h-full">
-              <TouchableOpacity onPress={toggleCameraFacing}>
-                <Text className="text-white">Flip Camera</Text>
-              </TouchableOpacity>
-            </View>
-          </CameraView>
-        </View>
+    <SafeAreaView className="flex-1 bg-black">
+      <Stack.Screen
+        options={{
+          title: 'Scan QR',
+          headerShown: false,
+          headerShadowVisible: false,
+          headerBackTitleVisible: false,
+        }}
+      />
+      <FocusAwareStatusBar />
+
+      {/* Header avec boutons Fermer et Flash */}
+      <View className="absolute left-5 top-5 z-10">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="close" size={32} color="white" />
+        </TouchableOpacity>
+      </View>
+      <View className="absolute right-5 top-5 z-10">
+        <TouchableOpacity onPress={toggleFlash}>
+          <Ionicons name={flash === 'off' ? 'flash-off' : 'flash'} size={32} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Camera */}
+      <View className="flex-1 items-center justify-center">
+        <CameraView facing={facing} flash={flash} barcodeScannerSettings={{ barcodeTypes: ['qr'] }} onBarcodeScanned={qrCodeScanned} className="flex h-full w-full items-center justify-center">
+          {/* QR Code Scanner Guide */}
+          <View className="absolute left-1/4 top-1/4 h-1/4 w-1/2 rounded-lg border-4 border-blue-500 opacity-75" />
+
+          {/* Instruction Text */}
+          <View className="rounded-lg border border-white">
+            <Text className="absolute bottom-1/2 px-4 text-center text-lg text-white">Place the QR code in the center to scan a Bitcoin address or invoice.</Text>
+          </View>
+        </CameraView>
+      </View>
+
+      <View className="absolute bottom-10 left-1/2 -translate-x-1/2">
+        <TouchableOpacity onPress={toggleCameraFacing} className="rounded-full bg-gray-800 p-4">
+          <Ionicons name="camera-reverse" size={32} color="white" />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
-
-  // const [hasPermission, setHasPermission] = useState(null);
-
-  // // État du flash
-  // const [flash, setFlash] = useState(false);
-
-  // // Éviter de scanner plusieurs fois d'affilée
-  // const [scanned, setScanned] = useState(false);
-
-  // // Navigation via expo-router
-  // const router = useRouter();
-
-  // // Demande de permission à l'ouverture
-  // useEffect(() => {
-  //   (async () => {
-  //     const { status } = await Camera.requestCameraPermissionsAsync();
-  //     setHasPermission(status === PermissionStatus);
-  //   })();
-  // }, []);
-
-  // // Fonction déclenchée au scan
-  // const handleBarCodeScanned = ({ type, data }) => {
-  //   if (!scanned) {
-  //     setScanned(true);
-  //     console.log('Type : ', type);
-  //     console.log('Data : ', data);
-
-  //     // Redirection vers une autre page
-  //     router.push({
-  //       pathname: '/someOtherScreen',
-  //       params: { qrData: data },
-  //     });
-  //   }
-  // };
-
-  // // Affichage en attente de décision
-  // if (hasPermission === null) {
-  //   return (
-  //     <SafeAreaView className="flex-1 items-center justify-center bg-white">
-  //       <Text className="text-base text-gray-700">Demande de permission...</Text>
-  //     </SafeAreaView>
-  //   );
-  // }
-
-  // // Si refus
-  // if (hasPermission === false) {
-  //   return (
-  //     <SafeAreaView className="flex-1 items-center justify-center bg-white px-5">
-  //       <Text className="mb-2 text-center text-lg text-red-600">Vous avez refusé la permission d'utiliser la caméra.</Text>
-  //       <Text className="text-center text-base text-gray-700">Vous pouvez l'activer dans les paramètres pour scanner un QR code.</Text>
-  //     </SafeAreaView>
-  //   );
-  // }
-
-  // // Sinon on affiche la caméra
-  // return (
-  //   <SafeAreaView className="relative flex-1 bg-black">
-  //     {/* Barre du haut (boutons) */}
-  //     <View className="absolute top-0 z-10 w-full flex-row justify-between bg-black/50 px-4 py-2">
-  //       {/* Bouton fermer */}
-  //       <TouchableOpacity onPress={() => router.back()}>
-  //         <Ionicons name="close" size={30} color="#fff" />
-  //       </TouchableOpacity>
-
-  //       {/* Bouton flash */}
-  //       <TouchableOpacity onPress={() => setFlash(!flash)}>
-  //         <Ionicons name={flash ? 'flash' : 'flash-off'} size={30} color="#fff" />
-  //       </TouchableOpacity>
-  //     </View>
-
-  //     {/* Composant Caméra */}
-  //     <Camera
-  //       className="flex-1 justify-end"
-  //       type={CameraType.back}
-  //       flashMode={flash ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off}
-  //       barCodeScannerSettings={{
-  //         barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-  //       }}
-  //       onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-  //     >
-  //       {/* Overlay + zone de scan */}
-  //       <View className="absolute inset-0 flex items-center justify-center">
-  //         <View className="h-64 w-64 rounded-md border-2 border-green-500 bg-transparent" />
-  //       </View>
-  //     </Camera>
-  //   </SafeAreaView>
-  // );
 }
