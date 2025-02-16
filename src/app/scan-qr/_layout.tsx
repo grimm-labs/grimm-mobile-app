@@ -4,11 +4,11 @@ import type { BarcodeScanningResult, CameraType, FlashMode } from 'expo-camera';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Linking, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, TouchableOpacity, View } from 'react-native';
 
-import { ScreenSubtitle } from '@/components/screen-subtitle';
-import { ScreenTitle } from '@/components/screen-title';
-import { Button, FocusAwareStatusBar } from '@/ui';
+import { colors, FocusAwareStatusBar, Text } from '@/ui';
+
+import NoCameraPermission from './no-camera-permission';
 
 export default function ScanQrScreen() {
   const router = useRouter();
@@ -42,45 +42,11 @@ export default function ScanQrScreen() {
   }, []);
 
   if (!hasPermission) {
-    return (
-      <SafeAreaView>
-        <View className="flex h-full justify-between px-4">
-          <Stack.Screen
-            options={{
-              title: 'Scan QR',
-              headerShown: true,
-              headerShadowVisible: false,
-              headerBackTitleVisible: false,
-            }}
-          />
-          <FocusAwareStatusBar />
-          <View className="flex-1 items-center justify-center">
-            <ScreenTitle title="No Camera Access" className="text-center text-2xl font-medium" />
-            <View className="mb-4" />
-            <ScreenSubtitle subtitle="Grimm App doesn't have access to the camera. Please enable camera access to scan QR codes." className="text-center" />
-            <View className="mb-4" />
-            <Button
-              testID="login-button"
-              label="Open Settings"
-              variant="outline"
-              className="mb-4"
-              textClassName="text-base"
-              onPress={async () => {
-                await Linking.openURL('app-settings:');
-              }}
-              icon="cog"
-            />
-          </View>
-          <View className="">
-            <Button testID="login-button" label="Show Receive Address" variant="secondary" size="lg" textClassName="text-base" onPress={() => router.push('receive')} icon="qr-code" />
-          </View>
-        </View>
-      </SafeAreaView>
-    );
+    return <NoCameraPermission />;
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-black">
+    <SafeAreaView className="flex-1">
       <Stack.Screen
         options={{
           title: 'Scan QR',
@@ -90,19 +56,29 @@ export default function ScanQrScreen() {
         }}
       />
       <FocusAwareStatusBar />
-      <View className="flex-1 items-center justify-center">
-        <CameraView facing={facing} flash={flash} barcodeScannerSettings={{ barcodeTypes: ['qr'] }} onBarcodeScanned={qrCodeScanned} className="h-full w-full flex-1 items-center justify-center border border-danger-500">
-          <View className="h-48 w-48 rounded-xl border-2 border-white" />
+      <View className="flex-1">
+        <CameraView facing={facing} flash={flash} barcodeScannerSettings={{ barcodeTypes: ['qr'] }} onBarcodeScanned={qrCodeScanned} className="flex-1">
+          <View className="h-full items-center justify-center">
+            <View className="flex h-full w-full">
+              <View className="flex-1 items-center justify-center">
+                <View className="mb-6 h-64 w-64 rounded-lg border-2 border-white bg-transparent" />
+                <View className="rounded-full bg-white px-4 py-1">
+                  <Text className="text-gray-600">Scan a Bitcoin or Lightning QR Code</Text>
+                </View>
+              </View>
+              <View>
+                <View className="flex w-full flex-row justify-center py-4">
+                  <TouchableOpacity onPress={toggleCameraFacing} className="mr-2 rounded-full bg-white p-5">
+                    <Ionicons name="camera-reverse" size={26} color={colors.neutral[700]} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={toggleFlash} className="ml-2 rounded-full bg-white p-5">
+                    <Ionicons name={flash === 'off' ? 'flash-off' : 'flash'} size={26} color={colors.neutral[700]} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
         </CameraView>
-      </View>
-
-      <View className="flex w-full flex-row justify-center space-x-4">
-        <TouchableOpacity onPress={toggleCameraFacing} className="mr-2 rounded-full bg-gray-800 p-5">
-          <Ionicons name="camera-reverse" size={26} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={toggleFlash} className="ml-2 rounded-full bg-gray-800 p-5">
-          <Ionicons name={flash === 'off' ? 'flash-off' : 'flash'} size={26} color="white" />
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

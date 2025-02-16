@@ -72,7 +72,7 @@ export default function NotificationsScreen() {
               <View className="mx-5">
                 <Text className="text-normal my-2 text-center text-gray-600">Scan BTC address to send payment or copy wallet address below</Text>
                 <View className="mb-2">
-                  <Text ellipsizeMode="middle" className="my-4 text-center text-lg text-gray-600">
+                  <Text ellipsizeMode="middle" selectable={true} className="my-4 text-center text-lg text-gray-600">
                     {address}
                   </Text>
                 </View>
@@ -80,8 +80,8 @@ export default function NotificationsScreen() {
             </KeyboardAvoidingView>
             <View>
               <View className="flex-col justify-between">
-                <Button testID="login-button" label="Share BTC Address" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={handleShareAddress} icon="share" />
-                <Button testID="login-button" label="Copy Address" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleCopyAdress} disabled={false} />
+                <Button testID="share-button" label="Share BTC Address" fullWidth={true} size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={handleShareAddress} icon="share" />
+                <Button testID="copy-address-button" label="Copy Address" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleCopyAdress} disabled={false} />
               </View>
             </View>
           </View>

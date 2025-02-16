@@ -36,26 +36,21 @@ export default function Settings() {
           <Text className="text-2xl font-bold text-gray-800">Settings</Text>
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-          <View className="my-6">
+          <View className="my-3">
             <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">General</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem icon="globe" title="Networks" subtitle="Manage and configure your networks" onPress={() => router.push('settings/network')} />
-
               <SettingsItem icon="language" title="Language" subtitle="Select your preferred app language" onPress={() => router.push('settings/language')} />
-
               <SettingsItem icon="logo-usd" title="Currency" subtitle="Choose your default display currency" onPress={() => router.push('settings/currency')} />
               <SettingsItem icon="options-sharp" title="Bitcoin Units" subtitle="Choose between BTC and SAT" onPress={() => router.push('settings/bitcoin-unit')} />
             </View>
           </View>
-
           <View className="mb-6">
             <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">Security</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem icon="lock-closed" title="Change PIN code" subtitle="Update your wallet access PIN" onPress={() => console.log('PIN change pressed')} />
-
               <SettingsItem icon="key" title="Backup Key" subtitle="Secure and manage your wallet recovery key" onPress={() => router.push('settings/recovery-phrase-warning')} />
-
-              <Pressable className="mb-4 flex-row items-center rounded py-2">
+              <Pressable className="mb-1 flex-row items-center rounded py-2">
                 <View className="mr-1 rounded-full p-2">
                   <Ionicons name="scan-sharp" size={20} color="gray" />
                 </View>
@@ -75,7 +70,6 @@ export default function Settings() {
             <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">Preferences</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => router.push('settings/notifications')} />
-
               <SettingsItem icon="color-palette" title="Appearance" subtitle="Switch between light and dark modes" onPress={() => router.push('settings/appearance')} />
             </View>
           </View>
@@ -84,13 +78,11 @@ export default function Settings() {
               <Text className="text-center font-bold text-green-600">Help & Support</Text>
             </Pressable>
           </View>
-
           <View className="mx-4 mb-4">
             <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4" onPress={signOut}>
               <Text className="text-center font-bold text-red-600">Sign Out</Text>
             </Pressable>
           </View>
-
           <View className="mx-10 mb-6">
             <Text className="text-center text-base text-gray-700">
               Grimm App's <Text className="font-bold underline">Privacy</Text>, <Text className="font-bold underline">Terms</Text> and <Text className="font-bold underline">Open Source Software</Text>

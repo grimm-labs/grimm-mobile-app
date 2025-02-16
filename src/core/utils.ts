@@ -61,3 +61,12 @@ export const getBlockchainConfig = (): BlockchainElectrumConfig => ({
 export const getBlockchain = async (config: BlockchainElectrumConfig = getBlockchainConfig()) => {
   return await new Blockchain().create(config);
 };
+
+export const isMnemonicValid = async (mnemonic: string) => {
+  try {
+    await new Mnemonic().fromString(mnemonic);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
