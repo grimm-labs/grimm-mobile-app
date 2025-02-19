@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,11 +13,12 @@ import { Keyboard, KeyboardAvoidingView, Platform, Pressable, TouchableWithoutFe
 import * as z from 'zod';
 
 import { getCountryManager, useSelectedCountryCode } from '@/core';
-import { Button, ControlledInput, Image, View } from '@/ui';
+import { Button, ControlledInput, Image, Text, View } from '@/ui';
 
 const schema = z.object({
   phoneNumber: z.string({ required_error: 'Phone number is required' }),
 });
+
 export type FormType = z.infer<typeof schema>;
 export type SignInFormProps = { onSubmit: SubmitHandler<FormType> };
 
@@ -35,8 +37,17 @@ export const SignInForm = ({ onSubmit }: SignInFormProps) => {
 
   const validatePhoneNumber = (number: string, countryCode: CountryCode) => {
     const parsedNumber = parsePhoneNumberFromString(number, countryCode);
-    console.log(parsedNumber?.isValid());
     setIsPhoneNumberValid(parsedNumber ? parsedNumber.isValid() : false);
+  };
+
+  const formatPhoneNumber = (number: string, countryCode: CountryCode) => {
+    const parsedNumber = parsePhoneNumberFromString(number, countryCode);
+    return parsedNumber ? parsedNumber.format('E.164') : `+${parseSelectedCountry?.callingCode}${number}`;
+  };
+
+  const handleFormSubmit: SubmitHandler<FormType> = (data) => {
+    const formattedPhoneNumber = formatPhoneNumber(data.phoneNumber, selectedCountryCode as CountryCode);
+    onSubmit({ phoneNumber: formattedPhoneNumber });
   };
 
   const getPlaceholderPhoneNumber = (countryCode: CountryCode) => getExampleNumber(countryCode, examples)?.formatNational();
@@ -49,41 +60,45 @@ export const SignInForm = ({ onSubmit }: SignInFormProps) => {
     }
   }, [phoneNumberValue, selectedCountryCode]);
 
+  const gerPrefix = () => {
+    return (
+      <Pressable onPress={() => router.push('/auth/select-country')}>
+        <View className="flex flex-row items-center justify-center rounded p-1">
+          <Image
+            style={{ width: 36, height: 36 }}
+            className="mr-2 rounded-full"
+            contentFit="fill"
+            source={{
+              uri: parseSelectedCountry?.flag,
+            }}
+          />
+          <Text className="text-base font-semibold text-gray-600">+{parseSelectedCountry?.callingCode}</Text>
+        </View>
+      </Pressable>
+    );
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="h-full flex-1">
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} className="flex-1" keyboardVerticalOffset={90}>
           <View className="flex-1">
             <View className="mb-4 flex-row">
-              <View>
-                <Pressable onPress={() => router.push('/auth/select-country')}>
-                  <View className="flex flex-row items-center justify-center rounded border-b-2 border-gray-600 p-2">
-                    <Image
-                      style={{ width: 32, height: 32 }}
-                      className="rounded-full"
-                      contentFit="fill"
-                      source={{
-                        uri: parseSelectedCountry?.flag,
-                      }}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-              <View className="ml-2 flex-1">
+              <View className="flex-1">
                 <ControlledInput
                   testID="phoneNumber"
                   control={control}
                   name="phoneNumber"
                   placeholder={getPlaceholderPhoneNumber(selectedCountryCode as CountryCode)}
-                  placeholderClassName="text-xs"
+                  placeholderClassName="text-base"
                   textContentType="telephoneNumber"
                   keyboardType="number-pad"
-                  disabled={true}
+                  prefix={gerPrefix()}
                 />
               </View>
             </View>
           </View>
-          <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} disabled={!isPhoneNumberValid} />
+          <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(handleFormSubmit)} disabled={!isPhoneNumberValid} />
         </KeyboardAvoidingView>
       </View>
     </TouchableWithoutFeedback>

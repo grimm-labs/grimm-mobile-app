@@ -45,8 +45,8 @@ export const convertBtcToSats = (btc: number) => {
   return btc * 100_000_000;
 };
 
-export const convertSatsToBtc = (sats: number): number => {
-  return parseFloat((sats / 100_000_000).toFixed(8));
+export const convertSatsToBtc = (sats: number): string => {
+  return (sats / 100_000_000).toFixed(8);
 };
 
 export const getBlockchainConfig = (): BlockchainElectrumConfig => ({

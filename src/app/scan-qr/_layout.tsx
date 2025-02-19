@@ -63,7 +63,7 @@ export default function ScanQrScreen() {
               <View className="flex-1 items-center justify-center">
                 <View className="mb-6 h-64 w-64 rounded-lg border-2 border-white bg-transparent" />
                 <View className="rounded-full bg-white px-4 py-1">
-                  <Text className="text-gray-600">Scan a Bitcoin or Lightning QR Code</Text>
+                  <Text className="text-xl text-gray-600">Scan a Bitcoin or Lightning QR Code</Text>
                 </View>
               </View>
               <View>

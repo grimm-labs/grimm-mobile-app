@@ -47,7 +47,7 @@ export default function GenerateSeedPhrase() {
             <View>
               <View className="flex-row flex-wrap justify-around">
                 {mnemonic?.split(' ').map((word, index) => (
-                  <View key={index} className="mb-4 w-1/3 flex-row items-center px-1">
+                  <View key={index} className="mb-4 w-1/2 flex-row items-center px-1">
                     <View className="w-full flex-row items-center rounded-lg border border-gray-400 px-4 py-3">
                       <Text key={index} className="text-center text-base font-medium text-gray-600">
                         {showSeed ? `${index + 1}. ${word}` : '•••••••'}
@@ -62,9 +62,9 @@ export default function GenerateSeedPhrase() {
                   <Checkbox.Label text="I have backup my seed phrase" className="font-medium" />
                 </Checkbox.Root>
                 <View className="my-2" />
-                <Checkbox.Root checked={isUnderstand} onChange={(value) => setIsUnderstand(value)} accessibilityLabel="I have backup my seed phrase" className="pb-2">
+                <Checkbox.Root checked={isUnderstand} onChange={(value) => setIsUnderstand(value)} accessibilityLabel="I have backup my seed phrase">
                   <Checkbox.Icon checked={isUnderstand} />
-                  <Checkbox.Label text="I understand if I loose my recovery key, I won't be able to access my wallet." className="font-medium" />
+                  <Checkbox.Label text="I understand if I loose my recovery key, I won't be able to access my wallet." />
                 </Checkbox.Root>
               </View>
             </View>

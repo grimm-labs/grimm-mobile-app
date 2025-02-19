@@ -65,8 +65,7 @@ export default function EnterBitcoinAddressScreen() {
               placeholder="Bitcoin address or invoice"
               placeholderClassName="text-base"
               textContentType="telephoneNumber"
-              icon={<Ionicons name="qr-code" size={26} color={colors.primary[600]} />}
-              onIconPress={() => handleScanQRCode()}
+              suffix={<Ionicons name="qr-code" size={26} color={colors.primary[600]} onPress={() => handleScanQRCode()} />}
             />
           </View>
         </KeyboardAvoidingView>
