@@ -4,12 +4,12 @@ import { createMutation } from 'react-query-kit';
 import { client } from '../common';
 import type { SignInResponse } from './types';
 
-type Variables = { phoneNumber: string; otp: string };
+type Variables = { phoneNumber: string; code: string };
 
 export const useSignIn = createMutation<SignInResponse, Variables, AxiosError>({
   mutationFn: async (variables) =>
     client({
-      url: 'auth/sign-in',
+      url: 'auth/login',
       method: 'POST',
       data: variables,
     }).then((response) => response.data),

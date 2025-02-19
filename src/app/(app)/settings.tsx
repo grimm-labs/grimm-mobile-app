@@ -36,8 +36,8 @@ export default function Settings() {
           <Text className="text-2xl font-bold text-gray-800">Settings</Text>
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-          <View className="my-3">
-            <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">General</Text>
+          <View className="mb-6 mt-3">
+            <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">General</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem icon="globe" title="Networks" subtitle="Manage and configure your networks" onPress={() => router.push('settings/network')} />
               <SettingsItem icon="language" title="Language" subtitle="Select your preferred app language" onPress={() => router.push('settings/language')} />
@@ -46,7 +46,7 @@ export default function Settings() {
             </View>
           </View>
           <View className="mb-6">
-            <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">Security</Text>
+            <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">Security</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem icon="lock-closed" title="Change PIN code" subtitle="Update your wallet access PIN" onPress={() => console.log('PIN change pressed')} />
               <SettingsItem icon="key" title="Backup Key" subtitle="Secure and manage your wallet recovery key" onPress={() => router.push('settings/recovery-phrase-warning')} />
@@ -67,7 +67,7 @@ export default function Settings() {
             </View>
           </View>
           <View className="mb-6">
-            <Text className="mx-4 mb-3 text-base font-semibold text-gray-600">Preferences</Text>
+            <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">Preferences</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => router.push('settings/notifications')} />
               <SettingsItem icon="color-palette" title="Appearance" subtitle="Switch between light and dark modes" onPress={() => router.push('settings/appearance')} />

@@ -34,7 +34,7 @@ export default function NotificationsScreen() {
     showSuccessMessage('Bitcoin address copied!');
   };
 
-  const handleShareAddress = () => {
+  const handleShareAddress = async () => {
     showSuccessMessage('Bitcoin address copied!');
   };
 
