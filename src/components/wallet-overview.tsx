@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { Balance } from 'bdk-rn/lib/classes/Bindings';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { convertSatsToBtc, useSelectedFiatCurrency } from '@/core';
-import { useHideBalance } from '@/core/hooks/use-hide-balance';
+import { formatBalance, useSelectedFiatCurrency } from '@/core';
+import { AppContext } from '@/core/context';
 import { useSelectedBitcoinUnit } from '@/core/hooks/use-selected-bitcoin-unit';
 
 type WalletOverviewProps = {
@@ -14,20 +14,10 @@ type WalletOverviewProps = {
 
 export const WalletOverview = ({ balance }: WalletOverviewProps) => {
   const router = useRouter();
+  const { hideBalance, setHideBalance } = useContext(AppContext);
   const [selectedFiatCurrency, _setSelectedFiatCurrency] = useSelectedFiatCurrency();
 
-  const [isBalanceHide, setIsBalanceHide] = useHideBalance();
   const [selectedBitcoinUnit, _setSelectedBitcoinUnit] = useSelectedBitcoinUnit();
-
-  const formatBalance = (): string => {
-    if (isBalanceHide) return '********';
-
-    if (selectedBitcoinUnit === 'SAT') {
-      return `${balance.total} SAT`;
-    } else {
-      return `${convertSatsToBtc(balance.total)} BTC`;
-    }
-  };
 
   return (
     <View className="">
@@ -36,19 +26,19 @@ export const WalletOverview = ({ balance }: WalletOverviewProps) => {
         <View className="flex-row space-x-2">
           <Pressable
             onPress={() => {
-              setIsBalanceHide(!isBalanceHide);
+              setHideBalance(!hideBalance);
             }}
           >
-            <Ionicons name={isBalanceHide ? 'eye-off' : 'eye'} size={16} color="gray" />
+            <Ionicons name={hideBalance ? 'eye-off' : 'eye'} size={16} color="gray" />
           </Pressable>
         </View>
       </View>
       <View className="py-6">
-        <Pressable onPress={() => setIsBalanceHide(!isBalanceHide)}>
-          <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{formatBalance()}</Text>
+        <Pressable onPress={() => setHideBalance(!hideBalance)}>
+          <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{formatBalance(balance.total, selectedBitcoinUnit as 'BTC' | 'SAT')}</Text>
         </Pressable>
         <View className="mb-4">
-          <Text className="text-center text-lg font-medium text-gray-600">{isBalanceHide ? '********' : `${selectedFiatCurrency} 0.00`}</Text>
+          <Text className="text-center text-lg font-medium text-gray-600">{hideBalance ? '********' : `${selectedFiatCurrency} 0.00`}</Text>
         </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">

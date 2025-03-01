@@ -25,19 +25,19 @@ export default function CreateOrImportWallet() {
         <FocusAwareStatusBar />
         <ScreenTitle title="Let's set up your wallet" />
         <View className="mb-4" />
-        <ScreenSubtitle subtitle="Your wallet supports top network like Bitcoin - So you can manage your crypto all in one place." />
-        <View className="mb-10" />
-        <Pressable className="mb-10 flex flex-row items-center" onPress={() => router.push('/auth/generate-seed-phrase')}>
+        <ScreenSubtitle subtitle="Your wallet supports top network like Bitcoin - So you can manage your bitcoin wallets all in one place." />
+        <View className="mb-6" />
+        <Pressable className="mb-4 flex flex-row items-center rounded-lg bg-neutral-100 p-4" onPress={() => router.push('/auth/generate-seed-phrase')}>
           <Ionicons name="add-circle-outline" size={28} />
           <Text className="ml-3 text-lg font-medium">Create a new wallet</Text>
         </Pressable>
-        <Pressable className="mb-10 flex flex-row items-center" onPress={() => router.push('/auth/import-wallet')}>
+        <Pressable className="mb-4 flex flex-row items-center rounded-lg bg-neutral-100 p-4" onPress={() => router.push('/auth/import-wallet')}>
           <Ionicons name="cloud-download-outline" size={28} />
-          <Text className="ml-3 text-lg font-medium">Import your existing wallet</Text>
+          <Text className="ml-3 text-lg font-medium">Import an existing wallet</Text>
         </Pressable>
-        <View className="mb-4" />
+        <View className="mb-6" />
         <Text className="text-base">
-          By continuing, you agree to the <Text className="font-bold underline">Self-Custody Wallet Licensing and User Agrement.</Text>
+          By choosing one of the option, you agree to the <Text className="font-bold underline">Self-Custody Wallet Licensing and User Agrement.</Text>
         </Text>
       </View>
     </SafeAreaView>

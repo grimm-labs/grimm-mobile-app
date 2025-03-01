@@ -38,42 +38,42 @@ export const ImportSeedScreenForm = ({ onSubmit }: ImportSeedScreenFormProps) =>
             <View className="flex flex-row">
               <View className="flex-1 pr-3">
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word1" placeholder="Word 1" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word1" placeholder="1" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word2" placeholder="Word 2" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word2" placeholder="2" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word3" placeholder="Word 3" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word3" placeholder="3" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word4" placeholder="Word 4" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word4" placeholder="4" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word5" placeholder="Word 5" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word5" placeholder="5" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word6" placeholder="Word 6" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word6" placeholder="6" placeholderClassName="text-xs" />
                 </View>
               </View>
               <View className="flex-1 pl-3">
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word7" placeholder="Word 7" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word7" placeholder="7" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word8" placeholder="Word 8" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word8" placeholder="8" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word9" placeholder="Word 9" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word9" placeholder="9" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word10" placeholder="Word 10" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word10" placeholder="10" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word11" placeholder="Word 11" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word11" placeholder="11" placeholderClassName="text-xs" />
                 </View>
                 <View className="mb-4">
-                  <ControlledInput control={control} name="word12" placeholder="Word 12" placeholderClassName="text-xs" />
+                  <ControlledInput control={control} name="word12" placeholder="12" placeholderClassName="text-xs" />
                 </View>
               </View>
             </View>

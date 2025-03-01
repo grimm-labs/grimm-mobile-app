@@ -8,20 +8,23 @@ import type { CountryCode } from 'libphonenumber-js/types';
 import React, { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, SafeAreaView } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView } from 'react-native';
 import * as z from 'zod';
 
 import { useGetOtp } from '@/api';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import type { FormType, SignInFormProps } from '@/components/sign-in-form';
 import { getCountryManager, useSelectedCountryCode } from '@/core';
 import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { Button, ControlledInput, FocusAwareStatusBar, Image, Text, View } from '@/ui';
+import { Button, ControlledInput, FocusAwareStatusBar, Image, showErrorMessage, Text, View } from '@/ui';
 
 const schema = z.object({
   phoneNumber: z.string({ required_error: 'Phone number is required' }),
 });
+
+export type FormType = z.infer<typeof schema>;
+
+export type SignInFormProps = { onSubmit: SubmitHandler<FormType> };
 
 export default function Login() {
   useSoftKeyboardEffect();
@@ -35,7 +38,6 @@ export default function Login() {
 
   const [selectedCountryCode, _setSelectedCountryCode] = useSelectedCountryCode();
   const [isPhoneNumberValid, setIsPhoneNumberValid] = useState<boolean>(false);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState<boolean>(false);
 
   const parseSelectedCountry = countryManager.getCountryByCode(selectedCountryCode);
 
@@ -59,6 +61,7 @@ export default function Login() {
   const getPlaceholderPhoneNumber = (countryCode: CountryCode) => getExampleNumber(countryCode, examples)?.formatNational();
 
   const onSubmit: SignInFormProps['onSubmit'] = ({ phoneNumber }) => {
+    router.push('(app)/_layouts');
     getOTP(
       {
         phoneNumber,
@@ -74,6 +77,7 @@ export default function Login() {
         },
         onError: (error) => {
           console.log('error', JSON.stringify(error));
+          showErrorMessage(error?.message);
         },
       }
     );
@@ -86,20 +90,6 @@ export default function Login() {
       setIsPhoneNumberValid(false);
     }
   }, [phoneNumberValue, selectedCountryCode]);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setIsKeyboardOpen(true);
-    });
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      console.log('Keyboard Hidden');
-    });
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
 
   const gerPrefix = () => {
     return (
@@ -134,27 +124,20 @@ export default function Login() {
           <View className="flex">
             <ScreenTitle title="What's your phone number ?" />
             <View className="mb-4" />
-            <ScreenSubtitle subtitle="We'll send you a verification code so make sure it's your number" />
+            <ScreenSubtitle subtitle="We'll send you a verification code so make sure it's your number and valid" />
             <View className="mb-4" />
-            <View className="flex">
-              <View className="mb-4 flex-row">
-                <View className="flex-1">
-                  <ControlledInput
-                    testID="phoneNumberInput"
-                    control={control}
-                    name="phoneNumber"
-                    placeholder={getPlaceholderPhoneNumber(selectedCountryCode as CountryCode)}
-                    placeholderClassName="text-base"
-                    textContentType="telephoneNumber"
-                    keyboardType="number-pad"
-                    prefix={gerPrefix()}
-                    // autoFocus={true}
-                  />
-                </View>
-              </View>
-            </View>
-          </View>
-          <View className="flex-1 justify-end">
+            <ControlledInput
+              testID="phoneNumberInput"
+              control={control}
+              name="phoneNumber"
+              placeholder={getPlaceholderPhoneNumber(selectedCountryCode as CountryCode)}
+              placeholderClassName="text-base"
+              textContentType="telephoneNumber"
+              keyboardType="number-pad"
+              prefix={gerPrefix()}
+              // autoFocus={true}
+            />
+            <View className="mb-4" />
             <Button
               testID="login-button"
               label="Continue"
@@ -165,7 +148,6 @@ export default function Login() {
               onPress={handleSubmit(handleFormSubmit)}
               disabled={!isPhoneNumberValid}
               loading={isPending}
-              className={isKeyboardOpen ? 'mb-4' : 'mb-0'}
             />
           </View>
         </View>

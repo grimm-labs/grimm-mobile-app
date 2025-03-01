@@ -11,9 +11,9 @@ import { Text } from './text';
 
 const inputTv = tv({
   slots: {
-    container: 'mb-0 flex-row items-center',
+    container: 'mb-0 flex-col items-center rounded-xl bg-neutral-200 p-2',
     label: 'text-grey-100 mb-1 text-lg dark:text-neutral-100',
-    inputContainer: 'w-full flex-row items-center border-b-2 border-gray-600',
+    inputContainer: 'w-full flex-row items-center',
     input: 'font-inter mt-0 flex-1 p-2 py-4 text-base font-medium leading-5 dark:bg-neutral-800 dark:text-white',
   },
   variants: {
@@ -76,28 +76,30 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
   );
 
   return (
-    <View className={styles.container()}>
-      {label && (
-        <Text testID={testID ? `${testID}-label` : undefined} className={styles.label()}>
-          {label}
-        </Text>
-      )}
-      <View className={styles.inputContainer()}>
-        {prefix && <View>{prefix}</View>}
-        <NTextInput
-          testID={testID}
-          ref={ref}
-          placeholderTextColor={colors.neutral[400]}
-          className={styles.input()}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          {...inputProps}
-          style={StyleSheet.flatten([{ writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }, { textAlign: I18nManager.isRTL ? 'right' : 'left' }, inputProps.style])}
-        />
-        {suffix && <View>{suffix}</View>}
+    <View>
+      <View className={styles.container()}>
+        {label && (
+          <Text testID={testID ? `${testID}-label` : undefined} className={styles.label()}>
+            {label}
+          </Text>
+        )}
+        <View className={styles.inputContainer()}>
+          {prefix && <View>{prefix}</View>}
+          <NTextInput
+            testID={testID}
+            ref={ref}
+            placeholderTextColor={colors.neutral[400]}
+            className={styles.input()}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            {...inputProps}
+            style={StyleSheet.flatten([{ writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }, { textAlign: I18nManager.isRTL ? 'right' : 'left' }, inputProps.style])}
+          />
+          {suffix && <View>{suffix}</View>}
+        </View>
       </View>
       {error && (
-        <Text testID={testID ? `${testID}-error` : undefined} className="mt-1 text-sm text-danger-400 dark:text-danger-600">
+        <Text testID={testID ? `${testID}-error` : undefined} className="mt-1 text-sm text-danger-500 dark:text-danger-600">
           {error}
         </Text>
       )}

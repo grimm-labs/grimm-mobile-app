@@ -10,7 +10,7 @@ import { createWallet, getBlockchain, getBlockchainConfig, useSelectedBitcoinNet
 import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
 import { Button, colors, showSuccessMessage, Text, View } from '@/ui';
 
-export default function NotificationsScreen() {
+export default function ReceiveBitcoinScreen() {
   const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
   const [address, setAddress] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(true);

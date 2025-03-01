@@ -19,21 +19,21 @@ export default function Onboarding() {
         />
         <FocusAwareStatusBar />
         <View className="flex-1 items-center justify-end pb-6">
-          <Text className="mt-5 text-center text-3xl font-light">Welcome to Grimm App</Text>
-          <Text className="mt-4 text-center font-light text-gray-600">Safely store, send, receive, and exchange your tokens effortlessly, all in one place.</Text>
+          <Text className="mt-5 text-center text-3xl">Welcome to Grimm App</Text>
+          <Text className="mt-4 text-center text-gray-600">Safely store, send, receive, and exchange your tokens effortlessly, all in one place.</Text>
         </View>
-        <View>
+        <View className="pb-6">
           <Button
             label="Get Started"
             onPress={() => {
-              router.push('/auth/sign-in');
+              router.push('/auth/create-or-import-wallet');
             }}
             fullWidth={true}
             variant="secondary"
             textClassName="text-base text-white"
             size="lg"
           />
-          <Text className="mt-4 text-center text-base font-light text-gray-600">
+          <Text className="mt-4 text-center text-gray-600">
             By Continuing, You agree to the <Text className="text-primary-600 underline">Terms of Service</Text> & <Text className="text-primary-600 underline">Privacy Policy</Text>
           </Text>
         </View>

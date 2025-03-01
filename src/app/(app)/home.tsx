@@ -4,7 +4,6 @@ import type { Network } from 'bdk-rn/lib/lib/enums';
 import React, { useEffect, useState } from 'react';
 
 import HomeHeader from '@/components/home-header';
-import { QuickActions } from '@/components/quick-actions';
 import { WalletOverview } from '@/components/wallet-overview';
 import { WalletView } from '@/components/wallet-view';
 import { createWallet, getBlockchain, getBlockchainConfig, useSelectedBitcoinNetwork } from '@/core';
@@ -33,10 +32,10 @@ export default function Home() {
     <SafeAreaView className="h-full flex-1">
       <View className="flex">
         <HomeHeader />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 70 }} className="flex">
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}>
           <View className="m-4">
             <WalletOverview balance={balance} />
-            <QuickActions />
+            {/* <QuickActions /> */}
             <View className="mb-4" />
             <View className="mb-4">
               <Text className="mb-2 text-lg font-medium">On-chain</Text>
