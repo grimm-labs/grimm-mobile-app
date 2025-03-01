@@ -49,6 +49,16 @@ export const convertSatsToBtc = (sats: number): string => {
   return (sats / 100_000_000).toFixed(8);
 };
 
+export const formatBalance = (total: number, unit: 'BTC' | 'SAT'): string => {
+  if (unit === 'SAT') {
+    return `${total.toLocaleString('en-US')} SAT`;
+  }
+  if (unit === 'BTC') {
+    return `${convertSatsToBtc(total)} BTC`;
+  }
+  return total.toLocaleString();
+};
+
 export const getBlockchainConfig = (): BlockchainElectrumConfig => ({
   url: 'ssl://electrum.blockstream.info:60002',
   sock5: null,

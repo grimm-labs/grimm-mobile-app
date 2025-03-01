@@ -151,7 +151,7 @@ export default function Login() {
                 <View>
                   <ControlledInput control={control} name="code" maxLength={6} keyboardType="number-pad" placeholder="Enter 6 digit number" />
                 </View>
-                <View className="mt-6">
+                <View className="my-4">
                   {!canRetry && <Text className="text-center">Resend the verification code in {formatTime(secondsLeft)}</Text>}
                   {canRetry && (
                     <Pressable onPress={onSubmitGetOtp}>
@@ -161,21 +161,19 @@ export default function Login() {
                     </Pressable>
                   )}
                 </View>
+                <Button
+                  testID="otp-submit-button"
+                  label="Verify code"
+                  fullWidth={true}
+                  size="lg"
+                  variant="secondary"
+                  textClassName="text-base text-white"
+                  onPress={handleSubmit(onSubmitOtpVerification)}
+                  disabled={isGetOtpPending || isSignInPending || otpValues[0]?.length !== 6}
+                  className={isKeyboardOpen ? 'mb-4' : 'mb-0'}
+                  loading={isGetOtpPending || isSignInPending}
+                />
               </View>
-            </View>
-            <View className="flex-1 justify-end">
-              <Button
-                testID="otp-submit-button"
-                label="Verify code"
-                fullWidth={true}
-                size="lg"
-                variant="secondary"
-                textClassName="text-base text-white"
-                onPress={handleSubmit(onSubmitOtpVerification)}
-                disabled={isGetOtpPending || isSignInPending || otpValues[0]?.length !== 6}
-                className={isKeyboardOpen ? 'mb-4' : 'mb-0'}
-                loading={isGetOtpPending || isSignInPending}
-              />
             </View>
           </View>
         </KeyboardAvoidingView>
