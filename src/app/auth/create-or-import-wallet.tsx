@@ -5,13 +5,10 @@ import { SafeAreaView, View } from 'react-native';
 
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { FocusAwareStatusBar, Pressable, Text } from '@/ui';
+import { colors, FocusAwareStatusBar, Pressable, Text } from '@/components/ui';
 
 export default function CreateOrImportWallet() {
   const router = useRouter();
-  useSoftKeyboardEffect();
-
   return (
     <SafeAreaView>
       <View className="flex h-full px-4">
@@ -27,13 +24,19 @@ export default function CreateOrImportWallet() {
         <View className="mb-4" />
         <ScreenSubtitle subtitle="Your wallet supports top network like Bitcoin - So you can manage your bitcoin wallets all in one place." />
         <View className="mb-6" />
-        <Pressable className="mb-4 flex flex-row items-center rounded-lg bg-neutral-100 p-4" onPress={() => router.push('/auth/generate-seed-phrase')}>
-          <Ionicons name="add-circle-outline" size={28} />
-          <Text className="ml-3 text-lg font-medium">Create a new wallet</Text>
+        <Pressable className="mb-4 flex flex-row items-center justify-between rounded-xl bg-neutral-100 px-3 py-6" onPress={() => router.push('/auth/wallet-preparation')}>
+          <View className="flex flex-row items-center">
+            <Ionicons name="add-circle-outline" size={28} />
+            <Text className="ml-6 text-base font-medium">Create a new wallet</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.neutral[400]} />
         </Pressable>
-        <Pressable className="mb-4 flex flex-row items-center rounded-lg bg-neutral-100 p-4" onPress={() => router.push('/auth/import-wallet')}>
-          <Ionicons name="cloud-download-outline" size={28} />
-          <Text className="ml-3 text-lg font-medium">Import an existing wallet</Text>
+        <Pressable className="mb-4 flex flex-row items-center justify-between rounded-xl bg-neutral-100 px-3 py-6" onPress={() => router.push('/auth/import-wallet')}>
+          <View className="flex flex-row items-center">
+            <Ionicons name="cloud-download-outline" size={28} />
+            <Text className="ml-6 text-base font-medium">Restore your wallet</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.neutral[400]} />
         </Pressable>
         <View className="mb-6" />
         <Text className="text-base">

@@ -11,10 +11,7 @@
   "[javascript][typescript][typescriptreact]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.codeActionsOnSave": [
-      "source.addMissingImports",
-      "source.fixAll.eslint"
-    ]
+    "editor.codeActionsOnSave": ["source.addMissingImports", "source.fixAll.eslint"]
   },
   "[json][jsonc]": {
     "editor.formatOnSave": true,
@@ -28,13 +25,14 @@
   "i18n-ally.localesPaths": ["src/translations/"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.disabled": false, // make sure to disable i18n-ally in your global setting and only enable it for such projects
-  "tailwindCSS.experimental.classRegex": [
-    ["tv\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
-  ],
+  "tailwindCSS.experimental.classRegex": [["tv\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]],
   "[typescriptreact]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

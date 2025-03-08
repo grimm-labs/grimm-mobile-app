@@ -1,12 +1,12 @@
 import React from 'react';
 
-import type { Option } from '@/ui';
-import { Input, Select, View } from '@/ui';
-import { Checkbox, Radio, Switch } from '@/ui';
+import type { OptionType } from '@/components/ui';
+import { Input, Select, View } from '@/components/ui';
+import { Checkbox, Radio, Switch } from '@/components/ui';
 
 import { Title } from './title';
 
-const options: Option[] = [
+const options: OptionType[] = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberry', label: 'Strawberry' },
   { value: 'vanilla', label: 'Vanilla' },

@@ -1,50 +1,40 @@
-/* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
-import type { Network } from 'bdk-rn/lib/lib/enums';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Mnemonic } from 'bdk-rn';
+import { WordCount } from 'bdk-rn/lib/lib/enums';
+import { Stack, useRouter } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { createWallet, getBlockchain, getBlockchainConfig, useSeedPhrase, useSelectedBitcoinNetwork } from '@/core';
-import { Button, FocusAwareStatusBar, showError, Text, View } from '@/ui';
+import { Button, FocusAwareStatusBar, showError, Text, View } from '@/components/ui';
+import { AppContext } from '@/lib/context';
 
-type SearchParams = {
-  mnemonic: string;
-};
-
-export default function TransactionFinalStatus() {
+export default function WalletPreparation() {
   const router = useRouter();
-  const { mnemonic } = useLocalSearchParams<SearchParams>();
   const animation = useRef<LottieView>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const [seedPhrase, setSeedPhrase] = useSeedPhrase();
-  const [selectedBitcoinNetwork, _setSelectedBitcoinNetwork] = useSelectedBitcoinNetwork();
+  const { setSeedPhrase, selectedBitcoinNetwork } = useContext(AppContext);
 
   const handleContinue = () => {
     router.replace('/');
-    // router.push('./(app)/_layout');
   };
+
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      if (mnemonic && mnemonic?.split(' ').length === 12) {
+    const init = async () => {
+      const newMnemonic = (await new Mnemonic().create(WordCount.WORDS12)).asString();
+      if (newMnemonic && newMnemonic?.split(' ').length === 12) {
         try {
-          setSeedPhrase(mnemonic);
-          const wallet = await createWallet(mnemonic, selectedBitcoinNetwork as Network);
-          const blockchain = await getBlockchain(getBlockchainConfig());
-          await wallet.sync(blockchain);
+          setSeedPhrase(newMnemonic);
         } catch (error: any) {
           showError(error.message);
+        } finally {
+          setIsLoading(false);
         }
       }
-
-      setIsLoading(false);
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [mnemonic, seedPhrase, selectedBitcoinNetwork, setSeedPhrase]);
+    };
+    init();
+  }, [selectedBitcoinNetwork, setSeedPhrase]);
 
   return (
     <SafeAreaView>
@@ -53,7 +43,6 @@ export default function TransactionFinalStatus() {
           options={{
             headerShown: false,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />
@@ -62,7 +51,7 @@ export default function TransactionFinalStatus() {
             {isLoading ? (
               <View>
                 <ActivityIndicator size="large" color="#FFA500" className="mb-4" />
-                <Text className="text-base font-semibold text-gray-600">Configuration of the current wallet...</Text>
+                <Text className="text-base text-gray-600">Configuration of the current wallet...</Text>
               </View>
             ) : (
               <>
@@ -77,7 +66,7 @@ export default function TransactionFinalStatus() {
                   }}
                   source={require('@/assets/lotties/success.json')}
                 />
-                <Text className="mt-2 text-center text-base font-semibold text-gray-600">Your Bitcoin wallet has been initialized</Text>
+                <Text className="text-center text-base text-gray-600">Your Bitcoin wallet has been initialized</Text>
               </>
             )}
           </View>

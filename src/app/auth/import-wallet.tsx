@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useRouter } from 'expo-router';
@@ -9,9 +10,8 @@ import { z } from 'zod';
 
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { isMnemonicValid } from '@/core';
-import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { Button, ControlledInput, FocusAwareStatusBar, showErrorMessage } from '@/ui';
+import { Button, ControlledInput, FocusAwareStatusBar, showErrorMessage } from '@/components/ui';
+import { isMnemonicValid } from '@/lib/utils';
 
 const seedSchema = z.object({
   word1: z.string({ required_error: 'Word is required' }),
@@ -34,8 +34,6 @@ export type ImportSeedScreenFormProps = { onSubmit: SubmitHandler<SeedFormType> 
 
 export default function ImportWallet() {
   const router = useRouter();
-  useSoftKeyboardEffect();
-
   const { control, handleSubmit } = useForm<SeedFormType>({ resolver: zodResolver(seedSchema) });
 
   const onSubmit: ImportSeedScreenFormProps['onSubmit'] = async (data) => {

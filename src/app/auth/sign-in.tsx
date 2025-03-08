@@ -5,7 +5,7 @@ import { Stack, useRouter } from 'expo-router';
 import examples from 'libphonenumber-js/examples.mobile.json';
 import parsePhoneNumberFromString, { getExampleNumber } from 'libphonenumber-js/mobile';
 import type { CountryCode } from 'libphonenumber-js/types';
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView } from 'react-native';
@@ -14,39 +14,34 @@ import * as z from 'zod';
 import { useGetOtp } from '@/api';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { getCountryManager, useSelectedCountryCode } from '@/core';
-import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { Button, ControlledInput, FocusAwareStatusBar, Image, showErrorMessage, Text, View } from '@/ui';
-
-const schema = z.object({
-  phoneNumber: z.string({ required_error: 'Phone number is required' }),
-});
-
-export type FormType = z.infer<typeof schema>;
-
-export type SignInFormProps = { onSubmit: SubmitHandler<FormType> };
+import { Button, ControlledInput, FocusAwareStatusBar, Image, showErrorMessage, Text, View } from '@/components/ui';
+import { AppContext } from '@/lib/context';
+import { getCountryManager } from '@/lib/utils';
 
 export default function Login() {
-  useSoftKeyboardEffect();
-  const { handleSubmit, control, watch } = useForm<FormType>({
-    resolver: zodResolver(schema),
-  });
+  const { mutate: getOTP, isPending } = useGetOtp();
+  const { selectedCountryCode } = useContext(AppContext);
+  const countryManager = getCountryManager();
+  const parseSelectedCountry = countryManager.getCountryByCode(selectedCountryCode);
   const router = useRouter();
 
-  const { mutate: getOTP, isPending } = useGetOtp();
-  const countryManager = getCountryManager();
+  type FormType = z.infer<typeof schema>;
 
-  const [selectedCountryCode, _setSelectedCountryCode] = useSelectedCountryCode();
-  const [isPhoneNumberValid, setIsPhoneNumberValid] = useState<boolean>(false);
+  type SignInFormProps = { onSubmit: SubmitHandler<FormType> };
 
-  const parseSelectedCountry = countryManager.getCountryByCode(selectedCountryCode);
+  const schema = z.object({
+    phoneNumber: z.string({ required_error: 'Phone number is required' }).refine(
+      (value) => {
+        const parsedNumber = parsePhoneNumberFromString(value, selectedCountryCode as CountryCode);
+        return parsedNumber ? parsedNumber.isValid() : false;
+      },
+      {
+        message: 'Phone number is invalid',
+      },
+    ),
+  });
 
-  const phoneNumberValue = watch('phoneNumber');
-
-  const validatePhoneNumber = (number: string, countryCode: CountryCode) => {
-    const parsedNumber = parsePhoneNumberFromString(number, countryCode);
-    setIsPhoneNumberValid(parsedNumber ? parsedNumber.isValid() : false);
-  };
+  const { handleSubmit, control } = useForm<FormType>({ resolver: zodResolver(schema) });
 
   const formatPhoneNumber = (number: string, countryCode: CountryCode) => {
     const parsedNumber = parsePhoneNumberFromString(number, countryCode);
@@ -55,13 +50,18 @@ export default function Login() {
 
   const handleFormSubmit: SubmitHandler<FormType> = (data) => {
     const formattedPhoneNumber = formatPhoneNumber(data.phoneNumber, selectedCountryCode as CountryCode);
+    router.push({
+      pathname: '/auth/otp-confirmation',
+      params: {
+        phoneNumber: formattedPhoneNumber,
+      },
+    });
     onSubmit({ phoneNumber: formattedPhoneNumber });
   };
 
   const getPlaceholderPhoneNumber = (countryCode: CountryCode) => getExampleNumber(countryCode, examples)?.formatNational();
 
   const onSubmit: SignInFormProps['onSubmit'] = ({ phoneNumber }) => {
-    router.push('(app)/_layouts');
     getOTP(
       {
         phoneNumber,
@@ -79,19 +79,12 @@ export default function Login() {
           console.log('error', JSON.stringify(error));
           showErrorMessage(error?.message);
         },
-      }
+      },
     );
   };
 
-  useEffect(() => {
-    if (phoneNumberValue) {
-      validatePhoneNumber(phoneNumberValue, selectedCountryCode as CountryCode);
-    } else {
-      setIsPhoneNumberValid(false);
-    }
-  }, [phoneNumberValue, selectedCountryCode]);
-
   const gerPrefix = () => {
+    console.log(parseSelectedCountry);
     return (
       <Pressable onPress={() => router.push('/auth/select-country')}>
         <View className="flex flex-row items-center justify-center rounded p-1">
@@ -116,6 +109,7 @@ export default function Login() {
           title: '',
           headerShown: true,
           headerShadowVisible: false,
+          headerBackTitle: undefined,
         }}
       />
       <FocusAwareStatusBar />
@@ -135,20 +129,9 @@ export default function Login() {
               textContentType="telephoneNumber"
               keyboardType="number-pad"
               prefix={gerPrefix()}
-              // autoFocus={true}
             />
             <View className="mb-4" />
-            <Button
-              testID="login-button"
-              label="Continue"
-              fullWidth={true}
-              size="lg"
-              variant="secondary"
-              textClassName="text-base text-white"
-              onPress={handleSubmit(handleFormSubmit)}
-              disabled={!isPhoneNumberValid}
-              loading={isPending}
-            />
+            <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(handleFormSubmit)} loading={isPending} />
           </View>
         </View>
       </KeyboardAvoidingView>
