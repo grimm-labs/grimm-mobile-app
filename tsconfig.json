@@ -5,21 +5,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@env": ["./src/core/env.js"]
+      "@env": ["./src/lib/env.js"]
     },
     "esModuleInterop": true,
-    "checkJs": true,
-    "typeRoots": ["./node_modules/@types", "./types"]
+    "checkJs": true
   },
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js",
-    "docs",
-    "cli",
-    "android",
-    "ios",
-    "lint-staged.config.js"
-  ],
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "docs", "cli", "android", "ios", "lint-staged.config.js"],
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]
 }

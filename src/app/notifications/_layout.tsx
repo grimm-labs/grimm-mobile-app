@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { FocusAwareStatusBar, Text, View } from '@/ui';
+import { FocusAwareStatusBar, Text, View } from '@/components/ui';
 
 export default function NotificationsScreen() {
   return (
@@ -14,7 +14,6 @@ export default function NotificationsScreen() {
             title: 'Notifications',
             headerShown: true,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

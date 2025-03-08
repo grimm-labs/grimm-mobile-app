@@ -1,7 +1,7 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { Text } from '@/ui';
+import { Text } from '@/components/ui';
 
 export type ScreenSubtitleProps = {
   subtitle: string;

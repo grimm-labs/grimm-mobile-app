@@ -1,7 +1,24 @@
 /* eslint-disable max-lines-per-function */
 import type { ConfigContext, ExpoConfig } from '@expo/config';
+import type { AppIconBadgeConfig } from 'app-icon-badge/types';
 
 import { ClientEnv, Env } from './env';
+
+const appIconBadgeConfig: AppIconBadgeConfig = {
+  enabled: Env.APP_ENV !== 'production',
+  badges: [
+    {
+      text: Env.APP_ENV,
+      type: 'banner',
+      color: 'white',
+    },
+    {
+      text: Env.VERSION.toString(),
+      type: 'ribbon',
+      color: 'white',
+    },
+  ],
+};
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -9,16 +26,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   description: `${Env.NAME} Mobile App`,
   owner: Env.EXPO_ACCOUNT_OWNER,
   scheme: Env.SCHEME,
-  slug: 'grimm-app',
+  slug: 'obytesapp',
   version: Env.VERSION.toString(),
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
-  splash: {
-    image: './assets/splash.png',
-    resizeMode: 'cover',
-    backgroundColor: '#2E3C4B',
-  },
+  newArchEnabled: true,
   updates: {
     fallbackToCacheTimeout: 0,
   },
@@ -26,6 +39,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: Env.BUNDLE_ID,
+    config: {
+      usesNonExemptEncryption: false, // Avoid the export compliance warning on the app store
+    },
   },
   experiments: {
     typedRoutes: true,
@@ -42,6 +58,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundler: 'metro',
   },
   plugins: [
+    [
+      'expo-splash-screen',
+      {
+        backgroundColor: '#2E3C4B',
+        image: './assets/splash-icon.png',
+        imageWidth: 150,
+      },
+    ],
     [
       'expo-font',
       {
@@ -63,38 +87,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     'expo-localization',
     'expo-router',
-    [
-      'expo-build-properties',
-      {
-        android: {
-          kotlinVersion: '1.7.22', // this is for softinput package
-        },
-      },
-    ],
-    [
-      'app-icon-badge',
-      {
-        enabled: Env.APP_ENV !== 'production',
-        badges: [
-          {
-            text: Env.APP_ENV,
-            type: 'banner',
-            color: 'white',
-          },
-          {
-            text: Env.VERSION.toString(),
-            type: 'ribbon',
-            color: 'white',
-          },
-        ],
-      },
-    ],
-    [
-      'expo-camera',
-      {
-        cameraPermission: 'Allow $(PRODUCT_NAME) to access your camera',
-      },
-    ],
+    ['app-icon-badge', appIconBadgeConfig],
+    ['react-native-edge-to-edge'],
   ],
   extra: {
     ...ClientEnv,

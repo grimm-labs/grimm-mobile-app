@@ -1,3 +1,4 @@
+/* eslint-env node */
 /*
  * Env file to load and validate env variables
  * Be cautious; this file should not be imported into your source folder.
@@ -28,17 +29,17 @@ require('dotenv').config({
  * Such as: bundle id, package name, app name.
  *
  * You can add them to the .env file but we think it's better to keep them here as as we use prefix to generate this values based on the APP_ENV
- * for example: if the APP_ENV is staging, the bundle id will be com.grimmmobileapp.staging
+ * for example: if the APP_ENV is staging, the bundle id will be com.grimmapp.staging
  */
 
 // TODO: Replace these values with your own
 
-const BUNDLE_ID = 'com.grimmmobileapp'; // ios bundle id
-const PACKAGE = 'com.grimmmobileapp'; // android package name
-const NAME = 'GrimmMobileApp'; // app name
+const BUNDLE_ID = 'com.grimmapp'; // ios bundle id
+const PACKAGE = 'com.grimmapp'; // android package name
+const NAME = 'GrimmApp'; // app name
 const EXPO_ACCOUNT_OWNER = 'grimm-technologies'; // expo account owner
 const EAS_PROJECT_ID = '64373569-be43-4db2-ace8-1f2b9f81448c'; // eas project id
-const SCHEME = 'GrimmMobileApp'; // app scheme
+const SCHEME = 'GrimmApp'; // app scheme
 
 /**
  * We declare a function withEnvSuffix that will add a suffix to the variable name based on the APP_ENV
@@ -137,7 +138,7 @@ if (parsed.success === false) {
     parsed.error.flatten().fieldErrors,
 
     `\n❌ Missing variables in .env.${APP_ENV} file, Make sure all required variables are defined in the .env.${APP_ENV} file.`,
-    `\n💡 Tip: If you recently updated the .env.${APP_ENV} file and the error still persists, try restarting the server with the -cc flag to clear the cache.`
+    `\n💡 Tip: If you recently updated the .env.${APP_ENV} file and the error still persists, try restarting the server with the -c flag to clear the cache.`,
   );
   throw new Error('Invalid environment variables, Check terminal for more details ');
 }

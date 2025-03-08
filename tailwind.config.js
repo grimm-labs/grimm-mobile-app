@@ -1,5 +1,4 @@
-const colors = require('./src/ui/colors');
-import { platformSelect } from 'nativewind/theme';
+const colors = require('./src/components/ui/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,12 +9,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        roboto: ['Roboto'],
-        system: platformSelect({
-          ios: 'Roboto',
-          android: 'sans-serif',
-          default: 'Roboto',
-        }),
+        inter: ['Inter'],
       },
       colors,
     },

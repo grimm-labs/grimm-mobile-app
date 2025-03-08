@@ -1,26 +1,41 @@
 /* eslint-disable react/no-unstable-nested-components */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Redirect, Tabs } from 'expo-router';
-import React from 'react';
+import { Redirect, SplashScreen, Tabs } from 'expo-router';
+import React, { useCallback, useContext, useEffect } from 'react';
 
-import { useSeedPhrase } from '@/core';
+import { AppContext } from '@/lib/context';
 
 export default function TabLayout() {
-  const [seedPhrase, _setSeedPhrase] = useSeedPhrase();
+  const { seedPhrase, isDataLoaded } = useContext(AppContext);
 
-  if (seedPhrase === undefined) {
+  const hideSplash = useCallback(async () => {
+    await SplashScreen.hideAsync();
+  }, []);
+
+  useEffect(() => {
+    if (isDataLoaded) {
+      setTimeout(() => {
+        hideSplash();
+      }, 1000);
+    }
+  }, [hideSplash, isDataLoaded]);
+
+  if (!isDataLoaded) {
+    return null;
+  }
+
+  if (seedPhrase?.length === 0) {
     return <Redirect href="/onboarding" />;
   }
 
   return (
     <Tabs>
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           headerShown: false,
           title: 'Home',
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={26} color={color} />,
-          tabBarTestID: 'home-tab',
+          tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -28,8 +43,7 @@ export default function TabLayout() {
         options={{
           title: 'Transactions',
           headerShown: false,
-          tabBarIcon: ({ color }) => <Ionicons name="receipt" size={26} color={color} />,
-          tabBarTestID: 'transactions-tab',
+          tabBarIcon: ({ color }) => <Ionicons name="receipt" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -37,8 +51,7 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           headerShown: false,
-          tabBarIcon: ({ color }) => <Ionicons name="settings" size={26} color={color} />,
-          tabBarTestID: 'settings-tab',
+          tabBarIcon: ({ color }) => <Ionicons name="settings" size={24} color={color} />,
         }}
       />
     </Tabs>

@@ -1,13 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useContext } from 'react';
 import { FlatList } from 'react-native';
 
-import type { CountryItem } from '@/core';
-import { getCountryManager, useSelectedCountryCode } from '@/core';
-import { useSoftKeyboardEffect } from '@/core/keyboard';
-import { colors, FocusAwareStatusBar, Image, Text, TouchableOpacity, View } from '@/ui';
+import { colors, FocusAwareStatusBar, Image, Text, TouchableOpacity, View } from '@/components/ui';
+import { AppContext } from '@/lib/context';
+import type { CountryItem } from '@/lib/country-manager';
+import { getCountryManager } from '@/lib/utils';
 
 interface RenderItemData {
   index: number;
@@ -15,10 +15,9 @@ interface RenderItemData {
 }
 
 export default function SelectCountry() {
-  const [selectedCountryCode, setSelectedCountryCode] = useSelectedCountryCode();
-  const router = useRouter();
-  useSoftKeyboardEffect();
+  const { selectedCountryCode, setSelectedCountryCode } = useContext(AppContext);
 
+  const router = useRouter();
   const countryManager = getCountryManager();
 
   const renderItem = ({ item }: RenderItemData) => {
