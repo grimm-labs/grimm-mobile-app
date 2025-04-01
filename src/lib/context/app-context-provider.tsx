@@ -5,6 +5,7 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 
 import { BaseWallet } from '@/class/base-wallet';
+import type { TUnit } from '@/types';
 
 type Props = PropsWithChildren<{}>;
 
@@ -16,12 +17,14 @@ type defaultContextType = {
   selectedBitcoinNetwork: string;
   isDataLoaded: boolean;
   wallet?: BaseWallet;
+  units: TUnit;
   setHideBalance: (hideBalance: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
   setSelectedCountryCode: (country: string) => void;
   resetAppData: () => void;
   setSeedPhrase: (seedPhrase: string) => void;
   setSelectedBitcoinNetwork: (network: string) => void;
+  setUnits: (units: TUnit) => void;
 };
 
 const defaultContext: defaultContextType = {
@@ -32,12 +35,17 @@ const defaultContext: defaultContextType = {
   selectedBitcoinNetwork: Network.Testnet,
   isDataLoaded: false,
   wallet: undefined,
+  units: {
+    name: 'sats',
+    symbol: 'sats',
+  },
   setHideBalance: () => {},
   setOnboarding: () => {},
   resetAppData: () => {},
   setSelectedCountryCode: () => {},
   setSeedPhrase: () => {},
   setSelectedBitcoinNetwork: () => {},
+  setUnits: () => {},
 };
 
 export const AppContext = createContext<defaultContextType>(defaultContext);
@@ -50,6 +58,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [selectedBitcoinNetwork, _setSelectedBitcoinNetwork] = useState(defaultContext.selectedBitcoinNetwork);
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
   const [_wallet, _setWallet] = useState<BaseWallet | undefined>(defaultContext.wallet);
+  const [units, _setUnits] = useState(defaultContext.units);
 
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
   const { getItem: _getOnboarding, setItem: _updateOnboarding } = useAsyncStorage('onboarding');
@@ -57,6 +66,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase } = useAsyncStorage('seedPhrase');
   const { getItem: _getSelectedBitcoinNetwork, setItem: _updateSelectedBitcoinNetwork } = useAsyncStorage('selectedBitcoinNetowork');
   const { getItem: _getWallet, setItem: _updateWallet } = useAsyncStorage('wallet');
+  const { getItem: _getUnits, setItem: _updateUnits } = useAsyncStorage('units');
 
   const _loadHideBalance = useCallback(async () => {
     const ob = await _getHideBalance();
@@ -93,6 +103,13 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   }, [_getSelectedBitcoinNetwork, _setSelectedBitcoinNetwork]);
 
+  const _loadUnits = useCallback(async () => {
+    const ob = await _getUnits();
+    if (ob !== null) {
+      _setUnits(ob);
+    }
+  }, [_getUnits, _setUnits]);
+
   const _loadWallet = useCallback(async () => {
     const savedWallets = await _getWallet();
     if (savedWallets !== null) {
@@ -104,7 +121,7 @@ export const AppContextProvider = ({ children }: Props) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([_loadHideBalance(), _loadSelectedBitcoinNetwork(), _loadOnboarding(), _loadSelectedCountryCode(), _loadSeedPhrase(), _loadWallet]);
+        await Promise.all([_loadHideBalance(), _loadSelectedBitcoinNetwork(), _loadOnboarding(), _loadSelectedCountryCode(), _loadSeedPhrase(), _loadWallet(), _loadUnits()]);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -113,7 +130,7 @@ export const AppContextProvider = ({ children }: Props) => {
     };
 
     loadData();
-  }, [_loadHideBalance, _loadOnboarding, _loadSeedPhrase, _loadSelectedBitcoinNetwork, _loadSelectedCountryCode, _loadWallet]);
+  }, [_loadHideBalance, _loadOnboarding, _loadSeedPhrase, _loadSelectedBitcoinNetwork, _loadSelectedCountryCode, _loadUnits, _loadWallet]);
 
   const setOnboarding = useCallback(
     async (arg: boolean) => {

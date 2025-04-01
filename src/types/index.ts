@@ -31,3 +31,8 @@ export type TDescriptorObject = {
   internal: BDK.Descriptor;
   priv: BDK.Descriptor;
 };
+
+export type TUnit = {
+  name: string; // Unit name, 'sats' or 'BTC'
+  symbol: string; // Unit symbol '₿' or 'sats' (see https://satsymbol.com/)
+};
