@@ -34,10 +34,10 @@ require('dotenv').config({
 
 // TODO: Replace these values with your own
 
-const BUNDLE_ID = 'com.grimmapp'; // ios bundle id
-const PACKAGE = 'com.grimmapp'; // android package name
-const NAME = 'GrimmApp'; // app name
-const EXPO_ACCOUNT_OWNER = 'grimm-technologies'; // expo account owner
+const BUNDLE_ID = 'com.grimm.labs.app'; // ios bundle id
+const PACKAGE = 'com.grimm.labs.app'; // android package name
+const NAME = 'Grimm App'; // app name
+const EXPO_ACCOUNT_OWNER = 'grimm-labs'; // expo account owner
 const EAS_PROJECT_ID = '64373569-be43-4db2-ace8-1f2b9f81448c'; // eas project id
 const SCHEME = 'GrimmApp'; // app scheme
 
