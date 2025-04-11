@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { FocusAwareStatusBar, Pressable, Switch, Text, View } from '@/ui';
+import { FocusAwareStatusBar, Pressable, Switch, Text, View } from '@/components/ui';
 
 interface NotificationOptionProps {
   title: string;
@@ -43,7 +43,6 @@ export default function NotificationSettingsScreen() {
             title: 'Notifications',
             headerShown: true,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

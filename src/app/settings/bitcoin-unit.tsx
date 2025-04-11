@@ -4,7 +4,6 @@ import React from 'react';
 import { SafeAreaView } from 'react-native';
 
 import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
-import { useSelectedBitcoinUnit } from '@/core/hooks/use-selected-bitcoin-unit';
 
 interface UnitOptionProps {
   title: string;

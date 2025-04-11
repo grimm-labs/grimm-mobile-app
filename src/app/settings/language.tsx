@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { FocusAwareStatusBar, Pressable, Text, View } from '@/ui';
+import { FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
 
 interface LanguageOptionProps {
   language: string;
@@ -33,7 +33,6 @@ export default function LanguageSelector() {
             title: 'Language Selector',
             headerShown: true,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

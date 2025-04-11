@@ -3,8 +3,7 @@ import { Stack } from 'expo-router';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { useSelectedFiatCurrency } from '@/core';
-import { FocusAwareStatusBar, Pressable, Text, View } from '@/ui';
+import { FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
 
 interface CurrencyOptionProps {
   currency: string;
@@ -42,7 +41,6 @@ export default function CurrencySelector() {
             title: 'Currency Selector',
             headerShown: true,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

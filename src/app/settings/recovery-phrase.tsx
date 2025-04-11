@@ -4,8 +4,8 @@ import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView } from 'react-native';
 
+import { Button, showSuccessMessage, Text, View } from '@/components/ui';
 import { useSeedPhrase } from '@/core/hooks/use-seed-phrase';
-import { Button, showSuccessMessage, Text, View } from '@/ui';
 
 export default function SeedPhraseScreen() {
   const router = useRouter();
@@ -27,7 +27,6 @@ export default function SeedPhraseScreen() {
             title: 'Seed Phrase',
             headerShown: true,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>

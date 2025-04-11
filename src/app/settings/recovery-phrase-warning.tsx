@@ -3,7 +3,7 @@ import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView } from 'react-native';
 
-import { Button, FocusAwareStatusBar, Text, View } from '@/ui';
+import { Button, FocusAwareStatusBar, Text, View } from '@/components/ui';
 
 interface WarningTypes {
   text: string;
@@ -44,7 +44,6 @@ export default function MnemonicWarning() {
             title: 'Warning',
             headerShown: true,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />

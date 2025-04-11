@@ -4,8 +4,7 @@ import { Stack } from 'expo-router';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 
-import { useSelectedBitcoinNetwork } from '@/core';
-import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/ui';
+import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
 
 interface NetworkOptionProps {
   title: string;
@@ -37,7 +36,6 @@ export default function NetworkSwitcher() {
             title: 'Network',
             headerShown: true,
             headerShadowVisible: false,
-            headerBackTitleVisible: false,
           }}
         />
         <FocusAwareStatusBar />
