@@ -1,11 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { FlatList } from 'react-native';
 
+import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, Image, Text, TouchableOpacity, View } from '@/components/ui';
-import { AppContext } from '@/lib/context';
 import type { CountryItem } from '@/lib/country-manager';
 import { getCountryManager } from '@/lib/utils';
 
@@ -15,7 +15,7 @@ interface RenderItemData {
 }
 
 export default function SelectCountry() {
-  const { selectedCountryCode, setSelectedCountryCode } = useContext(AppContext);
+  const [selectedCountryCode, setSelectedCountryCode] = useState('CM');
 
   const router = useRouter();
   const countryManager = getCountryManager();
@@ -45,12 +45,14 @@ export default function SelectCountry() {
     <>
       <Stack.Screen
         options={{
-          title: 'Select your country',
-          headerShown: true,
+          headerLeft: HeaderLeft,
+          headerTitle: 'Select your country',
+          headerRight: () => null,
           headerShadowVisible: false,
         }}
       />
-      <FocusAwareStatusBar />
+
+      <FocusAwareStatusBar style="dark" />
       <View className="flex-1 bg-white">
         <View className="mx-4 flex-1">
           <FlatList data={countryManager.getAllCountries()} renderItem={renderItem} keyExtractor={(item) => item.code} />

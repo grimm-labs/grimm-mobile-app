@@ -1,4 +1,3 @@
-import type * as BDK from 'bdk-rn';
 import type BigNumber from 'bignumber.js';
 
 import type { ENet } from './enum';
@@ -26,11 +25,11 @@ export type TBaseWalletArgs = {
   fingerprint?: string;
 };
 
-export type TDescriptorObject = {
-  external: BDK.Descriptor;
-  internal: BDK.Descriptor;
-  priv: BDK.Descriptor;
-};
+// export type TDescriptorObject = {
+//   external: BDK.Descriptor;
+//   internal: BDK.Descriptor;
+//   priv: BDK.Descriptor;
+// };
 
 export type TUnit = {
   name: string; // Unit name, 'sats' or 'BTC'

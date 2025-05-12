@@ -2,25 +2,25 @@
 /* eslint-disable max-lines-per-function */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useRouter } from 'expo-router';
+import type { CountryCode } from 'libphonenumber-js';
 import examples from 'libphonenumber-js/examples.mobile.json';
 import parsePhoneNumberFromString, { getExampleNumber } from 'libphonenumber-js/mobile';
-import type { CountryCode } from 'libphonenumber-js/types';
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView } from 'react-native';
 import * as z from 'zod';
 
 import { useGetOtp } from '@/api';
+import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
 import { Button, ControlledInput, FocusAwareStatusBar, Image, showErrorMessage, Text, View } from '@/components/ui';
-import { AppContext } from '@/lib/context';
 import { getCountryManager } from '@/lib/utils';
 
 export default function Login() {
   const { mutate: getOTP, isPending } = useGetOtp();
-  const { selectedCountryCode } = useContext(AppContext);
+  const [selectedCountryCode] = useState('CM');
   const countryManager = getCountryManager();
   const parseSelectedCountry = countryManager.getCountryByCode(selectedCountryCode);
   const router = useRouter();
@@ -51,7 +51,7 @@ export default function Login() {
   const handleFormSubmit: SubmitHandler<FormType> = (data) => {
     const formattedPhoneNumber = formatPhoneNumber(data.phoneNumber, selectedCountryCode as CountryCode);
     router.push({
-      pathname: '/auth/otp-confirmation',
+      pathname: '/auth/sign-in',
       params: {
         phoneNumber: formattedPhoneNumber,
       },
@@ -69,7 +69,7 @@ export default function Login() {
       {
         onSuccess: () => {
           router.push({
-            pathname: '/auth/otp-confirmation',
+            pathname: '/auth/sign-in',
             params: {
               phoneNumber,
             },
@@ -103,38 +103,42 @@ export default function Login() {
   };
 
   return (
-    <SafeAreaView className="mx-2 flex-1">
-      <Stack.Screen
-        options={{
-          title: '',
-          headerShown: true,
-          headerShadowVisible: false,
-          headerBackTitle: undefined,
-        }}
-      />
-      <FocusAwareStatusBar />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} className="flex-1" keyboardVerticalOffset={90}>
-        <View className="flex-1">
-          <View className="flex">
-            <ScreenTitle title="What's your phone number ?" />
-            <View className="mb-4" />
-            <ScreenSubtitle subtitle="We'll send you a verification code so make sure it's your number and valid" />
-            <View className="mb-4" />
-            <ControlledInput
-              testID="phoneNumberInput"
-              control={control}
-              name="phoneNumber"
-              placeholder={getPlaceholderPhoneNumber(selectedCountryCode as CountryCode)}
-              placeholderClassName="text-base"
-              textContentType="telephoneNumber"
-              keyboardType="number-pad"
-              prefix={gerPrefix()}
-            />
-            <View className="mb-4" />
-            <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(handleFormSubmit)} loading={isPending} />
+    <SafeAreaView className="flex-1">
+      <View className="flex h-full px-4">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerLeft: HeaderLeft,
+            headerRight: () => null,
+            headerShadowVisible: false,
+          }}
+        />
+
+        <FocusAwareStatusBar style="dark" />
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} className="flex-1" keyboardVerticalOffset={90}>
+          <View className="flex-1">
+            <View className="flex">
+              <ScreenTitle title="What's your phone number ?" />
+              <View className="mb-4" />
+              <ScreenSubtitle subtitle="We'll send you a verification code so make sure it's your number and valid" />
+              <View className="mb-4" />
+              <ControlledInput
+                testID="phoneNumberInput"
+                control={control}
+                name="phoneNumber"
+                placeholder={getPlaceholderPhoneNumber(selectedCountryCode as CountryCode)}
+                placeholderClassName="text-base"
+                textContentType="telephoneNumber"
+                keyboardType="number-pad"
+                prefix={gerPrefix()}
+              />
+              <View className="mb-4" />
+              <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(handleFormSubmit)} loading={isPending} />
+            </View>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }

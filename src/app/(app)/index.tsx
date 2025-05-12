@@ -16,10 +16,10 @@ export default function Home() {
 
   return (
     <SafeAreaView className="flex-1">
+      <FocusAwareStatusBar style="dark" />
       <View className="flex-1">
         <View className="flex flex-row items-center justify-between border-b border-neutral-200 px-4">
           <View className="flex  py-3">
-            <FocusAwareStatusBar />
             <Text className="text-2xl font-bold text-gray-800">Home</Text>
           </View>
           <Pressable className="relative" onPress={() => router.push('/notifications')}>

@@ -1,51 +1,26 @@
 /* eslint-disable max-lines-per-function */
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
-import { Network } from 'bdk-rn/lib/lib/enums';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-
-import { BaseWallet } from '@/class/base-wallet';
-import type { TUnit } from '@/types';
 
 type Props = PropsWithChildren<{}>;
 
 type defaultContextType = {
   hideBalance: boolean;
   onboarding: boolean;
-  selectedCountryCode: string;
-  seedPhrase: string;
-  selectedBitcoinNetwork: string;
   isDataLoaded: boolean;
-  wallet?: BaseWallet;
-  units: TUnit;
   setHideBalance: (hideBalance: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
-  setSelectedCountryCode: (country: string) => void;
   resetAppData: () => void;
-  setSeedPhrase: (seedPhrase: string) => void;
-  setSelectedBitcoinNetwork: (network: string) => void;
-  setUnits: (units: TUnit) => void;
 };
 
 const defaultContext: defaultContextType = {
   hideBalance: false,
   onboarding: false,
-  selectedCountryCode: 'CM',
-  seedPhrase: '',
-  selectedBitcoinNetwork: Network.Testnet,
   isDataLoaded: false,
-  wallet: undefined,
-  units: {
-    name: 'sats',
-    symbol: 'sats',
-  },
   setHideBalance: () => {},
   setOnboarding: () => {},
   resetAppData: () => {},
-  setSelectedCountryCode: () => {},
-  setSeedPhrase: () => {},
-  setSelectedBitcoinNetwork: () => {},
-  setUnits: () => {},
 };
 
 export const AppContext = createContext<defaultContextType>(defaultContext);
@@ -53,20 +28,10 @@ export const AppContext = createContext<defaultContextType>(defaultContext);
 export const AppContextProvider = ({ children }: Props) => {
   const [hideBalance, _setHideBalance] = useState(defaultContext.hideBalance);
   const [onboarding, _setOnboarding] = useState(defaultContext.onboarding);
-  const [selectedCountryCode, _setSelectedCountryCode] = useState(defaultContext.selectedCountryCode);
-  const [seedPhrase, _setSeedPhrase] = useState(defaultContext.seedPhrase);
-  const [selectedBitcoinNetwork, _setSelectedBitcoinNetwork] = useState(defaultContext.selectedBitcoinNetwork);
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
-  const [_wallet, _setWallet] = useState<BaseWallet | undefined>(defaultContext.wallet);
-  const [units, _setUnits] = useState(defaultContext.units);
 
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
   const { getItem: _getOnboarding, setItem: _updateOnboarding } = useAsyncStorage('onboarding');
-  const { getItem: _getSelectedCountryCode, setItem: _updateSelectedCountryCode } = useAsyncStorage('selectedCountryCode');
-  const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase } = useAsyncStorage('seedPhrase');
-  const { getItem: _getSelectedBitcoinNetwork, setItem: _updateSelectedBitcoinNetwork } = useAsyncStorage('selectedBitcoinNetowork');
-  const { getItem: _getWallet, setItem: _updateWallet } = useAsyncStorage('wallet');
-  const { getItem: _getUnits, setItem: _updateUnits } = useAsyncStorage('units');
 
   const _loadHideBalance = useCallback(async () => {
     const ob = await _getHideBalance();
@@ -82,46 +47,10 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   }, [_getOnboarding, _setOnboarding]);
 
-  const _loadSelectedCountryCode = useCallback(async () => {
-    const ob = await _getSelectedCountryCode();
-    if (ob !== null) {
-      _setSelectedCountryCode(ob);
-    }
-  }, [_getSelectedCountryCode, _setSelectedCountryCode]);
-
-  const _loadSeedPhrase = useCallback(async () => {
-    const ob = await _getSeedPhrase();
-    if (ob !== null) {
-      _setSeedPhrase(ob);
-    }
-  }, [_getSeedPhrase, _setSeedPhrase]);
-
-  const _loadSelectedBitcoinNetwork = useCallback(async () => {
-    const ob = await _getSelectedBitcoinNetwork();
-    if (ob !== null) {
-      _setSelectedBitcoinNetwork(ob);
-    }
-  }, [_getSelectedBitcoinNetwork, _setSelectedBitcoinNetwork]);
-
-  const _loadUnits = useCallback(async () => {
-    const ob = await _getUnits();
-    if (ob !== null) {
-      _setUnits(ob);
-    }
-  }, [_getUnits, _setUnits]);
-
-  const _loadWallet = useCallback(async () => {
-    const savedWallets = await _getWallet();
-    if (savedWallets !== null) {
-      const w = BaseWallet.fromJSON(savedWallets);
-      _setWallet(w);
-    }
-  }, [_getWallet, _setWallet]);
-
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([_loadHideBalance(), _loadSelectedBitcoinNetwork(), _loadOnboarding(), _loadSelectedCountryCode(), _loadSeedPhrase(), _loadWallet(), _loadUnits()]);
+        await Promise.all([_loadHideBalance(), _loadOnboarding()]);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -130,7 +59,7 @@ export const AppContextProvider = ({ children }: Props) => {
     };
 
     loadData();
-  }, [_loadHideBalance, _loadOnboarding, _loadSeedPhrase, _loadSelectedBitcoinNetwork, _loadSelectedCountryCode, _loadUnits, _loadWallet]);
+  }, [_loadHideBalance, _loadOnboarding]);
 
   const setOnboarding = useCallback(
     async (arg: boolean) => {
@@ -168,60 +97,15 @@ export const AppContextProvider = ({ children }: Props) => {
     [_setHideBalance, _updateHideBalance],
   );
 
-  const setSelectedCountryCode = useCallback(
-    async (arg: string) => {
-      try {
-        await _setSelectedCountryCode(arg);
-        await _updateSelectedCountryCode(JSON.stringify(arg));
-      } catch (e) {
-        console.error(`[AsyncStorage] (selectedCountryCode) Error loading data: ${e} [${arg}]`);
-        throw new Error('Error setting selectedCountryCode');
-      }
-    },
-    [_setSelectedCountryCode, _updateSelectedCountryCode],
-  );
-
-  const setSeedPhrase = useCallback(
-    async (arg: string) => {
-      try {
-        await _setSeedPhrase(arg);
-        await _updateSeedPhrase(arg);
-      } catch (e) {
-        console.error(`[AsyncStorage] (seedPhrase) Error loading data: ${e} [${arg}]`);
-        throw new Error('Error setting seedPhrase');
-      }
-    },
-    [_setSeedPhrase, _updateSeedPhrase],
-  );
-
-  const setSelectedBitcoinNetwork = useCallback(
-    async (arg: string) => {
-      try {
-        await _setSelectedBitcoinNetwork(arg);
-        await _updateSelectedBitcoinNetwork(JSON.stringify(arg));
-      } catch (e) {
-        console.error(`[AsyncStorage] (bitcoinNetwork) Error loading data: ${e} [${arg}]`);
-        throw new Error('Error setting bitcoinNetwork');
-      }
-    },
-    [_setSelectedBitcoinNetwork, _updateSelectedBitcoinNetwork],
-  );
-
   return (
     <AppContext.Provider
       value={{
         hideBalance,
         onboarding,
-        selectedCountryCode,
-        seedPhrase,
-        selectedBitcoinNetwork,
         isDataLoaded,
         setHideBalance,
         setOnboarding,
         resetAppData,
-        setSelectedCountryCode,
-        setSeedPhrase,
-        setSelectedBitcoinNetwork,
       }}
     >
       {children}

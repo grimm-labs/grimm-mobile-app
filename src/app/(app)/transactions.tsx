@@ -1,21 +1,14 @@
 import * as React from 'react';
 
-import { Buttons } from '@/components/buttons';
-import { Colors } from '@/components/colors';
-import { Inputs } from '@/components/inputs';
-import { Typography } from '@/components/typography';
-import { FocusAwareStatusBar, SafeAreaView, ScrollView } from '@/components/ui';
+import { FocusAwareStatusBar, SafeAreaView, ScrollView, Text } from '@/components/ui';
 
-export default function Style() {
+export default function Transactions() {
   return (
     <>
-      <FocusAwareStatusBar />
+      <FocusAwareStatusBar style="dark" />
       <ScrollView className="px-4">
         <SafeAreaView className="flex-1">
-          <Typography />
-          <Colors />
-          <Buttons />
-          <Inputs />
+          <Text className="text-2xl font-bold">Transactions</Text>
         </SafeAreaView>
       </ScrollView>
     </>
