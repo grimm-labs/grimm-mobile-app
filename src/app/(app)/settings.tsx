@@ -30,9 +30,9 @@ export default function Settings() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      <FocusAwareStatusBar style="dark" />
       <View className="flex">
         <View className="flex border-b border-neutral-100 px-4 py-3">
-          <FocusAwareStatusBar />
           <Text className="text-2xl font-bold text-gray-800">Settings</Text>
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -85,7 +85,7 @@ export default function Settings() {
           </View>
           <View className="mx-10 mb-6">
             <Text className="text-center text-base text-gray-700">
-              Grimm App's <Text className="font-bold underline">Privacy</Text>, <Text className="font-bold underline">Terms</Text> and <Text className="font-bold underline">Open Source Software</Text>
+              Grimm Technologies's <Text className="font-bold underline">Privacy</Text>, <Text className="font-bold underline">Terms</Text> and <Text className="font-bold underline">Open Source Software</Text>
             </Text>
           </View>
           <View className="mb-10">

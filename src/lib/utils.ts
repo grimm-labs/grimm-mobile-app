@@ -1,6 +1,3 @@
-import { Blockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, Wallet } from 'bdk-rn';
-import type { BlockchainElectrumConfig, Network } from 'bdk-rn/lib/lib/enums';
-import { KeychainKind } from 'bdk-rn/lib/lib/enums';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
@@ -25,53 +22,6 @@ export const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_stor
 
 export const getCountryManager = () => {
   return new CountryManager(countries);
-};
-
-export const isMnemonicValid = async (mnemonic: string): Promise<boolean> => {
-  if (!mnemonic || typeof mnemonic !== 'string') {
-    console.warn('The provided mnemonic is invalid or empty.');
-    return false;
-  }
-
-  try {
-    const mnemonicInstance = new Mnemonic();
-    await mnemonicInstance.fromString(mnemonic);
-    return true;
-  } catch (error) {
-    console.error('Error validating the mnemonic:', error);
-    return false;
-  }
-};
-
-export async function createWallet(mnemonic: string, network: Network): Promise<Wallet> {
-  try {
-    const mnemonicInstance = await new Mnemonic().fromString(mnemonic);
-    const descriptorSecretKey = await new DescriptorSecretKey().create(network, mnemonicInstance);
-
-    const [externalDescriptor, internalDescriptor, dbConfig] = await Promise.all([
-      new Descriptor().newBip84(descriptorSecretKey, KeychainKind.External, network),
-      new Descriptor().newBip84(descriptorSecretKey, KeychainKind.Internal, network),
-      new DatabaseConfig().memory(),
-    ]);
-
-    return await new Wallet().create(externalDescriptor, internalDescriptor, network, dbConfig);
-  } catch (error) {
-    console.error('Error creating wallet:', error);
-    throw new Error('Failed to create wallet');
-  }
-}
-
-export const getBlockchainConfig = (): BlockchainElectrumConfig => ({
-  url: 'ssl://electrum.blockstream.info:60002',
-  sock5: null,
-  retry: 5,
-  timeout: 5,
-  stopGap: 100,
-  validateDomain: false,
-});
-
-export const getBlockchain = async (config: BlockchainElectrumConfig = getBlockchainConfig()) => {
-  return await new Blockchain().create(config);
 };
 
 export const convertSatsToBtc = (sats: number): string => {

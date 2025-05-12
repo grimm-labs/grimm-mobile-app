@@ -1,12 +1,12 @@
 /* eslint-disable react/no-unstable-nested-components */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Redirect, SplashScreen, Tabs } from 'expo-router';
+import { SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useContext, useEffect } from 'react';
 
 import { AppContext } from '@/lib/context';
 
 export default function TabLayout() {
-  const { seedPhrase, isDataLoaded } = useContext(AppContext);
+  const { isDataLoaded } = useContext(AppContext);
 
   const hideSplash = useCallback(async () => {
     await SplashScreen.hideAsync();
@@ -22,10 +22,6 @@ export default function TabLayout() {
 
   if (!isDataLoaded) {
     return null;
-  }
-
-  if (seedPhrase?.length === 0) {
-    return <Redirect href="/onboarding" />;
   }
 
   return (

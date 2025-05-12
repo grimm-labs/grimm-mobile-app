@@ -1,6 +1,7 @@
 <h1 align="center">
   <img alt="logo" src="./assets/icon.png" width="124px" style="border-radius:10px"/><br/>
-Mobile App </h1>
+  Grimm App
+</h1>
 
 > This Project is based on [Obytes starter](https://starter.obytes.com)
 
@@ -18,9 +19,9 @@ Mobile App </h1>
 Clone the repo to your machine and install deps :
 
 ```sh
-git clone https://github.com/user/repo-name
+git clone git@github.com:grimm-labs/grimm-mobile-app.git
 
-cd ./repo-name
+cd grimm-mobile-app
 
 pnpm install
 ```
