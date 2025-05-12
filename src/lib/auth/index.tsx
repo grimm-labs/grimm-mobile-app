@@ -23,16 +23,16 @@ const _useAuth = create<AuthState>((set, get) => ({
     removeToken();
     set({ status: 'signOut', token: null });
   },
-  hydrate: () => {
+  hydrate: async () => {
     try {
-      const userToken = getToken();
+      const userToken = await getToken();
       if (userToken !== null) {
         get().signIn(userToken);
       } else {
         get().signOut();
       }
     } catch (e) {
-      // catch error here
+      console.error('Error during hydration:', e); // catch error here
       // Maybe sign_out user!
     }
   },
