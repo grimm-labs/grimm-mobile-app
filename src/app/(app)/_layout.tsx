@@ -3,6 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useContext, useEffect } from 'react';
 
+import { colors } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 
 export default function TabLayout() {
@@ -25,7 +26,11 @@ export default function TabLayout() {
   }
 
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={() => ({
+        tabBarActiveTintColor: colors.primary[600],
+      })}
+    >
       <Tabs.Screen
         name="index"
         options={{
