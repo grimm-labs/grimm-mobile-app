@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { memo, useCallback, useContext, useEffect } from 'react';
 
+import { colors } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 
 const SPLASH_HIDE_DELAY = 1000;
@@ -59,7 +60,11 @@ const TabLayout = () => {
   }
 
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={() => ({
+        tabBarActiveTintColor: colors.primary[600],
+      })}
+    >
       {TAB_CONFIG.map(({ name, title, iconName }) => (
         <Tabs.Screen
           key={name}
