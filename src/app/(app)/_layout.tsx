@@ -1,12 +1,42 @@
-/* eslint-disable react/no-unstable-nested-components */
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { SplashScreen, Tabs } from 'expo-router';
-import React, { useCallback, useContext, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Redirect, SplashScreen, Tabs } from 'expo-router';
+import React, { memo, useCallback, useContext, useEffect } from 'react';
 
 import { AppContext } from '@/lib/context';
 
-export default function TabLayout() {
-  const { isDataLoaded } = useContext(AppContext);
+const SPLASH_HIDE_DELAY = 1000;
+
+interface TabBarIconProps {
+  name: string;
+  color: string;
+}
+
+const TabBarIcon = memo(({ name, color }: TabBarIconProps) => <Ionicons name={name as React.ComponentProps<typeof Ionicons>['name']} size={24} color={color} />);
+
+const TAB_CONFIG: Array<{ name: string; title: string; iconName: React.ComponentProps<typeof Ionicons>['name'] }> = [
+  {
+    name: 'index',
+    title: 'Home',
+    iconName: 'home',
+  },
+  {
+    name: 'transactions',
+    title: 'Transactions',
+    iconName: 'receipt',
+  },
+  {
+    name: 'settings',
+    title: 'Settings',
+    iconName: 'settings',
+  },
+];
+
+const tabBarIcon =
+  (iconName: string) =>
+  ({ color }: { color: string }) => <TabBarIcon name={iconName} color={color} />;
+
+const TabLayout = () => {
+  const { isDataLoaded, seedPhrase } = useContext(AppContext);
 
   const hideSplash = useCallback(async () => {
     await SplashScreen.hideAsync();
@@ -14,42 +44,35 @@ export default function TabLayout() {
 
   useEffect(() => {
     if (isDataLoaded) {
-      setTimeout(() => {
-        hideSplash();
-      }, 1000);
+      const timer = setTimeout(hideSplash, SPLASH_HIDE_DELAY);
+      return () => clearTimeout(timer);
     }
   }, [hideSplash, isDataLoaded]);
 
+  // Return null during loading to avoid rendering partial UI
   if (!isDataLoaded) {
     return null;
   }
 
+  if (!seedPhrase?.length) {
+    return <Redirect href="/onboarding" />;
+  }
+
   return (
     <Tabs>
-      <Tabs.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          title: 'Home',
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="transactions"
-        options={{
-          title: 'Transactions',
-          headerShown: false,
-          tabBarIcon: ({ color }) => <Ionicons name="receipt" size={24} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          headerShown: false,
-          tabBarIcon: ({ color }) => <Ionicons name="settings" size={24} color={color} />,
-        }}
-      />
+      {TAB_CONFIG.map(({ name, title, iconName }) => (
+        <Tabs.Screen
+          key={name}
+          name={name}
+          options={{
+            tabBarIcon: tabBarIcon(iconName),
+            headerShown: false,
+            title,
+          }}
+        />
+      ))}
     </Tabs>
   );
-}
+};
+
+export default memo(TabLayout);
