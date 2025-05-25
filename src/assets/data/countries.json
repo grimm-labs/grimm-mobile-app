@@ -1,0 +1,2207 @@
+[
+  {
+    "currency": "AFN",
+    "callingCode": "93",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Afghanistan",
+    "nameFr": "Afghanistan",
+    "isoCode": "AF"
+  },
+  {
+    "currency": "ALL",
+    "callingCode": "355",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Albania",
+    "nameFr": "Albanie",
+    "isoCode": "AL"
+  },
+  {
+    "currency": "DZD",
+    "callingCode": "213",
+    "region": "Africa",
+    "subregion": "Northern Africa",
+    "name": "Algeria",
+    "nameFr": "Algérie",
+    "isoCode": "DZ"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1684",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "American Samoa",
+    "nameFr": "Samoa américaines",
+    "isoCode": "AS"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "376",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Andorra",
+    "nameFr": "Andorre",
+    "isoCode": "AD"
+  },
+  {
+    "currency": "AOA",
+    "callingCode": "244",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "Angola",
+    "nameFr": "Angola",
+    "isoCode": "AO"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1264",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Anguilla",
+    "nameFr": "Anguilla",
+    "isoCode": "AI"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1268",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Antigua and Barbuda",
+    "nameFr": "Antigua-et-Barbuda",
+    "isoCode": "AG"
+  },
+  {
+    "currency": "ARS",
+    "callingCode": "54",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Argentina",
+    "nameFr": "Argentine",
+    "isoCode": "AR"
+  },
+  {
+    "currency": "AMD",
+    "callingCode": "374",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Armenia",
+    "nameFr": "Arménie",
+    "isoCode": "AM"
+  },
+  {
+    "currency": "AWG",
+    "callingCode": "297",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Aruba",
+    "nameFr": "Aruba",
+    "isoCode": "AW"
+  },
+  {
+    "currency": "AUD",
+    "callingCode": "61",
+    "region": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "name": "Australia",
+    "nameFr": "Australie",
+    "isoCode": "AU"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "43",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Austria",
+    "nameFr": "Autriche",
+    "isoCode": "AT"
+  },
+  {
+    "currency": "AZN",
+    "callingCode": "994",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Azerbaijan",
+    "nameFr": "Azerbaïdjan",
+    "isoCode": "AZ"
+  },
+  {
+    "currency": "BSD",
+    "callingCode": "1242",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Bahamas",
+    "nameFr": "Bahamas",
+    "isoCode": "BS"
+  },
+  {
+    "currency": "BHD",
+    "callingCode": "973",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Bahrain",
+    "nameFr": "Bahreïn",
+    "isoCode": "BH"
+  },
+  {
+    "currency": "BDT",
+    "callingCode": "880",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Bangladesh",
+    "nameFr": "Bangladesh",
+    "isoCode": "BD"
+  },
+  {
+    "currency": "BBD",
+    "callingCode": "1246",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Barbados",
+    "nameFr": "Barbade",
+    "isoCode": "BB"
+  },
+  {
+    "currency": "BYN",
+    "callingCode": "375",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Belarus",
+    "nameFr": "Biélorussie",
+    "isoCode": "BY"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "32",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Belgium",
+    "nameFr": "Belgique",
+    "isoCode": "BE"
+  },
+  {
+    "currency": "BZD",
+    "callingCode": "501",
+    "region": "Americas",
+    "subregion": "Central America",
+    "name": "Belize",
+    "nameFr": "Belize",
+    "isoCode": "BZ"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "229",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Benin",
+    "nameFr": "Bénin",
+    "isoCode": "BJ"
+  },
+  {
+    "currency": "BMD",
+    "callingCode": "1441",
+    "region": "Americas",
+    "subregion": "North America",
+    "name": "Bermuda",
+    "nameFr": "Bermudes",
+    "isoCode": "BM"
+  },
+  {
+    "currency": "BTN",
+    "callingCode": "975",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Bhutan",
+    "nameFr": "Bhoutan",
+    "isoCode": "BT"
+  },
+  {
+    "currency": "BOB",
+    "callingCode": "591",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Bolivia",
+    "nameFr": "Bolivie",
+    "isoCode": "BO"
+  },
+  {
+    "currency": "BAM",
+    "callingCode": "387",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Bosnia and Herzegovina",
+    "nameFr": "Bosnie-Herzégovine",
+    "isoCode": "BA"
+  },
+  {
+    "currency": "BWP",
+    "callingCode": "267",
+    "region": "Africa",
+    "subregion": "Southern Africa",
+    "name": "Botswana",
+    "nameFr": "Botswana",
+    "isoCode": "BW"
+  },
+  {
+    "currency": "BRL",
+    "callingCode": "55",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Brazil",
+    "nameFr": "Brésil",
+    "isoCode": "BR"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "246",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "British Indian Ocean Territory",
+    "nameFr": "Territoire britannique de l'océan Indien",
+    "isoCode": "IO"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1284",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "British Virgin Islands",
+    "nameFr": "Îles Vierges britanniques",
+    "isoCode": "VG"
+  },
+  {
+    "currency": "BND",
+    "callingCode": "673",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Brunei",
+    "nameFr": "Brunei",
+    "isoCode": "BN"
+  },
+  {
+    "currency": "BGN",
+    "callingCode": "359",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Bulgaria",
+    "nameFr": "Bulgarie",
+    "isoCode": "BG"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "226",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Burkina Faso",
+    "nameFr": "Burkina Faso",
+    "isoCode": "BF"
+  },
+  {
+    "currency": "BIF",
+    "callingCode": "257",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Burundi",
+    "nameFr": "Burundi",
+    "isoCode": "BI"
+  },
+  {
+    "currency": "KHR",
+    "callingCode": "855",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Cambodia",
+    "nameFr": "Cambodge",
+    "isoCode": "KH"
+  },
+  {
+    "currency": "XAF",
+    "callingCode": "237",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "Cameroon",
+    "nameFr": "Cameroun",
+    "isoCode": "CM"
+  },
+  {
+    "currency": "CAD",
+    "callingCode": "1",
+    "region": "Americas",
+    "subregion": "North America",
+    "name": "Canada",
+    "nameFr": "Canada",
+    "isoCode": "CA"
+  },
+  {
+    "currency": "CVE",
+    "callingCode": "238",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Cape Verde",
+    "nameFr": "Îles du Cap-Vert",
+    "isoCode": "CV"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "599",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Caribbean Netherlands",
+    "nameFr": "Pays-Bas caribéens",
+    "isoCode": "BQ"
+  },
+  {
+    "currency": "KYD",
+    "callingCode": "1345",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Cayman Islands",
+    "nameFr": "Îles Caïmans",
+    "isoCode": "KY"
+  },
+  {
+    "currency": "XAF",
+    "callingCode": "236",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "Central African Republic",
+    "nameFr": "République centrafricaine",
+    "isoCode": "CF"
+  },
+  {
+    "currency": "XAF",
+    "callingCode": "235",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "Chad",
+    "nameFr": "Tchad",
+    "isoCode": "TD"
+  },
+  {
+    "currency": "CLP",
+    "callingCode": "56",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Chile",
+    "nameFr": "Chili",
+    "isoCode": "CL"
+  },
+  {
+    "currency": "CNY",
+    "callingCode": "86",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "China",
+    "nameFr": "Chine",
+    "isoCode": "CN"
+  },
+  {
+    "currency": "AUD",
+    "callingCode": "61",
+    "region": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "name": "Christmas Island",
+    "nameFr": "Île Christmas",
+    "isoCode": "CX"
+  },
+  {
+    "currency": "AUD",
+    "callingCode": "61",
+    "region": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "name": "Cocos (Keeling) Islands",
+    "nameFr": "Îles Cocos",
+    "isoCode": "CC"
+  },
+  {
+    "currency": "COP",
+    "callingCode": "57",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Colombia",
+    "nameFr": "Colombie",
+    "isoCode": "CO"
+  },
+  {
+    "currency": "KMF",
+    "callingCode": "269",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Comoros",
+    "nameFr": "Comores",
+    "isoCode": "KM"
+  },
+  {
+    "currency": "NZD",
+    "callingCode": "682",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Cook Islands",
+    "nameFr": "Îles Cook",
+    "isoCode": "CK"
+  },
+  {
+    "currency": "CRC",
+    "callingCode": "506",
+    "region": "Americas",
+    "subregion": "Central America",
+    "name": "Costa Rica",
+    "nameFr": "Costa Rica",
+    "isoCode": "CR"
+  },
+  {
+    "currency": "HRK",
+    "callingCode": "385",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Croatia",
+    "nameFr": "Croatie",
+    "isoCode": "HR"
+  },
+  {
+    "currency": "CUC",
+    "callingCode": "53",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Cuba",
+    "nameFr": "Cuba",
+    "isoCode": "CU"
+  },
+  {
+    "currency": "ANG",
+    "callingCode": "5999",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Curaçao",
+    "nameFr": "Curaçao",
+    "isoCode": "CW"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "357",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Cyprus",
+    "nameFr": "Chypre",
+    "isoCode": "CY"
+  },
+  {
+    "currency": "CZK",
+    "callingCode": "420",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Czechia",
+    "nameFr": "Tchéquie",
+    "isoCode": "CZ"
+  },
+  {
+    "currency": "CDF",
+    "callingCode": "243",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "DR Congo",
+    "nameFr": "Congo (Rép. dém.)",
+    "isoCode": "CD"
+  },
+  {
+    "currency": "DKK",
+    "callingCode": "45",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Denmark",
+    "nameFr": "Danemark",
+    "isoCode": "DK"
+  },
+  {
+    "currency": "DJF",
+    "callingCode": "253",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Djibouti",
+    "nameFr": "Djibouti",
+    "isoCode": "DJ"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1767",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Dominica",
+    "nameFr": "Dominique",
+    "isoCode": "DM"
+  },
+  {
+    "currency": "DOP",
+    "callingCode": "1809",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Dominican Republic",
+    "nameFr": "République dominicaine",
+    "isoCode": "DO"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "593",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Ecuador",
+    "nameFr": "Équateur",
+    "isoCode": "EC"
+  },
+  {
+    "currency": "EGP",
+    "callingCode": "20",
+    "region": "Africa",
+    "subregion": "Northern Africa",
+    "name": "Egypt",
+    "nameFr": "Égypte",
+    "isoCode": "EG"
+  },
+  {
+    "currency": "SVC",
+    "callingCode": "503",
+    "region": "Americas",
+    "subregion": "Central America",
+    "name": "El Salvador",
+    "nameFr": "Salvador",
+    "isoCode": "SV"
+  },
+  {
+    "currency": "XAF",
+    "callingCode": "240",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "Equatorial Guinea",
+    "nameFr": "Guinée équatoriale",
+    "isoCode": "GQ"
+  },
+  {
+    "currency": "ERN",
+    "callingCode": "291",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Eritrea",
+    "nameFr": "Érythrée",
+    "isoCode": "ER"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "372",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Estonia",
+    "nameFr": "Estonie",
+    "isoCode": "EE"
+  },
+  {
+    "currency": "SZL",
+    "callingCode": "268",
+    "region": "Africa",
+    "subregion": "Southern Africa",
+    "name": "Eswatini",
+    "nameFr": "Swaziland",
+    "isoCode": "SZ"
+  },
+  {
+    "currency": "ETB",
+    "callingCode": "251",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Ethiopia",
+    "nameFr": "Éthiopie",
+    "isoCode": "ET"
+  },
+  {
+    "currency": "FKP",
+    "callingCode": "500",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Falkland Islands",
+    "nameFr": "Îles Malouines",
+    "isoCode": "FK"
+  },
+  {
+    "currency": "DKK",
+    "callingCode": "298",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Faroe Islands",
+    "nameFr": "Îles Féroé",
+    "isoCode": "FO"
+  },
+  {
+    "currency": "FJD",
+    "callingCode": "679",
+    "region": "Oceania",
+    "subregion": "Melanesia",
+    "name": "Fiji",
+    "nameFr": "Fidji",
+    "isoCode": "FJ"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "358",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Finland",
+    "nameFr": "Finlande",
+    "isoCode": "FI"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "33",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "France",
+    "nameFr": "France",
+    "isoCode": "FR"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "594",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "French Guiana",
+    "nameFr": "Guyane",
+    "isoCode": "GF"
+  },
+  {
+    "currency": "XPF",
+    "callingCode": "689",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "French Polynesia",
+    "nameFr": "Polynésie française",
+    "isoCode": "PF"
+  },
+  {
+    "currency": "XAF",
+    "callingCode": "241",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "Gabon",
+    "nameFr": "Gabon",
+    "isoCode": "GA"
+  },
+  {
+    "currency": "GMD",
+    "callingCode": "220",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Gambia",
+    "nameFr": "Gambie",
+    "isoCode": "GM"
+  },
+  {
+    "currency": "GEL",
+    "callingCode": "995",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Georgia",
+    "nameFr": "Géorgie",
+    "isoCode": "GE"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "49",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Germany",
+    "nameFr": "Allemagne",
+    "isoCode": "DE"
+  },
+  {
+    "currency": "GHS",
+    "callingCode": "233",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Ghana",
+    "nameFr": "Ghana",
+    "isoCode": "GH"
+  },
+  {
+    "currency": "GIP",
+    "callingCode": "350",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Gibraltar",
+    "nameFr": "Gibraltar",
+    "isoCode": "GI"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "30",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Greece",
+    "nameFr": "Grèce",
+    "isoCode": "GR"
+  },
+  {
+    "currency": "DKK",
+    "callingCode": "299",
+    "region": "Americas",
+    "subregion": "North America",
+    "name": "Greenland",
+    "nameFr": "Groenland",
+    "isoCode": "GL"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1473",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Grenada",
+    "nameFr": "Grenade",
+    "isoCode": "GD"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "590",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Guadeloupe",
+    "nameFr": "Guadeloupe",
+    "isoCode": "GP"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1671",
+    "region": "Oceania",
+    "subregion": "Micronesia",
+    "name": "Guam",
+    "nameFr": "Guam",
+    "isoCode": "GU"
+  },
+  {
+    "currency": "GTQ",
+    "callingCode": "502",
+    "region": "Americas",
+    "subregion": "Central America",
+    "name": "Guatemala",
+    "nameFr": "Guatemala",
+    "isoCode": "GT"
+  },
+  {
+    "currency": "GBP",
+    "callingCode": "44",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Guernsey",
+    "nameFr": "Guernesey",
+    "isoCode": "GG"
+  },
+  {
+    "currency": "GNF",
+    "callingCode": "224",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Guinea",
+    "nameFr": "Guinée",
+    "isoCode": "GN"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "245",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Guinea-Bissau",
+    "nameFr": "Guinée-Bissau",
+    "isoCode": "GW"
+  },
+  {
+    "currency": "GYD",
+    "callingCode": "592",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Guyana",
+    "nameFr": "Guyana",
+    "isoCode": "GY"
+  },
+  {
+    "currency": "HTG",
+    "callingCode": "509",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Haiti",
+    "nameFr": "Haïti",
+    "isoCode": "HT"
+  },
+  {
+    "currency": "HNL",
+    "callingCode": "504",
+    "region": "Americas",
+    "subregion": "Central America",
+    "name": "Honduras",
+    "nameFr": "Honduras",
+    "isoCode": "HN"
+  },
+  {
+    "currency": "HKD",
+    "callingCode": "852",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "Hong Kong",
+    "nameFr": "Hong Kong",
+    "isoCode": "HK"
+  },
+  {
+    "currency": "HUF",
+    "callingCode": "36",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Hungary",
+    "nameFr": "Hongrie",
+    "isoCode": "HU"
+  },
+  {
+    "currency": "ISK",
+    "callingCode": "354",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Iceland",
+    "nameFr": "Islande",
+    "isoCode": "IS"
+  },
+  {
+    "currency": "INR",
+    "callingCode": "91",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "India",
+    "nameFr": "Inde",
+    "isoCode": "IN"
+  },
+  {
+    "currency": "IDR",
+    "callingCode": "62",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Indonesia",
+    "nameFr": "Indonésie",
+    "isoCode": "ID"
+  },
+  {
+    "currency": "IRR",
+    "callingCode": "98",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Iran",
+    "nameFr": "Iran",
+    "isoCode": "IR"
+  },
+  {
+    "currency": "IQD",
+    "callingCode": "964",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Iraq",
+    "nameFr": "Irak",
+    "isoCode": "IQ"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "353",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Ireland",
+    "nameFr": "Irlande",
+    "isoCode": "IE"
+  },
+  {
+    "currency": "GBP",
+    "callingCode": "44",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Isle of Man",
+    "nameFr": "Île de Man",
+    "isoCode": "IM"
+  },
+  {
+    "currency": "ILS",
+    "callingCode": "972",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Israel",
+    "nameFr": "Israël",
+    "isoCode": "IL"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "39",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Italy",
+    "nameFr": "Italie",
+    "isoCode": "IT"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "225",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Ivory Coast",
+    "nameFr": "Côte d'Ivoire",
+    "isoCode": "CI"
+  },
+  {
+    "currency": "JMD",
+    "callingCode": "1876",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Jamaica",
+    "nameFr": "Jamaïque",
+    "isoCode": "JM"
+  },
+  {
+    "currency": "JPY",
+    "callingCode": "81",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "Japan",
+    "nameFr": "Japon",
+    "isoCode": "JP"
+  },
+  {
+    "currency": "GBP",
+    "callingCode": "44",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Jersey",
+    "nameFr": "Jersey",
+    "isoCode": "JE"
+  },
+  {
+    "currency": "JOD",
+    "callingCode": "962",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Jordan",
+    "nameFr": "Jordanie",
+    "isoCode": "JO"
+  },
+  {
+    "currency": "KZT",
+    "callingCode": "7",
+    "region": "Asia",
+    "subregion": "Central Asia",
+    "name": "Kazakhstan",
+    "nameFr": "Kazakhstan",
+    "isoCode": "KZ"
+  },
+  {
+    "currency": "KES",
+    "callingCode": "254",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Kenya",
+    "nameFr": "Kenya",
+    "isoCode": "KE"
+  },
+  {
+    "currency": "AUD",
+    "callingCode": "686",
+    "region": "Oceania",
+    "subregion": "Micronesia",
+    "name": "Kiribati",
+    "nameFr": "Kiribati",
+    "isoCode": "KI"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "383",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Kosovo",
+    "nameFr": "Kosovo",
+    "isoCode": "XK"
+  },
+  {
+    "currency": "KWD",
+    "callingCode": "965",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Kuwait",
+    "nameFr": "Koweït",
+    "isoCode": "KW"
+  },
+  {
+    "currency": "KGS",
+    "callingCode": "996",
+    "region": "Asia",
+    "subregion": "Central Asia",
+    "name": "Kyrgyzstan",
+    "nameFr": "Kirghizistan",
+    "isoCode": "KG"
+  },
+  {
+    "currency": "LAK",
+    "callingCode": "856",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Laos",
+    "nameFr": "Laos",
+    "isoCode": "LA"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "371",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Latvia",
+    "nameFr": "Lettonie",
+    "isoCode": "LV"
+  },
+  {
+    "currency": "LBP",
+    "callingCode": "961",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Lebanon",
+    "nameFr": "Liban",
+    "isoCode": "LB"
+  },
+  {
+    "currency": "LSL",
+    "callingCode": "266",
+    "region": "Africa",
+    "subregion": "Southern Africa",
+    "name": "Lesotho",
+    "nameFr": "Lesotho",
+    "isoCode": "LS"
+  },
+  {
+    "currency": "LRD",
+    "callingCode": "231",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Liberia",
+    "nameFr": "Liberia",
+    "isoCode": "LR"
+  },
+  {
+    "currency": "LYD",
+    "callingCode": "218",
+    "region": "Africa",
+    "subregion": "Northern Africa",
+    "name": "Libya",
+    "nameFr": "Libye",
+    "isoCode": "LY"
+  },
+  {
+    "currency": "CHF",
+    "callingCode": "423",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Liechtenstein",
+    "nameFr": "Liechtenstein",
+    "isoCode": "LI"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "370",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Lithuania",
+    "nameFr": "Lituanie",
+    "isoCode": "LT"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "352",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Luxembourg",
+    "nameFr": "Luxembourg",
+    "isoCode": "LU"
+  },
+  {
+    "currency": "MOP",
+    "callingCode": "853",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "Macau",
+    "nameFr": "Macao",
+    "isoCode": "MO"
+  },
+  {
+    "currency": "MKD",
+    "callingCode": "389",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Macedonia",
+    "nameFr": "Macédoine",
+    "isoCode": "MK"
+  },
+  {
+    "currency": "MGA",
+    "callingCode": "261",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Madagascar",
+    "nameFr": "Madagascar",
+    "isoCode": "MG"
+  },
+  {
+    "currency": "MWK",
+    "callingCode": "265",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Malawi",
+    "nameFr": "Malawi",
+    "isoCode": "MW"
+  },
+  {
+    "currency": "MYR",
+    "callingCode": "60",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Malaysia",
+    "nameFr": "Malaisie",
+    "isoCode": "MY"
+  },
+  {
+    "currency": "MVR",
+    "callingCode": "960",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Maldives",
+    "nameFr": "Maldives",
+    "isoCode": "MV"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "223",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Mali",
+    "nameFr": "Mali",
+    "isoCode": "ML"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "356",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Malta",
+    "nameFr": "Malte",
+    "isoCode": "MT"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "692",
+    "region": "Oceania",
+    "subregion": "Micronesia",
+    "name": "Marshall Islands",
+    "nameFr": "Îles Marshall",
+    "isoCode": "MH"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "596",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Martinique",
+    "nameFr": "Martinique",
+    "isoCode": "MQ"
+  },
+  {
+    "currency": "MRO",
+    "callingCode": "222",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Mauritania",
+    "nameFr": "Mauritanie",
+    "isoCode": "MR"
+  },
+  {
+    "currency": "MUR",
+    "callingCode": "230",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Mauritius",
+    "nameFr": "Île Maurice",
+    "isoCode": "MU"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "262",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Mayotte",
+    "nameFr": "Mayotte",
+    "isoCode": "YT"
+  },
+  {
+    "currency": "MXN",
+    "callingCode": "52",
+    "region": "Americas",
+    "subregion": "North America",
+    "name": "Mexico",
+    "nameFr": "Mexique",
+    "isoCode": "MX"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "691",
+    "region": "Oceania",
+    "subregion": "Micronesia",
+    "name": "Micronesia",
+    "nameFr": "Micronésie",
+    "isoCode": "FM"
+  },
+  {
+    "currency": "MDL",
+    "callingCode": "373",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Moldova",
+    "nameFr": "Moldavie",
+    "isoCode": "MD"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "377",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Monaco",
+    "nameFr": "Monaco",
+    "isoCode": "MC"
+  },
+  {
+    "currency": "MNT",
+    "callingCode": "976",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "Mongolia",
+    "nameFr": "Mongolie",
+    "isoCode": "MN"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "382",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Montenegro",
+    "nameFr": "Monténégro",
+    "isoCode": "ME"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1664",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Montserrat",
+    "nameFr": "Montserrat",
+    "isoCode": "MS"
+  },
+  {
+    "currency": "MAD",
+    "callingCode": "212",
+    "region": "Africa",
+    "subregion": "Northern Africa",
+    "name": "Morocco",
+    "nameFr": "Maroc",
+    "isoCode": "MA"
+  },
+  {
+    "currency": "MZN",
+    "callingCode": "258",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Mozambique",
+    "nameFr": "Mozambique",
+    "isoCode": "MZ"
+  },
+  {
+    "currency": "MMK",
+    "callingCode": "95",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Myanmar",
+    "nameFr": "Birmanie",
+    "isoCode": "MM"
+  },
+  {
+    "currency": "NAD",
+    "callingCode": "264",
+    "region": "Africa",
+    "subregion": "Southern Africa",
+    "name": "Namibia",
+    "nameFr": "Namibie",
+    "isoCode": "NA"
+  },
+  {
+    "currency": "AUD",
+    "callingCode": "674",
+    "region": "Oceania",
+    "subregion": "Micronesia",
+    "name": "Nauru",
+    "nameFr": "Nauru",
+    "isoCode": "NR"
+  },
+  {
+    "currency": "NPR",
+    "callingCode": "977",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Nepal",
+    "nameFr": "Népal",
+    "isoCode": "NP"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "31",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Netherlands",
+    "nameFr": "Pays-Bas",
+    "isoCode": "NL"
+  },
+  {
+    "currency": "XPF",
+    "callingCode": "687",
+    "region": "Oceania",
+    "subregion": "Melanesia",
+    "name": "New Caledonia",
+    "nameFr": "Nouvelle-Calédonie",
+    "isoCode": "NC"
+  },
+  {
+    "currency": "NZD",
+    "callingCode": "64",
+    "region": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "name": "New Zealand",
+    "nameFr": "Nouvelle-Zélande",
+    "isoCode": "NZ"
+  },
+  {
+    "currency": "NIO",
+    "callingCode": "505",
+    "region": "Americas",
+    "subregion": "Central America",
+    "name": "Nicaragua",
+    "nameFr": "Nicaragua",
+    "isoCode": "NI"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "227",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Niger",
+    "nameFr": "Niger",
+    "isoCode": "NE"
+  },
+  {
+    "currency": "NGN",
+    "callingCode": "234",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Nigeria",
+    "nameFr": "Nigéria",
+    "isoCode": "NG"
+  },
+  {
+    "currency": "NZD",
+    "callingCode": "683",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Niue",
+    "nameFr": "Niue",
+    "isoCode": "NU"
+  },
+  {
+    "currency": "AUD",
+    "callingCode": "672",
+    "region": "Oceania",
+    "subregion": "Australia and New Zealand",
+    "name": "Norfolk Island",
+    "nameFr": "Île Norfolk",
+    "isoCode": "NF"
+  },
+  {
+    "currency": "KPW",
+    "callingCode": "850",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "North Korea",
+    "nameFr": "Corée du Nord",
+    "isoCode": "KP"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1670",
+    "region": "Oceania",
+    "subregion": "Micronesia",
+    "name": "Northern Mariana Islands",
+    "nameFr": "Îles Mariannes du Nord",
+    "isoCode": "MP"
+  },
+  {
+    "currency": "NOK",
+    "callingCode": "47",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Norway",
+    "nameFr": "Norvège",
+    "isoCode": "NO"
+  },
+  {
+    "currency": "OMR",
+    "callingCode": "968",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Oman",
+    "nameFr": "Oman",
+    "isoCode": "OM"
+  },
+  {
+    "currency": "PKR",
+    "callingCode": "92",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Pakistan",
+    "nameFr": "Pakistan",
+    "isoCode": "PK"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "680",
+    "region": "Oceania",
+    "subregion": "Micronesia",
+    "name": "Palau",
+    "nameFr": "Palaos (Palau)",
+    "isoCode": "PW"
+  },
+  {
+    "currency": "ILS",
+    "callingCode": "970",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Palestine",
+    "nameFr": "Palestine",
+    "isoCode": "PS"
+  },
+  {
+    "currency": "PAB",
+    "callingCode": "507",
+    "region": "Americas",
+    "subregion": "Central America",
+    "name": "Panama",
+    "nameFr": "Panama",
+    "isoCode": "PA"
+  },
+  {
+    "currency": "PGK",
+    "callingCode": "675",
+    "region": "Oceania",
+    "subregion": "Melanesia",
+    "name": "Papua New Guinea",
+    "nameFr": "Papouasie-Nouvelle-Guinée",
+    "isoCode": "PG"
+  },
+  {
+    "currency": "PYG",
+    "callingCode": "595",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Paraguay",
+    "nameFr": "Paraguay",
+    "isoCode": "PY"
+  },
+  {
+    "currency": "PEN",
+    "callingCode": "51",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Peru",
+    "nameFr": "Pérou",
+    "isoCode": "PE"
+  },
+  {
+    "currency": "PHP",
+    "callingCode": "63",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Philippines",
+    "nameFr": "Philippines",
+    "isoCode": "PH"
+  },
+  {
+    "currency": "NZD",
+    "callingCode": "64",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Pitcairn Islands",
+    "nameFr": "Îles Pitcairn",
+    "isoCode": "PN"
+  },
+  {
+    "currency": "PLN",
+    "callingCode": "48",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Poland",
+    "nameFr": "Pologne",
+    "isoCode": "PL"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "351",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Portugal",
+    "nameFr": "Portugal",
+    "isoCode": "PT"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1787",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Puerto Rico",
+    "nameFr": "Porto Rico",
+    "isoCode": "PR"
+  },
+  {
+    "currency": "QAR",
+    "callingCode": "974",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Qatar",
+    "nameFr": "Qatar",
+    "isoCode": "QA"
+  },
+  {
+    "currency": "XAF",
+    "callingCode": "242",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "Republic of the Congo",
+    "nameFr": "Congo",
+    "isoCode": "CG"
+  },
+  {
+    "currency": "RON",
+    "callingCode": "40",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Romania",
+    "nameFr": "Roumanie",
+    "isoCode": "RO"
+  },
+  {
+    "currency": "RUB",
+    "callingCode": "7",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Russia",
+    "nameFr": "Russie",
+    "isoCode": "RU"
+  },
+  {
+    "currency": "RWF",
+    "callingCode": "250",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Rwanda",
+    "nameFr": "Rwanda",
+    "isoCode": "RW"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "262",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Réunion",
+    "nameFr": "Réunion",
+    "isoCode": "RE"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "590",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Saint Barthélemy",
+    "nameFr": "Saint-Barthélemy",
+    "isoCode": "BL"
+  },
+  {
+    "currency": "SHP",
+    "callingCode": "290",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Saint Helena, Ascension and Tristan da Cunha",
+    "nameFr": "Sainte-Hélène, Ascension et Tristan da Cunha",
+    "isoCode": "SH"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1869",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Saint Kitts and Nevis",
+    "nameFr": "Saint-Christophe-et-Niévès",
+    "isoCode": "KN"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1758",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Saint Lucia",
+    "nameFr": "Sainte-Lucie",
+    "isoCode": "LC"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "590",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Saint Martin",
+    "nameFr": "Saint-Martin",
+    "isoCode": "MF"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "508",
+    "region": "Americas",
+    "subregion": "North America",
+    "name": "Saint Pierre and Miquelon",
+    "nameFr": "Saint-Pierre-et-Miquelon",
+    "isoCode": "PM"
+  },
+  {
+    "currency": "XCD",
+    "callingCode": "1784",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Saint Vincent and the Grenadines",
+    "nameFr": "Saint-Vincent-et-les-Grenadines",
+    "isoCode": "VC"
+  },
+  {
+    "currency": "WST",
+    "callingCode": "685",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Samoa",
+    "nameFr": "Samoa",
+    "isoCode": "WS"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "378",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "San Marino",
+    "nameFr": "Saint-Marin",
+    "isoCode": "SM"
+  },
+  {
+    "currency": "SAR",
+    "callingCode": "966",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Saudi Arabia",
+    "nameFr": "Arabie Saoudite",
+    "isoCode": "SA"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "221",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Senegal",
+    "nameFr": "Sénégal",
+    "isoCode": "SN"
+  },
+  {
+    "currency": "RSD",
+    "callingCode": "381",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Serbia",
+    "nameFr": "Serbie",
+    "isoCode": "RS"
+  },
+  {
+    "currency": "SCR",
+    "callingCode": "248",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Seychelles",
+    "nameFr": "Seychelles",
+    "isoCode": "SC"
+  },
+  {
+    "currency": "SLL",
+    "callingCode": "232",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Sierra Leone",
+    "nameFr": "Sierra Leone",
+    "isoCode": "SL"
+  },
+  {
+    "currency": "SGD",
+    "callingCode": "65",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Singapore",
+    "nameFr": "Singapour",
+    "isoCode": "SG"
+  },
+  {
+    "currency": "ANG",
+    "callingCode": "1721",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Sint Maarten",
+    "nameFr": "Saint-Martin",
+    "isoCode": "SX"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "421",
+    "region": "Europe",
+    "subregion": "Central Europe",
+    "name": "Slovakia",
+    "nameFr": "Slovaquie",
+    "isoCode": "SK"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "386",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Slovenia",
+    "nameFr": "Slovénie",
+    "isoCode": "SI"
+  },
+  {
+    "currency": "SBD",
+    "callingCode": "677",
+    "region": "Oceania",
+    "subregion": "Melanesia",
+    "name": "Solomon Islands",
+    "nameFr": "Îles Salomon",
+    "isoCode": "SB"
+  },
+  {
+    "currency": "SOS",
+    "callingCode": "252",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Somalia",
+    "nameFr": "Somalie",
+    "isoCode": "SO"
+  },
+  {
+    "currency": "ZAR",
+    "callingCode": "27",
+    "region": "Africa",
+    "subregion": "Southern Africa",
+    "name": "South Africa",
+    "nameFr": "Afrique du Sud",
+    "isoCode": "ZA"
+  },
+  {
+    "currency": "GBP",
+    "callingCode": "500",
+    "region": "Antarctic",
+    "subregion": "",
+    "name": "South Georgia",
+    "nameFr": "Géorgie du Sud-et-les Îles Sandwich du Sud",
+    "isoCode": "GS"
+  },
+  {
+    "currency": "KRW",
+    "callingCode": "82",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "South Korea",
+    "nameFr": "Corée du Sud",
+    "isoCode": "KR"
+  },
+  {
+    "currency": "SSP",
+    "callingCode": "211",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "South Sudan",
+    "nameFr": "Soudan du Sud",
+    "isoCode": "SS"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "34",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Spain",
+    "nameFr": "Espagne",
+    "isoCode": "ES"
+  },
+  {
+    "currency": "LKR",
+    "callingCode": "94",
+    "region": "Asia",
+    "subregion": "Southern Asia",
+    "name": "Sri Lanka",
+    "nameFr": "Sri Lanka",
+    "isoCode": "LK"
+  },
+  {
+    "currency": "SDG",
+    "callingCode": "249",
+    "region": "Africa",
+    "subregion": "Northern Africa",
+    "name": "Sudan",
+    "nameFr": "Soudan",
+    "isoCode": "SD"
+  },
+  {
+    "currency": "SRD",
+    "callingCode": "597",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Suriname",
+    "nameFr": "Surinam",
+    "isoCode": "SR"
+  },
+  {
+    "currency": "NOK",
+    "callingCode": "4779",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Svalbard and Jan Mayen",
+    "nameFr": "Svalbard et Jan Mayen",
+    "isoCode": "SJ"
+  },
+  {
+    "currency": "SEK",
+    "callingCode": "46",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Sweden",
+    "nameFr": "Suède",
+    "isoCode": "SE"
+  },
+  {
+    "currency": "CHF",
+    "callingCode": "41",
+    "region": "Europe",
+    "subregion": "Western Europe",
+    "name": "Switzerland",
+    "nameFr": "Suisse",
+    "isoCode": "CH"
+  },
+  {
+    "currency": "SYP",
+    "callingCode": "963",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Syria",
+    "nameFr": "Syrie",
+    "isoCode": "SY"
+  },
+  {
+    "currency": "STD",
+    "callingCode": "239",
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "name": "São Tomé and Príncipe",
+    "nameFr": "São Tomé et Príncipe",
+    "isoCode": "ST"
+  },
+  {
+    "currency": "TWD",
+    "callingCode": "886",
+    "region": "Asia",
+    "subregion": "Eastern Asia",
+    "name": "Taiwan",
+    "nameFr": "Taïwan",
+    "isoCode": "TW"
+  },
+  {
+    "currency": "TJS",
+    "callingCode": "992",
+    "region": "Asia",
+    "subregion": "Central Asia",
+    "name": "Tajikistan",
+    "nameFr": "Tadjikistan",
+    "isoCode": "TJ"
+  },
+  {
+    "currency": "TZS",
+    "callingCode": "255",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Tanzania",
+    "nameFr": "Tanzanie",
+    "isoCode": "TZ"
+  },
+  {
+    "currency": "THB",
+    "callingCode": "66",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Thailand",
+    "nameFr": "Thaïlande",
+    "isoCode": "TH"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "670",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Timor-Leste",
+    "nameFr": "Timor oriental",
+    "isoCode": "TL"
+  },
+  {
+    "currency": "XOF",
+    "callingCode": "228",
+    "region": "Africa",
+    "subregion": "Western Africa",
+    "name": "Togo",
+    "nameFr": "Togo",
+    "isoCode": "TG"
+  },
+  {
+    "currency": "NZD",
+    "callingCode": "690",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Tokelau",
+    "nameFr": "Tokelau",
+    "isoCode": "TK"
+  },
+  {
+    "currency": "TOP",
+    "callingCode": "676",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Tonga",
+    "nameFr": "Tonga",
+    "isoCode": "TO"
+  },
+  {
+    "currency": "TTD",
+    "callingCode": "1868",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Trinidad and Tobago",
+    "nameFr": "Trinité-et-Tobago",
+    "isoCode": "TT"
+  },
+  {
+    "currency": "TND",
+    "callingCode": "216",
+    "region": "Africa",
+    "subregion": "Northern Africa",
+    "name": "Tunisia",
+    "nameFr": "Tunisie",
+    "isoCode": "TN"
+  },
+  {
+    "currency": "TRY",
+    "callingCode": "90",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Turkey",
+    "nameFr": "Turquie",
+    "isoCode": "TR"
+  },
+  {
+    "currency": "TMT",
+    "callingCode": "993",
+    "region": "Asia",
+    "subregion": "Central Asia",
+    "name": "Turkmenistan",
+    "nameFr": "Turkménistan",
+    "isoCode": "TM"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1649",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "Turks and Caicos Islands",
+    "nameFr": "Îles Turques-et-Caïques",
+    "isoCode": "TC"
+  },
+  {
+    "currency": "AUD",
+    "callingCode": "688",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Tuvalu",
+    "nameFr": "Tuvalu",
+    "isoCode": "TV"
+  },
+  {
+    "currency": "UGX",
+    "callingCode": "256",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Uganda",
+    "nameFr": "Ouganda",
+    "isoCode": "UG"
+  },
+  {
+    "currency": "UAH",
+    "callingCode": "380",
+    "region": "Europe",
+    "subregion": "Eastern Europe",
+    "name": "Ukraine",
+    "nameFr": "Ukraine",
+    "isoCode": "UA"
+  },
+  {
+    "currency": "AED",
+    "callingCode": "971",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "United Arab Emirates",
+    "nameFr": "Émirats arabes unis",
+    "isoCode": "AE"
+  },
+  {
+    "currency": "GBP",
+    "callingCode": "44",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "United Kingdom",
+    "nameFr": "Royaume-Uni",
+    "isoCode": "GB"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1",
+    "region": "Americas",
+    "subregion": "North America",
+    "name": "United States",
+    "nameFr": "États-Unis",
+    "isoCode": "US"
+  },
+  {
+    "currency": "USD",
+    "callingCode": "1340",
+    "region": "Americas",
+    "subregion": "Caribbean",
+    "name": "United States Virgin Islands",
+    "nameFr": "Îles Vierges des États-Unis",
+    "isoCode": "VI"
+  },
+  {
+    "currency": "UYU",
+    "callingCode": "598",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Uruguay",
+    "nameFr": "Uruguay",
+    "isoCode": "UY"
+  },
+  {
+    "currency": "UZS",
+    "callingCode": "998",
+    "region": "Asia",
+    "subregion": "Central Asia",
+    "name": "Uzbekistan",
+    "nameFr": "Ouzbékistan",
+    "isoCode": "UZ"
+  },
+  {
+    "currency": "VUV",
+    "callingCode": "678",
+    "region": "Oceania",
+    "subregion": "Melanesia",
+    "name": "Vanuatu",
+    "nameFr": "Vanuatu",
+    "isoCode": "VU"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "3906698",
+    "region": "Europe",
+    "subregion": "Southern Europe",
+    "name": "Vatican City",
+    "nameFr": "Cité du Vatican",
+    "isoCode": "VA"
+  },
+  {
+    "currency": "VEF",
+    "callingCode": "58",
+    "region": "Americas",
+    "subregion": "South America",
+    "name": "Venezuela",
+    "nameFr": "Venezuela",
+    "isoCode": "VE"
+  },
+  {
+    "currency": "VND",
+    "callingCode": "84",
+    "region": "Asia",
+    "subregion": "South-Eastern Asia",
+    "name": "Vietnam",
+    "nameFr": "Viêt Nam",
+    "isoCode": "VN"
+  },
+  {
+    "currency": "XPF",
+    "callingCode": "681",
+    "region": "Oceania",
+    "subregion": "Polynesia",
+    "name": "Wallis and Futuna",
+    "nameFr": "Wallis-et-Futuna",
+    "isoCode": "WF"
+  },
+  {
+    "currency": "MAD",
+    "callingCode": "212",
+    "region": "Africa",
+    "subregion": "Northern Africa",
+    "name": "Western Sahara",
+    "nameFr": "Sahara Occidental",
+    "isoCode": "EH"
+  },
+  {
+    "currency": "YER",
+    "callingCode": "967",
+    "region": "Asia",
+    "subregion": "Western Asia",
+    "name": "Yemen",
+    "nameFr": "Yémen",
+    "isoCode": "YE"
+  },
+  {
+    "currency": "ZMW",
+    "callingCode": "260",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Zambia",
+    "nameFr": "Zambie",
+    "isoCode": "ZM"
+  },
+  {
+    "currency": "ZWL",
+    "callingCode": "263",
+    "region": "Africa",
+    "subregion": "Eastern Africa",
+    "name": "Zimbabwe",
+    "nameFr": "Zimbabwe",
+    "isoCode": "ZW"
+  },
+  {
+    "currency": "EUR",
+    "callingCode": "358",
+    "region": "Europe",
+    "subregion": "Northern Europe",
+    "name": "Åland Islands",
+    "nameFr": "Ahvenanmaa",
+    "isoCode": "AX"
+  }
+]

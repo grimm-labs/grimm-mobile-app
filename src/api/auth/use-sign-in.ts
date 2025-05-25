@@ -9,7 +9,7 @@ type Variables = { phoneNumber: string; code: string };
 export const useSignIn = createMutation<SignInResponse, Variables, AxiosError>({
   mutationFn: async (variables) =>
     client({
-      url: 'auth/login',
+      url: '/auth/login',
       method: 'POST',
       data: variables,
     }).then((response) => response.data),

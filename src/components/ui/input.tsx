@@ -62,7 +62,7 @@ export type InputControllerType<T extends FieldValues> = {
 interface ControlledInputProps<T extends FieldValues> extends NInputProps, InputControllerType<T> {}
 
 export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
-  const { label, error, testID, prefix, suffix, ...inputProps } = props;
+  const { label, error, testID, prefix, suffix, disabled, ...inputProps } = props;
   const [isFocussed, setIsFocussed] = React.useState(false);
   const onBlur = React.useCallback(() => setIsFocussed(false), []);
   const onFocus = React.useCallback(() => setIsFocussed(true), []);
@@ -72,14 +72,14 @@ export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
       inputTv({
         error: Boolean(error),
         focused: isFocussed,
-        disabled: Boolean(props.disabled),
+        disabled: Boolean(disabled),
       }),
-    [error, isFocussed, props.disabled],
+    [error, isFocussed, disabled],
   );
 
   return (
     <View>
-      <View className={styles.container()}>
+      <View className={styles.container()} pointerEvents={disabled ? 'none' : 'auto'}>
         {label && (
           <Text testID={testID ? `${testID}-label` : undefined} className={styles.label()}>
             {label}
@@ -94,6 +94,7 @@ export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
             className={styles.input()}
             onBlur={onBlur}
             onFocus={onFocus}
+            editable={!disabled}
             {...inputProps}
             style={StyleSheet.flatten([{ writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }, { textAlign: I18nManager.isRTL ? 'right' : 'left' }, inputProps.style])}
           />
@@ -101,7 +102,7 @@ export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
         </View>
       </View>
       {error && (
-        <Text testID={testID ? `${testID}-error` : undefined} className="mt-1 text-sm text-danger-400 dark:text-danger-600">
+        <Text testID={testID ? `${testID}-error` : undefined} className="mt-1 text-sm font-bold text-danger-500 dark:text-danger-600">
           {error}
         </Text>
       )}

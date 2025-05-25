@@ -1,8 +1,8 @@
+import type { CountryCode } from 'libphonenumber-js';
+import parsePhoneNumberFromString, { getExampleNumber } from 'libphonenumber-js';
+import examples from 'libphonenumber-js/mobile/examples';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
-
-import countries from '../assets/data/available-countries.json';
-import { CountryManager } from './country-manager';
 
 export function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url));
@@ -20,10 +20,6 @@ export const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_stor
   return store;
 };
 
-export const getCountryManager = () => {
-  return new CountryManager(countries);
-};
-
 export const convertSatsToBtc = (sats: number): string => {
   return (sats / 100_000_000).toFixed(8);
 };
@@ -36,4 +32,13 @@ export const formatBalance = (total: number, unit: 'BTC' | 'SAT'): string => {
     return `${convertSatsToBtc(total)} BTC`;
   }
   return total.toLocaleString();
+};
+
+export const formatPhoneNumber = (number: string, countryCode: CountryCode): string => {
+  const parsedNumber = parsePhoneNumberFromString(number, countryCode);
+  return parsedNumber?.format('E.164') ?? `+237${number}`;
+};
+
+export const getPlaceholderPhoneNumber = (countryCode: CountryCode): string | undefined => {
+  return getExampleNumber(countryCode, examples)?.formatNational();
 };

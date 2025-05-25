@@ -10,7 +10,7 @@ export type ScreenSubtitleProps = {
 
 export const ScreenSubtitle = ({ subtitle, className }: ScreenSubtitleProps) => {
   return (
-    <Text testID="form-subtitle" className={twMerge('text-lg', className)}>
+    <Text testID="form-subtitle" className={twMerge('text-lg font-normal mb-3', className)}>
       {subtitle}
     </Text>
   );
