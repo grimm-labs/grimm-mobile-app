@@ -11,7 +11,7 @@ interface BackButtonProps {
   className?: string;
 }
 
-export const BackButton = memo(({ color = colors.success[600], size = 24, className = 'mr-4' }: BackButtonProps) => {
+export const BackButton = memo(({ color = colors.primary[600], size = 24, className = 'mr-4' }: BackButtonProps) => {
   const router = useRouter();
 
   return (
