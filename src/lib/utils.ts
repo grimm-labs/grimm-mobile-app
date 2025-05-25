@@ -53,18 +53,18 @@ export const beautifyPhoneNumber = (phoneNumber: string, format: 'national' | 'i
 
     switch (format) {
       case 'national':
-        return parsed.formatNational(); // Format national (ex: "693 22 02 22" pour le Cameroun)
+        return parsed.formatNational(); // National format (ex: "693 22 02 22" for Cameroon)
       case 'international':
-        return parsed.formatInternational(); // Format international (ex: "+237 693 22 02 22")
+        return parsed.formatInternational(); // International format (ex: "+237 693 22 02 22")
       case 'e164':
-        return parsed.format('E.164'); // Format E.164 (ex: "+237693220222")
+        return parsed.format('E.164'); // E.164 format (ex: "+237693220222")
       case 'rfc3966':
-        return parsed.format('RFC3966'); // Format RFC3966 (ex: "tel:+237-693-22-02-22")
+        return parsed.format('RFC3966'); // RFC3966 format (ex: "tel:+237-693-22-02-22")
       default:
         return parsed.formatInternational();
     }
   } catch (error) {
-    console.warn('Erreur lors du formatage du numéro:', error);
+    console.warn('Error formatting phone number:', error);
     return phoneNumber;
   }
 };
