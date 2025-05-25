@@ -1,8 +1,9 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { memo } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
-import { Text } from '@/components/ui';
+import { colors } from '@/components/ui';
 
 const HelpButton = memo(() => {
   const router = useRouter();
@@ -13,7 +14,8 @@ const HelpButton = memo(() => {
 
   return (
     <TouchableOpacity onPress={handleHelpPress}>
-      <Text className="font-bold text-success-700">Help</Text>
+      <Ionicons name="chatbubble-ellipses" size={24} color={colors.neutral[400]} />
+      <View className="absolute -right-0.5 -top-1 size-3 items-center justify-center rounded-full bg-primary-600" />
     </TouchableOpacity>
   );
 });

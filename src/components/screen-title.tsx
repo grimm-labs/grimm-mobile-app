@@ -10,7 +10,7 @@ export type ScreenTitleProps = {
 
 export const ScreenTitle = ({ title, className }: ScreenTitleProps) => {
   return (
-    <Text testID="form-title" className={twMerge('text-2xl font-medium', className)}>
+    <Text testID="form-title" className={twMerge('text-3xl font-normal my-3', className)}>
       {title}
     </Text>
   );

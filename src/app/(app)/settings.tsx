@@ -2,28 +2,31 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Alert } from 'react-native';
 
 import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
+import { AppContext } from '@/lib/context';
 
 export default function Settings() {
+  const { setSeedPhrase } = useContext(AppContext);
   const router = useRouter();
   const [isFadeIdEnabled, setIsFaceIdEnabled] = React.useState(false);
+
+  const handleSignOut = () => {
+    setSeedPhrase('');
+    router.push('/');
+  };
 
   const signOut = () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       {
         text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'Sign Out',
-        style: 'destructive',
         onPress: () => {
-          // Sign out logic
+          handleSignOut();
         },
+        style: 'destructive',
       },
     ]);
   };

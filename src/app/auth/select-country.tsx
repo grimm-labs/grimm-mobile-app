@@ -1,61 +1,163 @@
-/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import type { ListRenderItem } from 'react-native';
 import { FlatList } from 'react-native';
+import * as z from 'zod';
 
+import countries from '@/assets/data/countries.json';
 import { HeaderLeft } from '@/components/back-button';
-import { colors, FocusAwareStatusBar, Image, Text, TouchableOpacity, View } from '@/components/ui';
-import type { CountryItem } from '@/lib/country-manager';
-import { getCountryManager } from '@/lib/utils';
+import { colors, ControlledInput, FocusAwareStatusBar, Text, TouchableOpacity, View } from '@/components/ui';
+import type { Country } from '@/interfaces';
+import { AppContext } from '@/lib/context';
 
-interface RenderItemData {
-  index: number;
-  item: CountryItem;
+interface FormData {
+  countrySearch: string;
 }
 
-export default function SelectCountry() {
-  const [selectedCountryCode, setSelectedCountryCode] = useState('CM');
+interface CountryItemProps {
+  country: Country;
+  isSelected: boolean;
+  onPress: (country: Country) => void;
+}
 
-  const router = useRouter();
-  const countryManager = getCountryManager();
+interface EmptyStateProps {
+  searchTerm: string;
+}
 
-  const renderItem = ({ item }: RenderItemData) => {
-    return (
-      <TouchableOpacity
-        className="mb-4 flex flex-row items-center border-b border-gray-200 pb-2"
-        onPress={() => {
-          setSelectedCountryCode(item.code);
-          router.back();
-        }}
-      >
-        <View className="flex-1 flex-row items-center">
-          <Image style={{ width: 35, height: 28 }} className="rounded" contentFit="fill" source={{ uri: item.flag }} />
-          <View className="ml-2 flex flex-col">
-            <Text className="text-lg font-medium text-gray-700">{item.name}</Text>
-            <Text className="text-sm text-gray-500">+{item.callingCode}</Text>
-          </View>
+const searchSchema = z.object({
+  countrySearch: z.string().optional().default(''),
+});
+
+const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelected, onPress }) => {
+  const handlePress = useCallback(() => {
+    onPress(country);
+  }, [country, onPress]);
+
+  return (
+    <TouchableOpacity className="mb-4 flex flex-row items-center border-b border-gray-200 pb-2" onPress={handlePress} activeOpacity={0.7}>
+      <View className="flex-1 flex-row items-center">
+        <View className="flex h-6 w-10 items-center justify-center rounded bg-gray-100">
+          <Text className="text-xs font-bold">{country.isoCode}</Text>
         </View>
-        {item.code === selectedCountryCode && <Ionicons name="checkmark-circle" size={26} color={colors.success[600]} />}
-      </TouchableOpacity>
-    );
-  };
+        <View className="ml-2 flex flex-col">
+          <Text className="text-lg font-medium text-gray-700">{country.name}</Text>
+          <Text className="text-sm text-gray-500">+{country.callingCode}</Text>
+        </View>
+      </View>
+      {isSelected && <Ionicons name="checkmark-circle" size={26} color={colors.success[600]} />}
+    </TouchableOpacity>
+  );
+});
+
+const EmptyState: React.FC<EmptyStateProps> = React.memo(({ searchTerm }) => (
+  <View className="flex-1 items-center justify-center py-8">
+    <Text className="text-neutral-500">{searchTerm ? `No countries found for "${searchTerm}"` : 'No countries available'}</Text>
+  </View>
+));
+
+const normalizeSearchTerm = (term: string): string => {
+  return term.toLowerCase().trim();
+};
+
+const filterCountries = (searchTerm: string): Country[] => {
+  if (!searchTerm.trim()) {
+    return countries;
+  }
+
+  const normalizedTerm = normalizeSearchTerm(searchTerm);
+
+  return countries.filter((country) => {
+    const nameMatch = country.name.toLowerCase().includes(normalizedTerm);
+    const codeMatch = country.isoCode.toLowerCase().includes(normalizedTerm);
+    const callingCodeMatch = country.callingCode.includes(normalizedTerm);
+
+    return nameMatch || codeMatch || callingCodeMatch;
+  });
+};
+
+export default function SelectCountry() {
+  const { selectedCountry, setSelectedCountry } = useContext(AppContext);
+  const router = useRouter();
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(searchSchema),
+    defaultValues: { countrySearch: '' },
+  });
+
+  const { control, watch } = form;
+  const searchValue = watch('countrySearch') || '';
+
+  const filteredCountries = useMemo(() => {
+    return filterCountries(searchValue);
+  }, [searchValue]);
+
+  const handleCountrySelect = useCallback(
+    (country: Country) => {
+      setSelectedCountry(country);
+      router.back();
+    },
+    [setSelectedCountry, router],
+  );
+
+  const renderCountryItem: ListRenderItem<Country> = useCallback(
+    ({ item }) => <CountryItem country={item} isSelected={item.isoCode === selectedCountry.isoCode} onPress={handleCountrySelect} />,
+    [selectedCountry.isoCode, handleCountrySelect],
+  );
+
+  const keyExtractor = useCallback((item: Country) => item.isoCode, []);
+
+  const renderEmptyComponent = useCallback(() => <EmptyState searchTerm={searchValue} />, [searchValue]);
+
+  const screenOptions = useMemo(
+    () => ({
+      headerLeft: HeaderLeft,
+      headerTitle: 'Select your country',
+      headerRight: () => null,
+      headerShadowVisible: false,
+    }),
+    [],
+  );
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerLeft: HeaderLeft,
-          headerTitle: 'Select your country',
-          headerRight: () => null,
-          headerShadowVisible: false,
-        }}
-      />
-
+      <Stack.Screen options={screenOptions} />
       <FocusAwareStatusBar style="dark" />
+
       <View className="flex-1 bg-white">
         <View className="mx-4 flex-1">
-          <FlatList data={countryManager.getAllCountries()} renderItem={renderItem} keyExtractor={(item) => item.code} />
+          <ControlledInput
+            testID="countrySearchInput"
+            name="countrySearch"
+            placeholder="Search for a country"
+            placeholderClassName="text-base"
+            keyboardType="web-search"
+            control={control}
+            autoCapitalize="none"
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+          />
+
+          <FlatList
+            data={filteredCountries}
+            renderItem={renderCountryItem}
+            keyExtractor={keyExtractor}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={renderEmptyComponent}
+            keyboardShouldPersistTaps="handled"
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={20}
+            windowSize={10}
+            initialNumToRender={15}
+            getItemLayout={(data, index) => ({
+              length: 68, // Approximate item height
+              offset: 68 * index,
+              index,
+            })}
+          />
         </View>
       </View>
     </>

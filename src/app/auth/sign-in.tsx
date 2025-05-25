@@ -1,11 +1,11 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
+/* eslint-disable react-native/no-inline-styles */
+import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useRouter } from 'expo-router';
 import type { CountryCode } from 'libphonenumber-js';
-import examples from 'libphonenumber-js/examples.mobile.json';
-import parsePhoneNumberFromString, { getExampleNumber } from 'libphonenumber-js/mobile';
-import React, { useState } from 'react';
+import parsePhoneNumberFromString from 'libphonenumber-js/mobile';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView } from 'react-native';
@@ -15,126 +15,163 @@ import { useGetOtp } from '@/api';
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, ControlledInput, FocusAwareStatusBar, Image, showErrorMessage, Text, View } from '@/components/ui';
-import { getCountryManager } from '@/lib/utils';
+import { Button, colors, ControlledInput, FocusAwareStatusBar, showErrorMessage, Text, View } from '@/components/ui';
+import { AppContext } from '@/lib/context';
+import { formatPhoneNumber, getPlaceholderPhoneNumber } from '@/lib/utils';
 
-export default function Login() {
-  const { mutate: getOTP, isPending } = useGetOtp();
-  const [selectedCountryCode] = useState('CM');
-  const countryManager = getCountryManager();
-  const parseSelectedCountry = countryManager.getCountryByCode(selectedCountryCode);
-  const router = useRouter();
+interface FormData {
+  phoneNumber: string;
+}
 
-  type FormType = z.infer<typeof schema>;
+interface CountryPrefixProps {
+  countryCode: string;
+  onPress: () => void;
+}
 
-  type SignInFormProps = { onSubmit: SubmitHandler<FormType> };
+interface ClearButtonProps {
+  onPress: () => void;
+  visible: boolean;
+}
 
-  const schema = z.object({
-    phoneNumber: z.string({ required_error: 'Phone number is required' }).refine(
-      (value) => {
-        const parsedNumber = parsePhoneNumberFromString(value, selectedCountryCode as CountryCode);
-        return parsedNumber ? parsedNumber.isValid() : false;
-      },
-      {
-        message: 'Phone number is invalid',
-      },
-    ),
+const createPhoneSchema = (countryCode: CountryCode) =>
+  z.object({
+    phoneNumber: z
+      .string({ required_error: 'Phone number is required' })
+      .min(1, 'Phone number is required')
+      .refine(
+        (value) => {
+          const parsedNumber = parsePhoneNumberFromString(value, countryCode);
+          return parsedNumber?.isValid() ?? false;
+        },
+        { message: 'Phone number is invalid' },
+      ),
   });
 
-  const { handleSubmit, control } = useForm<FormType>({ resolver: zodResolver(schema) });
+const CountryPrefix: React.FC<CountryPrefixProps> = React.memo(({ countryCode, onPress }) => (
+  <Pressable onPress={onPress} hitSlop={8}>
+    <View className="flex flex-row items-center justify-center rounded p-1">
+      <Text className="mx-2 text-base font-bold text-neutral-600">+{countryCode}</Text>
+      <Ionicons name="chevron-down-outline" size={24} color={colors.neutral[500]} />
+    </View>
+  </Pressable>
+));
 
-  const formatPhoneNumber = (number: string, countryCode: CountryCode) => {
-    const parsedNumber = parsePhoneNumberFromString(number, countryCode);
-    return parsedNumber ? parsedNumber.format('E.164') : `+${parseSelectedCountry?.callingCode}${number}`;
-  };
+const ClearButton: React.FC<ClearButtonProps> = React.memo(({ onPress, visible }) => {
+  if (!visible) return null;
 
-  const handleFormSubmit: SubmitHandler<FormType> = (data) => {
-    const formattedPhoneNumber = formatPhoneNumber(data.phoneNumber, selectedCountryCode as CountryCode);
-    router.push({
-      pathname: '/auth/sign-in',
-      params: {
-        phoneNumber: formattedPhoneNumber,
-      },
-    });
-    onSubmit({ phoneNumber: formattedPhoneNumber });
-  };
+  return (
+    <Pressable onPress={onPress} hitSlop={8}>
+      <View className="flex flex-row items-center justify-center rounded p-1">
+        <Ionicons name="close-circle-sharp" size={24} color={colors.neutral[500]} />
+      </View>
+    </Pressable>
+  );
+});
 
-  const getPlaceholderPhoneNumber = (countryCode: CountryCode) => getExampleNumber(countryCode, examples)?.formatNational();
+export default function SignIn() {
+  const { selectedCountry } = useContext(AppContext);
+  const { mutate: getOTP, isPending } = useGetOtp();
+  const router = useRouter();
 
-  const onSubmit: SignInFormProps['onSubmit'] = ({ phoneNumber }) => {
-    getOTP(
-      {
-        phoneNumber,
-      },
-      {
-        onSuccess: () => {
-          router.push({
-            pathname: '/auth/sign-in',
-            params: {
-              phoneNumber,
-            },
-          });
+  const schema = useMemo(() => createPhoneSchema(selectedCountry.isoCode as CountryCode), [selectedCountry.isoCode]);
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { phoneNumber: '' },
+  });
+
+  const { handleSubmit, control, setValue, watch, reset } = form;
+  const phoneNumberValue = watch('phoneNumber');
+
+  const placeholder = useMemo(() => getPlaceholderPhoneNumber(selectedCountry.isoCode as CountryCode), [selectedCountry.isoCode]);
+
+  useEffect(() => {
+    reset({ phoneNumber: '' });
+  }, [selectedCountry.isoCode, reset]);
+
+  const handleCountrySelect = useCallback(() => {
+    router.push('/auth/select-country');
+  }, [router]);
+
+  const handleClearInput = useCallback(() => {
+    setValue('phoneNumber', '');
+  }, [setValue]);
+
+  const handleOtpSuccess = useCallback(
+    (phoneNumber: string) => {
+      router.push({
+        pathname: '/auth/verify-otp',
+        params: { phoneNumber },
+      });
+    },
+    [router],
+  );
+
+  const handleOtpError = useCallback((error: unknown) => {
+    console.error('Error sending OTP:', error);
+    showErrorMessage('Sorry, we could not send the verification code. Please try again later.');
+  }, []);
+
+  const onSubmit: SubmitHandler<FormData> = useCallback(
+    (data) => {
+      const formattedPhoneNumber = formatPhoneNumber(data.phoneNumber, selectedCountry.isoCode as CountryCode);
+
+      getOTP(
+        { phoneNumber: formattedPhoneNumber },
+        {
+          onSuccess: () => handleOtpSuccess(formattedPhoneNumber),
+          onError: handleOtpError,
         },
-        onError: (error) => {
-          console.log('error', JSON.stringify(error));
-          showErrorMessage(error?.message);
-        },
-      },
-    );
-  };
+      );
+    },
+    [selectedCountry.isoCode, getOTP, handleOtpSuccess, handleOtpError],
+  );
 
-  const gerPrefix = () => {
-    console.log(parseSelectedCountry);
-    return (
-      <Pressable onPress={() => router.push('/auth/select-country')}>
-        <View className="flex flex-row items-center justify-center rounded p-1">
-          <Image
-            style={{ width: 36, height: 36 }}
-            className="mr-2 rounded-full"
-            contentFit="fill"
-            source={{
-              uri: parseSelectedCountry?.flag,
-            }}
-          />
-          <Text className="text-base font-semibold text-gray-600">+{parseSelectedCountry?.callingCode}</Text>
-        </View>
-      </Pressable>
-    );
-  };
+  const screenOptions = useMemo(
+    () => ({
+      headerShown: true,
+      headerTitle: '',
+      headerLeft: HeaderLeft,
+      headerRight: () => null,
+      headerShadowVisible: false,
+    }),
+    [],
+  );
+
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? 90 : 0;
+  const keyboardBehavior = Platform.OS === 'ios' ? 'padding' : 'height';
 
   return (
     <SafeAreaView className="flex-1">
       <View className="flex h-full px-4">
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: HeaderLeft,
-            headerRight: () => null,
-            headerShadowVisible: false,
-          }}
-        />
-
+        <Stack.Screen options={screenOptions} />
         <FocusAwareStatusBar style="dark" />
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }} className="flex-1" keyboardVerticalOffset={90}>
+
+        <KeyboardAvoidingView behavior={keyboardBehavior} style={{ flex: 1 }} className="flex-1" keyboardVerticalOffset={keyboardVerticalOffset}>
           <View className="flex-1">
             <View className="flex">
-              <ScreenTitle title="What's your phone number ?" />
+              <ScreenTitle title="Welcome to Grimm App" />
               <View className="mb-4" />
-              <ScreenSubtitle subtitle="We'll send you a verification code so make sure it's your number and valid" />
+
+              <ScreenSubtitle subtitle="We'll send you a verification code to this number" />
               <View className="mb-4" />
+
               <ControlledInput
                 testID="phoneNumberInput"
                 control={control}
                 name="phoneNumber"
-                placeholder={getPlaceholderPhoneNumber(selectedCountryCode as CountryCode)}
-                placeholderClassName="text-base"
+                placeholder={placeholder}
+                placeholderClassName="text-base font-semibold"
                 textContentType="telephoneNumber"
                 keyboardType="number-pad"
-                prefix={gerPrefix()}
+                prefix={<CountryPrefix countryCode={selectedCountry.callingCode} onPress={handleCountrySelect} />}
+                suffix={<ClearButton onPress={handleClearInput} visible={(phoneNumberValue?.length ?? 0) >= 1} />}
+                disabled={isPending}
               />
+
               <View className="mb-4" />
-              <Button testID="login-button" label="Continue" fullWidth={true} size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(handleFormSubmit)} loading={isPending} />
+
+              <Button disabled={isPending} testID="login-button" label="Continue" fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} loading={isPending} />
             </View>
           </View>
         </KeyboardAvoidingView>

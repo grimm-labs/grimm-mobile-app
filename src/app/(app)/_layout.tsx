@@ -45,17 +45,20 @@ const TabLayout = () => {
 
   useEffect(() => {
     if (isDataLoaded) {
-      const timer = setTimeout(hideSplash, SPLASH_HIDE_DELAY);
-      return () => clearTimeout(timer);
+      if (seedPhrase?.length === 0) {
+        hideSplash();
+      } else {
+        const timer = setTimeout(hideSplash, SPLASH_HIDE_DELAY);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [hideSplash, isDataLoaded]);
+  }, [hideSplash, isDataLoaded, seedPhrase?.length]);
 
-  // Return null during loading to avoid rendering partial UI
   if (!isDataLoaded) {
     return null;
   }
 
-  if (!seedPhrase?.length) {
+  if (seedPhrase?.length === 0) {
     return <Redirect href="/onboarding" />;
   }
 
