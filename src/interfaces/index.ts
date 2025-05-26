@@ -7,3 +7,8 @@ export interface Country {
   nameFr: string;
   isoCode: string;
 }
+
+export interface ClearButtonProps {
+  onPress: () => void;
+  visible: boolean;
+}

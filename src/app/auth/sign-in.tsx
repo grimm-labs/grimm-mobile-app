@@ -50,7 +50,7 @@ const createPhoneSchema = (countryCode: CountryCode) =>
 const CountryPrefix: React.FC<CountryPrefixProps> = React.memo(({ countryCode, onPress }) => (
   <Pressable onPress={onPress} hitSlop={8}>
     <View className="flex flex-row items-center justify-center rounded p-1">
-      <Text className="mx-2 text-base font-bold text-neutral-600">+{countryCode}</Text>
+      <Text className="mx-2 text-base font-bold text-neutral-500">+{countryCode}</Text>
       <Ionicons name="chevron-down-outline" size={24} color={colors.neutral[500]} />
     </View>
   </Pressable>
@@ -161,7 +161,7 @@ export default function SignIn() {
                 control={control}
                 name="phoneNumber"
                 placeholder={placeholder}
-                placeholderClassName="text-base font-semibold"
+                placeholderClassName="text-base text-neutral-500"
                 textContentType="telephoneNumber"
                 keyboardType="number-pad"
                 prefix={<CountryPrefix countryCode={selectedCountry.callingCode} onPress={handleCountrySelect} />}

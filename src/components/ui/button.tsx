@@ -19,7 +19,7 @@ const button = tv({
         indicator: 'text-white dark:text-black',
       },
       secondary: {
-        container: 'bg-success-700',
+        container: 'bg-primary-600',
         label: 'text-primary-600',
         indicator: 'text-white',
       },
