@@ -86,7 +86,7 @@ export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
           </Text>
         )}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {prefix && <View>{prefix}</View>}
+          {prefix && <View className="ml-2">{prefix}</View>}
           <NTextInput
             testID={testID}
             ref={ref}
@@ -98,7 +98,7 @@ export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
             {...inputProps}
             style={StyleSheet.flatten([{ writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }, { textAlign: I18nManager.isRTL ? 'right' : 'left' }, inputProps.style])}
           />
-          {suffix && <View>{suffix}</View>}
+          {suffix && <View className="mr-2">{suffix}</View>}
         </View>
       </View>
       {error && (

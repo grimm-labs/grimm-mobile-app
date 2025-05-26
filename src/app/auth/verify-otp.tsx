@@ -1,15 +1,17 @@
 /* eslint-disable max-lines-per-function */
 import type { AxiosError } from 'axios';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 
+import type { SignInResponse } from '@/api';
 import { useSignIn } from '@/api';
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
 import { Button, colors, FocusAwareStatusBar, showErrorMessage, View } from '@/components/ui';
+import { AppContext } from '@/lib/context';
 import { beautifyPhoneNumber } from '@/lib/utils';
 
 type SearchParams = {
@@ -42,11 +44,10 @@ export default function VerifyOTP() {
   const { phoneNumber } = useLocalSearchParams<SearchParams>();
   const [otpCode, setOtpCode] = useState<string>('');
   const { mutate: processSignIn, isPending } = useSignIn();
+  const { setUserToken } = useContext(AppContext);
 
   const formattedPhoneNumber = useMemo(() => beautifyPhoneNumber(phoneNumber, 'international'), [phoneNumber]);
-
   const isOtpValid = useMemo(() => otpCode.length === OTP_LENGTH, [otpCode]);
-
   const canSubmit = useMemo(() => isOtpValid && !isPending, [isOtpValid, isPending]);
 
   const extractErrorMessage = useCallback((error: AxiosError): string => {
@@ -63,9 +64,13 @@ export default function VerifyOTP() {
     [extractErrorMessage],
   );
 
-  const handleSignInSuccess = useCallback(() => {
-    router.push('/auth/create-or-import-wallet');
-  }, [router]);
+  const handleSignInSuccess = useCallback(
+    (response: SignInResponse) => {
+      setUserToken({ access: response.accessToken, refresh: response.refreshToken });
+      router.push('/auth/create-or-import-wallet');
+    },
+    [router, setUserToken],
+  );
 
   const handleOtpChange = useCallback((text: string) => {
     setOtpCode(text);

@@ -6,6 +6,8 @@ import React, { createContext, useCallback, useEffect, useState } from 'react';
 import type { Country } from '@/interfaces';
 import { useSecureStorage } from '@/lib/hooks';
 
+import type { TokenType } from '../auth/utils';
+
 type Props = PropsWithChildren<{}>;
 
 type defaultContextType = {
@@ -14,11 +16,13 @@ type defaultContextType = {
   isDataLoaded: boolean;
   seedPhrase: string;
   selectedCountry: Country;
+  userToken: TokenType | null;
   setHideBalance: (hideBalance: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
   resetAppData: () => void;
   setSeedPhrase: (seedPhrase: string) => void;
   setSelectedCountry: (country: Country) => void;
+  setUserToken: (token: TokenType | null) => void;
 };
 
 const defaultContext: defaultContextType = {
@@ -35,11 +39,13 @@ const defaultContext: defaultContextType = {
     nameFr: 'Cameroun',
     isoCode: 'CM',
   },
+  userToken: null,
   setHideBalance: () => {},
   setOnboarding: () => {},
   resetAppData: () => {},
   setSeedPhrase: () => {},
   setSelectedCountry: () => {},
+  setUserToken: () => {},
 };
 
 export const AppContext = createContext<defaultContextType>(defaultContext);
@@ -50,11 +56,13 @@ export const AppContextProvider = ({ children }: Props) => {
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
   const [seedPhrase, _setSeedPhrase] = useState(defaultContext.seedPhrase);
   const [selectedCountry, _setSelectedCountry] = useState<Country>(defaultContext.selectedCountry);
+  const [userToken, _setUserToken] = useState<TokenType | null>(defaultContext.userToken);
 
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
   const { getItem: _getOnboarding, setItem: _updateOnboarding } = useAsyncStorage('onboarding');
   const { getItem: _getSelectedCountry, setItem: _updateSelectedCountry } = useAsyncStorage('selectedCountry');
   const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase } = useSecureStorage('seedPhrase');
+  const { getItem: _getUserToken, setItem: _updateUserToken } = useAsyncStorage('userToken');
 
   const _loadHideBalance = useCallback(async () => {
     const ob = await _getHideBalance();
@@ -77,6 +85,13 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   }, [_getSelectedCountry, _setSelectedCountry]);
 
+  const _loadUserToken = useCallback(async () => {
+    const ob = await _getUserToken();
+    if (ob !== null) {
+      _setUserToken(JSON.parse(ob));
+    }
+  }, [_getUserToken, _setUserToken]);
+
   const _loadSeedPhrase = useCallback(async () => {
     const ob = await _getSeedPhrase();
     if (ob !== null) {
@@ -87,7 +102,7 @@ export const AppContextProvider = ({ children }: Props) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([_loadHideBalance(), _loadOnboarding(), _loadSelectedCountry(), _loadSeedPhrase()]);
+        await Promise.all([_loadHideBalance(), _loadOnboarding(), _loadSelectedCountry(), _loadUserToken(), _loadSeedPhrase()]);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -96,7 +111,7 @@ export const AppContextProvider = ({ children }: Props) => {
     };
 
     loadData();
-  }, [_loadHideBalance, _loadOnboarding, _loadSelectedCountry, _loadSeedPhrase]);
+  }, [_loadHideBalance, _loadOnboarding, _loadSelectedCountry, _loadUserToken, _loadSeedPhrase]);
 
   const setOnboarding = useCallback(
     async (arg: boolean) => {
@@ -111,16 +126,6 @@ export const AppContextProvider = ({ children }: Props) => {
     [_setOnboarding, _updateOnboarding],
   );
 
-  const resetAppData = useCallback(async () => {
-    try {
-      await setOnboarding(true);
-    } catch (e) {
-      console.error(`[AsyncStorage] (Reset app data) Error loading data: ${e}`);
-
-      throw new Error('Unable to reset app data');
-    }
-  }, [setOnboarding]);
-
   const setHideBalance = useCallback(
     async (arg: boolean) => {
       try {
@@ -132,6 +137,19 @@ export const AppContextProvider = ({ children }: Props) => {
       }
     },
     [_setHideBalance, _updateHideBalance],
+  );
+
+  const setUserToken = useCallback(
+    async (arg: TokenType | null) => {
+      try {
+        await _setUserToken(arg);
+        await _updateUserToken(JSON.stringify(arg));
+      } catch (e) {
+        console.error(`[AsyncStorage] (userToken) Error saving data: ${e} [${JSON.stringify(arg)}]`);
+        throw new Error('Error setting userToken');
+      }
+    },
+    [_setUserToken, _updateUserToken],
   );
 
   const setSeedPhrase = useCallback(
@@ -160,6 +178,16 @@ export const AppContextProvider = ({ children }: Props) => {
     [_setSelectedCountry, _updateSelectedCountry],
   );
 
+  const resetAppData = useCallback(async () => {
+    try {
+      await setOnboarding(true);
+      await setUserToken(null);
+    } catch (e) {
+      console.error(`[AsyncStorage] (Reset app data) Error loading data: ${e}`);
+      throw new Error('Unable to reset app data');
+    }
+  }, [setOnboarding, setUserToken]);
+
   return (
     <AppContext.Provider
       value={{
@@ -168,11 +196,13 @@ export const AppContextProvider = ({ children }: Props) => {
         isDataLoaded,
         seedPhrase,
         selectedCountry,
+        userToken,
         setHideBalance,
         setOnboarding,
         resetAppData,
         setSeedPhrase,
         setSelectedCountry,
+        setUserToken,
       }}
     >
       {children}
