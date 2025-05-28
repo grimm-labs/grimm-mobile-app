@@ -35,7 +35,8 @@ const OtpInputTheme = {
     fontWeight: 'bold' as const,
   },
   pinCodeContainerStyle: {
-    borderWidth: 2,
+    borderWidth: 1,
+    borderRadius: 6,
   },
 } as const;
 
@@ -67,7 +68,7 @@ export default function VerifyOTP() {
   const handleSignInSuccess = useCallback(
     (response: SignInResponse) => {
       setUserToken({ access: response.accessToken, refresh: response.refreshToken });
-      router.push('/auth/create-or-import-wallet');
+      router.push('/auth/create-or-import-seed');
     },
     [router, setUserToken],
   );
@@ -108,10 +109,10 @@ export default function VerifyOTP() {
 
         {/* Header Section */}
         <View className="flex justify-center">
-          <ScreenTitle title="Enter authentication code" />
+          <ScreenTitle title="We just sent you an SMS" />
           <View className="mb-6" />
 
-          <ScreenSubtitle subtitle={`A verification code has been sent to your mobile number ${formattedPhoneNumber}`} />
+          <ScreenSubtitle subtitle={`To confirm phone number, Please enter the 6 digit pin we sent to ${formattedPhoneNumber}`} />
           <View className="mb-8" />
 
           {/* OTP Input */}

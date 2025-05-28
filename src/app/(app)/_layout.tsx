@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
-import React, { memo, useCallback, useContext, useEffect } from 'react';
+import React, { memo, useCallback, useContext, useEffect, useRef } from 'react';
 
 import { colors } from '@/components/ui';
 import { AppContext } from '@/lib/context';
@@ -38,9 +38,13 @@ const tabBarIcon =
 
 const TabLayout = () => {
   const { isDataLoaded, seedPhrase } = useContext(AppContext);
+  const splashHiddenRef = useRef(false);
 
   const hideSplash = useCallback(async () => {
-    await SplashScreen.hideAsync();
+    if (!splashHiddenRef.current) {
+      splashHiddenRef.current = true;
+      await SplashScreen.hideAsync();
+    }
   }, []);
 
   useEffect(() => {
@@ -53,6 +57,14 @@ const TabLayout = () => {
       }
     }
   }, [hideSplash, isDataLoaded, seedPhrase?.length]);
+
+  useEffect(() => {
+    return () => {
+      if (!splashHiddenRef.current) {
+        hideSplash();
+      }
+    };
+  }, [hideSplash]);
 
   if (!isDataLoaded) {
     return null;

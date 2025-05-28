@@ -50,6 +50,7 @@
     "@tanstack/react-query": "^5.52.1",
     "app-icon-badge": "^0.1.2",
     "axios": "^1.7.5",
+    "bdk-rn": "^0.30.0",
     "bignumber.js": "^9.1.2",
     "expo": "~53.0.9",
     "expo-constants": "~17.1.6",

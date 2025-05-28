@@ -1,3 +1,4 @@
+import { Mnemonic } from 'bdk-rn';
 import type { CountryCode } from 'libphonenumber-js';
 import parsePhoneNumberFromString, { getExampleNumber, parsePhoneNumber } from 'libphonenumber-js';
 import examples from 'libphonenumber-js/mobile/examples';
@@ -66,5 +67,45 @@ export const beautifyPhoneNumber = (phoneNumber: string, format: 'national' | 'i
   } catch (error) {
     console.warn('Error formatting phone number:', error);
     return phoneNumber;
+  }
+};
+
+/**
+ * Validates a BIP39 mnemonic phrase
+ * @param mnemonic - The mnemonic phrase to validate
+ * @param allowedWordCounts - Allowed word counts (default: 12 and 24 words)
+ * @returns Promise<boolean> - true if the mnemonic is valid, false otherwise
+ */
+export const isMnemonicValid = async (mnemonic: string, allowedWordCounts: number[] = [12, 24]): Promise<boolean> => {
+  if (!mnemonic || typeof mnemonic !== 'string') {
+    return false;
+  }
+
+  const normalizedMnemonic = mnemonic.trim().toLowerCase().replace(/\s+/g, ' '); // Replace multiple spaces with single space
+
+  if (!normalizedMnemonic) {
+    return false;
+  }
+
+  const words = normalizedMnemonic.split(' ');
+  const wordCount = words.length;
+
+  if (!allowedWordCounts.includes(wordCount)) {
+    return false;
+  }
+
+  if (words.some((word) => !word || word.length === 0)) {
+    return false;
+  }
+
+  // BIP39 validation via Bdk-rn
+  try {
+    await new Mnemonic().fromString(normalizedMnemonic);
+    return true;
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('Mnemonic validation failed:', error);
+    }
+    return false;
   }
 };
