@@ -171,7 +171,7 @@ export default function SignIn() {
 
               <View className="mb-4" />
 
-              <Button disabled={isPending} testID="login-button" label="Continue" fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} loading={isPending} />
+              <Button disabled={isPending} testID="login-button" label="Send code" fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} loading={isPending} />
             </View>
           </View>
         </KeyboardAvoidingView>

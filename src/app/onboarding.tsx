@@ -59,7 +59,7 @@ function Onboarding() {
           </View>
         </View>
 
-        <View className="mb-4">
+        <View className="mb-8">
           <Footer onGetStarted={handleGetStarted} />
         </View>
       </View>

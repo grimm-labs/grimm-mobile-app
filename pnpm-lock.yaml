@@ -39,8 +39,8 @@ importers:
         specifier: ^1.7.5
         version: 1.7.5
       bdk-rn:
-        specifier: ^0.30.0
-        version: 0.30.0(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+        specifier: https://github.com/grimm-labs/bdk-rn.git
+        version: https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/9c9b9606bc0827f2f51886d98b4b108a8db97b6a(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -126,8 +126,8 @@ importers:
         specifier: ~2.24.0
         version: 2.24.0(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-keyboard-controller:
-        specifier: ^1.13.2
-        version: 1.13.2(react-native-reanimated@3.17.5(@babel/core@7.26.0)(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+        specifier: ^1.17.3
+        version: 1.17.3(react-native-reanimated@3.17.5(@babel/core@7.26.0)(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-otp-entry:
         specifier: ^1.8.4
         version: 1.8.4(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
@@ -314,6 +314,10 @@ packages:
     resolution: {integrity: sha512-RJlIHRueQgwWitWgF8OdFYGZX328Ax5BCemNGlqHfplnRT9ESi8JkFlvaVYbS+UubVY6dpv87Fs2u5M29iNFVQ==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/code-frame@7.27.1':
+    resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/compat-data@7.26.2':
     resolution: {integrity: sha512-Z0WgzSEa+aUcdiJuCIqgujCshpMWgUpgOxXotrYPSA53hA3qopNaqcJpyr0hVb1FeWdnqFA35/fUtXgBK8srQg==}
     engines: {node: '>=6.9.0'}
@@ -331,6 +335,10 @@ packages:
 
   '@babel/generator@7.26.2':
     resolution: {integrity: sha512-zevQbhbau95nkoxSq3f/DC/SC+EEOUZd3DYqfSkMhY2/wfSeaHV1Ew4vk8e+x8lja31IbyuUa2uQ3JONqKbysw==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/generator@7.27.3':
+    resolution: {integrity: sha512-xnlJYj5zepml8NXtjkG0WquFUv8RskFqyFcVgTBp5k+NaA/8uw/K+OSVf8AMGw5e9HKP2ETd5xpK5MLZQD6b4Q==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-annotate-as-pure@7.25.9':
@@ -404,8 +412,16 @@ packages:
     resolution: {integrity: sha512-4A/SCr/2KLd5jrtOMFzaKjVtAei3+2r/NChoBNoZ3EyP/+GlhoaEGoWOZUmFmoITP7zOJyHIMm+DYRd8o3PvHA==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/helper-string-parser@7.27.1':
+    resolution: {integrity: sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/helper-validator-identifier@7.25.9':
     resolution: {integrity: sha512-Ed61U6XJc3CVRfkERJWDz4dJwKe7iLmmJsbOGu9wSloNSFttHV0I8g6UAgb7qnK5ly5bGLPd4oXZlxCdANBOWQ==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/helper-validator-identifier@7.27.1':
+    resolution: {integrity: sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-validator-option@7.25.9':
@@ -426,6 +442,11 @@ packages:
 
   '@babel/parser@7.26.2':
     resolution: {integrity: sha512-DWMCZH9WA4Maitz2q21SRKHo9QXZxkDsbNZoVD62gusNtNBBqDg9i7uOhASfTfIGNzW+O+r7+jAlM8dwphcJKQ==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
+
+  '@babel/parser@7.27.4':
+    resolution: {integrity: sha512-BRmLHGwpUqLFR2jzx9orBuX/ABDkj2jLKOXrHDTN2aOKL+jFDDKaRNo9nyYsIl9h/UE/7lMKdDjKQQyxKKDZ7g==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -810,12 +831,24 @@ packages:
     resolution: {integrity: sha512-9DGttpmPvIxBb/2uwpVo3dqJ+O6RooAFOS+lB+xDqoE2PVCE8nfoHMdZLpfCQRLwvohzXISPZcgxt80xLfsuwg==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/template@7.27.2':
+    resolution: {integrity: sha512-LPDZ85aEJyYSd18/DkjNh4/y1ntkE5KwUHWTiqgRxruuZL2F1yuHligVHLvcHY2vMHXttKFpJn6LwfI7cw7ODw==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/traverse@7.25.9':
     resolution: {integrity: sha512-ZCuvfwOwlz/bawvAuvcj8rrithP2/N55Tzz342AkTvq4qaWbGfmCk/tKhNaV2cthijKrPAA8SRJV5WWe7IBMJw==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/traverse@7.27.4':
+    resolution: {integrity: sha512-oNcu2QbHqts9BtOWJosOVJapWjBDSxGCpFvikNR5TGDYDQf3JwpIoMzIKrvfoti93cLfPJEG4tH9SPVeyCGgdA==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/types@7.26.0':
     resolution: {integrity: sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.27.3':
+    resolution: {integrity: sha512-Y1GkI4ktrtvmawoSq+4FCVHNryea6uR+qUQy0AGxLSsjCX0nVmkYQMBLHDkXZuo5hGx7eYdnIaslsdBFm7zbUw==}
     engines: {node: '>=6.9.0'}
 
   '@bcoe/v8-coverage@0.2.3':
@@ -1323,6 +1356,10 @@ packages:
     resolution: {integrity: sha512-IzL8ZoEDIBRWEzlCcRhOaCupYyN5gdIK+Q6fbFdPDg6HqX6jpkItn7DFIpW9LQzXG6Df9sA7+OKnq0qlz/GaQg==}
     engines: {node: '>=6.0.0'}
 
+  '@jridgewell/gen-mapping@0.3.8':
+    resolution: {integrity: sha512-imAbBGkb+ebQyxKgzv5Hu2nmROxoDOXHh80evxdoXNOrvAnVx7zimzc1Oo5h9RlfV4vPXaE2iM5pOFbvOCClWA==}
+    engines: {node: '>=6.0.0'}
+
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
     engines: {node: '>=6.0.0'}
@@ -1620,8 +1657,8 @@ packages:
   '@types/eslint@9.6.1':
     resolution: {integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==}
 
-  '@types/estree@1.0.6':
-    resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
+  '@types/estree@1.0.7':
+    resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -1902,6 +1939,11 @@ packages:
 
   acorn@8.14.0:
     resolution: {integrity: sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
+
+  acorn@8.14.1:
+    resolution: {integrity: sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -2199,8 +2241,9 @@ packages:
   bcrypt-pbkdf@1.0.2:
     resolution: {integrity: sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w==}
 
-  bdk-rn@0.30.0:
-    resolution: {integrity: sha512-9gOJnSvoow4IR5Ezs4vCgrY+9QhrQ0Umj0DXl03G/bCbjMHfiJTZK6v1I3c0e4pkJJLOTjdpr4iTKPJ1/BSm/w==}
+  bdk-rn@https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/9c9b9606bc0827f2f51886d98b4b108a8db97b6a:
+    resolution: {tarball: https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/9c9b9606bc0827f2f51886d98b4b108a8db97b6a}
+    version: 0.31.0
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -2717,6 +2760,15 @@ packages:
       supports-color:
         optional: true
 
+  debug@4.4.1:
+    resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
   decimal.js@10.4.3:
     resolution: {integrity: sha512-VBBaLc1MgL5XpzgIP7ny5Z6Nx3UrRkIViUkPUdtl9aya5amy3De1gsUUSB1g3+3sExYNjCAsAznmukyxCb1GRA==}
 
@@ -2905,6 +2957,10 @@ packages:
     resolution: {integrity: sha512-LMHl3dXhTcfv8gM4kEzIUeTQ+7fpdA0l2tUf34BddXPkz2A5xJ5L/Pchd5BL6rdccM9QGvu0sWZzK1Z1t4wwyg==}
     engines: {node: '>=10.13.0'}
 
+  enhanced-resolve@5.18.1:
+    resolution: {integrity: sha512-ZSW3ma5GkcQBIpwZTSRAI8N71Uuwgs93IezB7mf7R60tC8ZbJideoDNKjHn2O9KIlx6rkGTTEk1xUCK2E1Y2Yg==}
+    engines: {node: '>=10.13.0'}
+
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
@@ -2946,8 +3002,8 @@ packages:
     resolution: {integrity: sha512-tpxqxncxnpw3c93u8n3VOzACmRFoVmWJqbWXvX/JfKbkhBw1oslgPrUfeSt2psuqyEJFD6N/9lg5i7bsKpoq+Q==}
     engines: {node: '>= 0.4'}
 
-  es-module-lexer@1.5.4:
-    resolution: {integrity: sha512-MVNK56NiMrOwitFB7cqDwq0CQutbw+0BvLshJSse0MUNU+y1FC3bUS/AQg7oUng+/wKrrki7JfmwtVHkVfPLlw==}
+  es-module-lexer@1.7.0:
+    resolution: {integrity: sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA==}
 
   es-object-atoms@1.0.0:
     resolution: {integrity: sha512-MZ4iQ6JwHOBQjahnjwaC1ZtIBH+2ohjamzAO3oaHcXYup7qxjF2fixyH+Q71voWHeOkI2q/TnJao/KfXYIZWbw==}
@@ -4478,6 +4534,11 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
+  jsesc@3.1.0:
+    resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
+    engines: {node: '>=6'}
+    hasBin: true
+
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
@@ -5664,8 +5725,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  react-native-keyboard-controller@1.13.2:
-    resolution: {integrity: sha512-FZkxByqboqa2bq2fXtEnD7f78VmKbu5cHjEfubHfV2ZtkGolZ01XTqKkEQ172GvFSjC5iuF1L3h7C4g8R6Xq9Q==}
+  react-native-keyboard-controller@1.17.3:
+    resolution: {integrity: sha512-e17P/+Wu1rcVN+F5fkqWyq7oX7pf0LT+tZPwWJQyF3CN9X0EOtbSfoGazsjagt0BnIXDCGYFqQG8Xf39y8+szg==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -5997,6 +6058,10 @@ packages:
   schema-utils@4.2.0:
     resolution: {integrity: sha512-L0jRsrPpjdckP3oPug3/VxNKt2trR8TcabrM6FOAAlvC/9Phcmm+cuAgTlxBqdBR1WJx7Naj9WHw+aOmheSVbw==}
     engines: {node: '>= 12.13.0'}
+
+  schema-utils@4.3.2:
+    resolution: {integrity: sha512-Gn/JaSk/Mt9gYubxTtSn/QCV4em9mpAPiR1rqy/Ocu19u/G9J5WWdNoUT4SiV6mFC3y6cxyFcFwdzPM3FgxGAQ==}
+    engines: {node: '>= 10.13.0'}
 
   scoped-regex@3.0.0:
     resolution: {integrity: sha512-yEsN6TuxZhZ1Tl9iB81frTNS292m0I/IG7+w8lTvfcJQP2x3vnpOoevjBoE3Np5A6KnZM2+RtVenihj9t6NiYg==}
@@ -6385,6 +6450,10 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
 
+  tapable@2.2.2:
+    resolution: {integrity: sha512-Re10+NauLTMCudc7T5WLFLAwDhQ0JWdrMK+9B2M8zR5hRExKmsRDCBA7/aV/pNJFltmBFO5BAMlQFi/vq3nKOg==}
+    engines: {node: '>=6'}
+
   tar@7.4.3:
     resolution: {integrity: sha512-5S7Va8hKfV7W5U6g3aYxXmlPoZVAwUMy9AOKyF2fVuZa2UD3qZjg578OrLRt8PcNN1PleVaL/5/yYATNL0ICUw==}
     engines: {node: '>=18'}
@@ -6401,8 +6470,8 @@ packages:
     resolution: {integrity: sha512-flFL3m4wuixmf6IfhFJd1YPiLiMuxEc8uHRM1buzIeZPm22Au2pDqBJQgdo7n1WfPU1ONFGv7YDwpFBmHGF6lg==}
     engines: {node: '>=12'}
 
-  terser-webpack-plugin@5.3.10:
-    resolution: {integrity: sha512-BKFPWlPDndPs+NGGCr1U59t0XScL5317Y0UReNrHaw9/FwhPENlq6bfgs+4yPfyP51vqC1bQ4rp1EfXW5ZSH9w==}
+  terser-webpack-plugin@5.3.14:
+    resolution: {integrity: sha512-vkZjpUjb6OMS7dhV+tILUW6BhpDR7P2L/aQSAv+Uwk+m8KATX9EccViHTJR2qDtACKPIYndLGCyl3FMo+r2LMw==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
       '@swc/core': '*'
@@ -6419,6 +6488,11 @@ packages:
 
   terser@5.36.0:
     resolution: {integrity: sha512-IYV9eNMuFAV4THUspIRXkLakHnV6XO7FEdtKjf/mDyrnqUg9LnlOn6/RwRvM9SZjR4GUq8Nk8zj67FzVARr74w==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  terser@5.40.0:
+    resolution: {integrity: sha512-cfeKl/jjwSR5ar7d0FGmave9hFGJT8obyo0z+CrQOylLDbk7X81nPU6vq9VORa5jU30SkDnT2FXjLbR8HLP+xA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -6744,8 +6818,8 @@ packages:
   warn-once@0.1.1:
     resolution: {integrity: sha512-VkQZJbO8zVImzYFteBXvBOZEl1qL175WH8VmZcxF2fZAoudNhNDvHi+doCaAEdU2l2vtcIwa2zn0QK5+I1HQ3Q==}
 
-  watchpack@2.4.2:
-    resolution: {integrity: sha512-TnbFSbcOCcDgjZ4piURLCbJ3nJhznVh9kw6F6iokjiFPl8ONxe9A6nMDVXDiNbrSfLILs6vB07F7wLBrwPYzJw==}
+  watchpack@2.4.4:
+    resolution: {integrity: sha512-c5EGNOiyxxV5qmTtAB7rbiXxi1ooX1pQKMLX/MIabJjRA0SJBQOjKF+KSVfHkr9U1cADPon0mRiVe/riyaiDUA==}
     engines: {node: '>=10.13.0'}
 
   wcwidth@1.0.1:
@@ -6764,6 +6838,10 @@ packages:
 
   webpack-sources@3.2.3:
     resolution: {integrity: sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==}
+    engines: {node: '>=10.13.0'}
+
+  webpack-sources@3.3.0:
+    resolution: {integrity: sha512-77R0RDmJfj9dyv5p3bM5pOHa+X8/ZkO9c7kpDstigkC4nIDobadsfSGCwB4bKhMVxqAok8tajaoR8rirM7+VFQ==}
     engines: {node: '>=10.13.0'}
 
   webpack@5.96.1:
@@ -7026,6 +7104,12 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
+  '@babel/code-frame@7.27.1':
+    dependencies:
+      '@babel/helper-validator-identifier': 7.27.1
+      js-tokens: 4.0.0
+      picocolors: 1.1.1
+
   '@babel/compat-data@7.26.2': {}
 
   '@babel/core@7.26.0':
@@ -7064,6 +7148,14 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.25
       jsesc: 3.0.2
 
+  '@babel/generator@7.27.3':
+    dependencies:
+      '@babel/parser': 7.27.4
+      '@babel/types': 7.27.3
+      '@jridgewell/gen-mapping': 0.3.8
+      '@jridgewell/trace-mapping': 0.3.25
+      jsesc: 3.1.0
+
   '@babel/helper-annotate-as-pure@7.25.9':
     dependencies:
       '@babel/types': 7.26.0
@@ -7101,7 +7193,7 @@ snapshots:
       '@babel/core': 7.26.0
       '@babel/helper-compilation-targets': 7.25.9
       '@babel/helper-plugin-utils': 7.25.9
-      debug: 4.4.0
+      debug: 4.4.1
       lodash.debounce: 4.0.8
       resolve: 1.22.8
     transitivePeerDependencies:
@@ -7170,15 +7262,19 @@ snapshots:
 
   '@babel/helper-string-parser@7.25.9': {}
 
+  '@babel/helper-string-parser@7.27.1': {}
+
   '@babel/helper-validator-identifier@7.25.9': {}
+
+  '@babel/helper-validator-identifier@7.27.1': {}
 
   '@babel/helper-validator-option@7.25.9': {}
 
   '@babel/helper-wrap-function@7.25.9':
     dependencies:
-      '@babel/template': 7.25.9
+      '@babel/template': 7.27.2
       '@babel/traverse': 7.25.9
-      '@babel/types': 7.26.0
+      '@babel/types': 7.27.3
     transitivePeerDependencies:
       - supports-color
 
@@ -7197,6 +7293,10 @@ snapshots:
   '@babel/parser@7.26.2':
     dependencies:
       '@babel/types': 7.26.0
+
+  '@babel/parser@7.27.4':
+    dependencies:
+      '@babel/types': 7.27.3
 
   '@babel/plugin-proposal-decorators@7.25.9(@babel/core@7.26.0)':
     dependencies:
@@ -7619,6 +7719,12 @@ snapshots:
       '@babel/parser': 7.26.2
       '@babel/types': 7.26.0
 
+  '@babel/template@7.27.2':
+    dependencies:
+      '@babel/code-frame': 7.27.1
+      '@babel/parser': 7.27.4
+      '@babel/types': 7.27.3
+
   '@babel/traverse@7.25.9':
     dependencies:
       '@babel/code-frame': 7.26.2
@@ -7631,10 +7737,27 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@babel/traverse@7.27.4':
+    dependencies:
+      '@babel/code-frame': 7.27.1
+      '@babel/generator': 7.27.3
+      '@babel/parser': 7.27.4
+      '@babel/template': 7.27.2
+      '@babel/types': 7.27.3
+      debug: 4.4.1
+      globals: 11.12.0
+    transitivePeerDependencies:
+      - supports-color
+
   '@babel/types@7.26.0':
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
+
+  '@babel/types@7.27.3':
+    dependencies:
+      '@babel/helper-string-parser': 7.27.1
+      '@babel/helper-validator-identifier': 7.27.1
 
   '@bcoe/v8-coverage@0.2.3': {}
 
@@ -8548,6 +8671,12 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
       '@jridgewell/trace-mapping': 0.3.25
 
+  '@jridgewell/gen-mapping@0.3.8':
+    dependencies:
+      '@jridgewell/set-array': 1.2.1
+      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/trace-mapping': 0.3.25
+
   '@jridgewell/resolve-uri@3.1.2': {}
 
   '@jridgewell/set-array@1.2.1': {}
@@ -8944,14 +9073,14 @@ snapshots:
   '@types/eslint-scope@3.7.7':
     dependencies:
       '@types/eslint': 9.6.1
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
 
   '@types/eslint@9.6.1':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
       '@types/json-schema': 7.0.15
 
-  '@types/estree@1.0.6': {}
+  '@types/estree@1.0.7': {}
 
   '@types/graceful-fs@4.1.9':
     dependencies:
@@ -9311,6 +9440,8 @@ snapshots:
       acorn: 8.14.0
 
   acorn@8.14.0: {}
+
+  acorn@8.14.1: {}
 
   adm-zip@0.5.16: {}
 
@@ -9680,7 +9811,7 @@ snapshots:
     dependencies:
       tweetnacl: 0.14.5
 
-  bdk-rn@0.30.0(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
+  bdk-rn@https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/9c9b9606bc0827f2f51886d98b4b108a8db97b6a(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
     dependencies:
       '@synonymdev/result': 0.0.2
       adm-zip: 0.5.16
@@ -10211,6 +10342,10 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
+  debug@4.4.1:
+    dependencies:
+      ms: 2.1.3
+
   decimal.js@10.4.3: {}
 
   decode-uri-component@0.2.2: {}
@@ -10363,6 +10498,11 @@ snapshots:
       graceful-fs: 4.2.11
       tapable: 2.2.1
 
+  enhanced-resolve@5.18.1:
+    dependencies:
+      graceful-fs: 4.2.11
+      tapable: 2.2.2
+
   entities@4.5.0: {}
 
   env-editor@0.4.2: {}
@@ -10454,7 +10594,7 @@ snapshots:
       iterator.prototype: 1.1.3
       safe-array-concat: 1.1.2
 
-  es-module-lexer@1.5.4: {}
+  es-module-lexer@1.7.0: {}
 
   es-object-atoms@1.0.0:
     dependencies:
@@ -11575,7 +11715,7 @@ snapshots:
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.3
-      debug: 4.4.0
+      debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
 
@@ -12448,6 +12588,8 @@ snapshots:
 
   jsesc@3.0.2: {}
 
+  jsesc@3.1.0: {}
+
   json-buffer@3.0.1: {}
 
   json-parse-better-errors@1.0.2: {}
@@ -12851,7 +12993,7 @@ snapshots:
   metro-source-map@0.82.3:
     dependencies:
       '@babel/traverse': 7.25.9
-      '@babel/traverse--for-generate-function-map': '@babel/traverse@7.25.9'
+      '@babel/traverse--for-generate-function-map': '@babel/traverse@7.27.4'
       '@babel/types': 7.26.0
       flow-enums-runtime: 0.0.6
       invariant: 2.2.4
@@ -13719,10 +13861,11 @@ snapshots:
       react: 19.0.0
       react-native: 0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0)
 
-  react-native-keyboard-controller@1.13.2(react-native-reanimated@3.17.5(@babel/core@7.26.0)(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
+  react-native-keyboard-controller@1.17.3(react-native-reanimated@3.17.5(@babel/core@7.26.0)(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
       react-native: 0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0)
+      react-native-is-edge-to-edge: 1.1.7(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-reanimated: 3.17.5(@babel/core@7.26.0)(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
 
   react-native-otp-entry@1.8.4(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
@@ -14131,6 +14274,13 @@ snapshots:
       ajv-keywords: 3.5.2(ajv@6.12.6)
 
   schema-utils@4.2.0:
+    dependencies:
+      '@types/json-schema': 7.0.15
+      ajv: 8.17.1
+      ajv-formats: 2.1.1(ajv@8.17.1)
+      ajv-keywords: 5.1.0(ajv@8.17.1)
+
+  schema-utils@4.3.2:
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.17.1
@@ -14572,6 +14722,8 @@ snapshots:
 
   tapable@2.2.1: {}
 
+  tapable@2.2.2: {}
+
   tar@7.4.3:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
@@ -14593,19 +14745,26 @@ snapshots:
       ansi-escapes: 5.0.0
       supports-hyperlinks: 2.3.0
 
-  terser-webpack-plugin@5.3.10(webpack@5.96.1):
+  terser-webpack-plugin@5.3.14(webpack@5.96.1):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
-      schema-utils: 3.3.0
+      schema-utils: 4.3.2
       serialize-javascript: 6.0.2
-      terser: 5.36.0
+      terser: 5.40.0
       webpack: 5.96.1
 
   terser@5.36.0:
     dependencies:
       '@jridgewell/source-map': 0.3.6
       acorn: 8.14.0
+      commander: 2.20.3
+      source-map-support: 0.5.21
+
+  terser@5.40.0:
+    dependencies:
+      '@jridgewell/source-map': 0.3.6
+      acorn: 8.14.1
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -14900,7 +15059,7 @@ snapshots:
 
   warn-once@0.1.1: {}
 
-  watchpack@2.4.2:
+  watchpack@2.4.4:
     dependencies:
       glob-to-regexp: 0.4.1
       graceful-fs: 4.2.11
@@ -14917,18 +15076,20 @@ snapshots:
 
   webpack-sources@3.2.3: {}
 
+  webpack-sources@3.3.0: {}
+
   webpack@5.96.1:
     dependencies:
       '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
       '@webassemblyjs/ast': 1.14.1
       '@webassemblyjs/wasm-edit': 1.14.1
       '@webassemblyjs/wasm-parser': 1.14.1
-      acorn: 8.14.0
+      acorn: 8.14.1
       browserslist: 4.24.2
       chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.17.1
-      es-module-lexer: 1.5.4
+      enhanced-resolve: 5.18.1
+      es-module-lexer: 1.7.0
       eslint-scope: 5.1.1
       events: 3.3.0
       glob-to-regexp: 0.4.1
@@ -14938,10 +15099,10 @@ snapshots:
       mime-types: 2.1.35
       neo-async: 2.6.2
       schema-utils: 3.3.0
-      tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(webpack@5.96.1)
-      watchpack: 2.4.2
-      webpack-sources: 3.2.3
+      tapable: 2.2.2
+      terser-webpack-plugin: 5.3.14(webpack@5.96.1)
+      watchpack: 2.4.4
+      webpack-sources: 3.3.0
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
