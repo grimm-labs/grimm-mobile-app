@@ -21,7 +21,7 @@ interface FooterProps {
 const Footer = memo(({ onGetStarted }: FooterProps) => (
   <>
     <Button label="Get Started" onPress={onGetStarted} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
-    <Text className="mt-4 text-center text-gray-700">
+    <Text className="my-4 text-center text-gray-700">
       By Continuing, You agree to the <Text className="font-semibold text-primary-600 underline">Terms of Service</Text> & <Text className="font-semibold text-primary-600 underline">Privacy Policy</Text>
     </Text>
   </>

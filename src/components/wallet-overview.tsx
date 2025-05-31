@@ -42,13 +42,13 @@ export const WalletOverview = ({ balance }: WalletOverviewProps) => {
       </View>
       <View className="flex flex-row justify-around space-x-1">
         <View className="flex items-center justify-center">
-          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={() => router.push('/')}>
+          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={() => router.push('/send/amount-description')}>
             <Ionicons name="arrow-up-outline" size={28} color="white" />
           </Pressable>
           <Text className="text-sm font-medium">Send</Text>
         </View>
         <View className="flex items-center justify-center">
-          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={() => router.push('/')}>
+          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={() => router.push('/receive/amount-description')}>
             <Ionicons name="add" size={28} color="white" />
           </Pressable>
           <Text className="text-sm font-medium">Receive</Text>

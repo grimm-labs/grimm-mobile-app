@@ -49,7 +49,6 @@ export const BitcoinPriceProvider = ({ children }: Props) => {
         {},
         {
           onSuccess: (response) => {
-            console.log('Bitcoin price updated:', response);
             setBitcoinPrices(response);
           },
           onError: (error) => {

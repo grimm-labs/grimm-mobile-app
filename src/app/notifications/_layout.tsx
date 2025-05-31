@@ -12,6 +12,7 @@ export default function NotificationsScreen() {
       <View className="flex h-full">
         <Stack.Screen
           options={{
+            headerTitleAlign: 'center',
             title: 'Notifications',
             headerShown: true,
             headerShadowVisible: false,
