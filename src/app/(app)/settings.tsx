@@ -8,14 +8,18 @@ import { Alert } from 'react-native';
 import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useBreez } from '@/lib/context/breez-context';
 
 export default function Settings() {
-  const { setSeedPhrase } = useContext(AppContext);
+  const { setSeedPhrase, resetAppData } = useContext(AppContext);
+  const { disconnectBreez } = useBreez();
   const router = useRouter();
   const [isFadeIdEnabled, setIsFaceIdEnabled] = React.useState(false);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     setSeedPhrase('');
+    resetAppData();
+    await disconnectBreez();
     router.push('/');
   };
 
@@ -78,7 +82,7 @@ export default function Settings() {
           </View>
           <View className="m-4">
             <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4" onPress={() => router.push('/need-help')}>
-              <Text className="text-center font-bold text-green-600">Help & Support</Text>
+              <Text className="text-center font-bold text-primary-600">Help & Support</Text>
             </Pressable>
           </View>
           <View className="mx-4 mb-4">
@@ -88,10 +92,11 @@ export default function Settings() {
           </View>
           <View className="mx-10 mb-6">
             <Text className="text-center text-base text-gray-700">
-              Grimm Technologies's <Text className="font-bold underline">Privacy</Text>, <Text className="font-bold underline">Terms</Text> and <Text className="font-bold underline">Open Source Software</Text>
+              Grimm Technologies's <Text className="font-semibold underline">Privacy</Text>, <Text className="font-semibold underline">Terms</Text> and{' '}
+              <Text className="font-semibold underline">Open Source Software</Text>
             </Text>
           </View>
-          <View className="mb-10">
+          <View className="mb-6">
             <Text className="text-center text-sm font-medium text-gray-500">Version 1.0.0 (0394859)</Text>
           </View>
         </ScrollView>

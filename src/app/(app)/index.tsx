@@ -31,15 +31,13 @@ export default function Home() {
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
             <View className="m-4">
               <WalletOverview balance={balance} />
-              {/* <QuickActions /> */}
-              <View className="mb-4" />
-              <View className="mb-4">
-                <Text className="mb-2 text-lg font-medium">On-chain</Text>
-                <WalletView name="Bitcoin" symbol="BTC" type="On-chain" balance={balance.onchain.toNumber()} />
-              </View>
+              <View className="mb-8" />
               <View>
-                <Text className="mb-2 text-lg font-medium">Lightning</Text>
-                <WalletView name="Bitcoin Lighning" symbol="BTC" type="Lightning" balance={balance.lightning.toNumber()} />
+                <View className="flex-row justify-between">
+                  <Text className="mb-2 text-lg font-medium">Spending</Text>
+                  <Ionicons name="chevron-forward-outline" size={22} color="gray" />
+                </View>
+                <WalletView name="Bitcoin" symbol="BTC" type="Lightning" balance={balance.lightning.toNumber()} />
               </View>
             </View>
           </ScrollView>

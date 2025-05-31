@@ -14,6 +14,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { APIProvider } from '@/api';
 import { hydrateAuth } from '@/lib';
 import { AppContextProvider } from '@/lib/context';
+import { BreezProvider } from '@/lib/context/breez-context';
 import { useThemeConfig } from '@/lib/use-theme-config';
 
 export { ErrorBoundary } from 'expo-router';
@@ -50,18 +51,20 @@ function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
   return (
     <AppContextProvider>
-      <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
-        <KeyboardProvider>
-          <ThemeProvider value={theme}>
-            <APIProvider>
-              <BottomSheetModalProvider>
-                {children}
-                <FlashMessage position="top" />
-              </BottomSheetModalProvider>
-            </APIProvider>
-          </ThemeProvider>
-        </KeyboardProvider>
-      </GestureHandlerRootView>
+      <BreezProvider>
+        <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
+          <KeyboardProvider>
+            <ThemeProvider value={theme}>
+              <APIProvider>
+                <BottomSheetModalProvider>
+                  {children}
+                  <FlashMessage position="top" />
+                </BottomSheetModalProvider>
+              </APIProvider>
+            </ThemeProvider>
+          </KeyboardProvider>
+        </GestureHandlerRootView>
+      </BreezProvider>
     </AppContextProvider>
   );
 }

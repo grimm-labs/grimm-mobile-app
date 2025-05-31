@@ -80,6 +80,7 @@ const client = z.object({
 
   // ADD YOUR CLIENT ENV VARS HERE
   API_URL: z.string(),
+  BREEZ_API_KEY: z.string(),
   VAR_NUMBER: z.number(),
   VAR_BOOL: z.boolean(),
 });
@@ -104,6 +105,7 @@ const _clientEnv = {
 
   // ADD YOUR ENV VARS HERE TOO
   API_URL: process.env.API_URL,
+  BREEZ_API_KEY: process.env.BREEZ_API_KEY,
   VAR_NUMBER: Number(process.env.VAR_NUMBER),
   VAR_BOOL: process.env.VAR_BOOL === 'true',
 };

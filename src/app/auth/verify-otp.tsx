@@ -35,7 +35,8 @@ const OtpInputTheme = {
     fontWeight: 'bold' as const,
   },
   pinCodeContainerStyle: {
-    borderWidth: 2,
+    borderWidth: 1,
+    borderRadius: 6,
   },
 } as const;
 
@@ -44,7 +45,7 @@ export default function VerifyOTP() {
   const { phoneNumber } = useLocalSearchParams<SearchParams>();
   const [otpCode, setOtpCode] = useState<string>('');
   const { mutate: processSignIn, isPending } = useSignIn();
-  const { setUserToken } = useContext(AppContext);
+  const { setUserToken, setUser } = useContext(AppContext);
 
   const formattedPhoneNumber = useMemo(() => beautifyPhoneNumber(phoneNumber, 'international'), [phoneNumber]);
   const isOtpValid = useMemo(() => otpCode.length === OTP_LENGTH, [otpCode]);
@@ -67,9 +68,10 @@ export default function VerifyOTP() {
   const handleSignInSuccess = useCallback(
     (response: SignInResponse) => {
       setUserToken({ access: response.accessToken, refresh: response.refreshToken });
-      router.push('/auth/create-or-import-wallet');
+      setUser(response.user);
+      router.push('/auth/create-or-import-seed');
     },
-    [router, setUserToken],
+    [router, setUser, setUserToken],
   );
 
   const handleOtpChange = useCallback((text: string) => {
@@ -108,10 +110,10 @@ export default function VerifyOTP() {
 
         {/* Header Section */}
         <View className="flex justify-center">
-          <ScreenTitle title="Enter authentication code" />
+          <ScreenTitle title="We just sent you an SMS" />
           <View className="mb-6" />
 
-          <ScreenSubtitle subtitle={`A verification code has been sent to your mobile number ${formattedPhoneNumber}`} />
+          <ScreenSubtitle subtitle={`To confirm phone number, Please enter the 6 digit pin we sent to ${formattedPhoneNumber}`} />
           <View className="mb-8" />
 
           {/* OTP Input */}
