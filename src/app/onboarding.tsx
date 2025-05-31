@@ -1,10 +1,9 @@
-/* eslint-disable react/no-unstable-nested-components */
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { memo } from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
-import HelpButton from '@/components/help-button';
-import { Button, FocusAwareStatusBar, Image } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Image } from '@/components/ui';
 
 const Logo = memo(() => <Image className="size-32" source={require('@/assets/images/logo.png')} />);
 
@@ -40,15 +39,20 @@ function Onboarding() {
       <View className="flex h-full justify-between px-4">
         <Stack.Screen
           options={{
-            headerShown: true,
+            headerShown: false,
             headerTitle: '',
-            headerLeft: () => null,
-            headerRight: () => <HelpButton />,
             headerShadowVisible: false,
           }}
         />
-
         <FocusAwareStatusBar style="dark" />
+
+        <View className="mt-6 flex flex-row items-center justify-between py-3">
+          <View className="flex py-3" />
+          <TouchableOpacity onPress={() => router.push('/need-help')}>
+            <Ionicons name="chatbubble-ellipses" size={32} color={colors.neutral[500]} />
+            <View className="-top-0,5 absolute -right-0.5 size-3 items-center justify-center rounded-full bg-primary-600" />
+          </TouchableOpacity>
+        </View>
 
         <View className="flex-1">
           <View className="flex-1 items-center justify-center">
