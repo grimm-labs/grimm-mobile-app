@@ -3,7 +3,7 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 
-import type { Country } from '@/interfaces';
+import type { Country, User } from '@/interfaces';
 import { useSecureStorage } from '@/lib/hooks';
 
 import type { TokenType } from '../auth/utils';
@@ -17,12 +17,14 @@ type defaultContextType = {
   seedPhrase: string;
   selectedCountry: Country;
   userToken: TokenType | null;
+  user: User | null;
   setHideBalance: (hideBalance: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
   resetAppData: () => void;
   setSeedPhrase: (seedPhrase: string) => void;
   setSelectedCountry: (country: Country) => void;
   setUserToken: (token: TokenType | null) => void;
+  setUser: (user: User | null) => void;
 };
 
 const defaultContext: defaultContextType = {
@@ -40,12 +42,14 @@ const defaultContext: defaultContextType = {
     isoCode: 'CM',
   },
   userToken: null,
+  user: null,
   setHideBalance: () => {},
   setOnboarding: () => {},
   resetAppData: () => {},
   setSeedPhrase: () => {},
   setSelectedCountry: () => {},
   setUserToken: () => {},
+  setUser: () => {},
 };
 
 export const AppContext = createContext<defaultContextType>(defaultContext);
@@ -57,12 +61,14 @@ export const AppContextProvider = ({ children }: Props) => {
   const [seedPhrase, _setSeedPhrase] = useState(defaultContext.seedPhrase);
   const [selectedCountry, _setSelectedCountry] = useState<Country>(defaultContext.selectedCountry);
   const [userToken, _setUserToken] = useState<TokenType | null>(defaultContext.userToken);
+  const [user, _setUser] = useState<User | null>(defaultContext.user);
 
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
   const { getItem: _getOnboarding, setItem: _updateOnboarding } = useAsyncStorage('onboarding');
   const { getItem: _getSelectedCountry, setItem: _updateSelectedCountry } = useAsyncStorage('selectedCountry');
   const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getUserToken, setItem: _updateUserToken } = useAsyncStorage('userToken');
+  const { getItem: _getUser, setItem: _updateUser } = useAsyncStorage('user');
 
   const _loadHideBalance = useCallback(async () => {
     const ob = await _getHideBalance();
@@ -92,6 +98,13 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   }, [_getUserToken, _setUserToken]);
 
+  const _loadUser = useCallback(async () => {
+    const ob = await _getUser();
+    if (ob !== null) {
+      _setUser(JSON.parse(ob));
+    }
+  }, [_getUser, _setUser]);
+
   const _loadSeedPhrase = useCallback(async () => {
     const ob = await _getSeedPhrase();
     if (ob !== null) {
@@ -102,7 +115,7 @@ export const AppContextProvider = ({ children }: Props) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([_loadHideBalance(), _loadOnboarding(), _loadSelectedCountry(), _loadUserToken(), _loadSeedPhrase()]);
+        await Promise.all([_loadHideBalance(), _loadOnboarding(), _loadSelectedCountry(), _loadUserToken(), _loadUser(), _loadSeedPhrase()]);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -111,7 +124,7 @@ export const AppContextProvider = ({ children }: Props) => {
     };
 
     loadData();
-  }, [_loadHideBalance, _loadOnboarding, _loadSelectedCountry, _loadUserToken, _loadSeedPhrase]);
+  }, [_loadHideBalance, _loadOnboarding, _loadSelectedCountry, _loadUserToken, _loadUser, _loadSeedPhrase]);
 
   const setOnboarding = useCallback(
     async (arg: boolean) => {
@@ -152,6 +165,19 @@ export const AppContextProvider = ({ children }: Props) => {
     [_setUserToken, _updateUserToken],
   );
 
+  const setUser = useCallback(
+    async (arg: User | null) => {
+      try {
+        await _setUser(arg);
+        await _updateUser(JSON.stringify(arg));
+      } catch (e) {
+        console.error(`[AsyncStorage] (user) Error saving data: ${e} [${JSON.stringify(arg)}]`);
+        throw new Error('Error setting user');
+      }
+    },
+    [_setUser, _updateUser],
+  );
+
   const setSeedPhrase = useCallback(
     async (arg: string) => {
       try {
@@ -182,11 +208,13 @@ export const AppContextProvider = ({ children }: Props) => {
     try {
       await setOnboarding(true);
       await setUserToken(null);
+      await setUser(null);
+      await setSeedPhrase('');
     } catch (e) {
       console.error(`[AsyncStorage] (Reset app data) Error loading data: ${e}`);
       throw new Error('Unable to reset app data');
     }
-  }, [setOnboarding, setUserToken]);
+  }, [setOnboarding, setUserToken, setUser, setSeedPhrase]);
 
   return (
     <AppContext.Provider
@@ -197,12 +225,14 @@ export const AppContextProvider = ({ children }: Props) => {
         seedPhrase,
         selectedCountry,
         userToken,
+        user,
         setHideBalance,
         setOnboarding,
         resetAppData,
         setSeedPhrase,
         setSelectedCountry,
         setUserToken,
+        setUser,
       }}
     >
       {children}

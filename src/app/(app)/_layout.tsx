@@ -4,6 +4,7 @@ import React, { memo, useCallback, useContext, useEffect, useRef } from 'react';
 
 import { colors } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useBreez } from '@/lib/context/breez-context';
 
 const SPLASH_HIDE_DELAY = 1000;
 
@@ -37,7 +38,8 @@ const tabBarIcon =
   ({ color }: { color: string }) => <TabBarIcon name={iconName} color={color} />;
 
 const TabLayout = () => {
-  const { isDataLoaded, seedPhrase } = useContext(AppContext);
+  const { isDataLoaded, seedPhrase, user } = useContext(AppContext);
+  const { isInitialized, initializeBreez } = useBreez();
   const splashHiddenRef = useRef(false);
 
   const hideSplash = useCallback(async () => {
@@ -46,6 +48,12 @@ const TabLayout = () => {
       await SplashScreen.hideAsync();
     }
   }, []);
+
+  useEffect(() => {
+    if (isDataLoaded && user && seedPhrase && seedPhrase.length > 0 && !isInitialized) {
+      initializeBreez();
+    }
+  }, [isDataLoaded, user, seedPhrase, isInitialized, initializeBreez]);
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -70,7 +78,7 @@ const TabLayout = () => {
     return null;
   }
 
-  if (seedPhrase?.length === 0) {
+  if (!user || seedPhrase?.length === 0) {
     return <Redirect href="/onboarding" />;
   }
 

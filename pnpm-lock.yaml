@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@breeztech/react-native-breez-sdk-liquid':
+        specifier: 0.9.2-rc1
+        version: 0.9.2-rc1(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       '@expo/config-plugins':
         specifier: ~10.0.0
         version: 10.0.2
@@ -817,6 +820,12 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+
+  '@breeztech/react-native-breez-sdk-liquid@0.9.2-rc1':
+    resolution: {integrity: sha512-/EGWRVN6fwxkhb5oZx34yijxJOof0Xm5Rb2pZymObjrBTQdZyiNXGDVFIHWw99dmLyjj+uCPOwNA/j/s1e1A0A==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
 
   '@commitlint/cli@19.2.2':
     resolution: {integrity: sha512-P8cbOHfg2PQRzfICLSrzUVOCVMqjEZ8Hlth6mtJ4yOEjT47Q5PbIGymgX3rLVylNw+3IAT2Djn9IJ2wHbXFzBg==}
@@ -7628,6 +7637,11 @@ snapshots:
       '@babel/helper-validator-identifier': 7.25.9
 
   '@bcoe/v8-coverage@0.2.3': {}
+
+  '@breeztech/react-native-breez-sdk-liquid@0.9.2-rc1(react-native@0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      react: 19.0.0
+      react-native: 0.79.2(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0)
 
   '@commitlint/cli@19.2.2(@types/node@22.9.1)(typescript@5.8.3)':
     dependencies:

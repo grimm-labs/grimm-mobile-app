@@ -45,7 +45,7 @@ export default function VerifyOTP() {
   const { phoneNumber } = useLocalSearchParams<SearchParams>();
   const [otpCode, setOtpCode] = useState<string>('');
   const { mutate: processSignIn, isPending } = useSignIn();
-  const { setUserToken } = useContext(AppContext);
+  const { setUserToken, setUser } = useContext(AppContext);
 
   const formattedPhoneNumber = useMemo(() => beautifyPhoneNumber(phoneNumber, 'international'), [phoneNumber]);
   const isOtpValid = useMemo(() => otpCode.length === OTP_LENGTH, [otpCode]);
@@ -68,9 +68,10 @@ export default function VerifyOTP() {
   const handleSignInSuccess = useCallback(
     (response: SignInResponse) => {
       setUserToken({ access: response.accessToken, refresh: response.refreshToken });
+      setUser(response.user);
       router.push('/auth/create-or-import-seed');
     },
-    [router, setUserToken],
+    [router, setUser, setUserToken],
   );
 
   const handleOtpChange = useCallback((text: string) => {

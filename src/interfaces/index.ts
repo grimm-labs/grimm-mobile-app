@@ -12,3 +12,12 @@ export interface ClearButtonProps {
   onPress: () => void;
   visible: boolean;
 }
+
+export interface User {
+  id: string;
+  phoneNumber: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  birthDate?: string;
+}

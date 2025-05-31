@@ -8,14 +8,18 @@ import { Alert } from 'react-native';
 import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useBreez } from '@/lib/context/breez-context';
 
 export default function Settings() {
-  const { setSeedPhrase } = useContext(AppContext);
+  const { setSeedPhrase, resetAppData } = useContext(AppContext);
+  const { disconnectBreez } = useBreez();
   const router = useRouter();
   const [isFadeIdEnabled, setIsFaceIdEnabled] = React.useState(false);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     setSeedPhrase('');
+    resetAppData();
+    await disconnectBreez();
     router.push('/');
   };
 
