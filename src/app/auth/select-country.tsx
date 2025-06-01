@@ -143,7 +143,7 @@ export default function SelectCountry() {
           <ControlledInput
             testID="countrySearchInput"
             name="countrySearch"
-            placeholder="Search for a country"
+            placeholder="Search country..."
             placeholderClassName="text-base"
             keyboardType="web-search"
             control={control}
@@ -170,7 +170,7 @@ export default function SelectCountry() {
             windowSize={10}
             initialNumToRender={15}
             getItemLayout={(data, index) => ({
-              length: 68, // Approximate item height
+              length: 68,
               offset: 68 * index,
               index,
             })}

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 
 import { Image, Text, View } from '@/components/ui';
-import { formatBalance } from '@/lib';
+import { formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 
 type WalletType = 'On-chain' | 'Lightning' | 'Liquid';
@@ -25,9 +25,9 @@ const getWalletIcon = (type: WalletType) => {
 };
 
 export const WalletView = ({ name, symbol, type, balance }: Props) => {
-  const { hideBalance } = useContext(AppContext);
+  const { hideBalance, selectedCountry } = useContext(AppContext);
   const selectedBitcoinUnit = 'SAT';
-  const selectedFiatCurrency = 'XAF';
+  const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   const walletIcon = getWalletIcon(type);
 

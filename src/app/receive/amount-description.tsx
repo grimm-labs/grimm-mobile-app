@@ -2,13 +2,16 @@
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Alert, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
 import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
+import { getFiatCurrency } from '@/lib';
+import { AppContext } from '@/lib/context';
 
 export default function EnterAmountScreen() {
+  const { selectedCountry } = useContext(AppContext);
   const [satsAmount, setSatsAmount] = useState('0');
   const [fcfaAmount, setFcfaAmount] = useState('0');
   const router = useRouter();
@@ -16,7 +19,9 @@ export default function EnterAmountScreen() {
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [validationError, setValidationError] = useState('');
 
-  const SATS_TO_FCFA_RATE = 0.604; // 1 sat = 0.6 FCFA
+  const SATS_TO_FCFA_RATE = 0.604; // 1 sat = 0.6
+
+  const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   const MIN_SATS = 1000;
   const MAX_SATS = 25000000;
@@ -130,7 +135,7 @@ export default function EnterAmountScreen() {
         {/* FIAT Section */}
         <View className="mb-12 items-center">
           <View className="flex-row items-center">
-            <Text className="mr-2 text-lg font-semibold text-gray-700">FCFA</Text>
+            <Text className="mr-2 text-lg font-semibold text-gray-700">{selectedFiatCurrency}</Text>
             <TextInput
               value={fcfaAmount}
               onChangeText={handleFcfaChange}

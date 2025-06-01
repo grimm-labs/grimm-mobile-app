@@ -32,7 +32,7 @@ const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
           <Text className="text-sm font-medium">{title}</Text>
         </View>
         <View className="flex size-20 items-center justify-center">
-          <Ionicons name="chevron-forward" size={24} color={colors.success[600]} />
+          <Ionicons name="chevron-forward" size={24} color={colors.primary[600]} />
         </View>
       </View>
     </View>
