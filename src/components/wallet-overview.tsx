@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { formatBalance } from '@/lib';
+import { formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import type { TBalance } from '@/types';
 
@@ -13,10 +13,11 @@ type WalletOverviewProps = {
 
 export const WalletOverview = ({ balance }: WalletOverviewProps) => {
   const router = useRouter();
-  const { hideBalance, setHideBalance } = useContext(AppContext);
+  const { hideBalance, setHideBalance, selectedCountry } = useContext(AppContext);
 
   const selectedBitcoinUnit = 'SAT';
-  const selectedFiatCurrency = 'XAF';
+  const selectedFiatCurrency = getFiatCurrency(selectedCountry);
+
   return (
     <View className="">
       <View className="flex-row items-center justify-center">

@@ -3,13 +3,15 @@ import type { ReceiveAmount } from '@breeztech/react-native-breez-sdk-liquid';
 import { PaymentMethod, prepareReceivePayment, ReceiveAmountVariant, receivePayment } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Clipboard, Pressable, SafeAreaView, ScrollView, Share } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
 
 import { HeaderLeft } from '@/components/back-button';
 import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
+import { getFiatCurrency } from '@/lib';
+import { AppContext } from '@/lib/context';
 
 type SearchParams = {
   satsAmount: string;
@@ -17,12 +19,15 @@ type SearchParams = {
 };
 
 export default function ReceivePaymentScreen() {
+  const { selectedCountry } = useContext(AppContext);
   const router = useRouter();
   const { satsAmount, note } = useLocalSearchParams<SearchParams>();
   const [loading, setLoading] = useState(true);
   const [paymentRequest, setPaymentRequest] = useState<string>('');
   const [fees, setFees] = useState<number>(0);
   const [error, setError] = useState<string>('');
+
+  const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   const generatePaymentRequest = React.useCallback(async () => {
     try {
@@ -164,7 +169,7 @@ export default function ReceivePaymentScreen() {
           <View className="mb-8 mt-6">
             <View className="items-center rounded-2xl p-6">
               <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
-              <Text className="text-lg text-gray-500">2,000 FCFA</Text>
+              <Text className="text-lg text-gray-500">2,000 {selectedFiatCurrency}</Text>
               {note && (
                 <View className="mt-4 rounded-lg bg-white p-3">
                   <Text className="text-sm text-gray-600">{note}</Text>
@@ -193,7 +198,9 @@ export default function ReceivePaymentScreen() {
           </View>
 
           <View className="my-4 rounded-lg bg-blue-50 p-4">
-            <Text className="text-center text-sm text-blue-700">A {fees} sats (23 CFA) fee will be applied to this invoice. Please keep Grimm App open until payment is complete</Text>
+            <Text className="text-center text-sm text-blue-700">
+              A {fees} sats (23 {selectedFiatCurrency}) fee will be applied to this invoice. Please keep Grimm App open until payment is complete
+            </Text>
           </View>
         </ScrollView>
 

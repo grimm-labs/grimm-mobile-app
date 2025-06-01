@@ -46,10 +46,11 @@ export default function Settings() {
           <View className="mb-6 mt-3">
             <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">General</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-              <SettingsItem icon="globe" title="Networks" subtitle="Manage and configure your networks" onPress={() => router.push('/settings/network')} />
+              <SettingsItem icon="build" title="Networks" subtitle="Manage and configure your networks" onPress={() => router.push('/settings/network')} />
+              <SettingsItem icon="globe" title="Country" subtitle="Select your country for a personalized experience" onPress={() => router.push('/settings/country')} />
               <SettingsItem icon="language" title="Language" subtitle="Select your preferred app language" onPress={() => router.push('/settings/language')} />
               <SettingsItem icon="logo-usd" title="Currency" subtitle="Choose your default display currency" onPress={() => router.push('/settings/currency')} />
-              <SettingsItem icon="options-sharp" title="Bitcoin Units" subtitle="Choose between BTC and SAT" onPress={() => router.push('/settings/bitcoin-unit')} />
+              <SettingsItem icon="options-sharp" title="Bitcoin Units" subtitle="Choose between BTC and SATS" onPress={() => router.push('/settings/bitcoin-unit')} />
             </View>
           </View>
           <View className="mb-6">

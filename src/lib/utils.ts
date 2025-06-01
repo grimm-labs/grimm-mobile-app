@@ -5,6 +5,9 @@ import examples from 'libphonenumber-js/mobile/examples';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
+import { supportedFiatCurrencies } from '@/constant';
+import type { Country } from '@/interfaces';
+
 export function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url));
 }
@@ -108,4 +111,8 @@ export const isMnemonicValid = async (mnemonic: string, allowedWordCounts: numbe
     }
     return false;
   }
+};
+
+export const getFiatCurrency = (country: Country): string => {
+  return supportedFiatCurrencies.includes(country.currency) ? country.currency : 'USD';
 };
