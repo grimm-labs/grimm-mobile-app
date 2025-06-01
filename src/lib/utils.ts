@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import { Mnemonic } from 'bdk-rn';
 import type { CountryCode } from 'libphonenumber-js';
 import parsePhoneNumberFromString, { getExampleNumber, parsePhoneNumber } from 'libphonenumber-js';
@@ -5,8 +6,10 @@ import examples from 'libphonenumber-js/mobile/examples';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
+import type { RatesResponse as OriginalRatesResponse } from '@/api';
 import { supportedFiatCurrencies } from '@/constant';
 import type { Country } from '@/interfaces';
+import { BitcoinUnit } from '@/types/enum';
 
 export function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url));
@@ -28,11 +31,15 @@ export const convertSatsToBtc = (sats: number): string => {
   return (sats / 100_000_000).toFixed(8);
 };
 
-export const formatBalance = (total: number, unit: 'BTC' | 'SAT'): string => {
-  if (unit === 'SAT') {
-    return `${total.toLocaleString('en-US')} SAT`;
+export const formatBalance = (total: number, unit: BitcoinUnit): string => {
+  if (unit === BitcoinUnit.Sats) {
+    if (total === 0) {
+      return '0.00 SATS';
+    }
+    return `${total.toLocaleString('en-US')} SATS`;
   }
-  if (unit === 'BTC') {
+
+  if (unit === BitcoinUnit.Btc) {
     return `${convertSatsToBtc(total)} BTC`;
   }
   return total.toLocaleString();
@@ -115,4 +122,38 @@ export const isMnemonicValid = async (mnemonic: string, allowedWordCounts: numbe
 
 export const getFiatCurrency = (country: Country): string => {
   return supportedFiatCurrencies.includes(country.currency) ? country.currency : 'USD';
+};
+
+type RatesResponse = OriginalRatesResponse & { [currency: string]: number };
+
+/**
+ * Converts a Bitcoin amount to fiat currency
+ * @param amount - The amount to convert
+ * @param bitcoinUnit - The unit of Bitcoin ('btc' or 'sats')
+ * @param outputCurrency - The desired output fiat currency
+ * @param bitcoinPrices - The object containing Bitcoin prices in various currencies
+ * @returns The amount converted into fiat currency
+ */
+export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, outputCurrency: string, bitcoinPrices: RatesResponse): number => {
+  // Check if the output currency exists in the price list
+  if (!(outputCurrency.toLowerCase() in bitcoinPrices)) {
+    throw new Error(`Currency ${outputCurrency} not supported`);
+  }
+
+  // Get the Bitcoin price in the output currency
+  const bitcoinPriceInOutputCurrency = bitcoinPrices[outputCurrency.toLowerCase()];
+
+  // Convert the amount to BTC if necessary
+  let amountInBTC: number;
+  if (bitcoinUnit === 'SATS') {
+    // 1 BTC = 100,000,000 satoshis
+    amountInBTC = amount / 100_000_000;
+  } else {
+    amountInBTC = amount;
+  }
+
+  // Calculate the amount in fiat currency
+  const fiatAmount = amountInBTC * bitcoinPriceInOutputCurrency;
+
+  return fiatAmount;
 };

@@ -1,18 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import BigNumber from 'bignumber.js';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { WalletOverview } from '@/components/wallet-overview';
 import { WalletView } from '@/components/wallet-view';
-import type { TBalance } from '@/types';
+
+const SvgComponent = () => {
+  return (
+    <Svg width={9} height={16} viewBox="0 0 9 16" fill="none">
+      <Path d="M1 15.75a.75.75 0 01-.53-1.281l6.47-6.47L.47 1.53A.75.75 0 111.531.468l7 7a.75.75 0 010 1.061l-7 7A.745.745 0 011 15.75z" fill="#5A5A5A" />
+    </Svg>
+  );
+};
 
 export default function Home() {
   const router = useRouter();
   const [notificationCount, _setNotificationCount] = React.useState(10);
-  const [balance] = useState<TBalance>({ onchain: BigNumber(1002), lightning: BigNumber(1909303) });
 
   return (
     <SafeAreaView className="flex-1">
@@ -27,17 +33,17 @@ export default function Home() {
             {notificationCount > 0 && <View className="absolute -right-0.5 -top-1 size-3 items-center justify-center rounded-full bg-primary-600" />}
           </Pressable>
         </View>
-        <View className=" flex-1">
+        <View className="flex-1">
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
             <View className="m-4">
-              <WalletOverview balance={balance} />
+              <WalletOverview />
               <View className="mb-8" />
               <View>
                 <View className="flex-row justify-between">
-                  <Text className="mb-2 text-lg font-medium">Spending</Text>
-                  <Ionicons name="chevron-forward-outline" size={22} color="gray" />
+                  <Text className="mb-2 text-lg font-semibold">Spending</Text>
+                  <SvgComponent />
                 </View>
-                <WalletView name="Bitcoin" symbol="BTC" type="Lightning" balance={balance.lightning.toNumber()} />
+                <WalletView name="Bitcoin" symbol="BTC" type="Lightning" />
               </View>
             </View>
           </ScrollView>

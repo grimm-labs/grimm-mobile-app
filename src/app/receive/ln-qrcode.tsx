@@ -10,8 +10,10 @@ import QRCode from 'react-native-qrcode-svg';
 
 import { HeaderLeft } from '@/components/back-button';
 import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
-import { getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
+import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
   satsAmount: string;
@@ -19,13 +21,15 @@ type SearchParams = {
 };
 
 export default function ReceivePaymentScreen() {
-  const { selectedCountry } = useContext(AppContext);
+  const { selectedCountry, bitcoinUnit } = useContext(AppContext);
   const router = useRouter();
+  const { bitcoinPrices } = useBitcoin();
   const { satsAmount, note } = useLocalSearchParams<SearchParams>();
   const [loading, setLoading] = useState(true);
   const [paymentRequest, setPaymentRequest] = useState<string>('');
   const [fees, setFees] = useState<number>(0);
   const [error, setError] = useState<string>('');
+  const defaultNotes = `Grimm App Payment of ${satsAmount} sats`;
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
@@ -52,7 +56,7 @@ export default function ReceivePaymentScreen() {
 
       const receiveResponse = await receivePayment({
         prepareResponse,
-        description: note || `Payment of ${satsAmount} SATS`,
+        description: note || defaultNotes,
       });
 
       setPaymentRequest(receiveResponse.destination);
@@ -62,7 +66,7 @@ export default function ReceivePaymentScreen() {
     } finally {
       setLoading(false);
     }
-  }, [satsAmount, note]);
+  }, [satsAmount, note, defaultNotes]);
 
   useEffect(() => {
     generatePaymentRequest();
@@ -166,15 +170,15 @@ export default function ReceivePaymentScreen() {
       <View className="flex-1">
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {/* Amount Information */}
-          <View className="mb-8 mt-6">
+          <View className="mb-4 mt-3">
             <View className="items-center rounded-2xl p-6">
               <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
-              <Text className="text-lg text-gray-500">2,000 {selectedFiatCurrency}</Text>
-              {note && (
-                <View className="mt-4 rounded-lg bg-white p-3">
-                  <Text className="text-sm text-gray-600">{note}</Text>
-                </View>
-              )}
+              <Text className="text-lg text-gray-500">
+                {convertBitcoinToFiat(Number(satsAmount), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}
+              </Text>
+              <View className="mt-4 rounded-lg bg-white p-3">
+                <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>
+              </View>
             </View>
           </View>
 
@@ -199,12 +203,13 @@ export default function ReceivePaymentScreen() {
 
           <View className="my-4 rounded-lg bg-blue-50 p-4">
             <Text className="text-center text-sm text-blue-700">
-              A {fees} sats (23 {selectedFiatCurrency}) fee will be applied to this invoice. Please keep Grimm App open until payment is complete
+              A {fees} sats ({convertBitcoinToFiat(fees, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}) fee will be applied to this invoice. Please keep Grimm App open until
+              payment is complete
             </Text>
           </View>
         </ScrollView>
 
-        <View className="px-4 pb-8">
+        <View className="px-4 pb-4">
           <Button label="Close" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
         </View>
       </View>
