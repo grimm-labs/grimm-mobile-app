@@ -2,9 +2,10 @@
 import type { ReceiveAmount } from '@breeztech/react-native-breez-sdk-liquid';
 import { PaymentMethod, prepareReceivePayment, ReceiveAmountVariant, receivePayment } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Clipboard, Pressable, SafeAreaView, ScrollView, Share } from 'react-native';
+import { ActivityIndicator, Clipboard, Pressable, SafeAreaView, ScrollView, Share } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -16,9 +17,11 @@ type SearchParams = {
 };
 
 export default function ReceivePaymentScreen() {
+  const router = useRouter();
   const { satsAmount, note } = useLocalSearchParams<SearchParams>();
   const [loading, setLoading] = useState(true);
   const [paymentRequest, setPaymentRequest] = useState<string>('');
+  const [fees, setFees] = useState<number>(0);
   const [error, setError] = useState<string>('');
 
   const generatePaymentRequest = React.useCallback(async () => {
@@ -30,21 +33,18 @@ export default function ReceivePaymentScreen() {
         throw new Error('Invalid amount');
       }
 
-      // Prepare the amount to receive
       const optionalAmount: ReceiveAmount = {
         type: ReceiveAmountVariant.BITCOIN,
         payerAmountSat: Number(satsAmount),
       };
 
-      // Prepare payment reception
       const prepareResponse = await prepareReceivePayment({
         paymentMethod: PaymentMethod.BOLT11_INVOICE,
         amount: optionalAmount,
       });
 
-      console.log(`Receiving fees: ${prepareResponse.feesSat} sats`);
+      setFees(prepareResponse.feesSat);
 
-      // Create the payment invoice
       const receiveResponse = await receivePayment({
         prepareResponse,
         description: note || `Payment of ${satsAmount} SATS`,
@@ -66,7 +66,7 @@ export default function ReceivePaymentScreen() {
   const copyToClipboard = async () => {
     if (paymentRequest) {
       await Clipboard.setString(paymentRequest);
-      Alert.alert('Copied', 'Payment address has been copied to clipboard');
+      showMessage({ message: 'Payment address has been copied to clipboard', type: 'success', duration: 2000 });
     }
   };
 
@@ -74,7 +74,7 @@ export default function ReceivePaymentScreen() {
     if (paymentRequest) {
       try {
         await Share.share({
-          message: `Lightning Payment: ${paymentRequest}`,
+          message: paymentRequest,
           title: 'Lightning Payment Request',
         });
       } catch (err) {
@@ -85,6 +85,14 @@ export default function ReceivePaymentScreen() {
 
   const handleRetry = () => {
     generatePaymentRequest();
+  };
+
+  const isValidAmount = () => {
+    return paymentRequest && satsAmount && parseInt(satsAmount, 10) > 0;
+  };
+
+  const handleSubmit = () => {
+    router.replace('/');
   };
 
   if (loading) {
@@ -102,7 +110,7 @@ export default function ReceivePaymentScreen() {
         <View className="flex-1 items-center justify-center px-4">
           <ActivityIndicator size="large" color={colors.primary[600]} />
           <Text className="mt-4 text-lg text-gray-600">Generating invoice...</Text>
-          <Text className="mt-2 text-center text-sm text-gray-400">Creating your payment QR code</Text>
+          <Text className="mt-2 text-center text-sm text-gray-400">Creating your payment QR Code</Text>
         </View>
       </SafeAreaView>
     );
@@ -150,46 +158,49 @@ export default function ReceivePaymentScreen() {
         }}
       />
 
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-        {/* Amount Information */}
-        <View className="mb-8 mt-6">
-          <View className="items-center rounded-2xl p-6">
-            <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
-            <Text className="text-lg text-gray-500">2,000 FCFA</Text>
-            {note && (
-              <View className="mt-4 rounded-lg bg-white p-3">
-                <Text className="text-sm text-gray-600">{note}</Text>
-              </View>
-            )}
+      <View className="flex-1">
+        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+          {/* Amount Information */}
+          <View className="mb-8 mt-6">
+            <View className="items-center rounded-2xl p-6">
+              <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
+              <Text className="text-lg text-gray-500">2,000 FCFA</Text>
+              {note && (
+                <View className="mt-4 rounded-lg bg-white p-3">
+                  <Text className="text-sm text-gray-600">{note}</Text>
+                </View>
+              )}
+            </View>
           </View>
-        </View>
 
-        {/* QR Code */}
-        <View className="mb-8 items-center">
-          <View className=" bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={250} backgroundColor="white" color="black" />}</View>
-          <Text className="mt-4 text-center text-sm text-gray-500">Scan this QR code to make the payment</Text>
-        </View>
-
-        <View className="flex flex-row justify-evenly">
-          <View className="flex items-center justify-center">
-            <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
-              <Ionicons name="copy" size={20} color="white" />
-            </Pressable>
-            <Text className="text-sm font-medium">Copy</Text>
+          {/* QR Code */}
+          <View className="mb-8 items-center">
+            <View className=" bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={250} backgroundColor="white" color="black" />}</View>
+            <Text className="mt-4 text-center text-sm text-gray-500">Scan this QR Code to make the payment</Text>
           </View>
-          <View className="flex items-center justify-center">
-            <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={sharePaymentRequest}>
-              <Ionicons name="share" size={20} color="white" />
-            </Pressable>
-            <Text className="text-sm font-medium">Share</Text>
-          </View>
-        </View>
 
-        {/* Additional Information */}
-        <View className="my-4 rounded-lg bg-blue-50 p-4">
-          <Text className="text-sm text-blue-700">A 24 sats fee will be applied to this invoice. Please keep Grimm App open until payment is complete.</Text>
+          <View className="flex flex-row justify-center">
+            <View className="mx-4 flex items-center justify-center">
+              <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
+                <Ionicons name="copy" size={20} color="white" />
+              </Pressable>
+            </View>
+            <View className="mx-4 flex items-center justify-center">
+              <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={sharePaymentRequest}>
+                <Ionicons name="share" size={20} color="white" />
+              </Pressable>
+            </View>
+          </View>
+
+          <View className="my-4 rounded-lg bg-blue-50 p-4">
+            <Text className="text-center text-sm text-blue-700">A {fees} sats (23 CFA) fee will be applied to this invoice. Please keep Grimm App open until payment is complete</Text>
+          </View>
+        </ScrollView>
+
+        <View className="px-4 pb-8">
+          <Button label="Close" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

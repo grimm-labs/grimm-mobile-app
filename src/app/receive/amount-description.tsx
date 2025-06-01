@@ -16,18 +16,17 @@ export default function EnterAmountScreen() {
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [validationError, setValidationError] = useState('');
 
-  // Taux de conversion exemple (à adapter selon vos besoins)
   const SATS_TO_FCFA_RATE = 0.604; // 1 sat = 0.6 FCFA
 
-  const MIN_SATS = 100;
+  const MIN_SATS = 1000;
   const MAX_SATS = 25000000;
 
   const validateAmount = (satsValue: number): string => {
     if (satsValue < MIN_SATS) {
-      return `Le montant minimum est de ${MIN_SATS.toLocaleString()} SATS`;
+      return `The minimum amount is ${MIN_SATS.toLocaleString()} SATS`;
     }
     if (satsValue > MAX_SATS) {
-      return `Le montant maximum est de ${MAX_SATS.toLocaleString()} SATS`;
+      return `The maximum amount is ${MAX_SATS.toLocaleString()} SATS`;
     }
     return '';
   };
@@ -71,12 +70,12 @@ export default function EnterAmountScreen() {
     const satsValue = parseInt(satsAmount, 10);
 
     if (satsAmount === '0' || satsAmount === '' || isNaN(satsValue)) {
-      Alert.alert('Erreur', 'Veuillez entrer un montant valide');
+      Alert.alert('Error', 'Please enter a valid amount');
       return;
     }
 
     if (validateAmount(satsValue)) {
-      Alert.alert('Montant invalide', validationError);
+      Alert.alert('Invalid amount', validationError);
       return;
     }
 
@@ -105,7 +104,7 @@ export default function EnterAmountScreen() {
       />
 
       <View className="flex-1 px-4 pt-8">
-        {/* Section SATS */}
+        {/* SATS Section */}
         <View className="mb-8 items-center">
           <Text className="mb-4 text-lg font-semibold text-gray-700">SATS</Text>
           <TextInput
@@ -121,14 +120,14 @@ export default function EnterAmountScreen() {
           {validationError ? <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text> : null}
         </View>
 
-        {/* Icône de conversion */}
+        {/* Conversion icon */}
         <View className="mb-8 items-center">
           <View className="rounded-full bg-primary-600 p-2">
             <Ionicons name="swap-vertical" size={20} color={colors.white} />
           </View>
         </View>
 
-        {/* Section FCFA */}
+        {/* FIAT Section */}
         <View className="mb-12 items-center">
           <View className="flex-row items-center">
             <Text className="mr-2 text-lg font-semibold text-gray-700">FCFA</Text>
@@ -143,7 +142,7 @@ export default function EnterAmountScreen() {
           </View>
         </View>
 
-        {/* Section Note */}
+        {/* Note Section */}
         <View className="mb-8">
           {!showNoteInput ? (
             <TouchableOpacity onPress={() => setShowNoteInput(true)} className="items-center">
@@ -164,22 +163,9 @@ export default function EnterAmountScreen() {
             </View>
           )}
         </View>
-
-        {/* Message d'information sur les limites */}
-        <View className="mb-6 rounded-lg bg-blue-50 p-4">
-          <View className="mb-2 flex-row items-center">
-            <Ionicons name="information-circle" size={20} color="#3B82F6" />
-            <Text className="ml-2 text-sm font-normal text-blue-800">Limites de montant que vous pouvez recevoir</Text>
-          </View>
-          <Text className="text-sm font-semibold text-blue-700">
-            Minimum: {MIN_SATS.toLocaleString()} SATS • Maximum: {MAX_SATS.toLocaleString()} SATS
-          </Text>
-        </View>
-
         <View className="flex-1" />
-
         <View className="mb-8">
-          <Button label="Get Started" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+          <Button label="Continue" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
         </View>
       </View>
     </SafeAreaView>
