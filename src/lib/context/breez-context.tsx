@@ -40,7 +40,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const [state, setState] = useState<BreezState>(initialState);
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const eventListenerRef = useRef<string | null>(null);
-  const isInitializingRef = useRef<boolean>(false); // Prevent multiple initializations
+  const isInitializingRef = useRef<boolean>(false);
 
   const updateState = (updates: Partial<BreezState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -74,7 +74,6 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   };
 
   const initializeBreez = async (): Promise<void> => {
-    // Prevent multiple initializations
     if (isInitializingRef.current || state.isInitialized) {
       console.log('Breez already initialized or initialization in progress');
       return;
@@ -94,10 +93,9 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       }
 
       // Default configuration
-      const config = await defaultConfig(LiquidNetwork.MAINNET, Env.BREEZ_API_KEY);
+      const config = await defaultConfig(LiquidNetwork.TESTNET, Env.BREEZ_API_KEY);
       console.log('Breez config:', config);
 
-      // Connection with "Already initialized" error handling
       try {
         await connect({ config, mnemonic: seedPhrase });
         console.log('Breez connected successfully');
@@ -105,7 +103,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         if (error?.message?.includes('Already initialized')) {
           console.log('Breez SDK already initialized, continuing...');
         } else {
-          throw error; // Re-throw if it's another error
+          throw error;
         }
       }
 
@@ -122,7 +120,6 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         isSyncing: false, // Important: set to false after success
       });
 
-      // Get wallet information
       await refreshWalletInfo();
     } catch (error) {
       console.error('Error during Breez initialization:', error);
