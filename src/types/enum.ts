@@ -7,3 +7,8 @@ export const enum BitcoinUnit {
   Btc = 'BTC',
   Sats = 'SATS',
 }
+
+export const enum BitcoinNetwork {
+  Mainnet = 'mainnet',
+  testnet = 'testnet',
+}

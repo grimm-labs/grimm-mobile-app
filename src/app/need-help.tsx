@@ -24,8 +24,8 @@ const supportLinks = {
 const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
   <Pressable onPress={onPress}>
     <View className="flex flex-row justify-between">
-      <View className="flex size-20 items-center justify-center">
-        <Ionicons name={icon} size={24} color="black" />
+      <View className="flex size-20 items-center justify-center ">
+        <Ionicons name={icon} size={28} color="black" />
       </View>
       <View className="h-full flex-1 flex-row items-center justify-between border-b-[0.5px] border-gray-300">
         <View className="h-full flex-1 flex-row items-center">
@@ -40,7 +40,7 @@ const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
 );
 
 const ServiceHours = () => (
-  <View className="mx-4">
+  <View className="mx-2">
     <View className="mb-4 border-b-[0.5px] border-gray-300">
       <Text className="my-6 text-sm font-medium">Customer Service Hours (UTC +1:00)</Text>
     </View>
@@ -79,10 +79,11 @@ const SupportItems = () => {
 export default function NeedHelp() {
   return (
     <SafeAreaView>
-      <View className="flex h-full pl-4">
+      <View className="flex h-full px-4">
         <Stack.Screen
           options={{
             headerShown: true,
+            headerTitleAlign: 'center',
             headerTitle: 'Help & Support',
             headerLeft: HeaderLeft,
             headerRight: () => null,

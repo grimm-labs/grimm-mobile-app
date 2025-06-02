@@ -135,7 +135,6 @@ type RatesResponse = OriginalRatesResponse & { [currency: string]: number };
  * @returns The amount converted into fiat currency
  */
 export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, outputCurrency: string, bitcoinPrices: RatesResponse): number => {
-  // Check if the output currency exists in the price list
   if (!(outputCurrency.toLowerCase() in bitcoinPrices)) {
     throw new Error(`Currency ${outputCurrency} not supported`);
   }
@@ -145,14 +144,13 @@ export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, o
 
   // Convert the amount to BTC if necessary
   let amountInBTC: number;
-  if (bitcoinUnit === 'SATS') {
+  if (bitcoinUnit === BitcoinUnit.Sats) {
     // 1 BTC = 100,000,000 satoshis
     amountInBTC = amount / 100_000_000;
   } else {
     amountInBTC = amount;
   }
 
-  // Calculate the amount in fiat currency
   const fiatAmount = amountInBTC * bitcoinPriceInOutputCurrency;
 
   return fiatAmount;
