@@ -6,6 +6,7 @@ import type { ListRenderItem } from 'react-native';
 import { FlatList, SafeAreaView, TextInput } from 'react-native';
 
 import countries from '@/assets/data/countries.json';
+import { HeaderLeft } from '@/components/back-button';
 import { Button, colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
 import type { Country } from '@/interfaces';
 import { AppContext } from '@/lib/context';
@@ -91,6 +92,7 @@ export default function CountrySelector() {
             title: 'Select a country',
             headerShown: true,
             headerShadowVisible: false,
+            headerLeft: HeaderLeft,
           }}
         />
         <FocusAwareStatusBar style="dark" />

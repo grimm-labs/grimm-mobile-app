@@ -7,19 +7,22 @@ import { Alert, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
 import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
-import { getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
+import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { BitcoinUnit } from '@/types/enum';
 
 export default function EnterAmountScreen() {
-  const { selectedCountry } = useContext(AppContext);
-  const [satsAmount, setSatsAmount] = useState('0');
-  const [fcfaAmount, setFcfaAmount] = useState('0');
   const router = useRouter();
+
+  const { selectedCountry } = useContext(AppContext);
+  const { bitcoinPrices } = useBitcoin();
+
+  const [satsAmount, setSatsAmount] = useState('0');
+  const [fiatAmount, setFiatAmount] = useState('0');
   const [note, setNote] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [validationError, setValidationError] = useState('');
-
-  const SATS_TO_FCFA_RATE = 0.604; // 1 sat = 0.6
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
@@ -42,31 +45,14 @@ export default function EnterAmountScreen() {
 
     if (numericValue && numericValue !== '0') {
       const satsValue = parseInt(numericValue, 10);
-      const fcfa = (satsValue * SATS_TO_FCFA_RATE).toFixed(0);
-      setFcfaAmount(fcfa);
+      const fiat = convertBitcoinToFiat(satsValue, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2);
+      setFiatAmount(fiat);
 
       // Validation
       const error = validateAmount(satsValue);
       setValidationError(error);
     } else {
-      setFcfaAmount('0');
-      setValidationError('');
-    }
-  };
-
-  const handleFcfaChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, '');
-    setFcfaAmount(numericValue);
-
-    if (numericValue && numericValue !== '0') {
-      const sats = Math.round(parseInt(numericValue, 10) / SATS_TO_FCFA_RATE);
-      setSatsAmount(sats.toString());
-
-      // Validation
-      const error = validateAmount(sats);
-      setValidationError(error);
-    } else {
-      setSatsAmount('0');
+      setFiatAmount('0');
       setValidationError('');
     }
   };
@@ -109,7 +95,6 @@ export default function EnterAmountScreen() {
       />
 
       <View className="flex-1 px-4 pt-8">
-        {/* SATS Section */}
         <View className="mb-8 items-center">
           <Text className="mb-4 text-lg font-semibold text-gray-700">SATS</Text>
           <TextInput
@@ -125,29 +110,19 @@ export default function EnterAmountScreen() {
           {validationError ? <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text> : null}
         </View>
 
-        {/* Conversion icon */}
         <View className="mb-8 items-center">
           <View className="rounded-full bg-primary-600 p-2">
             <Ionicons name="swap-vertical" size={20} color={colors.white} />
           </View>
         </View>
 
-        {/* FIAT Section */}
         <View className="mb-12 items-center">
           <View className="flex-row items-center">
-            <Text className="mr-2 text-lg font-semibold text-gray-700">{selectedFiatCurrency}</Text>
-            <TextInput
-              value={fcfaAmount}
-              onChangeText={handleFcfaChange}
-              className={`text-center text-lg ${validationError ? 'text-red-500' : 'text-gray-500'}`}
-              keyboardType="numeric"
-              placeholder="0"
-              placeholderTextColor="#9CA3AF"
-            />
+            <Text className="mr-2 text-xl font-semibold text-gray-700">{selectedFiatCurrency}</Text>
+            <Text className="text-bold text-2xl font-medium">{fiatAmount}</Text>
           </View>
         </View>
 
-        {/* Note Section */}
         <View className="mb-8">
           {!showNoteInput ? (
             <TouchableOpacity onPress={() => setShowNoteInput(true)} className="items-center">
@@ -155,7 +130,7 @@ export default function EnterAmountScreen() {
             </TouchableOpacity>
           ) : (
             <View className="rounded border bg-white p-4" style={{ borderColor: '#9CA3AF' }}>
-              <TextInput value={note} onChangeText={setNote} placeholder="Add a note here..." placeholderTextColor="#9CA3AF" className="min-h-[40px] text-base text-gray-700" multiline autoFocus />
+              <TextInput value={note} onChangeText={setNote} returnKeyType="done" placeholder="Add a note here..." placeholderTextColor="#9CA3AF" className="min-h-[40px] text-base text-gray-700" multiline autoFocus />
               <TouchableOpacity
                 onPress={() => {
                   setShowNoteInput(false);

@@ -5,6 +5,7 @@ import React, { createContext, useCallback, useEffect, useState } from 'react';
 
 import type { Country, User } from '@/interfaces';
 import { useSecureStorage } from '@/lib/hooks';
+import { BitcoinUnit } from '@/types/enum';
 
 import type { TokenType } from '../auth/utils';
 
@@ -18,6 +19,7 @@ type defaultContextType = {
   selectedCountry: Country;
   userToken: TokenType | null;
   user: User | null;
+  bitcoinUnit: BitcoinUnit; // Ajout de l'unité Bitcoin
   setHideBalance: (hideBalance: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
   resetAppData: () => void;
@@ -25,6 +27,7 @@ type defaultContextType = {
   setSelectedCountry: (country: Country) => void;
   setUserToken: (token: TokenType | null) => void;
   setUser: (user: User | null) => void;
+  setBitcoinUnit: (unit: BitcoinUnit) => void; // Setter pour l'unité Bitcoin
 };
 
 const defaultContext: defaultContextType = {
@@ -43,6 +46,7 @@ const defaultContext: defaultContextType = {
   },
   userToken: null,
   user: null,
+  bitcoinUnit: BitcoinUnit.Sats,
   setHideBalance: () => {},
   setOnboarding: () => {},
   resetAppData: () => {},
@@ -50,6 +54,7 @@ const defaultContext: defaultContextType = {
   setSelectedCountry: () => {},
   setUserToken: () => {},
   setUser: () => {},
+  setBitcoinUnit: () => {},
 };
 
 export const AppContext = createContext<defaultContextType>(defaultContext);
@@ -62,6 +67,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [selectedCountry, _setSelectedCountry] = useState<Country>(defaultContext.selectedCountry);
   const [userToken, _setUserToken] = useState<TokenType | null>(defaultContext.userToken);
   const [user, _setUser] = useState<User | null>(defaultContext.user);
+  const [bitcoinUnit, _setBitcoinUnit] = useState<BitcoinUnit>(defaultContext.bitcoinUnit);
 
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
   const { getItem: _getOnboarding, setItem: _updateOnboarding } = useAsyncStorage('onboarding');
@@ -69,6 +75,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getUserToken, setItem: _updateUserToken } = useAsyncStorage('userToken');
   const { getItem: _getUser, setItem: _updateUser } = useAsyncStorage('user');
+  const { getItem: _getBitcoinUnit, setItem: _updateBitcoinUnit } = useAsyncStorage('bitcoinUnit');
 
   const _loadHideBalance = useCallback(async () => {
     const ob = await _getHideBalance();
@@ -112,10 +119,17 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   }, [_getSeedPhrase, _setSeedPhrase]);
 
+  const _loadBitcoinUnit = useCallback(async () => {
+    const ob = await _getBitcoinUnit();
+    if (ob !== null) {
+      _setBitcoinUnit(JSON.parse(ob) as BitcoinUnit);
+    }
+  }, [_getBitcoinUnit, _setBitcoinUnit]);
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([_loadHideBalance(), _loadOnboarding(), _loadSelectedCountry(), _loadUserToken(), _loadUser(), _loadSeedPhrase()]);
+        await Promise.all([_loadHideBalance(), _loadOnboarding(), _loadSelectedCountry(), _loadUserToken(), _loadUser(), _loadSeedPhrase(), _loadBitcoinUnit()]);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -124,7 +138,7 @@ export const AppContextProvider = ({ children }: Props) => {
     };
 
     loadData();
-  }, [_loadHideBalance, _loadOnboarding, _loadSelectedCountry, _loadUserToken, _loadUser, _loadSeedPhrase]);
+  }, [_loadHideBalance, _loadOnboarding, _loadSelectedCountry, _loadUserToken, _loadUser, _loadSeedPhrase, _loadBitcoinUnit]);
 
   const setOnboarding = useCallback(
     async (arg: boolean) => {
@@ -204,17 +218,31 @@ export const AppContextProvider = ({ children }: Props) => {
     [_setSelectedCountry, _updateSelectedCountry],
   );
 
+  const setBitcoinUnit = useCallback(
+    async (arg: BitcoinUnit) => {
+      try {
+        await _setBitcoinUnit(arg);
+        await _updateBitcoinUnit(JSON.stringify(arg));
+      } catch (e) {
+        console.error(`[AsyncStorage] (bitcoinUnit) Error saving data: ${e} [${arg}]`);
+        throw new Error('Error setting bitcoinUnit');
+      }
+    },
+    [_setBitcoinUnit, _updateBitcoinUnit],
+  );
+
   const resetAppData = useCallback(async () => {
     try {
       await setOnboarding(true);
       await setUserToken(null);
       await setUser(null);
       await setSeedPhrase('');
+      await setBitcoinUnit(BitcoinUnit.Sats);
     } catch (e) {
       console.error(`[AsyncStorage] (Reset app data) Error loading data: ${e}`);
       throw new Error('Unable to reset app data');
     }
-  }, [setOnboarding, setUserToken, setUser, setSeedPhrase]);
+  }, [setOnboarding, setUserToken, setUser, setSeedPhrase, setBitcoinUnit]);
 
   return (
     <AppContext.Provider
@@ -226,6 +254,7 @@ export const AppContextProvider = ({ children }: Props) => {
         selectedCountry,
         userToken,
         user,
+        bitcoinUnit,
         setHideBalance,
         setOnboarding,
         resetAppData,
@@ -233,6 +262,7 @@ export const AppContextProvider = ({ children }: Props) => {
         setSelectedCountry,
         setUserToken,
         setUser,
+        setBitcoinUnit,
       }}
     >
       {children}

@@ -3,20 +3,19 @@ import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { formatBalance, getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
-import type { TBalance } from '@/types';
+import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { useBreez } from '@/lib/context/breez-context';
 
-type WalletOverviewProps = {
-  balance: TBalance;
-};
-
-export const WalletOverview = ({ balance }: WalletOverviewProps) => {
+export const WalletOverview = () => {
   const router = useRouter();
-  const { hideBalance, setHideBalance, selectedCountry } = useContext(AppContext);
-
-  const selectedBitcoinUnit = 'SAT';
+  const { hideBalance, setHideBalance, selectedCountry, bitcoinUnit } = useContext(AppContext);
+  const { bitcoinPrices } = useBitcoin();
+  const { balance } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
+
+  const convertedVal = convertBitcoinToFiat(balance, bitcoinUnit, selectedFiatCurrency, bitcoinPrices);
 
   return (
     <View className="">
@@ -35,10 +34,10 @@ export const WalletOverview = ({ balance }: WalletOverviewProps) => {
       </View>
       <View className="py-6">
         <Pressable onPress={() => setHideBalance(!hideBalance)}>
-          <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{hideBalance ? '********' : formatBalance(balance.onchain.plus(balance.lightning).toNumber(), selectedBitcoinUnit as 'BTC' | 'SAT')}</Text>
+          <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{hideBalance ? '********' : formatBalance(balance, bitcoinUnit)}</Text>
         </Pressable>
         <View className="mb-4">
-          <Text className="text-center text-lg font-medium text-gray-600">{hideBalance ? '********' : `${selectedFiatCurrency} 0.00`}</Text>
+          <Text className="text-center text-lg font-medium text-gray-600">{hideBalance ? '********' : `${selectedFiatCurrency} ${convertedVal.toFixed(2)}`}</Text>
         </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">

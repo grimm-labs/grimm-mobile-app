@@ -1,12 +1,11 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { Alert } from 'react-native';
 
 import { SettingsItem } from '@/components/settings-item';
-import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
+import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 
@@ -14,7 +13,6 @@ export default function Settings() {
   const { setSeedPhrase, resetAppData } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const router = useRouter();
-  const [isFadeIdEnabled, setIsFaceIdEnabled] = React.useState(false);
 
   const handleSignOut = async () => {
     setSeedPhrase('');
@@ -49,16 +47,15 @@ export default function Settings() {
               <SettingsItem icon="build" title="Networks" subtitle="Manage and configure your networks" onPress={() => router.push('/settings/network')} />
               <SettingsItem icon="globe" title="Country" subtitle="Select your country for a personalized experience" onPress={() => router.push('/settings/country')} />
               <SettingsItem icon="language" title="Language" subtitle="Select your preferred app language" onPress={() => router.push('/settings/language')} />
-              <SettingsItem icon="logo-usd" title="Currency" subtitle="Choose your default display currency" onPress={() => router.push('/settings/currency')} />
               <SettingsItem icon="options-sharp" title="Bitcoin Units" subtitle="Choose between BTC and SATS" onPress={() => router.push('/settings/bitcoin-unit')} />
             </View>
           </View>
           <View className="mb-6">
             <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">Security</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-              <SettingsItem icon="lock-closed" title="Change PIN code" subtitle="Update your wallet access PIN" onPress={() => console.log('PIN change pressed')} />
+              {/* <SettingsItem icon="lock-closed" title="Change PIN code" subtitle="Update your wallet access PIN" onPress={() => console.log('PIN change pressed')} /> */}
               <SettingsItem icon="key" title="Backup Key" subtitle="Secure and manage your wallet recovery key" onPress={() => router.push('/settings/recovery-phrase-warning')} />
-              <Pressable className="mb-1 flex-row items-center rounded py-2">
+              {/* <Pressable className="mb-1 flex-row items-center rounded py-2">
                 <View className="mr-1 rounded-full p-2">
                   <Ionicons name="scan-sharp" size={20} color="gray" />
                 </View>
@@ -71,13 +68,13 @@ export default function Settings() {
                     <Switch.Icon checked={isFadeIdEnabled} />
                   </Switch.Root>
                 </View>
-              </Pressable>
+              </Pressable> */}
             </View>
           </View>
           <View className="mb-6">
             <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">Preferences</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-              <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => router.push('/settings/notifications')} />
+              {/* <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => router.push('/settings/notifications')} /> */}
               <SettingsItem icon="color-palette" title="Appearance" subtitle="Switch between light and dark modes" onPress={() => router.push('/settings/appearance')} />
             </View>
           </View>
