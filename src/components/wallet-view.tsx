@@ -50,7 +50,7 @@ export const WalletView = ({ name, symbol, type }: Props) => {
             <View>
               <Text className="text-right text-lg font-semibold text-gray-700">{formatBalance(balance, bitcoinUnit)}</Text>
               <View className="my" />
-              <Text className="text-right text-sm font-medium text-gray-600">{selectedFiatCurrency} 0.00</Text>
+              <Text className="text-right text-sm font-medium text-gray-600">0.00 {selectedFiatCurrency} </Text>
             </View>
           )}
         </View>

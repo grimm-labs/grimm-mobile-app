@@ -38,13 +38,13 @@ export default function Home() {
             <View className="m-4">
               <WalletOverview />
               <View className="mb-8" />
-              <View>
+              <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
                 <View className="flex-row justify-between">
-                  <Text className="mb-2 text-lg font-semibold">Spending</Text>
+                  <Text className="mb-2 text-lg font-bold">Spending</Text>
                   <SvgComponent />
                 </View>
                 <WalletView name="Bitcoin" symbol="BTC" type="Lightning" />
-              </View>
+              </Pressable>
             </View>
           </ScrollView>
         </View>
