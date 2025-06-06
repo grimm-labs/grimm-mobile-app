@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { memo } from 'react';
-import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, SafeAreaView, Text, View } from 'react-native';
 
 import { Button, colors, FocusAwareStatusBar, Image } from '@/components/ui';
 
@@ -46,12 +46,12 @@ function Onboarding() {
         />
         <FocusAwareStatusBar style="dark" />
 
-        <View className="mt-6 flex flex-row items-center justify-between py-3">
-          <View className="flex py-3" />
-          <TouchableOpacity onPress={() => router.push('/need-help')}>
-            <Ionicons name="chatbubble-ellipses" size={32} color={colors.neutral[500]} />
+        <View className="flex flex-row items-center justify-between">
+          <View className="flex" />
+          <Pressable className="relative" onPress={() => router.push('/need-help')}>
+            <Ionicons name="chatbubble-ellipses" size={24} color={colors.neutral[500]} />
             <View className="-top-0,5 absolute -right-0.5 size-3 items-center justify-center rounded-full bg-primary-600" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <View className="flex-1">
@@ -62,8 +62,7 @@ function Onboarding() {
             <WelcomeText />
           </View>
         </View>
-
-        <View className="mb-8">
+        <View className="mb-4">
           <Footer onGetStarted={handleGetStarted} />
         </View>
       </View>

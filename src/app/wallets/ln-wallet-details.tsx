@@ -38,7 +38,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress, sho
 const HeaderTitle = () => (
   <View className="flex-row items-center">
     <Image className="mr-2 size-8 rounded-full" source={require('@/assets/images/bitcoin_lightning_logo.png')} />
-    <Text className="text-lg font-bold">Lightning</Text>
+    <Text className="text-lg font-semibold">Lightning</Text>
   </View>
 );
 
@@ -77,7 +77,7 @@ export default function LnWalletDetails() {
               {bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} {bitcoinUnit}
             </Text>
 
-            <View className="mb-4 border-t border-gray-200 pt-4">
+            <View className="mb-2 border-t border-gray-200 pt-4">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center">
                   <Image className="mr-2 size-6 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
@@ -105,7 +105,7 @@ export default function LnWalletDetails() {
         <View className="mb-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-xl font-bold text-gray-900">Transactions</Text>
-            {payments.length > 0 && (
+            {payments.length > 4 && (
               <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/transactions')}>
                 <Text className="text-base font-medium text-primary-600">See all</Text>
               </TouchableOpacity>
@@ -117,7 +117,7 @@ export default function LnWalletDetails() {
               <EmptyTransactions />
             ) : (
               <View className="">
-                {payments.map((payment, index) => (
+                {payments.slice(0, 4).map((payment, index) => (
                   <View key={payment.txId}>
                     <TransactionItem payment={payment} />
                     {index < payments.length - 1 && <View className="ml-16 border-t border-gray-100" />}

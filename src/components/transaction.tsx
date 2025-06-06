@@ -82,19 +82,17 @@ export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => 
       <View className="mr-4 size-12 items-center justify-center rounded-full" style={{ backgroundColor: `${getTransactionColor()}15` }}>
         <Ionicons name={getTransactionIcon() as any} size={20} color={getTransactionColor()} />
       </View>
-      <View className="flex-1">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-base font-medium text-gray-900">{payment.paymentType === PaymentType.RECEIVE ? 'You received' : 'You paid'}</Text>
-          <Text className="text-base" style={{ color: getTransactionColor() }}>
-            {getAmountPrefix()}
-            {bitcoinAmount} {bitcoinUnit}
-          </Text>
-        </View>
-        <View className="mt-1 flex-row items-center justify-between">
-          <Text className="text-sm text-gray-500">
+      <View className="flex-1 flex-row items-center justify-between">
+        <View>
+          <Text className="text-left text-base font-medium text-gray-900">{payment.paymentType === PaymentType.RECEIVE ? 'You received' : 'You paid'}</Text>
+          <Text className="text-left text-sm text-gray-500">
             {formatDate(payment.timestamp)} • {payment.status === 'pending' ? 'Pending' : 'Confirmed'}
           </Text>
         </View>
+        <Text className="my-2 text-center text-base" style={{ color: getTransactionColor() }}>
+          {getAmountPrefix()}
+          {bitcoinAmount} {bitcoinUnit}
+        </Text>
       </View>
     </TouchableOpacity>
   );
