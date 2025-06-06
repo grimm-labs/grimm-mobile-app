@@ -16,11 +16,11 @@ type Props = {
 const getWalletIcon = (type: WalletType) => {
   switch (type) {
     case 'On-chain':
-      return require('../assets/images/on-chain-icon.png');
+      return require('../assets/images/bitcoin_logo.png');
     case 'Lightning':
-      return require('../assets/images/lightning-icon.png');
+      return require('../assets/images/bitcoin_lightning_logo.png');
     default:
-      return require('../assets/images/on-chain-icon.png');
+      return require('../assets/images/bitcoin_logo.png');
   }
 };
 
@@ -50,7 +50,7 @@ export const WalletView = ({ name, symbol, type }: Props) => {
             <View>
               <Text className="text-right text-lg font-semibold text-gray-700">{formatBalance(balance, bitcoinUnit)}</Text>
               <View className="my" />
-              <Text className="text-right text-sm font-medium text-gray-600">{selectedFiatCurrency} 0.00</Text>
+              <Text className="text-right text-sm font-medium text-gray-600">0.00 {selectedFiatCurrency} </Text>
             </View>
           )}
         </View>

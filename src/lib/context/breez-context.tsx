@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import type { SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
+import type { Payment, SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
 import { addEventListener, connect, defaultConfig, disconnect, getInfo, LiquidNetwork, listPayments, removeEventListener, SdkEventVariant } from '@breeztech/react-native-breez-sdk-liquid';
 import { Env } from '@env';
 import type { ReactNode } from 'react';
@@ -13,6 +13,7 @@ interface BreezState {
   balance: number;
   error: string | null;
   isInitialized: boolean;
+  payments: Payment[];
 }
 
 interface BreezContextType extends BreezState {
@@ -27,6 +28,7 @@ const initialState: BreezState = {
   balance: 0,
   error: null,
   isInitialized: false,
+  payments: [],
 };
 
 const BreezContext = createContext<BreezContextType | undefined>(undefined);
@@ -155,14 +157,14 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       const getInfoRes = await getInfo();
       console.log('Wallet information:', getInfoRes);
 
+      // Get payment history
+      const payments = await listPayments({});
+
       updateState({
         balance: getInfoRes.walletInfo.balanceSat || 0,
         isSyncing: false,
+        payments: payments || [],
       });
-
-      // Get payment history
-      const payments = await listPayments({});
-      console.log('Payment history:', payments);
     } catch (error) {
       console.error('Error retrieving information:', error);
       updateState({ error: error?.toString() });
@@ -189,13 +191,14 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
               const getInfoRes = await getInfo();
               console.log('Wallet information:', getInfoRes);
 
+              const payments = await listPayments({});
+
               updateState({
                 balance: getInfoRes.walletInfo.balanceSat || 0,
                 isSyncing: false,
+                payments: payments || [],
               });
 
-              const payments = await listPayments({});
-              console.log('Payment history:', payments);
               resolve();
             } catch (error) {
               console.error('Error retrieving information:', error);
@@ -235,6 +238,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         balance: 0,
         error: null,
         isInitialized: false,
+        payments: [],
       });
 
       // Reset initialization flag

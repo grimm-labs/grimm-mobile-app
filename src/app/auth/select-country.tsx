@@ -126,6 +126,7 @@ export default function SelectCountry() {
   const screenOptions = useMemo(
     () => ({
       headerLeft: HeaderLeft,
+      headerTitleAlign: 'center' as const,
       headerTitle: 'Select your country',
       headerRight: () => null,
       headerShadowVisible: false,
