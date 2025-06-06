@@ -16,11 +16,11 @@ type Props = {
 const getWalletIcon = (type: WalletType) => {
   switch (type) {
     case 'On-chain':
-      return require('../assets/images/on-chain-icon.png');
+      return require('../assets/images/bitcoin_logo.png');
     case 'Lightning':
-      return require('../assets/images/lightning-icon.png');
+      return require('../assets/images/bitcoin_lightning_logo.png');
     default:
-      return require('../assets/images/on-chain-icon.png');
+      return require('../assets/images/bitcoin_logo.png');
   }
 };
 
