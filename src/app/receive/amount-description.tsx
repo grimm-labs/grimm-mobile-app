@@ -1,8 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
+import { fetchLightningLimits, fetchOnchainLimits } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
-import React, { useContext, useState } from 'react';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useContext, useEffect, useState } from 'react';
 import { Alert, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -12,8 +13,13 @@ import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { BitcoinUnit } from '@/types/enum';
 
+type SearchParams = {
+  type: 'onchain' | 'lightning';
+};
+
 export default function EnterAmountScreen() {
   const router = useRouter();
+  const { type } = useLocalSearchParams<SearchParams>();
 
   const { selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
@@ -23,18 +29,35 @@ export default function EnterAmountScreen() {
   const [note, setNote] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const [receiveMinSatsLimit, setReceiveMinSatsLimit] = useState(0);
+  const [receiveMaxSatsLimit, setReceiveMaxSatsLimit] = useState(0);
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
-  const MIN_SATS = 1000;
-  const MAX_SATS = 25000000;
+  useEffect(() => {
+    const fetchLimits = async () => {
+      if (type === 'onchain') {
+        const currentLimits = await fetchOnchainLimits();
+        console.log(currentLimits);
+        setReceiveMinSatsLimit(currentLimits.receive.minSat);
+        setReceiveMaxSatsLimit(currentLimits.receive.maxSat);
+      }
+
+      if (type === 'lightning') {
+        const currentLimits = await fetchLightningLimits();
+        setReceiveMinSatsLimit(currentLimits.receive.minSat);
+        setReceiveMaxSatsLimit(currentLimits.receive.maxSat);
+      }
+    };
+    fetchLimits();
+  }, [type]);
 
   const validateAmount = (satsValue: number): string => {
-    if (satsValue < MIN_SATS) {
-      return `The minimum amount is ${MIN_SATS.toLocaleString()} SATS`;
+    if (satsValue <= receiveMinSatsLimit) {
+      return `The minimum amount is ${receiveMinSatsLimit.toLocaleString()} SATS`;
     }
-    if (satsValue > MAX_SATS) {
-      return `The maximum amount is ${MAX_SATS.toLocaleString()} SATS`;
+    if (satsValue >= receiveMaxSatsLimit) {
+      return `The maximum amount is ${receiveMaxSatsLimit.toLocaleString()} SATS`;
     }
     return '';
   };
@@ -48,7 +71,6 @@ export default function EnterAmountScreen() {
       const fiat = convertBitcoinToFiat(satsValue, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2);
       setFiatAmount(fiat);
 
-      // Validation
       const error = validateAmount(satsValue);
       setValidationError(error);
     } else {
@@ -72,13 +94,13 @@ export default function EnterAmountScreen() {
 
     router.push({
       pathname: '/receive/ln-qrcode',
-      params: { satsAmount, note },
+      params: { satsAmount, note, type },
     });
   };
 
   const isValidAmount = () => {
     const satsValue = parseInt(satsAmount, 10);
-    return !isNaN(satsValue) && satsValue >= MIN_SATS && satsValue <= MAX_SATS;
+    return !isNaN(satsValue) && satsValue >= receiveMinSatsLimit && satsValue <= receiveMaxSatsLimit;
   };
 
   return (
@@ -122,27 +144,28 @@ export default function EnterAmountScreen() {
             <Text className="text-bold text-2xl font-medium">{fiatAmount}</Text>
           </View>
         </View>
-
-        <View className="mb-8">
-          {!showNoteInput ? (
-            <TouchableOpacity onPress={() => setShowNoteInput(true)} className="items-center">
-              <Text className="text-base text-gray-400">+ Add a note (optional)</Text>
-            </TouchableOpacity>
-          ) : (
-            <View className="rounded border bg-white p-4" style={{ borderColor: '#9CA3AF' }}>
-              <TextInput value={note} onChangeText={setNote} returnKeyType="done" placeholder="Add a note here..." placeholderTextColor="#9CA3AF" className="min-h-[40px] text-base text-gray-700" multiline autoFocus />
-              <TouchableOpacity
-                onPress={() => {
-                  setShowNoteInput(false);
-                  setNote('');
-                }}
-                className="absolute right-2 top-2"
-              >
-                <Ionicons name="close" size={20} color="#9CA3AF" />
+        {type === 'lightning' && (
+          <View className="mb-8">
+            {!showNoteInput ? (
+              <TouchableOpacity onPress={() => setShowNoteInput(true)} className="items-center">
+                <Text className="text-base text-gray-400">+ Add a note (optional)</Text>
               </TouchableOpacity>
-            </View>
-          )}
-        </View>
+            ) : (
+              <View className="rounded border bg-white p-4" style={{ borderColor: '#9CA3AF' }}>
+                <TextInput value={note} onChangeText={setNote} returnKeyType="done" placeholder="Add a note here..." placeholderTextColor="#9CA3AF" className="min-h-[40px] text-base text-gray-700" multiline autoFocus />
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowNoteInput(false);
+                    setNote('');
+                  }}
+                  className="absolute right-2 top-2"
+                >
+                  <Ionicons name="close" size={20} color="#9CA3AF" />
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
         <View className="flex-1" />
         <View className="mb-8">
           <Button label="Continue" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />

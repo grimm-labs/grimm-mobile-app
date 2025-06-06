@@ -48,7 +48,15 @@ export const WalletOverview = () => {
           <Text className="text-sm font-medium">Send</Text>
         </View>
         <View className="flex items-center justify-center">
-          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={() => router.push('/receive/amount-description')}>
+          <Pressable
+            className="mb-2 rounded-full bg-primary-600 p-3 text-white"
+            onPress={() => {
+              router.push({
+                pathname: '/receive/amount-description',
+                params: { type: 'lightning' },
+              });
+            }}
+          >
             <Ionicons name="add" size={28} color="white" />
           </Pressable>
           <Text className="text-sm font-medium">Receive</Text>

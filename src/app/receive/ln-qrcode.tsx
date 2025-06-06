@@ -17,6 +17,7 @@ import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
   satsAmount: string;
+  type: 'onchain' | 'lightning';
   note?: string;
 };
 
@@ -24,13 +25,13 @@ export default function ReceivePaymentScreen() {
   const { selectedCountry, bitcoinUnit } = useContext(AppContext);
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
-  const { satsAmount, note } = useLocalSearchParams<SearchParams>();
+  const { satsAmount, note, type } = useLocalSearchParams<SearchParams>();
   const [loading, setLoading] = useState(true);
   const [paymentRequest, setPaymentRequest] = useState<string>('');
   const [fees, setFees] = useState<number>(0);
   const [error, setError] = useState<string>('');
-  const defaultNotes = `Grimm App Payment of ${satsAmount} sats`;
 
+  const defaultNotes = `Grimm App Payment of ${Number(satsAmount).toLocaleString()} sats`;
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   const generatePaymentRequest = React.useCallback(async () => {
@@ -42,31 +43,53 @@ export default function ReceivePaymentScreen() {
         throw new Error('Invalid amount');
       }
 
-      const optionalAmount: ReceiveAmount = {
-        type: ReceiveAmountVariant.BITCOIN,
-        payerAmountSat: Number(satsAmount),
-      };
+      if (type === 'onchain') {
+        const optionalAmount: ReceiveAmount = {
+          type: ReceiveAmountVariant.BITCOIN,
+          payerAmountSat: Number(satsAmount),
+        };
 
-      const prepareResponse = await prepareReceivePayment({
-        paymentMethod: PaymentMethod.BOLT11_INVOICE,
-        amount: optionalAmount,
-      });
+        const prepareResponse = await prepareReceivePayment({
+          paymentMethod: PaymentMethod.BITCOIN_ADDRESS,
+          amount: optionalAmount,
+        });
 
-      setFees(prepareResponse.feesSat);
+        setFees(prepareResponse.feesSat);
 
-      const receiveResponse = await receivePayment({
-        prepareResponse,
-        description: note || defaultNotes,
-      });
+        const receiveResponse = await receivePayment({
+          prepareResponse,
+        });
 
-      setPaymentRequest(receiveResponse.destination);
+        setPaymentRequest(receiveResponse.destination);
+      }
+
+      if (type === 'lightning') {
+        const optionalAmount: ReceiveAmount = {
+          type: ReceiveAmountVariant.BITCOIN,
+          payerAmountSat: Number(satsAmount),
+        };
+
+        const prepareResponse = await prepareReceivePayment({
+          paymentMethod: PaymentMethod.BOLT11_INVOICE,
+          amount: optionalAmount,
+        });
+
+        setFees(prepareResponse.feesSat);
+
+        const receiveResponse = await receivePayment({
+          prepareResponse,
+          description: note || defaultNotes,
+        });
+
+        setPaymentRequest(receiveResponse.destination);
+      }
     } catch (err) {
       console.error('Error generating invoice:', err);
       setError(err instanceof Error ? err.message : 'Error generating invoice');
     } finally {
       setLoading(false);
     }
-  }, [satsAmount, note, defaultNotes]);
+  }, [satsAmount, type, note, defaultNotes]);
 
   useEffect(() => {
     generatePaymentRequest();
@@ -169,14 +192,13 @@ export default function ReceivePaymentScreen() {
 
       <View className="flex-1">
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-          {/* Amount Information */}
-          <View className="mb-4 mt-3">
+          <View className="mb-2 mt-3">
             <View className="items-center rounded-2xl p-6">
               <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
               <Text className="text-lg text-gray-500">
-                {convertBitcoinToFiat(Number(satsAmount), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}
+                {convertBitcoinToFiat(Number(satsAmount), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
               </Text>
-              <View className="mt-4 rounded-lg bg-white p-3">
+              <View className="rounded-lg bg-white p-3">
                 <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>
               </View>
             </View>
@@ -184,7 +206,8 @@ export default function ReceivePaymentScreen() {
 
           {/* QR Code */}
           <View className="mb-8 items-center">
-            <View className=" bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={250} backgroundColor="white" color="black" />}</View>
+            <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={type === 'onchain' ? 150 : 250} backgroundColor="white" color="black" />}</View>
+            {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
             <Text className="mt-4 text-center text-sm text-gray-500">Scan this QR Code to make the payment</Text>
           </View>
 

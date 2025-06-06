@@ -94,9 +94,27 @@ export default function LnWalletDetails() {
         <View className="mb-8">
           <Text className="mb-3 text-xl font-bold text-gray-900">Actions</Text>
           <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
-            <MenuItem icon="add-outline" title="Create BTC lightning invoice" onPress={() => router.push('/receive/amount-description')} />
+            <MenuItem
+              icon="add-outline"
+              title="Create BTC lightning invoice"
+              onPress={() => {
+                router.push({
+                  pathname: '/receive/amount-description',
+                  params: { type: 'lightning' },
+                });
+              }}
+            />
             <View className="ml-14 border-t border-gray-200" />
-            <MenuItem icon="link" title="Receive via BTC on-chain" onPress={() => console.log('Receive Bitcoin')} />
+            <MenuItem
+              icon="link"
+              title="Receive via BTC on-chain"
+              onPress={() => {
+                router.push({
+                  pathname: '/receive/amount-description',
+                  params: { type: 'onchain' },
+                });
+              }}
+            />
             <View className="ml-14 border-t border-gray-200" />
             <MenuItem icon="arrow-up-outline" title="Pay a lightning invoice" onPress={() => console.log('pay for ln invoice')} />
           </View>
