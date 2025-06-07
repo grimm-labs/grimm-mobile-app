@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
@@ -42,7 +43,7 @@ export const WalletOverview = () => {
       </View>
       <View className="flex flex-row justify-around space-x-1">
         <View className="flex items-center justify-center">
-          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={() => router.push('/send/amount-description')}>
+          <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={() => router.push('/send/enter-address')}>
             <Ionicons name="arrow-up-outline" size={28} color="white" />
           </Pressable>
           <Text className="text-sm font-medium">Send</Text>
@@ -62,7 +63,15 @@ export const WalletOverview = () => {
           <Text className="text-sm font-medium">Receive</Text>
         </View>
         <View className="flex items-center justify-center">
-          <Pressable className="mb-2 rounded-full bg-neutral-700 p-3 text-white" onPress={() => router.push('/')}>
+          <Pressable
+            className="mb-2 rounded-full bg-neutral-700 p-3 text-white"
+            onPress={() => {
+              router.push({
+                pathname: '/transaction-result/success-screen',
+                params: { transactionType: 'received', amount: 1948394 },
+              });
+            }}
+          >
             <Ionicons name="scan" size={28} color="white" />
           </Pressable>
           <Text className="text-sm font-medium">Scan QR</Text>

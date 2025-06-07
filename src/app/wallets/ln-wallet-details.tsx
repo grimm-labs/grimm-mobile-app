@@ -116,7 +116,7 @@ export default function LnWalletDetails() {
               }}
             />
             <View className="ml-14 border-t border-gray-200" />
-            <MenuItem icon="arrow-up-outline" title="Pay a lightning invoice" onPress={() => console.log('pay for ln invoice')} />
+            <MenuItem icon="arrow-up-outline" title="Pay a lightning invoice" onPress={() => router.push('/send/enter-address')} />
           </View>
         </View>
 
