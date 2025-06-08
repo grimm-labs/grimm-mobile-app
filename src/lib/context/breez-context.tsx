@@ -2,6 +2,7 @@
 import type { Payment, SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
 import { addEventListener, connect, defaultConfig, disconnect, getInfo, LiquidNetwork, listPayments, removeEventListener, SdkEventVariant } from '@breeztech/react-native-breez-sdk-liquid';
 import { Env } from '@env';
+import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
@@ -39,6 +40,7 @@ interface BreezProviderProps {
 }
 
 export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
+  const router = useRouter();
   const [state, setState] = useState<BreezState>(initialState);
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const eventListenerRef = useRef<string | null>(null);
@@ -53,6 +55,11 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
     switch (event.type) {
       case SdkEventVariant.PAYMENT_SUCCEEDED:
+        const { amountSat } = event.details;
+        router.push({
+          pathname: '/transaction-result/success-screen',
+          params: { transactionType: 'received', satsAmount: amountSat.toString() },
+        });
         refreshWalletInfo();
         break;
       case SdkEventVariant.PAYMENT_FAILED:
@@ -94,9 +101,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         throw new Error('No recovery phrase found');
       }
 
-      // Default configuration
       const config = await defaultConfig(LiquidNetwork.TESTNET, Env.BREEZ_API_KEY);
-      console.log('Breez config:', config);
 
       try {
         await connect({ config, mnemonic: seedPhrase });

@@ -53,10 +53,10 @@ export default function EnterAmountScreen() {
   }, [type]);
 
   const validateAmount = (satsValue: number): string => {
-    if (satsValue <= receiveMinSatsLimit) {
+    if (satsValue < receiveMinSatsLimit) {
       return `The minimum amount is ${receiveMinSatsLimit.toLocaleString()} SATS`;
     }
-    if (satsValue >= receiveMaxSatsLimit) {
+    if (satsValue > receiveMaxSatsLimit) {
       return `The maximum amount is ${receiveMaxSatsLimit.toLocaleString()} SATS`;
     }
     return '';
