@@ -41,8 +41,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 🔍 Set GH_TOKEN
-        run: echo "GH_TOKEN=${{ secrets.GH_TOKEN }}" >> $GITHUB_ENV
+      - name: 🔍 GH_TOKEN
+        if: env.GH_TOKEN == ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "GH_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
       - name: 📦 Checkout project repo
         uses: actions/checkout@v3
         with:
