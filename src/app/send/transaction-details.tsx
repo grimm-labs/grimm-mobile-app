@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import type { LnInvoice } from '@breeztech/react-native-breez-sdk-liquid';
 import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
