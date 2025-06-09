@@ -113,7 +113,7 @@ export default function VerifyOTP() {
           <ScreenTitle title="We just sent you an SMS" />
           <View className="mb-6" />
 
-          <ScreenSubtitle subtitle={`To confirm phone number, Please enter the 6 digit pin we sent to ${formattedPhoneNumber}`} />
+          <ScreenSubtitle subtitle={`To confirm phone number, please enter the 6-digit pin we sent to ${formattedPhoneNumber}.`} />
           <View className="mb-8" />
 
           {/* OTP Input */}

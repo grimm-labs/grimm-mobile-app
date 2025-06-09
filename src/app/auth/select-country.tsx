@@ -37,7 +37,7 @@ const ClearButton: React.FC<ClearButtonProps> = React.memo(({ onPress, visible }
   return (
     <Pressable onPress={onPress} hitSlop={8}>
       <View className="flex flex-row items-center justify-center rounded p-1">
-        <Ionicons name="close-circle-sharp" size={24} color={colors.neutral[500]} />
+        <Ionicons name="close-circle-sharp" size={20} color={colors.neutral[500]} />
       </View>
     </Pressable>
   );
@@ -59,7 +59,7 @@ const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelecte
           <Text className="text-sm text-gray-500">+{country.callingCode}</Text>
         </View>
       </View>
-      {isSelected && <Ionicons name="checkmark-circle" size={24} color={colors.primary[600]} />}
+      {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
     </TouchableOpacity>
   );
 });

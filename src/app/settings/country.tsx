@@ -35,7 +35,7 @@ const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelecte
             {country.region} • {country.currency} • +{country.callingCode}
           </Text>
         </View>
-        {isSelected && <Ionicons name="checkmark-circle" size={24} color={colors.primary[600]} />}
+        {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
       </View>
     </Pressable>
   );

@@ -25,7 +25,7 @@ const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, isSele
         <Text className={`mb-1 text-xl font-normal ${isSelected ? 'text-primary-600' : 'text-gray-900'}`}>{title}</Text>
         <Text className={`text-sm text-gray-600`}>{subtitle}</Text>
       </View>
-      {isSelected && <Ionicons name="checkmark-circle" size={24} color={colors.primary[600]} />}
+      {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
     </TouchableOpacity>
   );
 };

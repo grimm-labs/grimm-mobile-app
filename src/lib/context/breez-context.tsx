@@ -2,6 +2,7 @@
 import type { Payment, SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
 import { addEventListener, connect, defaultConfig, disconnect, getInfo, LiquidNetwork, listPayments, removeEventListener, SdkEventVariant } from '@breeztech/react-native-breez-sdk-liquid';
 import { Env } from '@env';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
@@ -15,12 +16,15 @@ interface BreezState {
   error: string | null;
   isInitialized: boolean;
   payments: Payment[];
+  liquidNetwork: LiquidNetwork;
 }
 
 interface BreezContextType extends BreezState {
   initializeBreez: () => Promise<void>;
   refreshWalletInfo: () => Promise<void>;
   disconnectBreez: () => Promise<void>;
+  setLiquidNetwork: (network: LiquidNetwork) => Promise<void>;
+  getLiquidNetwork: () => LiquidNetwork;
 }
 
 const initialState: BreezState = {
@@ -30,6 +34,7 @@ const initialState: BreezState = {
   error: null,
   isInitialized: false,
   payments: [],
+  liquidNetwork: LiquidNetwork.TESTNET,
 };
 
 const BreezContext = createContext<BreezContextType | undefined>(undefined);
@@ -43,6 +48,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const router = useRouter();
   const [state, setState] = useState<BreezState>(initialState);
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
+  const { getItem: _getLiquidNetwork, setItem: _setLiquidNetwork } = useAsyncStorage('liquidNetwork');
   const eventListenerRef = useRef<string | null>(null);
   const isInitializingRef = useRef<boolean>(false);
 
@@ -82,6 +88,27 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    const loadLiquidNetwork = async (): Promise<LiquidNetwork> => {
+      try {
+        const storedNetwork = await _getLiquidNetwork();
+        if (storedNetwork && Object.values(LiquidNetwork).includes(storedNetwork as LiquidNetwork)) {
+          return storedNetwork as LiquidNetwork;
+        }
+        return LiquidNetwork.TESTNET;
+      } catch (error) {
+        console.error('Error loading liquid network:', error);
+        return LiquidNetwork.TESTNET;
+      }
+    };
+
+    const initializeNetwork = async () => {
+      const network = await loadLiquidNetwork();
+      updateState({ liquidNetwork: network });
+    };
+    initializeNetwork();
+  }, [_getLiquidNetwork]);
+
   const initializeBreez = async (): Promise<void> => {
     if (isInitializingRef.current || state.isInitialized) {
       console.log('Breez already initialized or initialization in progress');
@@ -101,11 +128,11 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         throw new Error('No recovery phrase found');
       }
 
-      const config = await defaultConfig(LiquidNetwork.TESTNET, Env.BREEZ_API_KEY);
+      const config = await defaultConfig(state.liquidNetwork, Env.BREEZ_API_KEY);
 
       try {
         await connect({ config, mnemonic: seedPhrase });
-        console.log('Breez connected successfully');
+        console.log(`Breez connected successfully on ${state.liquidNetwork}`);
       } catch (error: any) {
         if (error?.message?.includes('Already initialized')) {
           console.log('Breez SDK already initialized, continuing...');
@@ -236,7 +263,6 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       await disconnect();
       console.log('Disconnected from Breez SDK');
 
-      // Reset state
       updateState({
         isConnected: false,
         isSyncing: false,
@@ -254,6 +280,36 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     }
   };
 
+  const setLiquidNetwork = async (network: LiquidNetwork): Promise<void> => {
+    if (network === state.liquidNetwork) {
+      console.log('Network is already set to:', network);
+      return;
+    }
+
+    try {
+      console.log(`Changing network from ${state.liquidNetwork} to ${network}`);
+
+      await _setLiquidNetwork(network);
+
+      if (state.isConnected) {
+        await disconnectBreez();
+      }
+
+      updateState({ liquidNetwork: network });
+
+      setTimeout(async () => {
+        await initializeBreez();
+      }, 100);
+    } catch (error) {
+      console.error('Error changing liquid network:', error);
+      updateState({ error: error?.toString() });
+    }
+  };
+
+  const getLiquidNetwork = (): LiquidNetwork => {
+    return state.liquidNetwork;
+  };
+
   useEffect(() => {
     // Cleanup function to remove event listeners on unmount
     return () => {
@@ -268,6 +324,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     initializeBreez,
     refreshWalletInfo: refreshWalletInfoWithCurrentState,
     disconnectBreez,
+    setLiquidNetwork,
+    getLiquidNetwork,
   };
 
   return <BreezContext.Provider value={contextValue}>{children}</BreezContext.Provider>;
