@@ -7,6 +7,15 @@ import { cleanup, screen, setup } from '@/lib/test-utils';
 
 import { Checkbox, Radio, Switch } from './checkbox';
 
+jest.mock('expo-localization', () => ({
+  locale: 'en-US',
+  locales: ['fr-FR', 'en-US'],
+  timezone: 'Europe/Paris',
+  isoCurrencyCodes: ['EUR'],
+  region: 'FR',
+  isRTL: false,
+}));
+
 afterEach(cleanup);
 
 describe('Checkbox, Radio & Switch components ', () => {
