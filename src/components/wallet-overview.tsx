@@ -68,7 +68,7 @@ export const WalletOverview = () => {
             onPress={() => {
               router.push({
                 pathname: '/transaction-result/success-screen',
-                params: { transactionType: 'received', amount: 1948394 },
+                params: { transactionType: 'received', satsAmount: '34298' },
               });
             }}
           >

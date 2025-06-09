@@ -54,7 +54,7 @@ export default function Sync() {
           setSyncStatus('Sync completed!');
 
           setTimeout(() => {
-            router.push('/');
+            router.replace('/');
           }, 500);
         }
 
@@ -105,27 +105,8 @@ export default function Sync() {
             <Text className="text-center text-base text-gray-600">{syncStatus}</Text>
           </View>
 
-          <View className="mb-8 w-full px-4">
-            <View className="h-2 overflow-hidden rounded-full bg-gray-200">
-              <Animated.View
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600"
-                style={{
-                  width: progressAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0%', '100%'],
-                  }),
-                }}
-              />
-            </View>
-
-            <View className="mt-2 flex-row justify-between">
-              <Text className="text-sm text-gray-500">{progress}% Complete</Text>
-              <Text className="text-sm text-gray-500">{Math.max(0, Math.ceil((100 - progress) / 10))}s remaining</Text>
-            </View>
-          </View>
-
           <View className="px-6">
-            <Text className="text-center text-sm leading-5 text-gray-400">
+            <Text className="text-center text-sm leading-5 text-gray-500">
               Please wait while we sync your data.{'\n'}
               This may take a few moments.
             </Text>

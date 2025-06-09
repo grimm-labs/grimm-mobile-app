@@ -21,7 +21,7 @@ interface HeaderLeftProps {
 
 const HeaderLeft: React.FC<HeaderLeftProps> = ({ onPress }) => (
   <TouchableOpacity onPress={onPress}>
-    <Ionicons name="close-sharp" size={28} color={colors.primary[600]} />
+    <Ionicons name="close-sharp" size={32} color={colors.primary[600]} />
   </TouchableOpacity>
 );
 
@@ -65,7 +65,7 @@ export default function TransactionResultScreen() {
         <Text className="mb-6 text-center text-base text-gray-500">on the date of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</Text>
 
         <Text className="mb-8 text-xl font-bold text-primary-500">
-          That's {convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}!
+          That's {convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedFiatCurrency}!
         </Text>
 
         <Text className="mb-12 text-base font-medium text-gray-600">#GrimmAppBTC</Text>
@@ -73,7 +73,7 @@ export default function TransactionResultScreen() {
 
       <View className="px-6 pb-8">
         <TouchableOpacity onPress={() => router.push('/')} className="items-center rounded-full bg-primary-600 px-6 py-4">
-          <Text className="text-lg font-normal text-white">Okay</Text>
+          <Text className="text-lg font-normal text-white">Okay!</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
