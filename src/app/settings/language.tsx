@@ -2,10 +2,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { SafeAreaView } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 
 interface LanguageOptionProps {
   language: string;
@@ -25,7 +24,7 @@ const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, 
           <Text className="text-sm text-gray-500">{nativeName}</Text>
         </View>
       </View>
-      <View className="ml-3 size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={24} color={colors.primary[600]} />}</View>
+      <View className="ml-3 size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
     </View>
   </Pressable>
 ));

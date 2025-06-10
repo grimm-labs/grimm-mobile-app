@@ -3,11 +3,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import type { ListRenderItem } from 'react-native';
-import { FlatList, SafeAreaView, TextInput } from 'react-native';
+import { FlatList, TextInput } from 'react-native';
 
 import countries from '@/assets/data/countries.json';
 import { HeaderLeft } from '@/components/back-button';
-import { Button, colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import type { Country } from '@/interfaces';
 import { AppContext } from '@/lib/context';
 
@@ -35,7 +35,7 @@ const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelecte
             {country.region} • {country.currency} • +{country.callingCode}
           </Text>
         </View>
-        {isSelected && <Ionicons name="checkmark-circle" size={24} color={colors.primary[600]} />}
+        {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
       </View>
     </Pressable>
   );

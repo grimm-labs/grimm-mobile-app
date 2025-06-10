@@ -3,12 +3,12 @@ import { Mnemonic } from 'bdk-rn';
 import { WordCount } from 'bdk-rn/lib/lib/enums';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
-import { SafeAreaView, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 
 interface SeedOptionItemProps {
@@ -25,7 +25,7 @@ const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, isSele
         <Text className={`mb-1 text-xl font-normal ${isSelected ? 'text-primary-600' : 'text-gray-900'}`}>{title}</Text>
         <Text className={`text-sm text-gray-600`}>{subtitle}</Text>
       </View>
-      {isSelected && <Ionicons name="checkmark-circle" size={24} color={colors.primary[600]} />}
+      {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
     </TouchableOpacity>
   );
 };

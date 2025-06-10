@@ -8,6 +8,7 @@ import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
+import { Env } from '@/lib/env';
 
 export default function Settings() {
   const { setSeedPhrase, resetAppData } = useContext(AppContext);
@@ -95,7 +96,7 @@ export default function Settings() {
             </Text>
           </View>
           <View className="mb-6">
-            <Text className="text-center text-sm font-medium text-gray-500">Version 1.0.0 (0394859)</Text>
+            <Text className="text-center text-sm font-medium text-gray-500">Version {Env.VERSION}</Text>
           </View>
         </ScrollView>
       </View>

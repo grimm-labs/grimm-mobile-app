@@ -4,10 +4,10 @@ import { fetchLightningLimits, fetchOnchainLimits } from '@breeztech/react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
-import { Alert, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, TextInput, TouchableOpacity } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
@@ -53,10 +53,10 @@ export default function EnterAmountScreen() {
   }, [type]);
 
   const validateAmount = (satsValue: number): string => {
-    if (satsValue <= receiveMinSatsLimit) {
+    if (satsValue < receiveMinSatsLimit) {
       return `The minimum amount is ${receiveMinSatsLimit.toLocaleString()} SATS`;
     }
-    if (satsValue >= receiveMaxSatsLimit) {
+    if (satsValue > receiveMaxSatsLimit) {
       return `The maximum amount is ${receiveMaxSatsLimit.toLocaleString()} SATS`;
     }
     return '';

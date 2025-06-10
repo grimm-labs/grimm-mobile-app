@@ -7,6 +7,15 @@ import { cleanup, render, screen, setup } from '@/lib/test-utils';
 
 import { Input } from './input';
 
+jest.mock('expo-localization', () => ({
+  locale: 'en-US',
+  locales: ['fr-FR', 'en-US'],
+  timezone: 'Europe/Paris',
+  isoCurrencyCodes: ['EUR'],
+  region: 'FR',
+  isRTL: false,
+}));
+
 afterEach(cleanup);
 
 describe('Input component ', () => {

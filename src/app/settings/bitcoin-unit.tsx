@@ -2,10 +2,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useContext, useMemo } from 'react';
-import { SafeAreaView } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { BitcoinUnit } from '@/types/enum';
 
@@ -23,7 +22,7 @@ const UnitOption = React.memo<UnitOptionProps>(({ title, description, isSelected
         <Text className="mb-1 text-sm font-medium text-gray-900">{title}</Text>
         <Text className="text-xs leading-4 text-gray-500">{description}</Text>
       </View>
-      <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={24} color={colors.primary[600]} />}</View>
+      <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
     </View>
   </Pressable>
 ));

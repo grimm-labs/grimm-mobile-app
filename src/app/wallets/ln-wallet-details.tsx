@@ -2,12 +2,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext } from 'react';
-import { SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
 import { EmptyTransactions } from '@/components/empty-transaction';
 import { TransactionItem } from '@/components/transaction';
-import { colors, FocusAwareStatusBar, Image, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Image, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
@@ -65,7 +65,6 @@ export default function LnWalletDetails() {
         }}
       />
       <FocusAwareStatusBar style="dark" />
-
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
         <View className="mb-6 mt-4">
           <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
@@ -116,7 +115,7 @@ export default function LnWalletDetails() {
               }}
             />
             <View className="ml-14 border-t border-gray-200" />
-            <MenuItem icon="arrow-up-outline" title="Pay a lightning invoice" onPress={() => console.log('pay for ln invoice')} />
+            <MenuItem icon="arrow-up-outline" title="Pay a lightning invoice" onPress={() => router.push('/send/enter-address')} />
           </View>
         </View>
 

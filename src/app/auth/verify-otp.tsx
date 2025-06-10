@@ -2,7 +2,6 @@
 import type { AxiosError } from 'axios';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { SafeAreaView } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 
 import type { SignInResponse } from '@/api';
@@ -10,7 +9,7 @@ import { useSignIn } from '@/api';
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, colors, FocusAwareStatusBar, showErrorMessage, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { beautifyPhoneNumber } from '@/lib/utils';
 
@@ -113,7 +112,7 @@ export default function VerifyOTP() {
           <ScreenTitle title="We just sent you an SMS" />
           <View className="mb-6" />
 
-          <ScreenSubtitle subtitle={`To confirm phone number, Please enter the 6 digit pin we sent to ${formattedPhoneNumber}`} />
+          <ScreenSubtitle subtitle={`To confirm phone number, please enter the 6-digit pin we sent to ${formattedPhoneNumber}.`} />
           <View className="mb-8" />
 
           {/* OTP Input */}

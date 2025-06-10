@@ -4,12 +4,12 @@ import { PaymentMethod, prepareReceivePayment, ReceiveAmountVariant, receivePaym
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Clipboard, Pressable, SafeAreaView, ScrollView, Share } from 'react-native';
+import { ActivityIndicator, Clipboard, Pressable, ScrollView, Share } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
 
 import { HeaderLeft } from '@/components/back-button';
-import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
