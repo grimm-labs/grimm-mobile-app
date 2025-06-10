@@ -2,10 +2,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { SafeAreaView } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 
 type ThemeMode = 'system' | 'light' | 'dark';
 

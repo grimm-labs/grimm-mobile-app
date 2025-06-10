@@ -4,10 +4,10 @@ import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, SafeAreaView } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { useBreez } from '@/lib/context/breez-context';
 
 interface NetworkOptionProps {

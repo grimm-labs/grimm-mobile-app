@@ -2,10 +2,10 @@
 import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, SafeAreaView, ScrollView, TextInput } from 'react-native';
+import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { Button, colors, FocusAwareStatusBar, showErrorMessage, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
 
 export default function LightningPaymentScreen() {
   const router = useRouter();

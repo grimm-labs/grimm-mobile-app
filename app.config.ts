@@ -42,14 +42,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     config: {
       usesNonExemptEncryption: false, // Avoid the export compliance warning on the app store
     },
+    icon: {
+      light: './assets/icons/ios-light.png',
+      dark: './assets/icons/ios-dark.png',
+      tinted: './assets/icons/ios-tinted.png',
+    },
   },
   experiments: {
     typedRoutes: true,
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#2E3C4B',
+      foregroundImage: './assets/icons/adaptive-icon.png',
+      monochromeImage: './assets/icons/adaptive-icon.png',
+      backgroundColor: '#ffffff',
     },
     package: Env.PACKAGE,
   },
@@ -61,9 +67,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#2E3C4B',
-        image: './assets/splash-icon.png',
+        backgroundColor: '#ffffff',
+        image: './assets/icons/splash-icon-dark.png',
         imageWidth: 150,
+        resizeMode: 'contain',
+        dark: {
+          backgroundColor: '#000000',
+          image: './assets/icons/splash-icon-light.png',
+        },
       },
     ],
     [

@@ -2,7 +2,6 @@
 import type { AxiosError } from 'axios';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { SafeAreaView } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 
 import type { SignInResponse } from '@/api';
@@ -10,7 +9,7 @@ import { useSignIn } from '@/api';
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, colors, FocusAwareStatusBar, showErrorMessage, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { beautifyPhoneNumber } from '@/lib/utils';
 

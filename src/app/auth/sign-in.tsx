@@ -8,14 +8,14 @@ import parsePhoneNumberFromString from 'libphonenumber-js/mobile';
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable } from 'react-native';
 import * as z from 'zod';
 
 import { useGetOtp } from '@/api';
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, colors, ControlledInput, FocusAwareStatusBar, showErrorMessage, Text, View } from '@/components/ui';
+import { Button, colors, ControlledInput, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { formatPhoneNumber, getPlaceholderPhoneNumber } from '@/lib/utils';
 

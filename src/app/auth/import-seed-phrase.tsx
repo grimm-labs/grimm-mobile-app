@@ -1,12 +1,12 @@
 /* eslint-disable max-lines-per-function */
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
-import { SafeAreaView, ScrollView, TextInput } from 'react-native';
+import { ScrollView, TextInput } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, FocusAwareStatusBar, showErrorMessage, Text, View } from '@/components/ui';
+import { Button, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { isMnemonicValid } from '@/lib/utils';
 

@@ -1,10 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React from 'react';
-import { SafeAreaView } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { FocusAwareStatusBar, Text, View } from '@/components/ui';
+import { FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 
 export default function NotificationsScreen() {
   return (

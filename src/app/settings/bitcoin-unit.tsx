@@ -2,10 +2,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useContext, useMemo } from 'react';
-import { SafeAreaView } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { BitcoinUnit } from '@/types/enum';
 

@@ -3,12 +3,12 @@ import { Mnemonic } from 'bdk-rn';
 import { WordCount } from 'bdk-rn/lib/lib/enums';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
-import { SafeAreaView, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, colors, FocusAwareStatusBar, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 
 interface SeedOptionItemProps {

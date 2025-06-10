@@ -3,11 +3,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import type { ListRenderItem } from 'react-native';
-import { FlatList, SafeAreaView, TextInput } from 'react-native';
+import { FlatList, TextInput } from 'react-native';
 
 import countries from '@/assets/data/countries.json';
 import { HeaderLeft } from '@/components/back-button';
-import { Button, colors, FocusAwareStatusBar, Pressable, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import type { Country } from '@/interfaces';
 import { AppContext } from '@/lib/context';
 

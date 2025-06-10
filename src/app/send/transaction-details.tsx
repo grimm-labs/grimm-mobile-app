@@ -5,10 +5,10 @@ import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liqui
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, SafeAreaView, ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
-import { Button, colors, FocusAwareStatusBar, showErrorMessage, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';

@@ -1,9 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { memo } from 'react';
-import { Pressable, SafeAreaView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Button, colors, FocusAwareStatusBar, Image } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/components/ui';
 
 const Logo = memo(() => <Image className="size-32" source={require('@/assets/images/logo.png')} />);
 
