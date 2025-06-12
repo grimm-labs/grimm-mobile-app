@@ -147,10 +147,8 @@ export default function NetworkSwitcher() {
           ))}
         </View>
 
-        <View className="mt-6 px-2">
-          <Text className="text-sm leading-5 text-gray-600">
-            You should most likely be on mainnet for real Bitcoin transactions. Testnet is for developers and uses test Bitcoin with no real value. Regtest is for local development only.
-          </Text>
+        <View className="mt-6">
+          <Text className="text-xs text-gray-600">You should most likely be on mainnet for real Bitcoin transactions.</Text>
         </View>
       </View>
     </SafeAreaView>

@@ -1,12 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useContext } from 'react';
 import Svg, { Path } from 'react-native-svg';
 
+import { SeedPhraseBackupNotification } from '@/components/seed-phrase-backup-notification';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { WalletOverview } from '@/components/wallet-overview';
 import { WalletView } from '@/components/wallet-view';
+import { AppContext } from '@/lib/context';
 
 const SvgComponent = () => {
   return (
@@ -18,6 +20,7 @@ const SvgComponent = () => {
 
 export default function Home() {
   const router = useRouter();
+  const { isSeedPhraseBackup } = useContext(AppContext);
   const [notificationCount, _setNotificationCount] = React.useState(10);
 
   return (
@@ -38,6 +41,8 @@ export default function Home() {
             <View className="m-4">
               <WalletOverview />
               <View className="mb-8" />
+              {!isSeedPhraseBackup && <SeedPhraseBackupNotification />}
+              <View className="mb-4" />
               <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
                 <View className="flex-row justify-between">
                   <Text className="mb-2 text-lg font-bold">Spending</Text>

@@ -17,7 +17,7 @@ export const SettingsItem = ({ icon, title, subtitle, onPress }: Props) => {
       </View>
       <View className="ml-2 flex-1">
         <Text className="text-base font-medium text-gray-800">{title}</Text>
-        <Text className="text-sm text-gray-500">{subtitle}</Text>
+        <Text className="text-xs text-gray-500">{subtitle}</Text>
       </View>
       <View>
         <Ionicons name="chevron-forward" size={20} color="gray" />

@@ -11,7 +11,7 @@ import { useBreez } from '@/lib/context/breez-context';
 import { Env } from '@/lib/env';
 
 export default function Settings() {
-  const { setSeedPhrase, resetAppData } = useContext(AppContext);
+  const { setSeedPhrase, resetAppData, setIsSeedPhraseBackup, isSeedPhraseBackup } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const router = useRouter();
 
@@ -34,6 +34,11 @@ export default function Settings() {
     ]);
   };
 
+  const backupSeedPhrase = () => {
+    setIsSeedPhraseBackup(!isSeedPhraseBackup);
+    router.push('/settings/recovery-phrase-warning');
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <FocusAwareStatusBar style="dark" />
@@ -43,7 +48,7 @@ export default function Settings() {
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
           <View className="mb-6 mt-3">
-            <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">General</Text>
+            <Text className="mx-4 mb-3 text-lg text-gray-600">General</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               <SettingsItem icon="build" title="Networks" subtitle="Manage and configure your networks" onPress={() => router.push('/settings/network')} />
               <SettingsItem icon="globe" title="Country" subtitle="Select your country for a personalized experience" onPress={() => router.push('/settings/country')} />
@@ -52,10 +57,10 @@ export default function Settings() {
             </View>
           </View>
           <View className="mb-6">
-            <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">Security</Text>
+            <Text className="mx-4 mb-3 text-lg text-gray-600">Security</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               {/* <SettingsItem icon="lock-closed" title="Change PIN code" subtitle="Update your wallet access PIN" onPress={() => console.log('PIN change pressed')} /> */}
-              <SettingsItem icon="key" title="Backup Key" subtitle="Secure and manage your wallet recovery key" onPress={() => router.push('/settings/recovery-phrase-warning')} />
+              <SettingsItem icon="key" title="Backup Key" subtitle="Secure and manage your wallet recovery key" onPress={backupSeedPhrase} />
               {/* <Pressable className="mb-1 flex-row items-center rounded py-2">
                 <View className="mr-1 rounded-full p-2">
                   <Ionicons name="scan-sharp" size={20} color="gray" />
@@ -73,7 +78,7 @@ export default function Settings() {
             </View>
           </View>
           <View className="mb-6">
-            <Text className="mx-4 mb-3 text-xl font-semibold text-gray-600">Preferences</Text>
+            <Text className="mx-4 mb-3 text-lg text-gray-600">Preferences</Text>
             <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
               {/* <SettingsItem icon="notifications" title="Notifications" subtitle="Customize your app notification settings" onPress={() => router.push('/settings/notifications')} /> */}
               <SettingsItem icon="color-palette" title="Appearance" subtitle="Switch between light and dark modes" onPress={() => router.push('/settings/appearance')} />

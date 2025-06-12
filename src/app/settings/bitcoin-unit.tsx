@@ -97,7 +97,7 @@ export default function BitcoinUnitScreen() {
         </View>
 
         <View className="mt-6 px-2">
-          <Text className="text-sm leading-5 text-gray-500">The Bitcoin unit determines how balances are displayed in the wallet.</Text>
+          <Text className="text-xs leading-5 text-gray-500">The Bitcoin unit determines how balances are displayed in the wallet.</Text>
         </View>
       </View>
     </SafeAreaView>

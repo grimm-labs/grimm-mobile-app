@@ -30,7 +30,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
       mb-3 flex flex-row items-center 
       justify-between rounded-xl border border-gray-200 p-4
       ${isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'}
-      min-h-[80px] shadow-sm
+      min-h-[80px]
     `}
     >
       <View className="flex flex-1 flex-row items-center">
@@ -54,7 +54,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
           </Text>
           <Text
             className={`
-            text-sm leading-5
+            text-xs leading-5
             ${isSelected ? 'text-blue-700' : 'text-gray-600'}
           `}
           >

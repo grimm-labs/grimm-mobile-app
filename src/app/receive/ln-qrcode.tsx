@@ -190,8 +190,8 @@ export default function ReceivePaymentScreen() {
         }}
       />
 
-      <View className="flex-1">
-        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+      <View className="flex-1 px-2">
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="mb-2 mt-3">
             <View className="items-center rounded-2xl p-6">
               <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
@@ -232,7 +232,7 @@ export default function ReceivePaymentScreen() {
           </View>
         </ScrollView>
 
-        <View className="px-4 pb-4">
+        <View>
           <Button label="Close" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
         </View>
       </View>

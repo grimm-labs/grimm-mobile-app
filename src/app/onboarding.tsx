@@ -36,7 +36,7 @@ function Onboarding() {
 
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex h-full justify-between px-4">
+      <View className="flex h-full justify-between border px-4">
         <Stack.Screen
           options={{
             headerShown: false,
@@ -46,7 +46,7 @@ function Onboarding() {
         />
         <FocusAwareStatusBar style="dark" />
 
-        <View className="flex flex-row items-center justify-between">
+        <View className="my-2 flex flex-row items-center justify-between">
           <View className="flex" />
           <Pressable className="relative" onPress={() => router.push('/need-help')}>
             <Ionicons name="chatbubble-ellipses" size={24} color={colors.neutral[500]} />
@@ -62,7 +62,7 @@ function Onboarding() {
             <WelcomeText />
           </View>
         </View>
-        <View className="mb-4">
+        <View>
           <Footer onGetStarted={handleGetStarted} />
         </View>
       </View>

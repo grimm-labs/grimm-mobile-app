@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +11,7 @@ import * as z from 'zod';
 
 import countries from '@/assets/data/countries.json';
 import { HeaderLeft } from '@/components/back-button';
-import { colors, ControlledInput, FocusAwareStatusBar, Text, TouchableOpacity, View } from '@/components/ui';
+import { colors, ControlledInput, FocusAwareStatusBar, SafeAreaView, Text, TouchableOpacity, View } from '@/components/ui';
 import type { ClearButtonProps, Country } from '@/interfaces';
 import { AppContext } from '@/lib/context';
 
@@ -127,7 +128,11 @@ export default function SelectCountry() {
     () => ({
       headerLeft: HeaderLeft,
       headerTitleAlign: 'center' as const,
-      headerTitle: 'Select your country',
+      headerTitle: () => (
+        <View className="flex-row items-center">
+          <Text className="text-lg">Select your country</Text>
+        </View>
+      ),
       headerRight: () => null,
       headerShadowVisible: false,
     }),
@@ -135,11 +140,10 @@ export default function SelectCountry() {
   );
 
   return (
-    <>
+    <SafeAreaView className="flex-1 border">
       <Stack.Screen options={screenOptions} />
       <FocusAwareStatusBar style="dark" />
-
-      <View className="flex-1 bg-white">
+      <View className="mt-0 h-full flex-1 border bg-white">
         <View className="mx-4 flex-1">
           <ControlledInput
             testID="countrySearchInput"
@@ -178,6 +182,6 @@ export default function SelectCountry() {
           />
         </View>
       </View>
-    </>
+    </SafeAreaView>
   );
 }

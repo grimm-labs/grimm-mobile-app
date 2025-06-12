@@ -167,7 +167,7 @@ export default function EnterAmountScreen() {
           </View>
         )}
         <View className="flex-1" />
-        <View className="mb-8">
+        <View>
           <Button label="Continue" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
         </View>
       </View>

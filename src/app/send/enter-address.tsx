@@ -94,7 +94,7 @@ export default function LightningPaymentScreen() {
 
         {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
 
-        <View className="my-4">
+        <View>
           <Button label={isLoading ? 'Processing...' : 'Pay Invoice'} onPress={handlePayment} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
         </View>
       </ScrollView>

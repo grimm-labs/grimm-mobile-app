@@ -126,7 +126,7 @@ export default function CountrySelector() {
           })}
         />
 
-        <View className="pb-8 pt-2">
+        <View className="pt-2">
           <Button label="Save" onPress={handleSave} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
         </View>
       </View>
