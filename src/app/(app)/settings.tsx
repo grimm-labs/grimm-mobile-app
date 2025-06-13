@@ -11,7 +11,7 @@ import { useBreez } from '@/lib/context/breez-context';
 import { Env } from '@/lib/env';
 
 export default function Settings() {
-  const { setSeedPhrase, resetAppData, setIsSeedPhraseBackup, isSeedPhraseBackup } = useContext(AppContext);
+  const { setSeedPhrase, resetAppData } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const router = useRouter();
 
@@ -35,8 +35,7 @@ export default function Settings() {
   };
 
   const backupSeedPhrase = () => {
-    setIsSeedPhraseBackup(!isSeedPhraseBackup);
-    router.push('/settings/recovery-phrase-warning');
+    router.push('/settings/backup-seed-phrase/recovery-seed-phrase-warning');
   };
 
   return (

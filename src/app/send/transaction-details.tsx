@@ -8,10 +8,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 
 import { HeaderLeft } from '@/components/back-button';
+import SlideToConfirm from '@/components/slide-to-confirm';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
   rawInvoice: string;
@@ -21,7 +23,7 @@ export default function PaymentDetailsScreen() {
   const router = useRouter();
   const { rawInvoice } = useLocalSearchParams<SearchParams>();
 
-  const { selectedCountry, bitcoinUnit } = useContext(AppContext);
+  const { selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -157,8 +159,6 @@ export default function PaymentDetailsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <FocusAwareStatusBar style="dark" />
-
       <Stack.Screen
         options={{
           title: 'Pay via lightning',
@@ -167,7 +167,7 @@ export default function PaymentDetailsScreen() {
           headerShadowVisible: false,
         }}
       />
-
+      <FocusAwareStatusBar style="dark" />
       <View className="flex-1">
         <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
           <View className="flex-1 bg-white px-4 py-6">
@@ -175,37 +175,33 @@ export default function PaymentDetailsScreen() {
               <Text className="mb-2 text-lg font-medium text-gray-900">To</Text>
               <Text className="text-base text-gray-600">{getDestinationDisplay()}</Text>
             </View>
-
             <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
               <Text className="text-lg text-gray-600">Amount</Text>
               <View className="items-end">
                 <Text className="text-lg font-medium text-gray-900">{decodedInvoiceData?.amountMsat} SAT</Text>
                 <Text className="text-sm text-gray-500">
-                  {convertBitcoinToFiat(Number(decodedInvoiceData?.amountMsat || 0), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                  {convertBitcoinToFiat(Number(decodedInvoiceData?.amountMsat || 0), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                 </Text>
               </View>
             </View>
-
             <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
               <Text className="text-lg text-gray-600">Network fee</Text>
               <View className="items-end">
                 <Text className="text-lg font-medium text-gray-900">{feesSat} SAT</Text>
                 <Text className="text-sm text-gray-500">
-                  {convertBitcoinToFiat(Number(feesSat || 0), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                  {convertBitcoinToFiat(Number(feesSat || 0), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                 </Text>
               </View>
             </View>
-
             <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
               <Text className="text-lg text-gray-600">Total</Text>
               <View className="items-end">
                 <Text className="text-lg font-medium text-gray-900">{Number((feesSat || 0) + (decodedInvoiceData?.amountMsat || 0))} SAT</Text>
                 <Text className="text-sm text-gray-500">
-                  {convertBitcoinToFiat(Number((feesSat || 0) + (decodedInvoiceData?.amountMsat || 0)), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                  {convertBitcoinToFiat(Number((feesSat || 0) + (decodedInvoiceData?.amountMsat || 0)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                 </Text>
               </View>
             </View>
-
             {decodedInvoiceData?.description && (
               <View className="mb-8">
                 <Text className="mb-2 text-lg font-medium text-gray-900">Note</Text>
@@ -214,27 +210,13 @@ export default function PaymentDetailsScreen() {
             )}
           </View>
         </ScrollView>
-
-        {/* Bottom Fixed Section */}
         <View className="border-t border-gray-100 bg-white px-4 pb-8 pt-4">
-          {/* Expiry Timer */}
           {timeRemaining && (
             <View className="mb-6 items-center">
               <Text className="text-base text-gray-600">{timeRemaining === 'Expired' ? <Text className="text-red-500">This invoice has expired</Text> : <>This invoice expires in {timeRemaining}</>}</Text>
             </View>
           )}
-
-          {/* Send Button */}
-          <Button
-            label={isLoading ? 'Sending...' : 'SEND'}
-            onPress={handleSendPayment}
-            disabled={isLoading || timeRemaining === 'Expired'}
-            fullWidth={true}
-            variant="secondary"
-            textClassName="text-base font-semibold text-white"
-            size="lg"
-            className="rounded-lg"
-          />
+          <SlideToConfirm onConfirm={handleSendPayment} />
         </View>
       </View>
     </SafeAreaView>

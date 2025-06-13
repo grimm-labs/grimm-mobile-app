@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import Svg, { Path } from 'react-native-svg';
 
+import { QuickActions } from '@/components/quick-actions';
 import { SeedPhraseBackupNotification } from '@/components/seed-phrase-backup-notification';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { WalletOverview } from '@/components/wallet-overview';
@@ -20,7 +21,7 @@ const SvgComponent = () => {
 
 export default function Home() {
   const router = useRouter();
-  const { isSeedPhraseBackup } = useContext(AppContext);
+  const { isSeedPhraseBackup, selectedCountry } = useContext(AppContext);
   const [notificationCount, _setNotificationCount] = React.useState(10);
 
   return (
@@ -42,10 +43,11 @@ export default function Home() {
               <WalletOverview />
               <View className="mb-8" />
               {!isSeedPhraseBackup && <SeedPhraseBackupNotification />}
+              {isSeedPhraseBackup && selectedCountry.isoCode === 'CM' && <QuickActions />}
               <View className="mb-4" />
               <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
                 <View className="flex-row justify-between">
-                  <Text className="mb-2 text-lg font-bold">Spending</Text>
+                  <Text className="mb-2 text-lg font-bold text-gray-600">Spending</Text>
                   <SvgComponent />
                 </View>
                 <WalletView name="Bitcoin" symbol="BTC" type="Lightning" />
