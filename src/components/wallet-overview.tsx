@@ -27,7 +27,7 @@ export const WalletOverview = () => {
           }}
           className="flex flex-row items-center"
         >
-          <Text className="mr-2 text-center text-lg font-medium">Total Balance</Text>
+          <Text className="mr-2 text-center text-lg font-semibold text-gray-600">Total Balance</Text>
           <View className="flex-row space-x-2">
             <Ionicons name={hideBalance ? 'eye-off' : 'eye'} size={16} color="gray" />
           </View>

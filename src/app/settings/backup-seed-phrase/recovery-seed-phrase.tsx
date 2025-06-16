@@ -3,11 +3,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useMemo } from 'react';
-import { Clipboard, SafeAreaView, ScrollView } from 'react-native';
+import { Clipboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 
 import { HeaderLeft } from '@/components/back-button';
-import { Button, Text, View } from '@/components/ui';
+import { Button, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 
 export default function SeedPhraseScreen() {

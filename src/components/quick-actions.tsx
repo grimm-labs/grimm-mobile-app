@@ -11,13 +11,13 @@ type Action = {
 };
 
 const actions: Action[] = [
-  { label: 'Money', icon: <Ionicons name="cash" size={18} color="white" />, bg: 'bg-success-600', onPress: () => console.log('Send Money') },
-  { label: 'Airtime', icon: <Ionicons name="call" size={18} color="white" />, bg: 'bg-danger-600', onPress: () => console.log('Airtime') },
-  { label: 'Internet', icon: <Ionicons name="wifi" size={18} color="white" />, bg: 'bg-indigo-600', onPress: () => console.log('Internet') },
-  { label: 'Cable TV', icon: <Ionicons name="tv" size={18} color="white" />, bg: 'bg-sky-600', onPress: () => console.log('Cable TV') },
-  { label: 'Electricity', icon: <Ionicons name="flash" size={18} color="white" />, bg: 'bg-yellow-600', onPress: () => console.log('Electricity') },
-  { label: 'Water', icon: <Ionicons name="water" size={18} color="white" />, bg: 'bg-blue-600', onPress: () => console.log('Water') },
-  { label: 'Merchant', icon: <Ionicons name="storefront" size={18} color="white" />, bg: 'bg-teal-600', onPress: () => console.log('Merchant') },
+  { label: 'Money', icon: <Ionicons name="cash" size={22} color="white" />, bg: 'bg-success-600', onPress: () => console.log('Send Money') },
+  { label: 'Airtime', icon: <Ionicons name="call" size={22} color="white" />, bg: 'bg-danger-600', onPress: () => console.log('Airtime') },
+  { label: 'Internet', icon: <Ionicons name="wifi" size={22} color="white" />, bg: 'bg-indigo-600', onPress: () => console.log('Internet') },
+  { label: 'Cable TV', icon: <Ionicons name="tv" size={22} color="white" />, bg: 'bg-sky-600', onPress: () => console.log('Cable TV') },
+  { label: 'Electricity', icon: <Ionicons name="flash" size={22} color="white" />, bg: 'bg-yellow-600', onPress: () => console.log('Electricity') },
+  { label: 'Water', icon: <Ionicons name="water" size={22} color="white" />, bg: 'bg-blue-600', onPress: () => console.log('Water') },
+  { label: 'Merchant', icon: <Ionicons name="storefront" size={22} color="white" />, bg: 'bg-teal-600', onPress: () => console.log('Merchant') },
   { label: 'Betting', icon: <Ionicons name="football-sharp" size={18} color="white" />, bg: 'bg-purple-600', onPress: () => console.log('Betting') },
 ];
 

@@ -11,7 +11,7 @@ import { AppContext } from '@/lib/context';
 import { isMnemonicValid } from '@/lib/utils';
 
 export default function ImportSeedPhrase() {
-  const { setSeedPhrase } = useContext(AppContext);
+  const { setSeedPhrase, setIsSeedPhraseBackup } = useContext(AppContext);
   const [seedPhraseInput, setSeedPhraseInput] = useState('');
   const router = useRouter();
 
@@ -33,6 +33,7 @@ export default function ImportSeedPhrase() {
     }
 
     setSeedPhrase(seedPhraseInput.trim());
+    setIsSeedPhraseBackup(true);
     router.push('/sync');
   };
 

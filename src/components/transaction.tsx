@@ -49,7 +49,7 @@ export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => 
   };
 
   const formatDate = (timestamp: number) => {
-    const targetDate = new Date(timestamp);
+    const targetDate = new Date(timestamp * 1000);
     const now = new Date();
 
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());

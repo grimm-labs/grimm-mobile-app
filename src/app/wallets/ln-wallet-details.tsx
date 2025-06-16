@@ -91,7 +91,7 @@ export default function LnWalletDetails() {
         </View>
 
         <View className="mb-8">
-          <Text className="mb-3 text-xl font-bold text-gray-900">Actions</Text>
+          <Text className="mb-3 text-xl font-bold text-gray-600">Actions</Text>
           <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
             <MenuItem
               icon="add-outline"
@@ -121,7 +121,7 @@ export default function LnWalletDetails() {
 
         <View className="mb-8">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-gray-900">Transactions</Text>
+            <Text className="text-xl font-bold text-gray-600">Transactions</Text>
             {payments.length > 4 && (
               <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/transactions')}>
                 <Text className="text-base font-medium text-primary-600">See all</Text>

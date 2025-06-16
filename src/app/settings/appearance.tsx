@@ -46,7 +46,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
         <View className="flex-1 pr-3">
           <Text
             className={`
-            mb-1 text-base font-semibold
+            mb-1 text-sm font-medium
             ${isSelected ? 'text-blue-900' : 'text-gray-900'}
           `}
           >
