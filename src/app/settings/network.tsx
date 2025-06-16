@@ -5,6 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
@@ -114,43 +115,45 @@ export default function NetworkSwitcher() {
   const isDisabled = isChangingNetwork || isSyncing;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View className="flex h-full px-4">
-        <Stack.Screen
-          options={{
-            title: 'Network',
-            headerTitleAlign: 'center',
-            headerShown: true,
-            headerShadowVisible: false,
-            headerLeft: HeaderLeft,
-          }}
-        />
-        <FocusAwareStatusBar style="dark" />
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View className="flex h-full px-4">
+          <Stack.Screen
+            options={{
+              title: 'Network',
+              headerTitleAlign: 'center',
+              headerShown: true,
+              headerShadowVisible: false,
+              headerLeft: HeaderLeft,
+            }}
+          />
+          <FocusAwareStatusBar style="dark" />
 
-        {isChangingNetwork && (
-          <View className="mx-2 mt-4 flex-row items-center justify-center rounded-lg bg-blue-50 py-3">
-            <ActivityIndicator size="small" color={colors.primary[600]} />
-            <Text className="ml-2 text-sm text-blue-700">Switching network...</Text>
+          {isChangingNetwork && (
+            <View className="mx-2 mt-4 flex-row items-center justify-center rounded-lg bg-blue-50 py-3">
+              <ActivityIndicator size="small" color={colors.primary[600]} />
+              <Text className="ml-2 text-sm text-blue-700">Switching network...</Text>
+            </View>
+          )}
+
+          <View className="mb-2 mt-4 px-2">
+            <View className="flex-row items-center">
+              <View className={`mr-2 size-2 rounded-full ${isConnected ? 'bg-primary-500' : 'bg-red-500'}`} />
+              <Text className="text-sm text-gray-600">{isConnected ? `Connected to ${liquidNetwork}` : 'Disconnected'}</Text>
+            </View>
           </View>
-        )}
 
-        <View className="mb-2 mt-4 px-2">
-          <View className="flex-row items-center">
-            <View className={`mr-2 size-2 rounded-full ${isConnected ? 'bg-primary-500' : 'bg-red-500'}`} />
-            <Text className="text-sm text-gray-600">{isConnected ? `Connected to ${liquidNetwork}` : 'Disconnected'}</Text>
+          <View className="mt-2">
+            {networkOptions.map((option) => (
+              <NetworkOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} disabled={isDisabled} />
+            ))}
+          </View>
+
+          <View className="mt-6">
+            <Text className="text-xs text-gray-600">You should most likely be on mainnet for real Bitcoin transactions.</Text>
           </View>
         </View>
-
-        <View className="mt-2">
-          {networkOptions.map((option) => (
-            <NetworkOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} disabled={isDisabled} />
-          ))}
-        </View>
-
-        <View className="mt-6">
-          <Text className="text-xs text-gray-600">You should most likely be on mainnet for real Bitcoin transactions.</Text>
-        </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

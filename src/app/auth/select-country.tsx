@@ -7,6 +7,7 @@ import React, { useCallback, useContext, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ListRenderItem } from 'react-native';
 import { FlatList, Pressable } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as z from 'zod';
 
 import countries from '@/assets/data/countries.json';
@@ -140,48 +141,50 @@ export default function SelectCountry() {
   );
 
   return (
-    <SafeAreaView className="flex-1 border">
-      <Stack.Screen options={screenOptions} />
-      <FocusAwareStatusBar style="dark" />
-      <View className="mt-0 h-full flex-1 border bg-white">
-        <View className="mx-4 flex-1">
-          <ControlledInput
-            testID="countrySearchInput"
-            name="countrySearch"
-            placeholder="Search country..."
-            placeholderClassName="text-base"
-            keyboardType="web-search"
-            control={control}
-            autoCapitalize="none"
-            prefix={
-              <Pressable onPress={() => {}} hitSlop={8}>
-                <View className="flex flex-row items-center justify-center rounded p-1">
-                  <Ionicons name="search" size={24} color={colors.neutral[500]} />
-                </View>
-              </Pressable>
-            }
-            suffix={<ClearButton onPress={() => setValue('countrySearch', '')} visible={(searchValue?.length ?? 0) >= 1} />}
-          />
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1 border">
+        <Stack.Screen options={screenOptions} />
+        <FocusAwareStatusBar style="dark" />
+        <View className="mt-0 h-full flex-1 border bg-white">
+          <View className="mx-4 flex-1">
+            <ControlledInput
+              testID="countrySearchInput"
+              name="countrySearch"
+              placeholder="Search country..."
+              placeholderClassName="text-base"
+              keyboardType="web-search"
+              control={control}
+              autoCapitalize="none"
+              prefix={
+                <Pressable onPress={() => {}} hitSlop={8}>
+                  <View className="flex flex-row items-center justify-center rounded p-1">
+                    <Ionicons name="search" size={24} color={colors.neutral[500]} />
+                  </View>
+                </Pressable>
+              }
+              suffix={<ClearButton onPress={() => setValue('countrySearch', '')} visible={(searchValue?.length ?? 0) >= 1} />}
+            />
 
-          <FlatList
-            data={filteredCountries}
-            renderItem={renderCountryItem}
-            keyExtractor={keyExtractor}
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={renderEmptyComponent}
-            keyboardShouldPersistTaps="handled"
-            removeClippedSubviews={true}
-            maxToRenderPerBatch={20}
-            windowSize={10}
-            initialNumToRender={15}
-            getItemLayout={(data, index) => ({
-              length: 68,
-              offset: 68 * index,
-              index,
-            })}
-          />
+            <FlatList
+              data={filteredCountries}
+              renderItem={renderCountryItem}
+              keyExtractor={keyExtractor}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={renderEmptyComponent}
+              keyboardShouldPersistTaps="handled"
+              removeClippedSubviews={true}
+              maxToRenderPerBatch={20}
+              windowSize={10}
+              initialNumToRender={15}
+              getItemLayout={(data, index) => ({
+                length: 68,
+                offset: 68 * index,
+                index,
+              })}
+            />
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

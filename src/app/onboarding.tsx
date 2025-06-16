@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Button, colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/components/ui';
 
@@ -35,38 +36,40 @@ function Onboarding() {
   }, [router]);
 
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex h-full justify-between border px-4">
-        <Stack.Screen
-          options={{
-            headerShown: false,
-            headerTitle: '',
-            headerShadowVisible: false,
-          }}
-        />
-        <FocusAwareStatusBar style="dark" />
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1">
+        <View className="flex h-full justify-between border px-4">
+          <Stack.Screen
+            options={{
+              headerShown: false,
+              headerTitle: '',
+              headerShadowVisible: false,
+            }}
+          />
+          <FocusAwareStatusBar style="dark" />
 
-        <View className="my-2 flex flex-row items-center justify-between">
-          <View className="flex" />
-          <Pressable className="relative" onPress={() => router.push('/need-help')}>
-            <Ionicons name="chatbubble-ellipses" size={24} color={colors.neutral[500]} />
-            <View className="-top-0,5 absolute -right-0.5 size-3 items-center justify-center rounded-full bg-primary-600" />
-          </Pressable>
-        </View>
+          <View className="my-2 flex flex-row items-center justify-between">
+            <View className="flex" />
+            <Pressable className="relative" onPress={() => router.push('/need-help')}>
+              <Ionicons name="chatbubble-ellipses" size={24} color={colors.neutral[500]} />
+              <View className="-top-0,5 absolute -right-0.5 size-3 items-center justify-center rounded-full bg-primary-600" />
+            </Pressable>
+          </View>
 
-        <View className="flex-1">
-          <View className="flex-1 items-center justify-center">
-            <Logo />
+          <View className="flex-1">
+            <View className="flex-1 items-center justify-center">
+              <Logo />
+            </View>
+            <View className="items-center justify-end pb-6">
+              <WelcomeText />
+            </View>
           </View>
-          <View className="items-center justify-end pb-6">
-            <WelcomeText />
+          <View>
+            <Footer onGetStarted={handleGetStarted} />
           </View>
         </View>
-        <View>
-          <Footer onGetStarted={handleGetStarted} />
-        </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

@@ -3,6 +3,7 @@ import type { AxiosError } from 'axios';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { OtpInput } from 'react-native-otp-entry';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import type { SignInResponse } from '@/api';
 import { useSignIn } from '@/api';
@@ -93,70 +94,72 @@ export default function VerifyOTP() {
   }, [isOtpValid, phoneNumber, otpCode, processSignIn, handleSignInSuccess, handleSignInError]);
 
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex h-full px-4">
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: HeaderLeft,
-            headerRight: () => null,
-            headerShadowVisible: false,
-          }}
-        />
-
-        <FocusAwareStatusBar style="dark" />
-
-        {/* Header Section */}
-        <View className="flex justify-center">
-          <ScreenTitle title="We just sent you an SMS" />
-          <View className="mb-6" />
-
-          <ScreenSubtitle subtitle={`To confirm phone number, please enter the 6-digit pin we sent to ${formattedPhoneNumber}.`} />
-          <View className="mb-8" />
-
-          {/* OTP Input */}
-          <OtpInput
-            numberOfDigits={OTP_LENGTH}
-            focusColor={colors.primary[600]}
-            autoFocus={true}
-            hideStick={true}
-            placeholder="●●●●●●"
-            blurOnFilled
-            disabled={isPending}
-            type="numeric"
-            secureTextEntry={false}
-            focusStickBlinkingDuration={500}
-            onTextChange={handleOtpChange}
-            textInputProps={{
-              accessibilityLabel: 'One-Time Password input',
-              accessibilityHint: `Enter ${OTP_LENGTH} digit verification code`,
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1">
+        <View className="flex h-full px-4">
+          <Stack.Screen
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerLeft: HeaderLeft,
+              headerRight: () => null,
+              headerShadowVisible: false,
             }}
-            textProps={{
-              accessibilityRole: 'text',
-              accessibilityLabel: 'OTP digit',
-              allowFontScaling: false,
-            }}
-            theme={OtpInputTheme}
           />
-          <View className="mb-8" />
 
-          {/* Submit Button */}
-          <Button
-            disabled={!canSubmit}
-            testID="verify-otp-button"
-            label="Verify"
-            fullWidth
-            size="lg"
-            variant="secondary"
-            textClassName="text-base text-white"
-            onPress={submitOtpVerification}
-            loading={isPending}
-            accessibilityLabel="Verify OTP code"
-            accessibilityHint="Tap to verify the entered OTP code"
-          />
+          <FocusAwareStatusBar style="dark" />
+
+          {/* Header Section */}
+          <View className="flex justify-center">
+            <ScreenTitle title="We just sent you an SMS" />
+            <View className="mb-6" />
+
+            <ScreenSubtitle subtitle={`To confirm phone number, please enter the 6-digit pin we sent to ${formattedPhoneNumber}.`} />
+            <View className="mb-8" />
+
+            {/* OTP Input */}
+            <OtpInput
+              numberOfDigits={OTP_LENGTH}
+              focusColor={colors.primary[600]}
+              autoFocus={true}
+              hideStick={true}
+              placeholder="●●●●●●"
+              blurOnFilled
+              disabled={isPending}
+              type="numeric"
+              secureTextEntry={false}
+              focusStickBlinkingDuration={500}
+              onTextChange={handleOtpChange}
+              textInputProps={{
+                accessibilityLabel: 'One-Time Password input',
+                accessibilityHint: `Enter ${OTP_LENGTH} digit verification code`,
+              }}
+              textProps={{
+                accessibilityRole: 'text',
+                accessibilityLabel: 'OTP digit',
+                allowFontScaling: false,
+              }}
+              theme={OtpInputTheme}
+            />
+            <View className="mb-8" />
+
+            {/* Submit Button */}
+            <Button
+              disabled={!canSubmit}
+              testID="verify-otp-button"
+              label="Verify"
+              fullWidth
+              size="lg"
+              variant="secondary"
+              textClassName="text-base text-white"
+              onPress={submitOtpVerification}
+              loading={isPending}
+              accessibilityLabel="Verify OTP code"
+              accessibilityHint="Tap to verify the entered OTP code"
+            />
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

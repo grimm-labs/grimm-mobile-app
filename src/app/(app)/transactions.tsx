@@ -1,10 +1,11 @@
 import * as React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { FocusAwareStatusBar, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 
 export default function Transactions() {
   return (
-    <>
+    <SafeAreaProvider>
       <FocusAwareStatusBar style="dark" />
       <ScrollView>
         <SafeAreaView className="flex-1">
@@ -13,6 +14,6 @@ export default function Transactions() {
           </View>
         </SafeAreaView>
       </ScrollView>
-    </>
+    </SafeAreaProvider>
   );
 }

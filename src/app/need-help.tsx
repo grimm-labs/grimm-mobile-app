@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React from 'react';
 import { Linking } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
@@ -78,22 +79,24 @@ const SupportItems = () => {
 
 export default function NeedHelp() {
   return (
-    <SafeAreaView>
-      <View className="flex h-full px-4">
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTitleAlign: 'center',
-            headerTitle: 'Help & Support',
-            headerLeft: HeaderLeft,
-            headerRight: () => null,
-            headerShadowVisible: false,
-          }}
-        />
-        <FocusAwareStatusBar style="dark" />
-        <SupportItems />
-        <ServiceHours />
-      </View>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <View className="flex h-full px-4">
+          <Stack.Screen
+            options={{
+              headerShown: true,
+              headerTitleAlign: 'center',
+              headerTitle: 'Help & Support',
+              headerLeft: HeaderLeft,
+              headerRight: () => null,
+              headerShadowVisible: false,
+            }}
+          />
+          <FocusAwareStatusBar style="dark" />
+          <SupportItems />
+          <ServiceHours />
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

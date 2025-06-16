@@ -3,6 +3,7 @@ import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liqui
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
@@ -63,39 +64,41 @@ export default function LightningPaymentScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <Stack.Screen
-        options={{
-          title: 'Lightning Payment',
-          headerTitleAlign: 'center',
-          headerLeft: HeaderLeft,
-          headerShadowVisible: false,
-        }}
-      />
-      <FocusAwareStatusBar style="dark" />
-      <ScrollView className="flex-1 px-4 pt-8">
-        <View className="mb-4">
-          <View className="relative">
-            <TextInput
-              value={invoiceInput}
-              onChangeText={handleInvoiceChange}
-              className={`min-h-[120px] rounded-lg border bg-white p-4 text-base ${addressError ? 'border-red-400' : 'border-gray-300'}`}
-              placeholder="Invoice | Lightning Address | BTC Address"
-              placeholderTextColor="#9CA3AF"
-              multiline
-              textAlignVertical="top"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1 bg-white">
+        <Stack.Screen
+          options={{
+            title: 'Lightning Payment',
+            headerTitleAlign: 'center',
+            headerLeft: HeaderLeft,
+            headerShadowVisible: false,
+          }}
+        />
+        <FocusAwareStatusBar style="dark" />
+        <ScrollView className="flex-1 px-4 pt-8">
+          <View className="mb-4">
+            <View className="relative">
+              <TextInput
+                value={invoiceInput}
+                onChangeText={handleInvoiceChange}
+                className={`min-h-[120px] rounded-lg border bg-white p-4 text-base ${addressError ? 'border-red-400' : 'border-gray-300'}`}
+                placeholder="Invoice | Lightning Address | BTC Address"
+                placeholderTextColor="#9CA3AF"
+                multiline
+                textAlignVertical="top"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
           </View>
-        </View>
 
-        {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
+          {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
 
-        <View>
-          <Button label={isLoading ? 'Processing...' : 'Pay Invoice'} onPress={handlePayment} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          <View>
+            <Button label={isLoading ? 'Processing...' : 'Pay Invoice'} onPress={handlePayment} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

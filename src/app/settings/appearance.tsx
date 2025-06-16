@@ -2,6 +2,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
@@ -131,16 +132,18 @@ export default function ThemeSelector() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View className="flex h-full px-4">
-        <Stack.Screen options={screenOptions} />
-        <FocusAwareStatusBar style="dark" />
-        <View className="mt-4 flex-1">
-          {themeOptions.map((option) => (
-            <ThemeOption key={option.theme.id} theme={option.theme} isSelected={option.isSelected} onPress={option.onPress} />
-          ))}
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View className="flex h-full px-4">
+          <Stack.Screen options={screenOptions} />
+          <FocusAwareStatusBar style="dark" />
+          <View className="mt-4 flex-1">
+            {themeOptions.map((option) => (
+              <ThemeOption key={option.theme.id} theme={option.theme} isSelected={option.isSelected} onPress={option.onPress} />
+            ))}
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
