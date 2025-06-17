@@ -84,12 +84,12 @@ export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => 
       </View>
       <View className="flex-1 flex-row items-center justify-between">
         <View>
-          <Text className="text-left text-base font-medium text-gray-900">{payment.paymentType === PaymentType.RECEIVE ? 'You received' : 'You paid'}</Text>
-          <Text className="text-left text-sm text-gray-500">
+          <Text className="text-left text-base font-semibold text-gray-900">{payment.paymentType === PaymentType.RECEIVE ? 'You received' : 'You paid'}</Text>
+          <Text className="text-left text-xs text-gray-600">
             {formatDate(payment.timestamp)} • {payment.status === 'pending' ? 'Pending' : 'Confirmed'}
           </Text>
         </View>
-        <Text className="my-2 text-center text-base" style={{ color: getTransactionColor() }}>
+        <Text className="my-2 text-center text-base font-semibold" style={{ color: getTransactionColor() }}>
           {getAmountPrefix()}
           {bitcoinAmount} {bitcoinUnit}
         </Text>
