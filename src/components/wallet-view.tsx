@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 
 import { Image, Text, View } from '@/components/ui';
-import { formatBalance, getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
+import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
+import { BitcoinUnit } from '@/types/enum';
 
 type WalletType = 'On-chain' | 'Lightning' | 'Liquid';
 
@@ -28,6 +30,7 @@ export const WalletView = ({ name, symbol, type }: Props) => {
   const { hideBalance, selectedCountry, bitcoinUnit } = useContext(AppContext);
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const { balance } = useBreez();
+  const { bitcoinPrices } = useBitcoin();
 
   const walletIcon = getWalletIcon(type);
 
@@ -50,7 +53,9 @@ export const WalletView = ({ name, symbol, type }: Props) => {
             <View>
               <Text className="text-right text-lg font-semibold text-gray-700">{formatBalance(balance, bitcoinUnit)}</Text>
               <View className="my" />
-              <Text className="text-right text-sm font-medium text-gray-600">0.00 {selectedFiatCurrency} </Text>
+              <Text className="text-right text-sm font-medium text-gray-600">
+                {convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}{' '}
+              </Text>
             </View>
           )}
         </View>

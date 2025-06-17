@@ -2,6 +2,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useContext, useMemo } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
@@ -85,21 +86,23 @@ export default function BitcoinUnitScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View className="flex h-full px-4">
-        <Stack.Screen options={screenOptions} />
-        <FocusAwareStatusBar style="dark" />
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View className="flex h-full px-4">
+          <Stack.Screen options={screenOptions} />
+          <FocusAwareStatusBar style="dark" />
 
-        <View className="mt-4">
-          {unitOptions.map((option) => (
-            <UnitOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} />
-          ))}
-        </View>
+          <View className="mt-4">
+            {unitOptions.map((option) => (
+              <UnitOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} />
+            ))}
+          </View>
 
-        <View className="mt-6 px-2">
-          <Text className="text-sm leading-5 text-gray-500">The Bitcoin unit determines how balances are displayed in the wallet.</Text>
+          <View className="mt-6 px-2">
+            <Text className="text-xs leading-5 text-gray-500">The Bitcoin unit determines how balances are displayed in the wallet.</Text>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

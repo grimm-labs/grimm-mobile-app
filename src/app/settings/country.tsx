@@ -4,6 +4,7 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import type { ListRenderItem } from 'react-native';
 import { FlatList, TextInput } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import countries from '@/assets/data/countries.json';
 import { HeaderLeft } from '@/components/back-button';
@@ -84,52 +85,54 @@ export default function CountrySelector() {
   );
 
   return (
-    <SafeAreaView>
-      <View className="flex h-full px-4">
-        <Stack.Screen
-          options={{
-            headerTitleAlign: 'center',
-            title: 'Select a country',
-            headerShown: true,
-            headerShadowVisible: false,
-            headerLeft: HeaderLeft,
-          }}
-        />
-        <FocusAwareStatusBar style="dark" />
-        <View className="pb-4">
-          <View className="flex flex-row items-center rounded-lg bg-gray-100 px-3 py-2">
-            <Ionicons name="search-outline" size={20} color={colors.neutral[500]} />
-            <TextInput className="ml-2 flex-1 text-sm" placeholder="Search country..." value={searchQuery} onChangeText={setSearchQuery} autoCapitalize="none" autoCorrect={false} />
-            {searchQuery.length > 0 && (
-              <Pressable onPress={() => setSearchQuery('')}>
-                <Ionicons name="close-circle" size={20} color={colors.neutral[500]} />
-              </Pressable>
-            )}
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <View className="flex h-full px-4">
+          <Stack.Screen
+            options={{
+              headerTitleAlign: 'center',
+              title: 'Select a country',
+              headerShown: true,
+              headerShadowVisible: false,
+              headerLeft: HeaderLeft,
+            }}
+          />
+          <FocusAwareStatusBar style="dark" />
+          <View className="pb-4">
+            <View className=" flex flex-row items-center rounded-lg bg-gray-100 px-3 py-2">
+              <Ionicons name="search-outline" size={20} color={colors.neutral[500]} />
+              <TextInput className="ml-2 flex-1 text-sm" placeholder="Search country..." value={searchQuery} onChangeText={setSearchQuery} autoCapitalize="none" autoCorrect={false} />
+              {searchQuery.length > 0 && (
+                <Pressable onPress={() => setSearchQuery('')}>
+                  <Ionicons name="close-circle" size={20} color={colors.neutral[500]} />
+                </Pressable>
+              )}
+            </View>
+          </View>
+
+          <FlatList
+            data={filteredCountries}
+            renderItem={renderCountryItem}
+            keyExtractor={keyExtractor}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={renderEmptyComponent}
+            keyboardShouldPersistTaps="handled"
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={20}
+            windowSize={10}
+            initialNumToRender={15}
+            getItemLayout={(data, index) => ({
+              length: 68,
+              offset: 68 * index,
+              index,
+            })}
+          />
+
+          <View>
+            <Button label="Save" onPress={handleSave} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
-
-        <FlatList
-          data={filteredCountries}
-          renderItem={renderCountryItem}
-          keyExtractor={keyExtractor}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={renderEmptyComponent}
-          keyboardShouldPersistTaps="handled"
-          removeClippedSubviews={true}
-          maxToRenderPerBatch={20}
-          windowSize={10}
-          initialNumToRender={15}
-          getItemLayout={(data, index) => ({
-            length: 68, // Approximate item height
-            offset: 68 * index,
-            index,
-          })}
-        />
-
-        <View className="pb-8 pt-2">
-          <Button label="Save" onPress={handleSave} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
-        </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

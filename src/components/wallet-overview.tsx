@@ -27,7 +27,7 @@ export const WalletOverview = () => {
           }}
           className="flex flex-row items-center"
         >
-          <Text className="mr-2 text-center text-lg font-medium">Total Balance</Text>
+          <Text className="mr-2 text-center text-lg font-semibold text-gray-600">Total Balance</Text>
           <View className="flex-row space-x-2">
             <Ionicons name={hideBalance ? 'eye-off' : 'eye'} size={16} color="gray" />
           </View>
@@ -38,7 +38,7 @@ export const WalletOverview = () => {
           <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{hideBalance ? '********' : formatBalance(balance, bitcoinUnit)}</Text>
         </Pressable>
         <View className="mb-4">
-          <Text className="text-center text-lg font-medium text-gray-600">{hideBalance ? '********' : `${selectedFiatCurrency} ${convertedVal.toFixed(2)}`}</Text>
+          <Text className="text-center text-lg font-medium text-gray-600">{hideBalance ? '********' : `${convertedVal.toFixed(2)} ${selectedFiatCurrency} `}</Text>
         </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">

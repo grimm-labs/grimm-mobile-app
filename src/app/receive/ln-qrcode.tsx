@@ -7,6 +7,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Clipboard, Pressable, ScrollView, Share } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
@@ -178,64 +179,66 @@ export default function ReceivePaymentScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <FocusAwareStatusBar style="dark" />
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1 bg-white">
+        <FocusAwareStatusBar style="dark" />
 
-      <Stack.Screen
-        options={{
-          title: 'Receive Bitcoin',
-          headerTitleAlign: 'center',
-          headerLeft: HeaderLeft,
-          headerShadowVisible: false,
-        }}
-      />
+        <Stack.Screen
+          options={{
+            title: 'Receive Bitcoin',
+            headerTitleAlign: 'center',
+            headerLeft: HeaderLeft,
+            headerShadowVisible: false,
+          }}
+        />
 
-      <View className="flex-1">
-        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-          <View className="mb-2 mt-3">
-            <View className="items-center rounded-2xl p-6">
-              <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
-              <Text className="text-lg text-gray-500">
-                {convertBitcoinToFiat(Number(satsAmount), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
-              </Text>
-              <View className="rounded-lg bg-white p-3">
-                <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>
+        <View className="flex-1 px-2">
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View className="mb-2 mt-3">
+              <View className="items-center rounded-2xl p-6">
+                <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
+                <Text className="text-lg text-gray-500">
+                  {convertBitcoinToFiat(Number(satsAmount), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                </Text>
+                <View className="rounded-lg bg-white p-3">
+                  <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          {/* QR Code */}
-          <View className="mb-8 items-center">
-            <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={type === 'onchain' ? 150 : 250} backgroundColor="white" color="black" />}</View>
-            {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
-            <Text className="mt-4 text-center text-sm text-gray-500">Scan this QR Code to make the payment</Text>
-          </View>
-
-          <View className="flex flex-row justify-center">
-            <View className="mx-4 flex items-center justify-center">
-              <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
-                <Ionicons name="copy" size={20} color="white" />
-              </Pressable>
+            {/* QR Code */}
+            <View className="mb-8 items-center">
+              <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={type === 'onchain' ? 150 : 250} backgroundColor="white" color="black" />}</View>
+              {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
+              <Text className="mt-4 text-center text-sm text-gray-500">Scan this QR Code to make the payment</Text>
             </View>
-            <View className="mx-4 flex items-center justify-center">
-              <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={sharePaymentRequest}>
-                <Ionicons name="share" size={20} color="white" />
-              </Pressable>
+
+            <View className="flex flex-row justify-center">
+              <View className="mx-4 flex items-center justify-center">
+                <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
+                  <Ionicons name="copy" size={20} color="white" />
+                </Pressable>
+              </View>
+              <View className="mx-4 flex items-center justify-center">
+                <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={sharePaymentRequest}>
+                  <Ionicons name="share" size={20} color="white" />
+                </Pressable>
+              </View>
             </View>
-          </View>
 
-          <View className="my-4 rounded-lg bg-blue-50 p-4">
-            <Text className="text-center text-sm text-blue-700">
-              A {fees} sats ({convertBitcoinToFiat(fees, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}) fee will be applied to this invoice. Please keep Grimm App open until
-              payment is complete
-            </Text>
-          </View>
-        </ScrollView>
+            <View className="my-4 rounded-lg bg-blue-50 p-4">
+              <Text className="text-center text-sm text-blue-700">
+                A {fees} sats ({convertBitcoinToFiat(fees, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}) fee will be applied to this invoice. Please keep Grimm App open until
+                payment is complete
+              </Text>
+            </View>
+          </ScrollView>
 
-        <View className="px-4 pb-4">
-          <Button label="Close" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+          <View>
+            <Button label="Close" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

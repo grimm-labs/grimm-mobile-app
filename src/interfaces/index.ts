@@ -21,3 +21,12 @@ export interface User {
   email?: string;
   birthDate?: string;
 }
+
+export interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: Date;
+}

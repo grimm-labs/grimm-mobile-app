@@ -9,6 +9,7 @@ import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as z from 'zod';
 
 import { useGetOtp } from '@/api';
@@ -142,40 +143,42 @@ export default function SignIn() {
   const keyboardBehavior = Platform.OS === 'ios' ? 'padding' : 'height';
 
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex h-full px-4">
-        <Stack.Screen options={screenOptions} />
-        <FocusAwareStatusBar style="dark" />
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1">
+        <View className="flex h-full px-4">
+          <Stack.Screen options={screenOptions} />
+          <FocusAwareStatusBar style="dark" />
 
-        <KeyboardAvoidingView behavior={keyboardBehavior} style={{ flex: 1 }} className="flex-1" keyboardVerticalOffset={keyboardVerticalOffset}>
-          <View className="flex-1">
-            <View className="flex">
-              <ScreenTitle title="Welcome to Grimm App" />
-              <View className="mb-4" />
+          <KeyboardAvoidingView behavior={keyboardBehavior} style={{ flex: 1 }} className="flex-1" keyboardVerticalOffset={keyboardVerticalOffset}>
+            <View className="flex-1">
+              <View className="flex">
+                <ScreenTitle title="Welcome to Grimm App" />
+                <View className="mb-4" />
 
-              <ScreenSubtitle subtitle="We'll send you a verification code to this number" />
-              <View className="mb-4" />
+                <ScreenSubtitle subtitle="We'll send you a verification code to this number" />
+                <View className="mb-4" />
 
-              <ControlledInput
-                testID="phoneNumberInput"
-                control={control}
-                name="phoneNumber"
-                placeholder={placeholder}
-                placeholderClassName="text-base text-neutral-500"
-                textContentType="telephoneNumber"
-                keyboardType="number-pad"
-                prefix={<CountryPrefix countryCode={selectedCountry.callingCode} onPress={handleCountrySelect} />}
-                suffix={<ClearButton onPress={handleClearInput} visible={(phoneNumberValue?.length ?? 0) >= 1} />}
-                disabled={isPending}
-              />
+                <ControlledInput
+                  testID="phoneNumberInput"
+                  control={control}
+                  name="phoneNumber"
+                  placeholder={placeholder}
+                  placeholderClassName="text-base text-neutral-500"
+                  textContentType="telephoneNumber"
+                  keyboardType="number-pad"
+                  prefix={<CountryPrefix countryCode={selectedCountry.callingCode} onPress={handleCountrySelect} />}
+                  suffix={<ClearButton onPress={handleClearInput} visible={(phoneNumberValue?.length ?? 0) >= 1} />}
+                  disabled={isPending}
+                />
 
-              <View className="mb-4" />
+                <View className="mb-4" />
 
-              <Button disabled={isPending} testID="login-button" label="Send code" fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} loading={isPending} />
+                <Button disabled={isPending} testID="login-button" label="Send code" fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleSubmit(onSubmit)} loading={isPending} />
+              </View>
             </View>
-          </View>
-        </KeyboardAvoidingView>
-      </View>
-    </SafeAreaView>
+          </KeyboardAvoidingView>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

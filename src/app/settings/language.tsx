@@ -2,6 +2,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
@@ -90,21 +91,23 @@ export default function LanguageSelector() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View className="flex h-full px-4">
-        <Stack.Screen options={screenOptions} />
-        <FocusAwareStatusBar style="dark" />
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View className="flex h-full px-4">
+          <Stack.Screen options={screenOptions} />
+          <FocusAwareStatusBar style="dark" />
 
-        <View className="flex-1">
-          {languageOptions.map((language) => (
-            <LanguageOption key={language.code} language={language.name} nativeName={language.nativeName} flag={language.flag} isSelected={language.isSelected} onPress={language.onPress} />
-          ))}
-        </View>
+          <View className="flex-1">
+            {languageOptions.map((language) => (
+              <LanguageOption key={language.code} language={language.name} nativeName={language.nativeName} flag={language.flag} isSelected={language.isSelected} onPress={language.onPress} />
+            ))}
+          </View>
 
-        <View className="mb-4 mt-6 px-2">
-          <Text className="text-center text-xs leading-4 text-gray-500">Language changes will be applied immediately to the interface</Text>
+          <View className="mb-4 mt-6 px-2">
+            <Text className="text-center text-xs leading-4 text-gray-500">Language changes will be applied immediately to the interface</Text>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

@@ -2,6 +2,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
@@ -30,7 +31,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
       mb-3 flex flex-row items-center 
       justify-between rounded-xl border border-gray-200 p-4
       ${isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'}
-      min-h-[80px] shadow-sm
+      min-h-[80px]
     `}
     >
       <View className="flex flex-1 flex-row items-center">
@@ -46,7 +47,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
         <View className="flex-1 pr-3">
           <Text
             className={`
-            mb-1 text-base font-semibold
+            mb-1 text-sm font-medium
             ${isSelected ? 'text-blue-900' : 'text-gray-900'}
           `}
           >
@@ -54,7 +55,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
           </Text>
           <Text
             className={`
-            text-sm leading-5
+            text-xs leading-5
             ${isSelected ? 'text-blue-700' : 'text-gray-600'}
           `}
           >
@@ -131,16 +132,18 @@ export default function ThemeSelector() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View className="flex h-full px-4">
-        <Stack.Screen options={screenOptions} />
-        <FocusAwareStatusBar style="dark" />
-        <View className="mt-4 flex-1">
-          {themeOptions.map((option) => (
-            <ThemeOption key={option.theme.id} theme={option.theme} isSelected={option.isSelected} onPress={option.onPress} />
-          ))}
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View className="flex h-full px-4">
+          <Stack.Screen options={screenOptions} />
+          <FocusAwareStatusBar style="dark" />
+          <View className="mt-4 flex-1">
+            {themeOptions.map((option) => (
+              <ThemeOption key={option.theme.id} theme={option.theme} isSelected={option.isSelected} onPress={option.onPress} />
+            ))}
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
