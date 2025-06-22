@@ -5,6 +5,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 
 interface LanguageOptionProps {
@@ -54,6 +55,8 @@ const AVAILABLE_LANGUAGES: readonly Language[] = [
   },
 ] as const;
 
+const LanguageSelectorHeaderTitle = () => <HeaderTitle title="Languages" />;
+
 export default function LanguageSelector() {
   const [selectedLanguageCode, setSelectedLanguageCode] = useState<string>('fr');
 
@@ -81,7 +84,7 @@ export default function LanguageSelector() {
 
   const screenOptions = useMemo(
     () => ({
-      title: 'Language',
+      headerTitle: LanguageSelectorHeaderTitle,
       headerTitleAlign: 'center' as const,
       headerShown: true,
       headerShadowVisible: false,

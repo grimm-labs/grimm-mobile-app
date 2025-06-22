@@ -8,6 +8,7 @@ import { ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { useBreez } from '@/lib/context/breez-context';
 
@@ -30,6 +31,8 @@ const NetworkOption = React.memo<NetworkOptionProps>(({ title, description, isSe
     </View>
   </Pressable>
 ));
+
+const NetworkSwitcherHeaderTitle = () => <HeaderTitle title="Network" />;
 
 export default function NetworkSwitcher() {
   const { liquidNetwork, setLiquidNetwork, isConnected, isSyncing } = useBreez();
@@ -120,7 +123,7 @@ export default function NetworkSwitcher() {
         <View className="flex h-full px-4">
           <Stack.Screen
             options={{
-              title: 'Network',
+              headerTitle: NetworkSwitcherHeaderTitle,
               headerTitleAlign: 'center',
               headerShown: true,
               headerShadowVisible: false,

@@ -8,8 +8,11 @@ import { showMessage } from 'react-native-flash-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { Button, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+
+const SeedPhraseScreenHeaderTitle = () => <HeaderTitle title="Recovery Phrase" />;
 
 export default function SeedPhraseScreen() {
   const { seedPhrase, setIsSeedPhraseBackup } = useContext(AppContext);
@@ -34,7 +37,7 @@ export default function SeedPhraseScreen() {
 
   const handleClose = async () => {
     await setIsSeedPhraseBackup(true);
-    router.push('/');
+    router.replace('/');
   };
 
   const copyToClipboard = async () => {
@@ -55,7 +58,7 @@ export default function SeedPhraseScreen() {
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
-            title: 'Recovery Phrase',
+            headerTitle: SeedPhraseScreenHeaderTitle,
             headerShown: true,
             headerShadowVisible: false,
             headerLeft: HeaderLeft,

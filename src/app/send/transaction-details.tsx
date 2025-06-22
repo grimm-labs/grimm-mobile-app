@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import type { LnInvoice } from '@breeztech/react-native-breez-sdk-liquid';
@@ -9,6 +10,7 @@ import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import SlideToConfirm from '@/components/slide-to-confirm';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
@@ -115,7 +117,7 @@ export default function PaymentDetailsScreen() {
           <FocusAwareStatusBar style="dark" />
           <Stack.Screen
             options={{
-              title: 'Receive Bitcoin',
+              headerTitle: () => <HeaderTitle title="Lightning Payment" />,
               headerTitleAlign: 'center',
               headerLeft: HeaderLeft,
               headerShadowVisible: false,
@@ -138,7 +140,7 @@ export default function PaymentDetailsScreen() {
           <FocusAwareStatusBar style="dark" />
           <Stack.Screen
             options={{
-              title: 'Payment Error',
+              headerTitle: () => <HeaderTitle title="Payment Error" />,
               headerTitleAlign: 'center',
               headerLeft: HeaderLeft,
               headerShadowVisible: false,
@@ -167,7 +169,7 @@ export default function PaymentDetailsScreen() {
       <SafeAreaView className="flex-1 bg-gray-50">
         <Stack.Screen
           options={{
-            title: 'Pay via lightning',
+            headerTitle: () => <HeaderTitle title="Pay via lightning" />,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,

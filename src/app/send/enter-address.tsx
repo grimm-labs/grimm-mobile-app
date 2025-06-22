@@ -6,7 +6,10 @@ import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
+
+const LightningPaymentScreenHeaderTitle = () => <HeaderTitle title="Lightning Payment" />;
 
 export default function LightningPaymentScreen() {
   const router = useRouter();
@@ -68,7 +71,7 @@ export default function LightningPaymentScreen() {
       <SafeAreaView className="flex-1 bg-white">
         <Stack.Screen
           options={{
-            title: 'Lightning Payment',
+            headerTitle: LightningPaymentScreenHeaderTitle,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
