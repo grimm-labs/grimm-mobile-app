@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -11,10 +11,15 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Vi
 
 const LightningPaymentScreenHeaderTitle = () => <HeaderTitle title="Lightning Payment" />;
 
+type SearchParams = {
+  input: string;
+};
+
 export default function LightningPaymentScreen() {
+  const { input } = useLocalSearchParams<SearchParams>();
   const router = useRouter();
 
-  const [invoiceInput, setInvoiceInput] = useState('');
+  const [invoiceInput, setInvoiceInput] = useState(input || '');
   const [isLoading, setIsLoading] = useState(false);
   const [addressError, setAddressError] = useState(false);
 
@@ -44,7 +49,7 @@ export default function LightningPaymentScreen() {
             setAddressError(true);
             return;
           }
-          console.log(`Input is BOLT11 invoice for ${parsed.invoice.amountMsat != null ? parsed.invoice.amountMsat.toString() : 'unknown'} msats`);
+          console.log(`Input is BOLT11 invoice for ${parsed.invoice.amountMsat != null ? parsed.invoice.amountMsat.toString() : 'unknown'} sats`);
           router.push({
             pathname: '/send/transaction-details',
             params: {
