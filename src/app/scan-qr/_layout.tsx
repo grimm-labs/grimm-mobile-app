@@ -16,7 +16,7 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, TouchableOpaci
 
 const ScanQrHeaderTitle = () => <HeaderTitle title="Scan QR" />;
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-const SCAN_FRAME_SIZE = screenWidth * 0.7;
+const SCAN_FRAME_SIZE = screenWidth * 0.6;
 
 export default function ScanQrScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -84,6 +84,10 @@ export default function ScanQrScreen() {
     setFlashEnabled((current) => !current);
   };
 
+  const toggleClose = () => {
+    router.replace('/');
+  };
+
   const ScanFrame = () => (
     <View
       style={{
@@ -95,10 +99,10 @@ export default function ScanQrScreen() {
         backgroundColor: 'transparent',
       }}
     >
-      <View style={{ position: 'absolute', top: -2, left: -2, width: 30, height: 30, borderTopWidth: 4, borderLeftWidth: 4, borderColor: colors.primary[600], borderRadius: 8 }} />
-      <View style={{ position: 'absolute', top: -2, right: -2, width: 30, height: 30, borderTopWidth: 4, borderRightWidth: 4, borderColor: colors.primary[600], borderRadius: 8 }} />
-      <View style={{ position: 'absolute', bottom: -2, left: -2, width: 30, height: 30, borderBottomWidth: 4, borderLeftWidth: 4, borderColor: colors.primary[600], borderRadius: 8 }} />
-      <View style={{ position: 'absolute', bottom: -2, right: -2, width: 30, height: 30, borderBottomWidth: 4, borderRightWidth: 4, borderColor: colors.primary[600], borderRadius: 8 }} />
+      <View style={{ position: 'absolute', top: -2, left: -2, width: 30, height: 30, borderTopWidth: 4, borderLeftWidth: 4, borderColor: colors.white, borderRadius: 8 }} />
+      <View style={{ position: 'absolute', top: -2, right: -2, width: 30, height: 30, borderTopWidth: 4, borderRightWidth: 4, borderColor: colors.white, borderRadius: 8 }} />
+      <View style={{ position: 'absolute', bottom: -2, left: -2, width: 30, height: 30, borderBottomWidth: 4, borderLeftWidth: 4, borderColor: colors.white, borderRadius: 8 }} />
+      <View style={{ position: 'absolute', bottom: -2, right: -2, width: 30, height: 30, borderBottomWidth: 4, borderRightWidth: 4, borderColor: colors.white, borderRadius: 8 }} />
     </View>
   );
 
@@ -225,28 +229,8 @@ export default function ScanQrScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 18,
-                    fontWeight: '600',
-                    textAlign: 'center',
-                    paddingHorizontal: 16,
-                  }}
-                >
-                  Place QR code in frame
-                </Text>
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 14,
-                    textAlign: 'center',
-                    marginTop: 8,
-                    paddingHorizontal: 16,
-                  }}
-                >
-                  {isScanning ? 'Scanning...' : 'Processing...'}
-                </Text>
+                <Text className="text-center text-xl font-normal text-gray-300">Position the QR Code in view to activate</Text>
+                <Text className="my-6 text-center text-sm font-normal text-gray-300">{isScanning ? 'Scanning...' : 'Processing...'}</Text>
               </View>
 
               <View
@@ -288,7 +272,7 @@ export default function ScanQrScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={toggleFlash}
+                  onPress={toggleClose}
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.2)',
                     borderRadius: 30,
