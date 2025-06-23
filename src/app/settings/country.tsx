@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import countries from '@/assets/data/countries.json';
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import type { Country } from '@/interfaces';
 import { AppContext } from '@/lib/context';
@@ -47,6 +48,8 @@ const EmptyState: React.FC<EmptyStateProps> = React.memo(({ searchTerm }) => (
     <Text className="text-neutral-500">{searchTerm ? `No countries found for "${searchTerm}"` : 'No countries available'}</Text>
   </View>
 ));
+
+const CountrySelectorHeaderTitle = () => <HeaderTitle title="Country" />;
 
 export default function CountrySelector() {
   const { selectedCountry, setSelectedCountry } = useContext(AppContext);
@@ -91,7 +94,7 @@ export default function CountrySelector() {
           <Stack.Screen
             options={{
               headerTitleAlign: 'center',
-              title: 'Select a country',
+              headerTitle: CountrySelectorHeaderTitle,
               headerShown: true,
               headerShadowVisible: false,
               headerLeft: HeaderLeft,

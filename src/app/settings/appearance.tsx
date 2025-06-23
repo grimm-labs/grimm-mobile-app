@@ -5,6 +5,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 
 type ThemeMode = 'system' | 'light' | 'dark';
@@ -95,6 +96,8 @@ const THEME_CONFIGURATIONS: readonly ThemeConfig[] = [
   },
 ] as const;
 
+const ThemeSelectorHeaderTitle = () => <HeaderTitle title="Appearance" />;
+
 export default function ThemeSelector() {
   const [selectedTheme, setSelectedTheme] = useState<ThemeMode>('system');
 
@@ -122,7 +125,7 @@ export default function ThemeSelector() {
 
   const screenOptions = useMemo(
     () => ({
-      title: 'Appearance',
+      headerTitle: ThemeSelectorHeaderTitle,
       headerTitleAlign: 'center' as const,
       headerShown: true,
       headerShadowVisible: false,

@@ -47,6 +47,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       dark: './assets/icons/ios-dark.png',
       tinted: './assets/icons/ios-tinted.png',
     },
+    infoPlist: {
+      NSCameraUsageDescription: 'This app uses the camera to scan QR codes',
+    },
   },
   experiments: {
     typedRoutes: true,
@@ -101,6 +104,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['app-icon-badge', appIconBadgeConfig],
     ['react-native-edge-to-edge'],
     'expo-secure-store',
+    [
+      'expo-camera',
+      {
+        cameraPermission: 'Allow $(PRODUCT_NAME) to access your camera',
+        microphonePermission: 'Allow $(PRODUCT_NAME) to access your microphone',
+        recordAudioAndroid: true,
+      },
+    ],
   ],
   extra: {
     ...ClientEnv,

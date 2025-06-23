@@ -5,12 +5,15 @@ import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 
 interface WarningTypes {
   text: string;
   icon: React.ComponentProps<typeof Ionicons>['name'];
 }
+
+const MnemonicWarningHeaderTitle = () => <HeaderTitle title="Recovery Phrase Warning" />;
 
 export default function MnemonicWarning() {
   const router = useRouter();
@@ -45,7 +48,7 @@ export default function MnemonicWarning() {
           <Stack.Screen
             options={{
               headerTitleAlign: 'center',
-              title: 'Recovery Phrase Warning',
+              headerTitle: MnemonicWarningHeaderTitle,
               headerShown: true,
               headerShadowVisible: false,
               headerLeft: HeaderLeft,

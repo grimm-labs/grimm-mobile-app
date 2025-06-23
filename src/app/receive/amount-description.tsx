@@ -8,6 +8,7 @@ import { Alert, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
@@ -17,6 +18,8 @@ import { BitcoinUnit } from '@/types/enum';
 type SearchParams = {
   type: 'onchain' | 'lightning';
 };
+
+const EnterAmountScreenHeaderTitle = () => <HeaderTitle title="Enter amount" />;
 
 export default function EnterAmountScreen() {
   const router = useRouter();
@@ -101,7 +104,7 @@ export default function EnterAmountScreen() {
 
   const isValidAmount = () => {
     const satsValue = parseInt(satsAmount, 10);
-    return !isNaN(satsValue) && satsValue >= receiveMinSatsLimit && satsValue <= receiveMaxSatsLimit;
+    return !isNaN(satsValue) && satsValue > 0 && satsValue >= receiveMinSatsLimit && satsValue <= receiveMaxSatsLimit;
   };
 
   return (
@@ -111,7 +114,7 @@ export default function EnterAmountScreen() {
 
         <Stack.Screen
           options={{
-            title: 'Enter amount',
+            headerTitle: EnterAmountScreenHeaderTitle,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,

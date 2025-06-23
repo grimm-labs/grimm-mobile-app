@@ -7,7 +7,7 @@ export const SeedPhraseBackupNotification: React.FC = () => {
   const router = useRouter();
 
   const handleBackupPress = () => {
-    router.push('/backup-seed-phrase');
+    router.push('/settings/backup-seed-phrase/recovery-seed-phrase-warning');
   };
 
   return (

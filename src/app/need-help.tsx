@@ -5,6 +5,7 @@ import { Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 
 interface ItemProps {
@@ -77,6 +78,8 @@ const SupportItems = () => {
   );
 };
 
+const NeedHelpScreenHeaderTitle = () => <HeaderTitle title="Help & Support" />;
+
 export default function NeedHelp() {
   return (
     <SafeAreaProvider>
@@ -86,7 +89,7 @@ export default function NeedHelp() {
             options={{
               headerShown: true,
               headerTitleAlign: 'center',
-              headerTitle: 'Help & Support',
+              headerTitle: NeedHelpScreenHeaderTitle,
               headerLeft: HeaderLeft,
               headerRight: () => null,
               headerShadowVisible: false,

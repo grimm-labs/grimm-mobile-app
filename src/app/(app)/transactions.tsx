@@ -38,7 +38,7 @@ export default function Transactions() {
     const isSelected = selectedFilter === filter;
     return (
       <TouchableOpacity key={filter} onPress={() => setSelectedFilter(filter)} className={`mr-3 rounded-full px-4 py-2 ${isSelected ? 'bg-primary-600' : 'bg-gray-100'}`} activeOpacity={0.7}>
-        <Text className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-600'}`}>{filter}</Text>
+        <Text className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-gray-600'}`}>{filter}</Text>
       </TouchableOpacity>
     );
   };

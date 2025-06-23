@@ -5,6 +5,7 @@ import React, { useCallback, useContext, useMemo } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { BitcoinUnit } from '@/types/enum';
@@ -45,6 +46,8 @@ const UNIT_OPTIONS_DATA = [
   },
 ] as const;
 
+const BitcoinUnitScreenHeaderTitle = () => <HeaderTitle title="Bitcoin Unit" />;
+
 export default function BitcoinUnitScreen() {
   const { bitcoinUnit, setBitcoinUnit } = useContext(AppContext);
 
@@ -77,7 +80,7 @@ export default function BitcoinUnitScreen() {
   const screenOptions = useMemo(
     () => ({
       headerTitleAlign: 'center' as const,
-      title: 'Bitcoin Unit',
+      headerTitle: BitcoinUnitScreenHeaderTitle,
       headerShown: true,
       headerShadowVisible: false,
       headerLeft: HeaderLeft,

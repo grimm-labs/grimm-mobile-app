@@ -11,7 +11,7 @@ type Action = {
 };
 
 const actions: Action[] = [
-  { label: 'Money', icon: <Ionicons name="cash" size={22} color="white" />, bg: 'bg-success-600', onPress: () => console.log('Send Money') },
+  { label: 'Send Money', icon: <Ionicons name="cash" size={22} color="white" />, bg: 'bg-success-600', onPress: () => console.log('Send Money') },
   { label: 'Airtime', icon: <Ionicons name="call" size={22} color="white" />, bg: 'bg-danger-600', onPress: () => console.log('Airtime') },
   { label: 'Internet', icon: <Ionicons name="wifi" size={22} color="white" />, bg: 'bg-indigo-600', onPress: () => console.log('Internet') },
   { label: 'Cable TV', icon: <Ionicons name="tv" size={22} color="white" />, bg: 'bg-sky-600', onPress: () => console.log('Cable TV') },
