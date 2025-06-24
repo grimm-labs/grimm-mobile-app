@@ -73,7 +73,7 @@ export default function TransactionResultScreen() {
           <Text className="mb-12 text-base font-medium text-gray-600">#GrimmAppBTC</Text>
         </View>
 
-        <View className="px-6 pb-8">
+        <View className="px-6">
           <TouchableOpacity onPress={() => router.push('/')} className="items-center rounded-full bg-primary-600 px-6 py-4">
             <Text className="text-lg font-normal text-white">Okay!</Text>
           </TouchableOpacity>

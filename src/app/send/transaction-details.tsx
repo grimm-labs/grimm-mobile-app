@@ -1,8 +1,8 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
-import type { LnInvoice } from '@breeztech/react-native-breez-sdk-liquid';
-import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
+import type { LnInvoice, PrepareSendResponse } from '@breeztech/react-native-breez-sdk-liquid';
+import { InputTypeVariant, parse, prepareSendPayment, sendPayment } from '@breeztech/react-native-breez-sdk-liquid';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
@@ -32,10 +32,17 @@ export default function PaymentDetailsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState('');
   const [decodeError, setDecodeError] = useState<string | undefined>(undefined);
-  const [feesSat, _setFeesSat] = useState(34);
+  const [feesSat, setFeesSat] = useState(0);
   const [decodedInvoiceData, setDecodedInvoiceData] = useState<LnInvoice>();
+  const [paymentIsProcessing, setPaymentIsProcessing] = useState(false);
+  const [savedPrepareResponse, setSavedPrepareResponse] = useState<PrepareSendResponse | null>(null);
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
+
+  const convertMsatToSats = (msat: number | undefined) => {
+    if (msat === undefined) return 0;
+    return Math.floor(msat / 1000);
+  };
 
   useEffect(() => {
     if (rawInvoice) {
@@ -44,10 +51,11 @@ export default function PaymentDetailsScreen() {
           const parsed = await parse(rawInvoice.trim());
           if (parsed.type === InputTypeVariant.BOLT11 && parsed.invoice.amountMsat !== null) {
             setDecodedInvoiceData(parsed.invoice);
-            // const prepareResponse = await prepareSendPayment({
-            //   destination: parsed.invoice.bolt11,
-            // });
-            // setFeesSat(prepareResponse.feesSat || 0);
+            const prepareResponse = await prepareSendPayment({
+              destination: parsed.invoice.bolt11,
+            });
+            setFeesSat(prepareResponse.feesSat || 0);
+            setSavedPrepareResponse(prepareResponse);
           } else {
             setDecodeError('Error while decoding LN invoice');
           }
@@ -108,6 +116,24 @@ export default function PaymentDetailsScreen() {
       showErrorMessage('Invalid payment data');
       return;
     }
+
+    if (savedPrepareResponse) {
+      setPaymentIsProcessing(true);
+      try {
+        const sendResponse = await sendPayment({
+          prepareResponse: savedPrepareResponse,
+        });
+        const payment = sendResponse.payment;
+        if (payment.txId) {
+          router.push({
+            pathname: '/transaction-result/success-screen',
+            params: { transactionType: 'sent', satsAmount: payment.amountSat.toString() },
+          });
+        }
+      } finally {
+        setPaymentIsProcessing(false);
+      }
+    }
   };
 
   if (isLoading) {
@@ -156,7 +182,7 @@ export default function PaymentDetailsScreen() {
               <Text className="text-center text-sm text-gray-500">{decodeError}</Text>
             </View>
           </View>
-          <View className="px-4 pb-8">
+          <View className="px-4">
             <Button label="Go Back" onPress={() => router.back()} fullWidth={true} variant="secondary" textClassName="text-base font-semibold text-white" size="lg" className="rounded-lg" />
           </View>
         </SafeAreaView>
@@ -186,9 +212,9 @@ export default function PaymentDetailsScreen() {
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
                 <Text className="text-lg text-gray-600">Amount</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{decodedInvoiceData?.amountMsat} SAT</Text>
+                  <Text className="text-lg font-medium text-gray-900">{convertMsatToSats(decodedInvoiceData?.amountMsat)} SAT</Text>
                   <Text className="text-sm text-gray-500">
-                    {convertBitcoinToFiat(Number(decodedInvoiceData?.amountMsat || 0), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                    {convertBitcoinToFiat(Number(convertMsatToSats(decodedInvoiceData?.amountMsat || 0)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
@@ -204,9 +230,9 @@ export default function PaymentDetailsScreen() {
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
                 <Text className="text-lg text-gray-600">Total</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{Number((feesSat || 0) + (decodedInvoiceData?.amountMsat || 0))} SAT</Text>
+                  <Text className="text-lg font-medium text-gray-900">{Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0))} SAT</Text>
                   <Text className="text-sm text-gray-500">
-                    {convertBitcoinToFiat(Number((feesSat || 0) + (decodedInvoiceData?.amountMsat || 0)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                    {convertBitcoinToFiat(Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
@@ -218,13 +244,13 @@ export default function PaymentDetailsScreen() {
               )}
             </View>
           </ScrollView>
-          <View className="border-t border-gray-100 bg-white px-4 pb-8 pt-4">
+          <View className="border-t border-gray-100 bg-white px-4">
             {timeRemaining && (
-              <View className="mb-6 items-center">
-                <Text className="text-base text-gray-600">{timeRemaining === 'Expired' ? <Text className="text-red-500">This invoice has expired</Text> : <>This invoice expires in {timeRemaining}</>}</Text>
+              <View className="my-4 items-center">
+                <Text className="text-sm text-gray-600">{timeRemaining === 'Expired' ? <Text className="text-red-500">This invoice has expired</Text> : <>This invoice expires in {timeRemaining}</>}</Text>
               </View>
             )}
-            <SlideToConfirm onConfirm={handleSendPayment} />
+            <SlideToConfirm onConfirm={handleSendPayment} loading={paymentIsProcessing} />
           </View>
         </View>
       </SafeAreaView>

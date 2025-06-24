@@ -38,7 +38,7 @@ function Onboarding() {
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex-1">
-        <View className="flex h-full justify-between border px-4">
+        <View className="flex h-full justify-between px-4">
           <Stack.Screen
             options={{
               headerShown: false,

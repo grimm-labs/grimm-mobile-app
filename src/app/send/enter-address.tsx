@@ -49,7 +49,6 @@ export default function LightningPaymentScreen() {
             setAddressError(true);
             return;
           }
-          console.log(`Input is BOLT11 invoice for ${parsed.invoice.amountMsat != null ? parsed.invoice.amountMsat.toString() : 'unknown'} sats`);
           router.push({
             pathname: '/send/transaction-details',
             params: {
