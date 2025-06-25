@@ -34,7 +34,7 @@ export default function TransactionResultScreen() {
   const animation = useRef<LottieView>(null);
 
   const isReceived = transactionType === 'received';
-  const headerLeft = () => <HeaderLeft onPress={() => router.push('/')} />;
+  const headerLeft = () => <HeaderLeft onPress={() => router.replace('/')} />;
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
@@ -63,17 +63,13 @@ export default function TransactionResultScreen() {
             </View>
             <Text className="text-4xl font-semibold text-neutral-700">{formatBalance(Number(satsAmount), bitcoinUnit)}</Text>
           </View>
-
           <Text className="mb-6 text-center text-base text-gray-500">on the date of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</Text>
-
           <Text className="mb-8 text-xl font-bold text-primary-500">
             That's {convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedFiatCurrency}!
           </Text>
-
           <Text className="mb-12 text-base font-medium text-gray-600">#GrimmAppBTC</Text>
         </View>
-
-        <View className="px-6">
+        <View className="mb-4 px-6">
           <TouchableOpacity onPress={() => router.push('/')} className="items-center rounded-full bg-primary-600 px-6 py-4">
             <Text className="text-lg font-normal text-white">Okay!</Text>
           </TouchableOpacity>
