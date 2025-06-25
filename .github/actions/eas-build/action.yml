@@ -7,8 +7,10 @@
 # This action is used to trigger an EAS Build for a specific environment (development, staging, production).
 # This action accepts those inputs:
 #        `APP_ENV`, which is used to generate an APK for a specific environment (development, staging, production). We use staging by default.
-#        `AUTO_SUBMIT`, false by default, set to true if you want to automatically submit your build to stores.
+#        `AUTO_SUBMIT_ANDROID`, false by default, set to true if you want to automatically submit your Android build to store.
+#        `AUTO_SUBMIT_IOS`, false by default, set to true if you want to automatically submit your iOS build to store.
 #        `EXPO_TOKEN`, required, access token for your Expo account. https://expo.dev/settings/access-tokens
+#        `GOOGLE_SERVICES_KEY_BASE64`, required for Android submission, base64 encoded service account key.
 #        `VERSION`, required, version of the app to build. used as the build message.
 #        `ANDROID`, true by default, set to true if you don't want to trigger build for Android.
 #        `IOS`, false by default, set to true if you  want to trigger build for IOS.
@@ -22,8 +24,12 @@
 #        with:
 #          APP_ENV: staging
 #          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+#          GOOGLE_SERVICES_KEY_BASE64: ${{ secrets.GOOGLE_SERVICES_API_KEY_BASE64 }}
 #          VERSION: ${{ github.event.release.tag_name }}
+#          ANDROID: true
 #          IOS: false
+#          AUTO_SUBMIT_ANDROID: true
+#          AUTO_SUBMIT_IOS: false
 
 name: 'Setup EAS Build + Trigger Build'
 description: 'Setup EAS Build + Trigger Build'
@@ -32,8 +38,12 @@ inputs:
     description: 'APP_ENV (one of): development, staging, production'
     required: true
     default: 'staging'
-  AUTO_SUBMIT: ## TODO: we need to handle this too
-    description: 'AUTO_SUBMIT (one of): true, false'
+  AUTO_SUBMIT_ANDROID:
+    description: 'AUTO_SUBMIT_ANDROID (one of): true, false'
+    required: true
+    default: 'false'
+  AUTO_SUBMIT_IOS:
+    description: 'AUTO_SUBMIT_IOS (one of): true, false'
     required: true
     default: 'false'
   ANDROID:
@@ -51,7 +61,9 @@ inputs:
   EXPO_TOKEN:
     description: 'EXPO_TOKEN'
     required: true
-    default: 'false'
+  GOOGLE_SERVICES_KEY_BASE64:
+    description: 'Base64 encoded Google Services API Key for Android submission'
+    required: false
 
 runs:
   using: 'composite'
@@ -70,16 +82,31 @@ runs:
         eas-version: latest
         token: ${{ inputs.EXPO_TOKEN }}
 
+    - name: 🔐 Setup Google Services Key for Android
+      if: ${{ inputs.ANDROID == 'true' && inputs.GOOGLE_SERVICES_KEY_BASE64 != '' }}
+      run: |
+        mkdir -p ./credentials/android
+        echo "${{ inputs.GOOGLE_SERVICES_KEY_BASE64 }}" | base64 -d > ./credentials/android/service-account.json
+        echo "✅ Google Services key file created"
+      shell: bash
+
     - name: ⚙️ Run Prebuild
       run: pnpm prebuild:${{ inputs.APP_ENV }}
       shell: bash
 
     - name: 📱 Run Android Build
       if: ${{ inputs.ANDROID == 'true' }}
-      run: pnpm build:${{ inputs.APP_ENV }}:android --non-interactive  --no-wait --message "Build  ${{ inputs.APP_ENV }} ${{ inputs.VERSION }}"
+      run: pnpm build:${{ inputs.APP_ENV }}:android ${{ inputs.AUTO_SUBMIT_ANDROID == 'true' && '--auto-submit' || '' }} --non-interactive --no-wait --message "Build ${{ inputs.APP_ENV }} ${{ inputs.VERSION }}"
       shell: bash
 
     - name: 📱 Run IOS Build
       if: ${{ inputs.IOS == 'true' }}
-      run: pnpm build:${{ inputs.APP_ENV }}:ios --non-interactive  --no-wait --message "Build ${{ inputs.APP_ENV }} ${{ inputs.VERSION }}"
+      run: pnpm build:${{ inputs.APP_ENV }}:ios ${{ inputs.AUTO_SUBMIT_IOS == 'true' && '--auto-submit' || '' }} --non-interactive --no-wait --message "Build ${{ inputs.APP_ENV }} ${{ inputs.VERSION }}"
+      shell: bash
+
+    - name: 🧹 Clean up credentials
+      if: always() && inputs.ANDROID == 'true' && inputs.GOOGLE_SERVICES_KEY_BASE64 != ''
+      run: |
+        rm -f ./credentials/android/service-account.json
+        echo "✅ Credentials cleaned up"
       shell: bash
