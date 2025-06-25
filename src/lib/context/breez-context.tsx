@@ -34,7 +34,7 @@ const initialState: BreezState = {
   error: null,
   isInitialized: false,
   payments: [],
-  liquidNetwork: LiquidNetwork.TESTNET,
+  liquidNetwork: LiquidNetwork.MAINNET,
 };
 
 const BreezContext = createContext<BreezContextType | undefined>(undefined);

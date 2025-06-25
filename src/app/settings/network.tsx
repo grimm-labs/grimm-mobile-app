@@ -11,6 +11,9 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { useBreez } from '@/lib/context/breez-context';
+import { Env } from '@/lib/env';
+
+const isProduction = Env.APP_ENV === 'production';
 
 interface NetworkOptionProps {
   title: string;
@@ -55,7 +58,7 @@ export default function NetworkSwitcher() {
 
   const handleNetworkChange = useCallback(
     async (network: LiquidNetwork) => {
-      if (network === liquidNetwork) return;
+      if (network === liquidNetwork || isProduction) return;
 
       if (network === LiquidNetwork.MAINNET && liquidNetwork !== LiquidNetwork.MAINNET) {
         Alert.alert('Switch to Mainnet', 'You are about to switch to the Bitcoin mainnet. This will disconnect your current session and reconnect to the live Bitcoin network. Are you sure?', [
@@ -77,15 +80,13 @@ export default function NetworkSwitcher() {
   );
 
   const handleMainnetPress = useCallback(() => {
+    if (isProduction) return;
     handleNetworkChange(LiquidNetwork.MAINNET);
   }, [handleNetworkChange]);
 
   const handleTestnetPress = useCallback(() => {
+    if (isProduction) return;
     handleNetworkChange(LiquidNetwork.TESTNET);
-  }, [handleNetworkChange]);
-
-  const handleRegtestPress = useCallback(() => {
-    handleNetworkChange(LiquidNetwork.REGTEST);
   }, [handleNetworkChange]);
 
   const networkOptions = useMemo(
@@ -104,18 +105,11 @@ export default function NetworkSwitcher() {
         onPress: handleTestnetPress,
         key: 'testnet',
       },
-      {
-        title: 'Regtest',
-        description: 'Local development network for testing',
-        isSelected: liquidNetwork === LiquidNetwork.REGTEST,
-        onPress: handleRegtestPress,
-        key: 'regtest',
-      },
     ],
-    [liquidNetwork, handleMainnetPress, handleTestnetPress, handleRegtestPress],
+    [liquidNetwork, handleMainnetPress, handleTestnetPress],
   );
 
-  const isDisabled = isChangingNetwork || isSyncing;
+  const isDisabled = isChangingNetwork || isSyncing || isProduction;
 
   return (
     <SafeAreaProvider>
@@ -133,7 +127,7 @@ export default function NetworkSwitcher() {
           <FocusAwareStatusBar style="dark" />
 
           {isChangingNetwork && (
-            <View className="mx-2 mt-4 flex-row items-center justify-center rounded-lg bg-blue-50 py-3">
+            <View className="mt-4 flex-row items-center justify-center rounded-lg bg-blue-50 py-3">
               <ActivityIndicator size="small" color={colors.primary[600]} />
               <Text className="ml-2 text-sm text-blue-700">Switching network...</Text>
             </View>
@@ -146,6 +140,12 @@ export default function NetworkSwitcher() {
             </View>
           </View>
 
+          {isProduction && (
+            <View className="mt-4 rounded-lg bg-yellow-50 p-3">
+              <Text className="text-sm text-yellow-800">Network switching is disabled in production. Using Mainnet by default.</Text>
+            </View>
+          )}
+
           <View className="mt-2">
             {networkOptions.map((option) => (
               <NetworkOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} disabled={isDisabled} />
@@ -153,7 +153,7 @@ export default function NetworkSwitcher() {
           </View>
 
           <View className="mt-6">
-            <Text className="text-xs text-gray-600">You should most likely be on mainnet for real Bitcoin transactions.</Text>
+            <Text className="text-xs text-gray-600">{isProduction ? 'Production mode: Network is locked to Mainnet for security.' : 'You should most likely be on mainnet for real Bitcoin transactions.'}</Text>
           </View>
         </View>
       </SafeAreaView>
