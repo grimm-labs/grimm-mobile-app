@@ -10,6 +10,7 @@ import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
@@ -21,6 +22,8 @@ type SearchParams = {
   type: 'onchain' | 'lightning';
   note?: string;
 };
+
+const ReceivePaymentScreenHeaderTitle = () => <HeaderTitle title="Receive Bitcoin" />;
 
 export default function ReceivePaymentScreen() {
   const { selectedCountry, bitcoinUnit } = useContext(AppContext);
@@ -134,7 +137,7 @@ export default function ReceivePaymentScreen() {
         <FocusAwareStatusBar style="dark" />
         <Stack.Screen
           options={{
-            title: 'Receive Bitcoin',
+            headerTitle: ReceivePaymentScreenHeaderTitle,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
@@ -155,7 +158,7 @@ export default function ReceivePaymentScreen() {
         <FocusAwareStatusBar style="dark" />
         <Stack.Screen
           options={{
-            title: 'Error',
+            headerTitle: ReceivePaymentScreenHeaderTitle,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
@@ -182,21 +185,19 @@ export default function ReceivePaymentScreen() {
     <SafeAreaProvider>
       <SafeAreaView className="flex-1 bg-white">
         <FocusAwareStatusBar style="dark" />
-
         <Stack.Screen
           options={{
-            title: 'Receive Bitcoin',
+            headerTitle: ReceivePaymentScreenHeaderTitle,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
           }}
         />
-
         <View className="flex-1 px-2">
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="mb-2 mt-3">
               <View className="items-center rounded-2xl p-6">
-                <Text className="mb-2 text-4xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
+                <Text className="mb-2 text-2xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
                 <Text className="text-lg text-gray-500">
                   {convertBitcoinToFiat(Number(satsAmount), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                 </Text>
@@ -205,14 +206,11 @@ export default function ReceivePaymentScreen() {
                 </View>
               </View>
             </View>
-
-            {/* QR Code */}
             <View className="mb-8 items-center">
               <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={type === 'onchain' ? 150 : 250} backgroundColor="white" color="black" />}</View>
               {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
               <Text className="mt-4 text-center text-sm text-gray-500">Scan this QR Code to make the payment</Text>
             </View>
-
             <View className="flex flex-row justify-center">
               <View className="mx-4 flex items-center justify-center">
                 <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
@@ -225,7 +223,6 @@ export default function ReceivePaymentScreen() {
                 </Pressable>
               </View>
             </View>
-
             <View className="my-4 rounded-lg bg-blue-50 p-4">
               <Text className="text-center text-sm text-blue-700">
                 A {fees} sats ({convertBitcoinToFiat(fees, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}) fee will be applied to this invoice. Please keep Grimm App open until
@@ -233,7 +230,6 @@ export default function ReceivePaymentScreen() {
               </Text>
             </View>
           </ScrollView>
-
           <View>
             <Button label="Close" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>

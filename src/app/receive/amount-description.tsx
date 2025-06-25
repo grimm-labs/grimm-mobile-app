@@ -68,7 +68,7 @@ export default function EnterAmountScreen() {
 
   const handleSatsChange = (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, '');
-    setSatsAmount(numericValue);
+    setSatsAmount((+numericValue).toString());
 
     if (numericValue && numericValue !== '0') {
       const satsValue = parseInt(numericValue, 10);

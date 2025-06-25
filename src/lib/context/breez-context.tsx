@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import type { Payment, SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
-import { addEventListener, connect, defaultConfig, disconnect, getInfo, LiquidNetwork, listPayments, removeEventListener, SdkEventVariant } from '@breeztech/react-native-breez-sdk-liquid';
+import { addEventListener, connect, defaultConfig, disconnect, getInfo, LiquidNetwork, listPayments, PaymentType, removeEventListener, SdkEventVariant } from '@breeztech/react-native-breez-sdk-liquid';
 import { Env } from '@env';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -61,12 +61,14 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
     switch (event.type) {
       case SdkEventVariant.PAYMENT_SUCCEEDED:
-        const { amountSat } = event.details;
-        router.push({
-          pathname: '/transaction-result/success-screen',
-          params: { transactionType: 'received', satsAmount: amountSat.toString() },
-        });
+        const { amountSat, paymentType } = event.details;
         refreshWalletInfo();
+        if (paymentType === PaymentType.RECEIVE) {
+          router.push({
+            pathname: '/transaction-result/success-screen',
+            params: { transactionType: 'received', satsAmount: amountSat.toString() },
+          });
+        }
         break;
       case SdkEventVariant.PAYMENT_FAILED:
         console.error('Payment failed:', event);
