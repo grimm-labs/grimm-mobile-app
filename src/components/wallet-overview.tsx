@@ -7,6 +7,7 @@ import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
+import { BitcoinUnit } from '@/types/enum';
 
 export const WalletOverview = () => {
   const router = useRouter();
@@ -15,7 +16,7 @@ export const WalletOverview = () => {
   const { balance } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
-  const convertedVal = convertBitcoinToFiat(balance, bitcoinUnit, selectedFiatCurrency, bitcoinPrices);
+  const convertedVal = convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices);
 
   return (
     <View className="">
