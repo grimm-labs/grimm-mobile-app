@@ -1,0 +1,71 @@
+{
+  "onboarding": {
+    "agreementText": "En continuant, vous acceptez les",
+    "getStarted": "Commencer",
+    "help": "Besoin d'aide ?",
+    "privacyPolicy": "Politique de confidentialité",
+    "subtitle": "La SuperApp Bitcoin nouvelle génération, auto-hébergée, pour des paiements On-chain et Lightning sans effort.",
+    "termsOfService": "Conditions d'utilisation",
+    "title": "Bienvenue sur Grimm App"
+  },
+  "settings": {
+    "aboutApp": "À propos de Grimm App",
+    "general": {
+      "bitcoinUnit": {
+        "subtitle": "Choisissez entre BTC et SATS",
+        "title": "Unités Bitcoin"
+      },
+      "country": {
+        "subtitle": "Sélectionnez votre pays pour une expérience personnalisée",
+        "title": "Pays"
+      },
+      "language": {
+        "subtitle": "Choisissez votre langue préférée",
+        "title": "Langue"
+      },
+      "networks": {
+        "subtitle": "Gérer et configurer vos réseaux",
+        "title": "Réseaux"
+      }
+    },
+    "help": "Assistance",
+    "legal": "Confidentialité, Conditions et Logiciels Open Source de Grimm Technologies",
+    "preferences": {
+      "appearance": {
+        "subtitle": "Basculez entre les modes clair et sombre",
+        "title": "Apparence"
+      },
+      "notifications": {
+        "subtitle": "Personnalisez les paramètres de notification",
+        "title": "Notifications"
+      }
+    },
+    "sections": {
+      "general": "Général",
+      "preferences": "Préférences",
+      "security": "Sécurité"
+    },
+    "security": {
+      "backup": {
+        "subtitle": "Sécurisez et gérez votre clé de récupération",
+        "title": "Clé de sauvegarde"
+      },
+      "faceId": {
+        "subtitle": "Utilisez Face ID pour un accès rapide",
+        "title": "Activer Face ID"
+      },
+      "pin": {
+        "subtitle": "Mettre à jour le code PIN de votre portefeuille",
+        "title": "Changer le code PIN"
+      }
+    },
+    "signOut": "Se déconnecter",
+    "signOutAlert": {
+      "cancel": "Annuler",
+      "message": "Êtes-vous sûr de vouloir vous déconnecter ?",
+      "title": "Déconnexion"
+    },
+    "title": "Paramètres",
+    "version": "Version {{version}}"
+  }
+}
