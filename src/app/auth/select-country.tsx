@@ -142,7 +142,7 @@ export default function SelectCountry() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 border">
+      <SafeAreaView className="flex-1">
         <Stack.Screen options={screenOptions} />
         <FocusAwareStatusBar style="dark" />
         <View className="mt-0 h-full flex-1 border bg-white">

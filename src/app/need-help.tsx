@@ -72,8 +72,8 @@ const SupportItems = () => {
       <Item title="Send us an E-mail" icon="mail-outline" onPress={() => openLink(supportLinks.email)} />
       <Item title="Reach us on Facebook" icon="logo-facebook" onPress={() => openLink(supportLinks.facebook)} />
       <Item title="Follow us on LinkedIn" icon="logo-linkedin" onPress={() => openLink(supportLinks.linkedIn)} />
-      <Item title="Access our Help Center" icon="help-circle-outline" onPress={() => openLink(supportLinks.helpCenter)} />
       <Item title="Reach out on X (Formerly Twitter)" icon="logo-twitter" onPress={() => openLink(supportLinks.twitter)} />
+      <Item title="Access our Help Center" icon="help-circle-outline" onPress={() => openLink(supportLinks.helpCenter)} />
     </View>
   );
 };
