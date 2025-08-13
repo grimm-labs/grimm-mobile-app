@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -8,28 +9,36 @@ import { Button, colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/comp
 
 const Logo = memo(() => <Image className="size-32" source={require('@/assets/images/logo.png')} />);
 
-const WelcomeText = memo(() => (
-  <>
-    <Text className="mt-5 text-center text-3xl">Welcome to Grimm App</Text>
-    <Text className="mt-4 text-center text-gray-700">The next-gen self-custodial Bitcoin SuperApp for seamless On-chain & Lightning payments.</Text>
-  </>
-));
+const WelcomeText = memo(() => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Text className="mt-5 text-center text-3xl">{t('onboarding.title')}</Text>
+      <Text className="mt-4 text-center text-gray-700">{t('onboarding.subtitle')}</Text>
+    </>
+  );
+});
 
 interface FooterProps {
   onGetStarted: () => void;
 }
 
-const Footer = memo(({ onGetStarted }: FooterProps) => (
-  <>
-    <Button label="Get Started" onPress={onGetStarted} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
-    <Text className="my-4 text-center text-gray-700">
-      By Continuing, You agree to the <Text className="font-semibold text-primary-600 underline">Terms of Service</Text> & <Text className="font-semibold text-primary-600 underline">Privacy Policy</Text>
-    </Text>
-  </>
-));
+const Footer = memo(({ onGetStarted }: FooterProps) => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Button label={t('onboarding.getStarted')} onPress={onGetStarted} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+      <Text className="my-4 text-center text-gray-700">
+        {t('onboarding.agreementText')} <Text className="font-semibold text-primary-600 underline">{t('onboarding.termsOfService')}</Text> &{' '}
+        <Text className="font-semibold text-primary-600 underline">{t('onboarding.privacyPolicy')}</Text>
+      </Text>
+    </>
+  );
+});
 
 function Onboarding() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleGetStarted = React.useCallback(() => {
     router.push('/auth/sign-in');
@@ -50,7 +59,7 @@ function Onboarding() {
 
           <View className="my-2 flex flex-row items-center justify-between">
             <View className="flex" />
-            <Pressable className="relative" onPress={() => router.push('/need-help')}>
+            <Pressable className="relative" onPress={() => router.push('/need-help')} accessibilityLabel={t('onboarding.help')}>
               <Ionicons name="chatbubble-ellipses" size={24} color={colors.neutral[500]} />
               <View className="-top-0,5 absolute -right-0.5 size-3 items-center justify-center rounded-full bg-primary-600" />
             </Pressable>

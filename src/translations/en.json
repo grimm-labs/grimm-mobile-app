@@ -1,33 +1,71 @@
 {
   "onboarding": {
-    "message": "Welcome to obytes app site"
+    "agreementText": "By Continuing, You agree to the",
+    "getStarted": "Get Started",
+    "help": "Need help?",
+    "privacyPolicy": "Privacy Policy",
+    "subtitle": "The next-gen self-custodial Bitcoin SuperApp for seamless On-chain & Lightning payments.",
+    "termsOfService": "Terms of Service",
+    "title": "Welcome to Grimm App"
   },
   "settings": {
-    "about": "About",
-    "app_name": "App Name",
-    "arabic": "Arabic",
-    "english": "English",
-    "generale": "General",
-    "github": "Github",
-    "language": "Language",
-    "links": "Links",
-    "logout": "Logout",
-    "more": "More",
-    "privacy": "Privacy Policy",
-    "rate": "Rate",
-    "share": "Share",
-    "support": "Support",
-    "support_us": "Support Us",
-    "terms": "Terms of Service",
-    "theme": {
-      "dark": "Dark",
-      "light": "Light",
-      "system": "System",
-      "title": "Theme"
+    "aboutApp": "About Grimm App",
+    "general": {
+      "bitcoinUnit": {
+        "subtitle": "Choose between BTC and SATS",
+        "title": "Bitcoin Units"
+      },
+      "country": {
+        "subtitle": "Select your country for a personalized experience",
+        "title": "Country"
+      },
+      "language": {
+        "subtitle": "Select your preferred app language",
+        "title": "Language"
+      },
+      "networks": {
+        "subtitle": "Manage and configure your networks",
+        "title": "Networks"
+      }
+    },
+    "help": "Help & Support",
+    "legal": "Grimm Technologies's {{privacy}}, {{terms}} and {{oss}}",
+    "preferences": {
+      "appearance": {
+        "subtitle": "Switch between light and dark modes",
+        "title": "Appearance"
+      },
+      "notifications": {
+        "subtitle": "Customize your app notification settings",
+        "title": "Notifications"
+      }
+    },
+    "sections": {
+      "general": "General",
+      "preferences": "Preferences",
+      "security": "Security"
+    },
+    "security": {
+      "backup": {
+        "subtitle": "Secure and manage your wallet recovery key",
+        "title": "Backup Key"
+      },
+      "faceId": {
+        "subtitle": "Use Face ID for quick access",
+        "title": "Enable Face ID"
+      },
+      "pin": {
+        "subtitle": "Update your wallet access PIN",
+        "title": "Change PIN code"
+      }
+    },
+    "signOut": "Sign Out",
+    "signOutAlert": {
+      "cancel": "Cancel",
+      "message": "Are you sure you want to sign out?",
+      "title": "Sign Out"
     },
     "title": "Settings",
-    "version": "Version",
-    "website": "Website"
-  },
-  "welcome": "Welcome to obytes app site"
+    "version": "Version {{version}}"
+  }
 }
