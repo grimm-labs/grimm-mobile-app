@@ -1,4 +1,24 @@
 {
+  "lnWallet": {
+    "actions": "Actions",
+    "available": "Available Bitcoin Lightning",
+    "createInvoice": "Create BTC lightning invoice",
+    "currentPrice": "Current Bitcoin price",
+    "payInvoice": "Pay a lightning invoice",
+    "receiveOnchain": "Receive via BTC on-chain",
+    "seeAll": "See all",
+    "transactions": "Transactions"
+  },
+  "notifications": {
+    "days_ago": "{{count}}d ago",
+    "hours_ago": "{{count}}h ago",
+    "just_now": "Just now",
+    "loading": "Loading...",
+    "mark_all_as_read": "Mark all as read",
+    "no_notifications": "No notifications",
+    "no_notifications_subtext": "You haven't received any notifications yet",
+    "title": "Notifications"
+  },
   "onboarding": {
     "agreementText": "By Continuing, You agree to the",
     "getStarted": "Get Started",
@@ -7,6 +27,16 @@
     "subtitle": "The next-gen self-custodial Bitcoin SuperApp for seamless On-chain & Lightning payments.",
     "termsOfService": "Terms of Service",
     "title": "Welcome to Grimm App"
+  },
+  "scan_qr": {
+    "instruction": "Position the QR Code in view to activate",
+    "no_access_message": "Grimm App doesn't have access to the camera. Please enable camera access to scan QR codes.",
+    "no_access_title": "No Camera Access",
+    "open_settings": "Open Settings",
+    "permission_required": "Camera permission is required to scan QR codes.",
+    "processing": "Processing...",
+    "scanning": "Scanning...",
+    "title": "Scan QR"
   },
   "settings": {
     "aboutApp": "About Grimm App",
@@ -67,5 +97,12 @@
     },
     "title": "Settings",
     "version": "Version {{version}}"
+  },
+  "transaction": {
+    "date": "on the date of",
+    "fiatEquivalent": "That's {{amount}} {{currency}}!",
+    "okButton": "Okay!",
+    "received": "You received",
+    "sent": "Transaction sent"
   }
 }

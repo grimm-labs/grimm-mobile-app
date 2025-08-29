@@ -2,6 +2,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -44,6 +45,7 @@ const HeaderTitle = () => (
 );
 
 export default function LnWalletDetails() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit } = useContext(AppContext);
@@ -70,7 +72,7 @@ export default function LnWalletDetails() {
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
             <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
-              <Text className="mb-2 text-sm text-gray-500">Available Bitcoin Lightning</Text>
+              <Text className="mb-2 text-sm text-gray-500">{t('lnWallet.available')}</Text>
               <Text className="mb-2 text-4xl font-bold text-gray-900">
                 {convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}
               </Text>
@@ -82,7 +84,7 @@ export default function LnWalletDetails() {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center">
                     <Image className="mr-2 size-6 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
-                    <Text className="text-sm text-gray-700">Current Bitcoin price</Text>
+                    <Text className="text-sm text-gray-700">{t('lnWallet.currentPrice')}</Text>
                   </View>
                   <Text className="text-sm font-semibold text-gray-900">
                     {convertBitcoinToFiat(1, BitcoinUnit.Btc, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedFiatCurrency}
@@ -93,11 +95,11 @@ export default function LnWalletDetails() {
           </View>
 
           <View className="mb-8">
-            <Text className="mb-3 text-xl font-bold text-gray-600">Actions</Text>
+            <Text className="mb-3 text-xl font-bold text-gray-600">{t('lnWallet.actions')}</Text>
             <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
               <MenuItem
                 icon="add-outline"
-                title="Create BTC lightning invoice"
+                title={t('lnWallet.createInvoice')}
                 onPress={() => {
                   router.push({
                     pathname: '/receive/amount-description',
@@ -108,7 +110,7 @@ export default function LnWalletDetails() {
               <View className="ml-14 border-t border-gray-200" />
               <MenuItem
                 icon="link"
-                title="Receive via BTC on-chain"
+                title={t('lnWallet.receiveOnchain')}
                 onPress={() => {
                   router.push({
                     pathname: '/receive/amount-description',
@@ -117,16 +119,16 @@ export default function LnWalletDetails() {
                 }}
               />
               <View className="ml-14 border-t border-gray-200" />
-              <MenuItem icon="arrow-up-outline" title="Pay a lightning invoice" onPress={() => router.push('/send/enter-address')} />
+              <MenuItem icon="arrow-up-outline" title={t('lnWallet.payInvoice')} onPress={() => router.push('/send/enter-address')} />
             </View>
           </View>
 
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-gray-600">Transactions</Text>
+              <Text className="text-xl font-bold text-gray-600">{t('lnWallet.transactions')}</Text>
               {payments.length > 4 && (
                 <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/transactions')}>
-                  <Text className="text-base font-medium text-primary-600">See all</Text>
+                  <Text className="text-base font-medium text-primary-600">{t('lnWallet.seeAll')}</Text>
                 </TouchableOpacity>
               )}
             </View>
