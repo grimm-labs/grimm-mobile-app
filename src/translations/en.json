@@ -3,6 +3,22 @@
     "continue": "Continue",
     "import": "Import"
   },
+  "enterAmount": {
+    "addNote": "+ Add a note (optional)",
+    "alert": {
+      "errorMessage": "Please enter a valid amount",
+      "errorTitle": "Error",
+      "invalidTitle": "Invalid amount"
+    },
+    "continueButton": "Continue",
+    "errors": {
+      "max": "The maximum amount is {{value}} SATS",
+      "min": "The minimum amount is {{value}} SATS"
+    },
+    "headerTitle": "Enter amount",
+    "notePlaceholder": "Add a note here...",
+    "satsLabel": "SATS"
+  },
   "importSeed": {
     "error": "Please enter a valid 12-word seed phrase.",
     "placeholder": "Enter your 12 or 24-word seed phrase separated by spaces",
@@ -10,6 +26,19 @@
     "title": "Recovery Phrase",
     "validCount": "✓ {{count}} words entered",
     "words": "words"
+  },
+  "lightningPayment": {
+    "errors": {
+      "bitcoinNotSupported": "Sorry, payment to a Bitcoin address is not supported yet",
+      "invalidInvoice": "Please enter a valid Lightning invoice",
+      "preparePaymentFailed": "Unable to prepare payment. Invalid address",
+      "unsupportedAddress": "Sorry, we do not support this Bitcoin or Lightning address",
+      "zeroAmountNotSupported": "Sorry, we do not support zero-amount Lightning payments"
+    },
+    "payButton": "Pay Invoice",
+    "placeholder": "Invoice | Lightning Address | BTC Address",
+    "processing": "Processing...",
+    "title": "Lightning Payment"
   },
   "lnWallet": {
     "actions": "Actions",
@@ -39,6 +68,46 @@
     "subtitle": "The next-gen self-custodial Bitcoin SuperApp for seamless On-chain & Lightning payments.",
     "termsOfService": "Terms of Service",
     "title": "Welcome to Grimm App"
+  },
+  "paymentDetails": {
+    "amount": "Amount",
+    "errorDescription": "We couldn't process your payment request. Please check your invoice and try again.",
+    "errorMessage": "Something went wrong",
+    "errorTitle": "Payment Error",
+    "errors": {
+      "decode": "Error while decoding LN invoice",
+      "invalidData": "Invalid invoice data",
+      "invalidPayment": "Invalid payment data",
+      "notEnoughFunds": "Cannot pay: not enough funds"
+    },
+    "expired": "Expired",
+    "expiredMessage": "This invoice has expired",
+    "expiresIn": "This invoice expires in",
+    "goBack": "Go Back",
+    "loading": "Loading Invoice",
+    "loadingSubtitle": "Just a moment while we fetch your details...",
+    "networkFee": "Network fee",
+    "note": "Note",
+    "payViaLightning": "Pay via Lightning",
+    "title": "Lightning Payment",
+    "to": "To",
+    "total": "Total",
+    "unknown": "Unknown"
+  },
+  "receive_payment": {
+    "close": "Close",
+    "copied": "Payment address has been copied to clipboard",
+    "default_note": "Grimm App Payment of {{amount}} sats",
+    "error_generic": "Error generating invoice",
+    "error_title": "Generation Error",
+    "fee_info": "A {{fees}} sats ({{fiat}} {{currency}}) fee will be applied to this invoice. Please keep Grimm App open until payment is complete.",
+    "header": "Receive Bitcoin",
+    "invalid_amount": "Invalid amount",
+    "loading_subtitle": "Creating your payment QR Code",
+    "loading_title": "Generating invoice...",
+    "retry": "Try Again",
+    "scan_text": "Scan this QR Code to make the payment",
+    "share_title": "Lightning Payment Request"
   },
   "scan_qr": {
     "instruction": "Position the QR Code in view to activate",

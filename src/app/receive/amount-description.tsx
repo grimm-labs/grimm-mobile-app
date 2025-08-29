@@ -4,6 +4,7 @@ import { fetchLightningLimits, fetchOnchainLimits } from '@breeztech/react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -19,9 +20,13 @@ type SearchParams = {
   type: 'onchain' | 'lightning';
 };
 
-const EnterAmountScreenHeaderTitle = () => <HeaderTitle title="Enter amount" />;
+const EnterAmountScreenHeaderTitle = () => {
+  const { t } = useTranslation();
+  return <HeaderTitle title={t('enterAmount.headerTitle')} />;
+};
 
 export default function EnterAmountScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { type } = useLocalSearchParams<SearchParams>();
 
@@ -42,7 +47,6 @@ export default function EnterAmountScreen() {
     const fetchLimits = async () => {
       if (type === 'onchain') {
         const currentLimits = await fetchOnchainLimits();
-        console.log(currentLimits);
         setReceiveMinSatsLimit(currentLimits.receive.minSat);
         setReceiveMaxSatsLimit(currentLimits.receive.maxSat);
       }
@@ -58,10 +62,10 @@ export default function EnterAmountScreen() {
 
   const validateAmount = (satsValue: number): string => {
     if (satsValue < receiveMinSatsLimit) {
-      return `The minimum amount is ${receiveMinSatsLimit.toLocaleString()} SATS`;
+      return t('enterAmount.errors.min', { value: receiveMinSatsLimit.toLocaleString() });
     }
     if (satsValue > receiveMaxSatsLimit) {
-      return `The maximum amount is ${receiveMaxSatsLimit.toLocaleString()} SATS`;
+      return t('enterAmount.errors.max', { value: receiveMaxSatsLimit.toLocaleString() });
     }
     return '';
   };
@@ -87,12 +91,12 @@ export default function EnterAmountScreen() {
     const satsValue = parseInt(satsAmount, 10);
 
     if (satsAmount === '0' || satsAmount === '' || isNaN(satsValue)) {
-      Alert.alert('Error', 'Please enter a valid amount');
+      Alert.alert(t('enterAmount.alert.errorTitle'), t('enterAmount.alert.errorMessage'));
       return;
     }
 
     if (validateAmount(satsValue)) {
-      Alert.alert('Invalid amount', validationError);
+      Alert.alert(t('enterAmount.alert.invalidTitle'), validationError);
       return;
     }
 
@@ -123,7 +127,7 @@ export default function EnterAmountScreen() {
 
         <View className="flex-1 px-4 pt-8">
           <View className="mb-8 items-center">
-            <Text className="mb-4 text-lg font-semibold text-gray-700">SATS</Text>
+            <Text className="mb-4 text-lg font-semibold text-gray-700">{t('enterAmount.satsLabel')}</Text>
             <TextInput
               textAlign="center"
               textAlignVertical="center"
@@ -153,7 +157,7 @@ export default function EnterAmountScreen() {
             <View className="mb-8">
               {!showNoteInput ? (
                 <TouchableOpacity onPress={() => setShowNoteInput(true)} className="items-center">
-                  <Text className="text-base text-gray-400">+ Add a note (optional)</Text>
+                  <Text className="text-base text-gray-400">{t('enterAmount.addNote')}</Text>
                 </TouchableOpacity>
               ) : (
                 <View className="rounded border bg-white p-4" style={{ borderColor: '#9CA3AF' }}>
@@ -161,7 +165,7 @@ export default function EnterAmountScreen() {
                     value={note}
                     onChangeText={setNote}
                     returnKeyType="done"
-                    placeholder="Add a note here..."
+                    placeholder={t('enterAmount.notePlaceholder')}
                     placeholderTextColor="#9CA3AF"
                     className="min-h-[40px] text-base text-gray-700"
                     multiline
@@ -182,7 +186,7 @@ export default function EnterAmountScreen() {
           )}
           <View className="flex-1" />
           <View>
-            <Button label="Continue" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button label={t('enterAmount.continueButton')} disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
       </SafeAreaView>

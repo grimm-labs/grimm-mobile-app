@@ -3,6 +3,22 @@
     "continue": "Continuer",
     "import": "Importer"
   },
+  "enterAmount": {
+    "addNote": "+ Ajouter une note (optionnel)",
+    "alert": {
+      "errorMessage": "Veuillez entrer un montant valide",
+      "errorTitle": "Erreur",
+      "invalidTitle": "Montant invalide"
+    },
+    "continueButton": "Continuer",
+    "errors": {
+      "max": "Le montant maximum est de {{value}} SATS",
+      "min": "Le montant minimum est de {{value}} SATS"
+    },
+    "headerTitle": "Entrer le montant",
+    "notePlaceholder": "Ajoutez une note ici...",
+    "satsLabel": "SATS"
+  },
   "importSeed": {
     "error": "Veuillez entrer une phrase de récupération de 12 mots valide.",
     "placeholder": "Saisissez votre phrase de 12 ou 24 mots séparés par des espaces",
@@ -10,6 +26,19 @@
     "title": "Phrase de récupération",
     "validCount": "✓ {{count}} mots saisis",
     "words": "mots"
+  },
+  "lightningPayment": {
+    "errors": {
+      "bitcoinNotSupported": "Désolé, le paiement vers une adresse Bitcoin n'est pas encore pris en charge",
+      "invalidInvoice": "Veuillez entrer une facture Lightning valide",
+      "preparePaymentFailed": "Impossible de préparer le paiement. Adresse invalide",
+      "unsupportedAddress": "Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning",
+      "zeroAmountNotSupported": "Désolé, nous ne prenons pas en charge les paiements Lightning sans montant"
+    },
+    "payButton": "Payer la facture",
+    "placeholder": "Facture | Adresse Lightning | Adresse BTC",
+    "processing": "Traitement...",
+    "title": "Paiement Lightning"
   },
   "lnWallet": {
     "actions": "Actions",
@@ -39,6 +68,46 @@
     "subtitle": "La SuperApp Bitcoin nouvelle génération, auto-hébergée, pour des paiements On-chain et Lightning sans effort.",
     "termsOfService": "Conditions d'utilisation",
     "title": "Bienvenue sur Grimm App"
+  },
+  "paymentDetails": {
+    "amount": "Montant",
+    "errorDescription": "Nous n'avons pas pu traiter votre demande de paiement. Veuillez vérifier votre facture et réessayer.",
+    "errorMessage": "Une erreur est survenue",
+    "errorTitle": "Erreur de paiement",
+    "errors": {
+      "decode": "Erreur lors du décodage de la facture LN",
+      "invalidData": "Données de facture invalides",
+      "invalidPayment": "Données de paiement invalides",
+      "notEnoughFunds": "Impossible de payer : fonds insuffisants"
+    },
+    "expired": "Expirée",
+    "expiredMessage": "Cette facture a expiré",
+    "expiresIn": "Cette facture expire dans",
+    "goBack": "Retour",
+    "loading": "Chargement de la facture",
+    "loadingSubtitle": "Un instant, nous récupérons vos informations...",
+    "networkFee": "Frais réseau",
+    "note": "Note",
+    "payViaLightning": "Payer via Lightning",
+    "title": "Paiement Lightning",
+    "to": "À",
+    "total": "Total",
+    "unknown": "Inconnu"
+  },
+  "receive_payment": {
+    "close": "Fermer",
+    "copied": "Adresse de paiement copiée dans le presse-papiers",
+    "default_note": "Paiement Grimm App de {{amount}} sats",
+    "error_generic": "Erreur lors de la génération de la facture",
+    "error_title": "Erreur de génération",
+    "fee_info": "Des frais de {{fees}} sats ({{fiat}} {{currency}}) seront appliqués à cette facture. Veuillez laisser l'application Grimm ouverte jusqu'à la fin du paiement.",
+    "header": "Recevoir du Bitcoin",
+    "invalid_amount": "Montant invalide",
+    "loading_subtitle": "Création de votre QR Code de paiement",
+    "loading_title": "Génération de la facture...",
+    "retry": "Réessayer",
+    "scan_text": "Scannez ce QR Code pour effectuer le paiement",
+    "share_title": "Demande de paiement Lightning"
   },
   "scan_qr": {
     "instruction": "Placez le code QR dans la zone pour l'activer",
