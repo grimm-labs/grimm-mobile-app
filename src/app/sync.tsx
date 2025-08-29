@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -8,9 +9,11 @@ import { HeaderLeft } from '@/components/back-button';
 import { colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 
 export default function Sync() {
+  const { t } = useTranslation();
   const router = useRouter();
+
   const [progress, setProgress] = useState(0);
-  const [syncStatus, setSyncStatus] = useState('Initializing...');
+  const [syncStatus, setSyncStatus] = useState(t('sync.status.initializing'));
 
   const pulseAnim = React.useMemo(() => new Animated.Value(1), []);
   const progressAnim = React.useMemo(() => new Animated.Value(0), []);
@@ -44,15 +47,15 @@ export default function Sync() {
         const newProgress = prev + 20;
 
         if (newProgress <= 20) {
-          setSyncStatus('Connecting to server...');
+          setSyncStatus(t('sync.status.connecting'));
         } else if (newProgress <= 40) {
-          setSyncStatus('Fetching data...');
+          setSyncStatus(t('sync.status.fetching'));
         } else if (newProgress <= 60) {
-          setSyncStatus('Processing...');
+          setSyncStatus(t('sync.status.processing'));
         } else if (newProgress <= 80) {
-          setSyncStatus('Finalizing...');
+          setSyncStatus(t('sync.status.finalizing'));
         } else if (newProgress >= 100) {
-          setSyncStatus('Sync completed!');
+          setSyncStatus(t('sync.status.completed'));
 
           setTimeout(() => {
             router.replace('/');
@@ -73,7 +76,7 @@ export default function Sync() {
       clearInterval(timer);
       pulseAnimation.stop();
     };
-  }, [fadeAnim, progressAnim, pulseAnim, router]);
+  }, [fadeAnim, progressAnim, pulseAnim, router, t]);
 
   return (
     <SafeAreaProvider>
@@ -88,7 +91,6 @@ export default function Sync() {
               headerShadowVisible: false,
             }}
           />
-
           <FocusAwareStatusBar style="dark" />
 
           <Animated.View className="flex-1 items-center justify-center" style={{ opacity: fadeAnim }}>
@@ -102,15 +104,15 @@ export default function Sync() {
                 <ActivityIndicator size="large" color={colors.primary[600]} />
               </Animated.View>
 
-              <Text className="mb-2 text-2xl font-bold text-gray-900">Synchronization</Text>
-
+              <Text className="mb-2 text-2xl font-bold text-gray-900">{t('sync.title')}</Text>
               <Text className="text-center text-base text-gray-600">{syncStatus}</Text>
             </View>
 
             <View className="px-6">
               <Text className="text-center text-sm leading-5 text-gray-500">
-                Please wait while we sync your data.{'\n'}
-                This may take a few moments.
+                {t('sync.description.line1')}
+                {'\n'}
+                {t('sync.description.line2')}
               </Text>
             </View>
           </Animated.View>

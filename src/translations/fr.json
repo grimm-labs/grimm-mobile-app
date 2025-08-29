@@ -1,4 +1,16 @@
 {
+  "common": {
+    "continue": "Continuer",
+    "import": "Importer"
+  },
+  "importSeed": {
+    "error": "Veuillez entrer une phrase de récupération de 12 mots valide.",
+    "placeholder": "Saisissez votre phrase de 12 ou 24 mots séparés par des espaces",
+    "subtitle": "Saisissez votre phrase de récupération de 12 ou 24 mots pour restaurer votre portefeuille Bitcoin.",
+    "title": "Phrase de récupération",
+    "validCount": "✓ {{count}} mots saisis",
+    "words": "mots"
+  },
   "lnWallet": {
     "actions": "Actions",
     "available": "Bitcoin Lightning disponible",
@@ -37,6 +49,24 @@
     "processing": "Traitement...",
     "scanning": "Analyse...",
     "title": "Scanner un QR"
+  },
+  "seedSetup": {
+    "create": {
+      "subtitle": "Générez une nouvelle phrase de récupération de 12 mots pour sécuriser votre portefeuille",
+      "title": "Créer une nouvelle phrase de récupération"
+    },
+    "import": {
+      "subtitle": "Utilisez votre phrase de récupération de 12 mots existante pour restaurer votre portefeuille",
+      "title": "Importer une phrase de récupération existante"
+    },
+    "subtitle": "Choisissez comment vous souhaitez configurer votre portefeuille Bitcoin. Vous pouvez créer une nouvelle phrase de récupération ou en importer une existante.",
+    "title": "Configurer votre portefeuille"
+  },
+  "selectCountry": {
+    "empty": "Aucun pays disponible",
+    "noMatch": "Aucun pays trouvé pour \"{{term}}\"",
+    "placeholder": "Rechercher un pays...",
+    "title": "Sélectionnez votre pays"
   },
   "settings": {
     "aboutApp": "À propos de Grimm App",
@@ -98,11 +128,52 @@
     "title": "Paramètres",
     "version": "Version {{version}}"
   },
+  "signIn": {
+    "button": "Envoyer le code",
+    "errors": {
+      "invalid": "Le numéro de téléphone est invalide",
+      "required": "Le numéro de téléphone est requis",
+      "sendOtpFailed": "Désolé, nous n'avons pas pu envoyer le code de vérification. Veuillez réessayer plus tard."
+    },
+    "subtitle": "Nous vous enverrons un code de vérification à ce numéro",
+    "title": "Bienvenue sur Grimm App"
+  },
+  "sync": {
+    "description": {
+      "line1": "Veuillez patienter pendant que nous synchronisons vos données.",
+      "line2": "Cela peut prendre quelques instants."
+    },
+    "status": {
+      "completed": "Synchronisation terminée !",
+      "connecting": "Connexion au serveur...",
+      "fetching": "Récupération des données...",
+      "finalizing": "Finalisation...",
+      "initializing": "Initialisation...",
+      "processing": "Traitement..."
+    },
+    "title": "Synchronisation"
+  },
   "transaction": {
     "date": "à la date du",
     "fiatEquivalent": "Cela représente {{amount}} {{currency}} !",
     "okButton": "D'accord !",
     "received": "Vous avez reçu",
     "sent": "Transaction envoyée"
+  },
+  "verifyOTP": {
+    "accessibility": {
+      "button": "Vérifier le code OTP",
+      "buttonHint": "Appuyez pour vérifier le code OTP saisi",
+      "digit": "Chiffre du code OTP",
+      "hint": "Saisissez le code de vérification à {{length}} chiffres",
+      "input": "Champ de saisie du mot de passe à usage unique"
+    },
+    "button": "Vérifier",
+    "errors": {
+      "default": "Échec de la vérification du code. Veuillez réessayer.",
+      "invalidOtp": "Veuillez entrer un code OTP valide de {{length}} chiffres."
+    },
+    "subtitle": "Pour confirmer le numéro de téléphone, veuillez saisir le code à 6 chiffres envoyé à {{phoneNumber}}.",
+    "title": "Nous venons de vous envoyer un SMS"
   }
 }

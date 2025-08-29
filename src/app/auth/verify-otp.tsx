@@ -2,6 +2,7 @@
 import type { AxiosError } from 'axios';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { OtpInput } from 'react-native-otp-entry';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -41,6 +42,7 @@ const OtpInputTheme = {
 } as const;
 
 export default function VerifyOTP() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { phoneNumber } = useLocalSearchParams<SearchParams>();
   const [otpCode, setOtpCode] = useState<string>('');
@@ -51,10 +53,13 @@ export default function VerifyOTP() {
   const isOtpValid = useMemo(() => otpCode.length === OTP_LENGTH, [otpCode]);
   const canSubmit = useMemo(() => isOtpValid && !isPending, [isOtpValid, isPending]);
 
-  const extractErrorMessage = useCallback((error: AxiosError): string => {
-    const responseData = error.response?.data as ApiErrorResponse | undefined;
-    return responseData?.message || 'Failed to verify OTP. Please try again.';
-  }, []);
+  const extractErrorMessage = useCallback(
+    (error: AxiosError): string => {
+      const responseData = error.response?.data as ApiErrorResponse | undefined;
+      return responseData?.message || t('verifyOTP.errors.default');
+    },
+    [t],
+  );
 
   const handleSignInError = useCallback(
     (error: AxiosError) => {
@@ -80,7 +85,7 @@ export default function VerifyOTP() {
 
   const submitOtpVerification = useCallback(() => {
     if (!isOtpValid) {
-      showErrorMessage(`Please enter a valid ${OTP_LENGTH}-digit OTP code.`);
+      showErrorMessage(t('verifyOTP.errors.invalidOtp', { length: OTP_LENGTH }));
       return;
     }
 
@@ -91,7 +96,7 @@ export default function VerifyOTP() {
         onError: handleSignInError,
       },
     );
-  }, [isOtpValid, phoneNumber, otpCode, processSignIn, handleSignInSuccess, handleSignInError]);
+  }, [isOtpValid, phoneNumber, otpCode, processSignIn, handleSignInSuccess, handleSignInError, t]);
 
   return (
     <SafeAreaProvider>
@@ -106,18 +111,14 @@ export default function VerifyOTP() {
               headerShadowVisible: false,
             }}
           />
-
           <FocusAwareStatusBar style="dark" />
 
-          {/* Header Section */}
           <View className="flex justify-center">
-            <ScreenTitle title="We just sent you an SMS" />
+            <ScreenTitle title={t('verifyOTP.title')} />
             <View className="mb-6" />
-
-            <ScreenSubtitle subtitle={`To confirm phone number, please enter the 6-digit pin we sent to ${formattedPhoneNumber}.`} />
+            <ScreenSubtitle subtitle={t('verifyOTP.subtitle', { phoneNumber: formattedPhoneNumber })} />
             <View className="mb-8" />
 
-            {/* OTP Input */}
             <OtpInput
               numberOfDigits={OTP_LENGTH}
               focusColor={colors.primary[600]}
@@ -131,31 +132,31 @@ export default function VerifyOTP() {
               focusStickBlinkingDuration={500}
               onTextChange={handleOtpChange}
               textInputProps={{
-                accessibilityLabel: 'One-Time Password input',
-                accessibilityHint: `Enter ${OTP_LENGTH} digit verification code`,
+                accessibilityLabel: t('verifyOTP.accessibility.input'),
+                accessibilityHint: t('verifyOTP.accessibility.hint', { length: OTP_LENGTH }),
               }}
               textProps={{
                 accessibilityRole: 'text',
-                accessibilityLabel: 'OTP digit',
+                accessibilityLabel: t('verifyOTP.accessibility.digit'),
                 allowFontScaling: false,
               }}
               theme={OtpInputTheme}
             />
+
             <View className="mb-8" />
 
-            {/* Submit Button */}
             <Button
               disabled={!canSubmit}
               testID="verify-otp-button"
-              label="Verify"
+              label={t('verifyOTP.button')}
               fullWidth
               size="lg"
               variant="secondary"
               textClassName="text-base text-white"
               onPress={submitOtpVerification}
               loading={isPending}
-              accessibilityLabel="Verify OTP code"
-              accessibilityHint="Tap to verify the entered OTP code"
+              accessibilityLabel={t('verifyOTP.accessibility.button')}
+              accessibilityHint={t('verifyOTP.accessibility.buttonHint')}
             />
           </View>
         </View>

@@ -3,6 +3,7 @@ import { Mnemonic } from 'bdk-rn';
 import { WordCount } from 'bdk-rn/lib/lib/enums';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -24,7 +25,7 @@ const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, isSele
     <TouchableOpacity onPress={onSelect} className={`mb-3 flex-row items-center justify-between rounded-lg border-2 p-4 ${isSelected ? 'border-primary-500' : 'border-gray-200'}`} activeOpacity={0.7}>
       <View className="flex-1 pr-4">
         <Text className={`mb-1 text-xl font-normal ${isSelected ? 'text-primary-600' : 'text-gray-900'}`}>{title}</Text>
-        <Text className={`text-sm text-gray-600`}>{subtitle}</Text>
+        <Text className="text-sm text-gray-600">{subtitle}</Text>
       </View>
       {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
     </TouchableOpacity>
@@ -32,6 +33,7 @@ const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, isSele
 };
 
 export default function CreateOrImportSeed() {
+  const { t } = useTranslation();
   const { setSeedPhrase } = useContext(AppContext);
   const [selectedOption, setSelectedOption] = useState<'create' | 'import'>('create');
   const router = useRouter();
@@ -71,28 +73,19 @@ export default function CreateOrImportSeed() {
           <FocusAwareStatusBar style="dark" />
 
           <View className="flex-1">
-            <ScreenTitle title="Set up your wallet" />
+            <ScreenTitle title={t('seedSetup.title')} />
             <View className="mb-3" />
 
-            <ScreenSubtitle subtitle="Choose how you want to set up your Bitcoin wallet. You can create a new seed phrase or import an existing one." />
+            <ScreenSubtitle subtitle={t('seedSetup.subtitle')} />
             <View className="mb-3" />
 
             <View className="flex-1">
-              <SeedOptionItem
-                title="Create a new seed phrase"
-                subtitle="Generate a new 12-word recovery phrase to secure your wallet"
-                isSelected={selectedOption === 'create'}
-                onSelect={() => setSelectedOption('create')}
-              />
-              <SeedOptionItem
-                title="Import existing seed phrase"
-                subtitle="Use your existing 12-word recovery phrase to restore your wallet"
-                isSelected={selectedOption === 'import'}
-                onSelect={() => setSelectedOption('import')}
-              />
+              <SeedOptionItem title={t('seedSetup.create.title')} subtitle={t('seedSetup.create.subtitle')} isSelected={selectedOption === 'create'} onSelect={() => setSelectedOption('create')} />
+              <SeedOptionItem title={t('seedSetup.import.title')} subtitle={t('seedSetup.import.subtitle')} isSelected={selectedOption === 'import'} onSelect={() => setSelectedOption('import')} />
             </View>
           </View>
-          <Button testID="login-button" label="Continue" fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} />
+
+          <Button testID="login-button" label={t('common.continue')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

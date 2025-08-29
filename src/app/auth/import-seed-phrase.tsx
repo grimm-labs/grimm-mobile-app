@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -12,6 +13,7 @@ import { AppContext } from '@/lib/context';
 import { isMnemonicValid } from '@/lib/utils';
 
 export default function ImportSeedPhrase() {
+  const { t } = useTranslation();
   const { setSeedPhrase, setIsSeedPhraseBackup } = useContext(AppContext);
   const [seedPhraseInput, setSeedPhraseInput] = useState('');
   const router = useRouter();
@@ -21,7 +23,6 @@ export default function ImportSeedPhrase() {
       .toLowerCase()
       .replace(/[^a-z\s]/g, '')
       .replace(/\s+/g, ' ');
-
     setSeedPhraseInput(cleanedText);
   };
 
@@ -29,7 +30,7 @@ export default function ImportSeedPhrase() {
     if (!seedPhraseInput.trim()) return;
 
     if ((await isMnemonicValid(seedPhraseInput.trim())) === false) {
-      showErrorMessage('Please enter a valid 12-word seed phrase.');
+      showErrorMessage(t('importSeed.error'));
       return;
     }
 
@@ -52,7 +53,7 @@ export default function ImportSeedPhrase() {
     const wordCount = countSeedPhraseWords(phrase);
 
     if (isValidWordCount(wordCount)) {
-      return `✓ ${wordCount} words entered`;
+      return t('importSeed.validCount', { count: wordCount });
     }
 
     return null;
@@ -75,16 +76,16 @@ export default function ImportSeedPhrase() {
 
           <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
             <View className="mb-3">
-              <ScreenTitle title="Recovery Phrase" />
+              <ScreenTitle title={t('importSeed.title')} />
               <View className="mb-3" />
-              <ScreenSubtitle subtitle="Enter your 12 or 24-word recovery phrase to restore your Bitcoin wallet." />
+              <ScreenSubtitle subtitle={t('importSeed.subtitle')} />
             </View>
 
             <View className="mb-6">
               <TextInput
                 value={seedPhraseInput}
                 onChangeText={handleTextChange}
-                placeholder="Enter your 12 or 24-word seed phrase separated by spaces"
+                placeholder={t('importSeed.placeholder')}
                 placeholderTextColor="#9CA3AF"
                 multiline
                 numberOfLines={4}
@@ -97,13 +98,15 @@ export default function ImportSeedPhrase() {
               />
 
               <View className="mt-2 flex-row items-center justify-between">
-                <Text className={`text-sm font-semibold text-gray-500`}>{seedPhraseInput.trim() ? seedPhraseInput.trim().split(/\s+/).length : 0} / 12 words</Text>
+                <Text className="text-sm font-semibold text-gray-500">
+                  {seedPhraseInput.trim() ? seedPhraseInput.trim().split(/\s+/).length : 0} / 12 {t('importSeed.words')}
+                </Text>
                 <Text className="font-semibold text-primary-600">{getValidationMessage(seedPhraseInput)}</Text>
               </View>
             </View>
           </ScrollView>
 
-          <Button testID="login-button" disabled={!isFormValid} label="Import" fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} />
+          <Button testID="login-button" disabled={!isFormValid} label={t('common.import')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

@@ -1,4 +1,16 @@
 {
+  "common": {
+    "continue": "Continue",
+    "import": "Import"
+  },
+  "importSeed": {
+    "error": "Please enter a valid 12-word seed phrase.",
+    "placeholder": "Enter your 12 or 24-word seed phrase separated by spaces",
+    "subtitle": "Enter your 12 or 24-word recovery phrase to restore your Bitcoin wallet.",
+    "title": "Recovery Phrase",
+    "validCount": "✓ {{count}} words entered",
+    "words": "words"
+  },
   "lnWallet": {
     "actions": "Actions",
     "available": "Available Bitcoin Lightning",
@@ -37,6 +49,24 @@
     "processing": "Processing...",
     "scanning": "Scanning...",
     "title": "Scan QR"
+  },
+  "seedSetup": {
+    "create": {
+      "subtitle": "Generate a new 12-word recovery phrase to secure your wallet",
+      "title": "Create a new seed phrase"
+    },
+    "import": {
+      "subtitle": "Use your existing 12-word recovery phrase to restore your wallet",
+      "title": "Import existing seed phrase"
+    },
+    "subtitle": "Choose how you want to set up your Bitcoin wallet. You can create a new seed phrase or import an existing one.",
+    "title": "Set up your wallet"
+  },
+  "selectCountry": {
+    "empty": "No countries available",
+    "noMatch": "No countries found for \"{{term}}\"",
+    "placeholder": "Search country...",
+    "title": "Select your country"
   },
   "settings": {
     "aboutApp": "About Grimm App",
@@ -98,11 +128,52 @@
     "title": "Settings",
     "version": "Version {{version}}"
   },
+  "signIn": {
+    "button": "Send code",
+    "errors": {
+      "invalid": "Phone number is invalid",
+      "required": "Phone number is required",
+      "sendOtpFailed": "Sorry, we could not send the verification code. Please try again later."
+    },
+    "subtitle": "We'll send you a verification code to this number",
+    "title": "Welcome to Grimm App"
+  },
+  "sync": {
+    "description": {
+      "line1": "Please wait while we sync your data.",
+      "line2": "This may take a few moments."
+    },
+    "status": {
+      "completed": "Sync completed!",
+      "connecting": "Connecting to server...",
+      "fetching": "Fetching data...",
+      "finalizing": "Finalizing...",
+      "initializing": "Initializing...",
+      "processing": "Processing..."
+    },
+    "title": "Synchronization"
+  },
   "transaction": {
     "date": "on the date of",
     "fiatEquivalent": "That's {{amount}} {{currency}}!",
     "okButton": "Okay!",
     "received": "You received",
     "sent": "Transaction sent"
+  },
+  "verifyOTP": {
+    "accessibility": {
+      "button": "Verify OTP code",
+      "buttonHint": "Tap to verify the entered OTP code",
+      "digit": "OTP digit",
+      "hint": "Enter {{length}} digit verification code",
+      "input": "One-Time Password input"
+    },
+    "button": "Verify",
+    "errors": {
+      "default": "Failed to verify OTP. Please try again.",
+      "invalidOtp": "Please enter a valid {{length}}-digit OTP code."
+    },
+    "subtitle": "To confirm phone number, please enter the 6-digit pin we sent to {{phoneNumber}}.",
+    "title": "We just sent you an SMS"
   }
 }
