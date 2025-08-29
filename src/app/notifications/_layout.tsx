@@ -3,6 +3,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Easing, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -13,6 +14,8 @@ import { colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/compone
 import type { Notification } from '@/interfaces';
 
 const NotificationItem: React.FC<{ notification: Notification; onPress?: (notification: Notification) => void }> = ({ notification, onPress }) => {
+  const { t } = useTranslation();
+
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
@@ -44,12 +47,12 @@ const NotificationItem: React.FC<{ notification: Notification; onPress?: (notifi
     const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
 
     if (diffInHours < 1) {
-      return 'Just now';
+      return t('notifications.just_now');
     } else if (diffInHours < 24) {
-      return `${diffInHours}h ago`;
+      return t('notifications.hours_ago', { count: diffInHours });
     } else {
       const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays}d ago`;
+      return t('notifications.days_ago', { count: diffInDays });
     }
   };
 
@@ -126,9 +129,13 @@ const NotificationItem: React.FC<{ notification: Notification; onPress?: (notifi
   );
 };
 
-const NotificationsHeaderTitle = () => <HeaderTitle title="Notifications" />;
+const NotificationsHeaderTitle = () => {
+  const { t } = useTranslation();
+  return <HeaderTitle title={t('notifications.title')} />;
+};
 
 export default function NotificationsScreen() {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -141,7 +148,6 @@ export default function NotificationsScreen() {
         {},
         {
           onSuccess: (response) => {
-            console.log('Notifications fetched successfully:', response);
             setNotifications(response);
           },
           onError: (error) => {
@@ -180,6 +186,7 @@ export default function NotificationsScreen() {
   }, [loadNotifications]);
 
   const hasUnreadNotifications = notifications.some((n) => !n.isRead);
+
   return (
     <SafeAreaProvider>
       <SafeAreaProvider>
@@ -199,20 +206,20 @@ export default function NotificationsScreen() {
             {loading ? (
               <View className="flex-1 items-center justify-center">
                 <ActivityIndicator size="small" color={colors.primary[600]} />
-                <Text className="text-base text-gray-500">loading...</Text>
+                <Text className="text-base text-gray-500">{t('notifications.loading')}</Text>
               </View>
             ) : notifications.length === 0 ? (
               <View className="flex-1 items-center justify-center px-6">
                 <Ionicons name="notifications-outline" size={60} color="#9CA3AF" className="mb-4" />
-                <Text className="text-normal mb-2 text-center font-medium text-gray-700">No notifications</Text>
-                <Text className="text-center text-xs text-gray-500">You haven't received any notifications yet</Text>
+                <Text className="text-normal mb-2 text-center font-medium text-gray-700">{t('notifications.no_notifications')}</Text>
+                <Text className="text-center text-xs text-gray-500">{t('notifications.no_notifications_subtext')}</Text>
               </View>
             ) : (
               <View className="flex-1">
                 {hasUnreadNotifications && !fetchingNotifications && (
                   <TouchableOpacity onPress={markAllAsRead} disabled={markingAllAsRead} className="my-6">
                     {markingAllAsRead && <ActivityIndicator size="small" color={colors.primary[600]} />}
-                    {!markingAllAsRead && <Text className="text-center text-xs font-medium text-primary-600">Mark all as read</Text>}
+                    {!markingAllAsRead && <Text className="text-center text-xs font-medium text-primary-600">{t('notifications.mark_all_as_read')}</Text>}
                   </TouchableOpacity>
                 )}
                 <ScrollView showsVerticalScrollIndicator={false} className="flex-1">

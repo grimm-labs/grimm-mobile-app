@@ -11,6 +11,26 @@
     "validCount": "✓ {{count}} mots saisis",
     "words": "mots"
   },
+  "lnWallet": {
+    "actions": "Actions",
+    "available": "Bitcoin Lightning disponible",
+    "createInvoice": "Créer une facture Lightning BTC",
+    "currentPrice": "Prix actuel du Bitcoin",
+    "payInvoice": "Payer une facture Lightning",
+    "receiveOnchain": "Recevoir via BTC on-chain",
+    "seeAll": "Voir tout",
+    "transactions": "Transactions"
+  },
+  "notifications": {
+    "days_ago": "Il y a {{count}}j",
+    "hours_ago": "Il y a {{count}}h",
+    "just_now": "À l'instant",
+    "loading": "Chargement...",
+    "mark_all_as_read": "Tout marquer comme lu",
+    "no_notifications": "Aucune notification",
+    "no_notifications_subtext": "Vous n'avez encore reçu aucune notification",
+    "title": "Notifications"
+  },
   "onboarding": {
     "agreementText": "En continuant, vous acceptez les",
     "getStarted": "Commencer",
@@ -19,6 +39,16 @@
     "subtitle": "La SuperApp Bitcoin nouvelle génération, auto-hébergée, pour des paiements On-chain et Lightning sans effort.",
     "termsOfService": "Conditions d'utilisation",
     "title": "Bienvenue sur Grimm App"
+  },
+  "scan_qr": {
+    "instruction": "Placez le code QR dans la zone pour l'activer",
+    "no_access_message": "Grimm App n'a pas accès à la caméra. Veuillez activer l'accès pour scanner les QR codes.",
+    "no_access_title": "Aucun accès à la caméra",
+    "open_settings": "Ouvrir les paramètres",
+    "permission_required": "L'autorisation caméra est requise pour scanner les QR codes.",
+    "processing": "Traitement...",
+    "scanning": "Analyse...",
+    "title": "Scanner un QR"
   },
   "seedSetup": {
     "create": {
@@ -122,6 +152,13 @@
       "processing": "Traitement..."
     },
     "title": "Synchronisation"
+  },
+  "transaction": {
+    "date": "à la date du",
+    "fiatEquivalent": "Cela représente {{amount}} {{currency}} !",
+    "okButton": "D'accord !",
+    "received": "Vous avez reçu",
+    "sent": "Transaction envoyée"
   },
   "verifyOTP": {
     "accessibility": {

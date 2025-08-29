@@ -6,6 +6,7 @@ import type { CameraType } from 'expo-camera';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -14,11 +15,11 @@ import { HeaderTitle } from '@/components/header-title';
 import { ScreenTitle } from '@/components/screen-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, TouchableOpacity, View } from '@/components/ui';
 
-const ScanQrHeaderTitle = () => <HeaderTitle title="Scan QR" />;
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const SCAN_FRAME_SIZE = screenWidth * 0.6;
 
 export default function ScanQrScreen() {
+  const { t } = useTranslation();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState<boolean>(false);
@@ -106,6 +107,8 @@ export default function ScanQrScreen() {
     </View>
   );
 
+  const ScanQrHeaderTitle = () => <HeaderTitle title={t('scan_qr.title')} />;
+
   if (!permission) {
     return (
       <SafeAreaProvider>
@@ -121,7 +124,7 @@ export default function ScanQrScreen() {
           />
           <FocusAwareStatusBar style="dark" />
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
-            <Text>Camera permission is required to scan QR codes.</Text>
+            <Text>{t('scan_qr.permission_required')}</Text>
           </View>
         </SafeAreaView>
       </SafeAreaProvider>
@@ -143,15 +146,15 @@ export default function ScanQrScreen() {
           />
           <FocusAwareStatusBar style="dark" />
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
-            <ScreenTitle title="No Camera Access" className="text-center text-2xl font-normal" />
+            <ScreenTitle title={t('scan_qr.no_access_title')} className="text-center text-2xl font-normal" />
             <View style={{ marginBottom: 16 }} />
             <Text testID="form-subtitle" className="mb-3 text-center text-sm font-normal">
-              Grimm App doesn't have access to the camera. Please enable camera access to scan QR codes.
+              {t('scan_qr.no_access_message')}
             </Text>
             <View style={{ marginBottom: 16 }} />
             <Button
               testID="open-settings-button"
-              label="Open Settings"
+              label={t('scan_qr.open_settings')}
               variant="outline"
               className="mb-4"
               textClassName="text-base"
@@ -189,9 +192,7 @@ export default function ScanQrScreen() {
             }}
             onBarcodeScanned={isScanning ? handleQrCodeScanned : undefined}
           >
-            {/* Overlay avec cadre de scan */}
             <View style={{ flex: 1, position: 'relative' }}>
-              {/* Zone d'assombrissement autour du cadre */}
               <View
                 style={{
                   position: 'absolute',
@@ -202,8 +203,6 @@ export default function ScanQrScreen() {
                   backgroundColor: 'rgba(0,0,0,0.5)',
                 }}
               />
-
-              {/* Zone transparente pour le scan */}
               <View
                 style={{
                   position: 'absolute',
@@ -215,11 +214,7 @@ export default function ScanQrScreen() {
                   borderRadius: 12,
                 }}
               />
-
-              {/* Cadre de scan */}
               <ScanFrame />
-
-              {/* Instructions */}
               <View
                 style={{
                   position: 'absolute',
@@ -229,10 +224,9 @@ export default function ScanQrScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text className="text-center text-xl font-normal text-gray-300">Position the QR Code in view to activate</Text>
-                <Text className="my-6 text-center text-sm font-normal text-gray-300">{isScanning ? 'Scanning...' : 'Processing...'}</Text>
+                <Text className="text-center text-xl font-normal text-gray-300">{t('scan_qr.instruction')}</Text>
+                <Text className="my-6 text-center text-sm font-normal text-gray-300">{isScanning ? t('scan_qr.scanning') : t('scan_qr.processing')}</Text>
               </View>
-
               <View
                 style={{
                   position: 'absolute',
@@ -257,7 +251,6 @@ export default function ScanQrScreen() {
                 >
                   <Ionicons name="camera-reverse" size={24} color="white" />
                 </TouchableOpacity>
-
                 <TouchableOpacity
                   onPress={toggleFlash}
                   style={{
@@ -270,7 +263,6 @@ export default function ScanQrScreen() {
                 >
                   <Ionicons name={flashEnabled ? 'flash' : 'flash-off'} size={24} color="white" />
                 </TouchableOpacity>
-
                 <TouchableOpacity
                   onPress={toggleClose}
                   style={{
