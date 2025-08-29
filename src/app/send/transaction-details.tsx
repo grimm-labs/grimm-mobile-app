@@ -6,6 +6,7 @@ import { InputTypeVariant, parse, prepareSendPayment, sendPayment } from '@breez
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -23,6 +24,7 @@ type SearchParams = {
 };
 
 export default function PaymentDetailsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { rawInvoice } = useLocalSearchParams<SearchParams>();
 
@@ -57,13 +59,13 @@ export default function PaymentDetailsScreen() {
             setFeesSat(prepareResponse.feesSat || 0);
             setSavedPrepareResponse(prepareResponse);
           } else {
-            setDecodeError('Error while decoding LN invoice');
+            setDecodeError(t('paymentDetails.errors.decode'));
           }
         } catch (error) {
           if ((error as Error).message?.includes('not enough funds')) {
-            setDecodeError('Cannot pay: not enough funds');
+            setDecodeError(t('paymentDetails.errors.notEnoughFunds'));
           } else {
-            showErrorMessage('Invalid invoice data');
+            showErrorMessage(t('paymentDetails.errors.invalidData'));
           }
           console.error('Error parsing invoice data:', (error as Error)?.message);
         } finally {
@@ -72,7 +74,7 @@ export default function PaymentDetailsScreen() {
       };
       parseInvoice();
     }
-  }, [rawInvoice, router]);
+  }, [rawInvoice, router, t]);
 
   useEffect(() => {
     if (!decodedInvoiceData?.expiry || !decodedInvoiceData?.timestamp) return;
@@ -83,7 +85,7 @@ export default function PaymentDetailsScreen() {
       const remaining = expiryTime - now;
 
       if (remaining <= 0) {
-        setTimeRemaining('Expired');
+        setTimeRemaining(t('paymentDetails.expired'));
         return;
       }
 
@@ -102,18 +104,18 @@ export default function PaymentDetailsScreen() {
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, [decodedInvoiceData]);
+  }, [decodedInvoiceData, t]);
 
   const getDestinationDisplay = () => {
     if (decodedInvoiceData?.payeePubkey) {
       return decodedInvoiceData?.payeePubkey;
     }
-    return 'Unknown';
+    return t('paymentDetails.unknown');
   };
 
   const handleSendPayment = async () => {
     if (!decodedInvoiceData) {
-      showErrorMessage('Invalid payment data');
+      showErrorMessage(t('paymentDetails.errors.invalidPayment'));
       return;
     }
 
@@ -143,7 +145,7 @@ export default function PaymentDetailsScreen() {
           <FocusAwareStatusBar style="dark" />
           <Stack.Screen
             options={{
-              headerTitle: () => <HeaderTitle title="Lightning Payment" />,
+              headerTitle: () => <HeaderTitle title={t('paymentDetails.title')} />,
               headerTitleAlign: 'center',
               headerLeft: HeaderLeft,
               headerShadowVisible: false,
@@ -151,8 +153,8 @@ export default function PaymentDetailsScreen() {
           />
           <View className="flex-1 items-center justify-center px-4">
             <ActivityIndicator size="large" color={colors.primary[600]} />
-            <Text className="mt-4 text-lg text-gray-600">Loading Invoice</Text>
-            <Text className="mt-2 text-center text-sm text-gray-400">Just a moment while we fetch your details...</Text>
+            <Text className="mt-4 text-lg text-gray-600">{t('paymentDetails.loading')}</Text>
+            <Text className="mt-2 text-center text-sm text-gray-400">{t('paymentDetails.loadingSubtitle')}</Text>
           </View>
         </SafeAreaView>
       </SafeAreaProvider>
@@ -166,7 +168,7 @@ export default function PaymentDetailsScreen() {
           <FocusAwareStatusBar style="dark" />
           <Stack.Screen
             options={{
-              headerTitle: () => <HeaderTitle title="Payment Error" />,
+              headerTitle: () => <HeaderTitle title={t('paymentDetails.errorTitle')} />,
               headerTitleAlign: 'center',
               headerLeft: HeaderLeft,
               headerShadowVisible: false,
@@ -176,14 +178,14 @@ export default function PaymentDetailsScreen() {
             <View className="mb-8 size-24 items-center justify-center rounded-full bg-red-100">
               <Ionicons name="alert-circle" size={48} color={colors.danger[500]} />
             </View>
-            <Text className="mb-4 text-center text-2xl font-bold text-gray-900">Something went wrong</Text>
-            <Text className="mb-8 text-center text-base leading-6 text-gray-600">We couldn't process your payment request. Please check your invoice and try again.</Text>
+            <Text className="mb-4 text-center text-2xl font-bold text-gray-900">{t('paymentDetails.errorMessage')}</Text>
+            <Text className="mb-8 text-center text-base leading-6 text-gray-600">{t('paymentDetails.errorDescription')}</Text>
             <View className="mb-8 w-full rounded-lg bg-gray-50 p-4">
               <Text className="text-center text-sm text-gray-500">{decodeError}</Text>
             </View>
           </View>
           <View className="px-4">
-            <Button label="Go Back" onPress={() => router.back()} fullWidth={true} variant="secondary" textClassName="text-base font-semibold text-white" size="lg" className="rounded-lg" />
+            <Button label={t('paymentDetails.goBack')} onPress={() => router.back()} fullWidth={true} variant="secondary" textClassName="text-base font-semibold text-white" size="lg" className="rounded-lg" />
           </View>
         </SafeAreaView>
       </SafeAreaProvider>
@@ -195,7 +197,7 @@ export default function PaymentDetailsScreen() {
       <SafeAreaView className="flex-1 bg-gray-50">
         <Stack.Screen
           options={{
-            headerTitle: () => <HeaderTitle title="Pay via lightning" />,
+            headerTitle: () => <HeaderTitle title={t('paymentDetails.payViaLightning')} />,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
@@ -206,11 +208,11 @@ export default function PaymentDetailsScreen() {
           <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
             <View className="flex-1 bg-white px-4 py-6">
               <View className="mb-8">
-                <Text className="mb-2 text-lg font-medium text-gray-900">To</Text>
+                <Text className="mb-2 text-lg font-medium text-gray-900">{t('paymentDetails.to')}</Text>
                 <Text className="text-base text-gray-600">{getDestinationDisplay()}</Text>
               </View>
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
-                <Text className="text-lg text-gray-600">Amount</Text>
+                <Text className="text-lg text-gray-600">{t('paymentDetails.amount')}</Text>
                 <View className="items-end">
                   <Text className="text-lg font-medium text-gray-900">{convertMsatToSats(decodedInvoiceData?.amountMsat)} SAT</Text>
                   <Text className="text-sm text-gray-500">
@@ -219,7 +221,7 @@ export default function PaymentDetailsScreen() {
                 </View>
               </View>
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
-                <Text className="text-lg text-gray-600">Network fee</Text>
+                <Text className="text-lg text-gray-600">{t('paymentDetails.networkFee')}</Text>
                 <View className="items-end">
                   <Text className="text-lg font-medium text-gray-900">{feesSat} SAT</Text>
                   <Text className="text-sm text-gray-500">
@@ -228,7 +230,7 @@ export default function PaymentDetailsScreen() {
                 </View>
               </View>
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
-                <Text className="text-lg text-gray-600">Total</Text>
+                <Text className="text-lg text-gray-600">{t('paymentDetails.total')}</Text>
                 <View className="items-end">
                   <Text className="text-lg font-medium text-gray-900">{Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0))} SAT</Text>
                   <Text className="text-sm text-gray-500">
@@ -238,7 +240,7 @@ export default function PaymentDetailsScreen() {
               </View>
               {decodedInvoiceData?.description && (
                 <View className="mb-8">
-                  <Text className="mb-2 text-lg font-medium text-gray-900">Note</Text>
+                  <Text className="mb-2 text-lg font-medium text-gray-900">{t('paymentDetails.note')}</Text>
                   <Text className="text-base text-gray-600">{decodedInvoiceData.description}</Text>
                 </View>
               )}
@@ -247,7 +249,15 @@ export default function PaymentDetailsScreen() {
           <View className="border-t border-gray-100 bg-white px-4">
             {timeRemaining && (
               <View className="my-4 items-center">
-                <Text className="text-sm text-gray-600">{timeRemaining === 'Expired' ? <Text className="text-red-500">This invoice has expired</Text> : <>This invoice expires in {timeRemaining}</>}</Text>
+                <Text className="text-sm text-gray-600">
+                  {timeRemaining === t('paymentDetails.expired') ? (
+                    <Text className="text-red-500">{t('paymentDetails.expiredMessage')}</Text>
+                  ) : (
+                    <>
+                      {t('paymentDetails.expiresIn')} {timeRemaining}
+                    </>
+                  )}
+                </Text>
               </View>
             )}
             <SlideToConfirm onConfirm={handleSendPayment} loading={paymentIsProcessing} />

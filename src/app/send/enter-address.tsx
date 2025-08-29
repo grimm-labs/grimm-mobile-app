@@ -2,6 +2,7 @@
 import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -9,13 +10,17 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
 
-const LightningPaymentScreenHeaderTitle = () => <HeaderTitle title="Lightning Payment" />;
+const LightningPaymentScreenHeaderTitle = () => {
+  const { t } = useTranslation();
+  return <HeaderTitle title={t('lightningPayment.title')} />;
+};
 
 type SearchParams = {
   input: string;
 };
 
 export default function LightningPaymentScreen() {
+  const { t } = useTranslation();
   const { input } = useLocalSearchParams<SearchParams>();
   const router = useRouter();
 
@@ -29,7 +34,7 @@ export default function LightningPaymentScreen() {
 
   const handlePayment = async () => {
     if (!invoiceInput.trim()) {
-      showErrorMessage('Please enter a valid Lightning invoice');
+      showErrorMessage(t('lightningPayment.errors.invalidInvoice'));
       return;
     }
 
@@ -40,12 +45,12 @@ export default function LightningPaymentScreen() {
       switch (parsed.type) {
         case InputTypeVariant.BITCOIN_ADDRESS:
           console.log(`Input is Bitcoin address ${parsed.address.address}`);
-          showErrorMessage('Sorry, payment to a Bitcoin address is not supported yet');
+          showErrorMessage(t('lightningPayment.errors.bitcoinNotSupported'));
           setAddressError(true);
           break;
         case InputTypeVariant.BOLT11:
           if (parsed.invoice.amountMsat === null) {
-            showErrorMessage('Sorry, we are not supporting Zero-amount ligthning payment');
+            showErrorMessage(t('lightningPayment.errors.zeroAmountNotSupported'));
             setAddressError(true);
             return;
           }
@@ -57,14 +62,14 @@ export default function LightningPaymentScreen() {
           });
           break;
         default:
-          showErrorMessage('Sorry, we do not support this Bitcoin or Lightning address');
+          showErrorMessage(t('lightningPayment.errors.unsupportedAddress'));
           setAddressError(true);
           break;
       }
     } catch (error) {
       console.error('Payment preparation error:', error);
       setAddressError(true);
-      showErrorMessage('Unable to prepare payment. Invalid Address');
+      showErrorMessage(t('lightningPayment.errors.preparePaymentFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +94,7 @@ export default function LightningPaymentScreen() {
                 value={invoiceInput}
                 onChangeText={handleInvoiceChange}
                 className={`min-h-[120px] rounded-lg border bg-white p-4 text-base ${addressError ? 'border-red-400' : 'border-gray-300'}`}
-                placeholder="Invoice | Lightning Address | BTC Address"
+                placeholder={t('lightningPayment.placeholder')}
                 placeholderTextColor="#9CA3AF"
                 multiline
                 textAlignVertical="top"
@@ -102,7 +107,7 @@ export default function LightningPaymentScreen() {
           {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
 
           <View>
-            <Button label={isLoading ? 'Processing...' : 'Pay Invoice'} onPress={handlePayment} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button label={isLoading ? t('lightningPayment.processing') : t('lightningPayment.payButton')} onPress={handlePayment} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </ScrollView>
       </SafeAreaView>

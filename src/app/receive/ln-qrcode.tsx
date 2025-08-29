@@ -4,6 +4,7 @@ import { PaymentMethod, prepareReceivePayment, ReceiveAmountVariant, receivePaym
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next'; // Ajout i18n
 import { ActivityIndicator, Clipboard, Pressable, ScrollView, Share } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
@@ -23,9 +24,13 @@ type SearchParams = {
   note?: string;
 };
 
-const ReceivePaymentScreenHeaderTitle = () => <HeaderTitle title="Receive Bitcoin" />;
+const ReceivePaymentScreenHeaderTitle = () => {
+  const { t } = useTranslation();
+  return <HeaderTitle title={t('receive_payment.header')} />;
+};
 
 export default function ReceivePaymentScreen() {
+  const { t } = useTranslation();
   const { selectedCountry, bitcoinUnit } = useContext(AppContext);
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
@@ -35,7 +40,7 @@ export default function ReceivePaymentScreen() {
   const [fees, setFees] = useState<number>(0);
   const [error, setError] = useState<string>('');
 
-  const defaultNotes = `Grimm App Payment of ${Number(satsAmount).toLocaleString()} sats`;
+  const defaultNotes = t('receive_payment.default_note', { amount: Number(satsAmount).toLocaleString() });
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   const generatePaymentRequest = React.useCallback(async () => {
@@ -44,56 +49,34 @@ export default function ReceivePaymentScreen() {
       setError('');
 
       if (!satsAmount || parseInt(satsAmount, 10) <= 0) {
-        throw new Error('Invalid amount');
+        throw new Error(t('receive_payment.invalid_amount'));
       }
 
-      if (type === 'onchain') {
-        const optionalAmount: ReceiveAmount = {
-          type: ReceiveAmountVariant.BITCOIN,
-          payerAmountSat: Number(satsAmount),
-        };
+      const optionalAmount: ReceiveAmount = {
+        type: ReceiveAmountVariant.BITCOIN,
+        payerAmountSat: Number(satsAmount),
+      };
 
-        const prepareResponse = await prepareReceivePayment({
-          paymentMethod: PaymentMethod.BITCOIN_ADDRESS,
-          amount: optionalAmount,
-        });
+      const prepareResponse = await prepareReceivePayment({
+        paymentMethod: type === 'onchain' ? PaymentMethod.BITCOIN_ADDRESS : PaymentMethod.BOLT11_INVOICE,
+        amount: optionalAmount,
+      });
 
-        setFees(prepareResponse.feesSat);
+      setFees(prepareResponse.feesSat);
 
-        const receiveResponse = await receivePayment({
-          prepareResponse,
-        });
+      const receiveResponse = await receivePayment({
+        prepareResponse,
+        ...(type === 'lightning' && { description: note || defaultNotes }),
+      });
 
-        setPaymentRequest(receiveResponse.destination);
-      }
-
-      if (type === 'lightning') {
-        const optionalAmount: ReceiveAmount = {
-          type: ReceiveAmountVariant.BITCOIN,
-          payerAmountSat: Number(satsAmount),
-        };
-
-        const prepareResponse = await prepareReceivePayment({
-          paymentMethod: PaymentMethod.BOLT11_INVOICE,
-          amount: optionalAmount,
-        });
-
-        setFees(prepareResponse.feesSat);
-
-        const receiveResponse = await receivePayment({
-          prepareResponse,
-          description: note || defaultNotes,
-        });
-
-        setPaymentRequest(receiveResponse.destination);
-      }
+      setPaymentRequest(receiveResponse.destination);
     } catch (err) {
       console.error('Error generating invoice:', err);
-      setError(err instanceof Error ? err.message : 'Error generating invoice');
+      setError(err instanceof Error ? err.message : t('receive_payment.error_generic'));
     } finally {
       setLoading(false);
     }
-  }, [satsAmount, type, note, defaultNotes]);
+  }, [satsAmount, type, note, defaultNotes, t]);
 
   useEffect(() => {
     generatePaymentRequest();
@@ -102,7 +85,7 @@ export default function ReceivePaymentScreen() {
   const copyToClipboard = async () => {
     if (paymentRequest) {
       await Clipboard.setString(paymentRequest);
-      showMessage({ message: 'Payment address has been copied to clipboard', type: 'success', duration: 2000 });
+      showMessage({ message: t('receive_payment.copied'), type: 'success', duration: 2000 });
     }
   };
 
@@ -111,7 +94,7 @@ export default function ReceivePaymentScreen() {
       try {
         await Share.share({
           message: paymentRequest,
-          title: 'Lightning Payment Request',
+          title: t('receive_payment.share_title'),
         });
       } catch (err) {
         console.error('Error sharing:', err);
@@ -145,8 +128,8 @@ export default function ReceivePaymentScreen() {
         />
         <View className="flex-1 items-center justify-center px-4">
           <ActivityIndicator size="large" color={colors.primary[600]} />
-          <Text className="mt-4 text-lg text-gray-600">Generating invoice...</Text>
-          <Text className="mt-2 text-center text-sm text-gray-400">Creating your payment QR Code</Text>
+          <Text className="mt-4 text-lg text-gray-600">{t('receive_payment.loading_title')}</Text>
+          <Text className="mt-2 text-center text-sm text-gray-400">{t('receive_payment.loading_subtitle')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -169,12 +152,12 @@ export default function ReceivePaymentScreen() {
             <View className="mb-4 rounded-full bg-red-100 p-4">
               <Ionicons name="alert-circle" size={48} color="#EF4444" />
             </View>
-            <Text className="mb-2 text-xl font-semibold text-gray-800">Generation Error</Text>
+            <Text className="mb-2 text-xl font-semibold text-gray-800">{t('receive_payment.error_title')}</Text>
             <Text className="mb-6 text-center text-gray-600">{error}</Text>
           </View>
 
           <View className="mb-8">
-            <Button label="Try Again" onPress={handleRetry} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button label={t('receive_payment.retry')} onPress={handleRetry} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
       </SafeAreaView>
@@ -209,7 +192,7 @@ export default function ReceivePaymentScreen() {
             <View className="mb-8 items-center">
               <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={type === 'onchain' ? 150 : 250} backgroundColor="white" color="black" />}</View>
               {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
-              <Text className="mt-4 text-center text-sm text-gray-500">Scan this QR Code to make the payment</Text>
+              <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_payment.scan_text')}</Text>
             </View>
             <View className="flex flex-row justify-center">
               <View className="mx-4 flex items-center justify-center">
@@ -225,13 +208,12 @@ export default function ReceivePaymentScreen() {
             </View>
             <View className="my-4 rounded-lg bg-blue-50 p-4">
               <Text className="text-center text-sm text-blue-700">
-                A {fees} sats ({convertBitcoinToFiat(fees, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}) fee will be applied to this invoice. Please keep Grimm App open until
-                payment is complete
+                {t('receive_payment.fee_info', { fees, fiat: convertBitcoinToFiat(fees, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2), currency: selectedFiatCurrency })}
               </Text>
             </View>
           </ScrollView>
           <View>
-            <Button label="Close" disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button label={t('receive_payment.close')} disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
       </SafeAreaView>
