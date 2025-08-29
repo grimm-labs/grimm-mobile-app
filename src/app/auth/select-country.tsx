@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import type { ListRenderItem } from 'react-native';
 import { FlatList, Pressable } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -66,11 +67,15 @@ const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelecte
   );
 });
 
-const EmptyState: React.FC<EmptyStateProps> = React.memo(({ searchTerm }) => (
-  <View className="flex-1 items-center justify-center py-8">
-    <Text className="text-neutral-500">{searchTerm ? `No countries found for "${searchTerm}"` : 'No countries available'}</Text>
-  </View>
-));
+const EmptyState: React.FC<EmptyStateProps> = React.memo(({ searchTerm }) => {
+  const { t } = useTranslation();
+
+  return (
+    <View className="flex-1 items-center justify-center py-8">
+      <Text className="text-neutral-500">{searchTerm ? t('selectCountry.noMatch', { term: searchTerm }) : t('selectCountry.empty')}</Text>
+    </View>
+  );
+});
 
 const normalizeSearchTerm = (term: string): string => {
   return term.toLowerCase().trim();
@@ -93,6 +98,7 @@ const filterCountries = (searchTerm: string): Country[] => {
 };
 
 export default function SelectCountry() {
+  const { t } = useTranslation();
   const { selectedCountry, setSelectedCountry } = useContext(AppContext);
   const router = useRouter();
 
@@ -122,7 +128,6 @@ export default function SelectCountry() {
   );
 
   const keyExtractor = useCallback((item: Country) => item.isoCode, []);
-
   const renderEmptyComponent = useCallback(() => <EmptyState searchTerm={searchValue} />, [searchValue]);
 
   const screenOptions = useMemo(
@@ -131,13 +136,13 @@ export default function SelectCountry() {
       headerTitleAlign: 'center' as const,
       headerTitle: () => (
         <View className="flex-row items-center">
-          <Text className="text-lg">Select your country</Text>
+          <Text className="text-lg">{t('selectCountry.title')}</Text>
         </View>
       ),
       headerRight: () => null,
       headerShadowVisible: false,
     }),
-    [],
+    [t],
   );
 
   return (
@@ -150,7 +155,7 @@ export default function SelectCountry() {
             <ControlledInput
               testID="countrySearchInput"
               name="countrySearch"
-              placeholder="Search country..."
+              placeholder={t('selectCountry.placeholder')}
               placeholderClassName="text-base"
               keyboardType="web-search"
               control={control}
