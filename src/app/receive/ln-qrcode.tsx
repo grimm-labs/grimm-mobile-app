@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import type { ReceiveAmount } from '@breeztech/react-native-breez-sdk-liquid';
 import { PaymentMethod, prepareReceivePayment, ReceiveAmountVariant, receivePayment } from '@breeztech/react-native-breez-sdk-liquid';
@@ -22,11 +23,6 @@ type SearchParams = {
   satsAmount: string;
   type: 'onchain' | 'lightning';
   note?: string;
-};
-
-const ReceivePaymentScreenHeaderTitle = () => {
-  const { t } = useTranslation();
-  return <HeaderTitle title={t('receive_payment.header')} />;
 };
 
 export default function ReceivePaymentScreen() {
@@ -120,7 +116,7 @@ export default function ReceivePaymentScreen() {
         <FocusAwareStatusBar style="dark" />
         <Stack.Screen
           options={{
-            headerTitle: ReceivePaymentScreenHeaderTitle,
+            headerTitle: () => <HeaderTitle title={t('receive_payment.header')} />,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
@@ -141,7 +137,7 @@ export default function ReceivePaymentScreen() {
         <FocusAwareStatusBar style="dark" />
         <Stack.Screen
           options={{
-            headerTitle: ReceivePaymentScreenHeaderTitle,
+            headerTitle: () => <HeaderTitle title={t('receive_payment.header')} />,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
@@ -170,7 +166,7 @@ export default function ReceivePaymentScreen() {
         <FocusAwareStatusBar style="dark" />
         <Stack.Screen
           options={{
-            headerTitle: ReceivePaymentScreenHeaderTitle,
+            headerTitle: () => <HeaderTitle title={t('receive_payment.header')} />,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,

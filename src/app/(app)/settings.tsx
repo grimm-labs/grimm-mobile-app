@@ -1,6 +1,5 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +7,7 @@ import { Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SettingsItem } from '@/components/settings-item';
-import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
+import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 
@@ -17,8 +16,6 @@ export default function Settings() {
   const { setSeedPhrase, resetAppData } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const router = useRouter();
-
-  const [isFaceIdEnabled, setIsFaceIdEnabled] = React.useState(false);
 
   const handleSignOut = async () => {
     setSeedPhrase('');
@@ -68,9 +65,9 @@ export default function Settings() {
             <View className="mb-6">
               <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.security')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-                <SettingsItem icon="lock-closed" title={t('settings.security.pin.title')} subtitle={t('settings.security.pin.subtitle')} onPress={() => console.log('PIN change pressed')} />
+                {/* <SettingsItem icon="lock-closed" title={t('settings.security.pin.title')} subtitle={t('settings.security.pin.subtitle')} onPress={() => console.log('PIN change pressed')} /> */}
                 <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={backupSeedPhrase} />
-                <Pressable className="mb-1 flex-row items-center rounded py-2">
+                {/* <Pressable className="mb-1 flex-row items-center rounded py-2">
                   <View className="mr-1 rounded-full p-2">
                     <Ionicons name="scan-sharp" size={20} color="gray" />
                   </View>
@@ -83,7 +80,7 @@ export default function Settings() {
                       <Switch.Icon checked={isFaceIdEnabled} />
                     </Switch.Root>
                   </View>
-                </Pressable>
+                </Pressable> */}
               </View>
             </View>
 
@@ -91,12 +88,12 @@ export default function Settings() {
             <View className="mb-6">
               <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.preferences')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-                <SettingsItem
+                {/* <SettingsItem
                   icon="notifications"
                   title={t('settings.preferences.notifications.title')}
                   subtitle={t('settings.preferences.notifications.subtitle')}
                   onPress={() => router.push('/settings/notifications')}
-                />
+                /> */}
                 <SettingsItem icon="color-palette" title={t('settings.preferences.appearance.title')} subtitle={t('settings.preferences.appearance.subtitle')} onPress={() => router.push('/settings/appearance')} />
               </View>
             </View>
@@ -112,7 +109,7 @@ export default function Settings() {
                 <Text className="text-center font-bold text-primary-600">{t('settings.help')}</Text>
               </Pressable>
             </View>
-            <View className="mx-4 mb-4">
+            <View className="mx-4 mb-8">
               <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4" onPress={signOut}>
                 <Text className="text-center font-bold text-red-600">{t('settings.signOut')}</Text>
               </Pressable>

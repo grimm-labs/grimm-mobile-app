@@ -1,7 +1,36 @@
 {
+  "about": {
+    "error_generic": "Une erreur est survenue lors de l'ouverture du lien",
+    "error_title": "Erreur",
+    "error_unable_link": "Impossible d'ouvrir le lien : {{url}}",
+    "header_title": "À propos",
+    "privacy_policy": "Politique de confidentialité",
+    "terms_of_service": "Conditions d'utilisation",
+    "version": "Version {{version}}",
+    "visit_website": "Visiter le site web"
+  },
+  "bitcoinUnit": {
+    "btc": {
+      "description": "Unité standard de Bitcoin, 1 BTC = 100 000 000 Satoshis",
+      "title": "Bitcoin (BTC)"
+    },
+    "header_title": "Unité Bitcoin",
+    "info_text": "L'unité Bitcoin détermine comment les soldes sont affichés dans le portefeuille.",
+    "sats": {
+      "description": "Plus petite unité de Bitcoin, 1 SAT = 0,00000001 BTC",
+      "title": "Satoshi (SATS)"
+    }
+  },
   "common": {
     "continue": "Continuer",
-    "import": "Importer"
+    "import": "Importer",
+    "save": "Enregistrer"
+  },
+  "country": {
+    "header_title": "Pays",
+    "no_countries": "Aucun pays disponible",
+    "no_results": "Aucun pays trouvé pour \"{{searchTerm}}\"",
+    "search_placeholder": "Rechercher un pays..."
   },
   "enterAmount": {
     "addNote": "+ Ajouter une note (optionnel)",
@@ -19,6 +48,22 @@
     "notePlaceholder": "Ajoutez une note ici...",
     "satsLabel": "SATS"
   },
+  "help": {
+    "closed": "Fermé",
+    "facebook": "Contactez-nous sur Facebook",
+    "header": "Aide et support",
+    "help_center": "Accéder au Centre d'aide",
+    "hours_mon_fri": "9:00-16:00",
+    "hours_saturday": "9:00-12:00",
+    "linkedin": "Suivez-nous sur LinkedIn",
+    "monday_friday": "Lundi-Vendredi",
+    "saturday": "Samedi",
+    "send_email": "Envoyez-nous un e-mail",
+    "service_hours_title": "Heures du service client (UTC +1:00)",
+    "sunday_holidays": "Dimanche et jours fériés",
+    "talk_us": "Parlez-nous",
+    "twitter": "Suivez-nous sur X (anciennement Twitter)"
+  },
   "importSeed": {
     "error": "Veuillez entrer une phrase de récupération de 12 mots valide.",
     "placeholder": "Saisissez votre phrase de 12 ou 24 mots séparés par des espaces",
@@ -26,6 +71,10 @@
     "title": "Phrase de récupération",
     "validCount": "✓ {{count}} mots saisis",
     "words": "mots"
+  },
+  "language": {
+    "header_title": "Langues",
+    "info_text": "Les changements de langue seront appliqués immédiatement à l'interface"
   },
   "lightningPayment": {
     "errors": {
@@ -49,6 +98,52 @@
     "receiveOnchain": "Recevoir via BTC on-chain",
     "seeAll": "Voir tout",
     "transactions": "Transactions"
+  },
+  "mnemonicWarning": {
+    "attention": "Attention",
+    "cancel": "Annuler",
+    "header": "Avertissement Phrase de Récupération",
+    "intro": "Veuillez lire attentivement ce qui suit avant de visualiser votre phrase de récupération.",
+    "proceed": "Continuer",
+    "warning1": "Toute personne possédant la phrase de récupération a un accès complet et irrévocable à tous les fonds associés au portefeuille.",
+    "warning2": "L'équipe de support de Grimm App ne vous demandera jamais votre phrase de récupération ou votre clé privée.",
+    "warning3": "Ne saisissez jamais votre phrase de récupération ou votre clé privée dans un formulaire ou une application. Les applications n’en ont pas besoin pour fonctionner."
+  },
+  "networkSwitcher": {
+    "alerts": {
+      "cancel": "Annuler",
+      "ok": "OK",
+      "switch": "Changer",
+      "switchFailed": {
+        "message": "Impossible de changer de réseau. Veuillez réessayer.",
+        "title": "Échec du changement de réseau"
+      },
+      "switchMainnet": {
+        "message": "Vous êtes sur le point de passer au réseau principal Bitcoin. Cela déconnectera votre session actuelle et reconnectera au réseau Bitcoin en direct. Êtes-vous sûr ?",
+        "title": "Passer au Mainnet"
+      }
+    },
+    "headerTitle": "Réseau",
+    "options": {
+      "mainnet": {
+        "description": "Le réseau Bitcoin principal avec de vrais BTC",
+        "title": "Mainnet (Bitcoin)"
+      },
+      "testnet": {
+        "description": "Un réseau de test pour les développeurs Bitcoin",
+        "title": "Testnet"
+      }
+    },
+    "productionNotice": "Le changement de réseau est désactivé en production. Mainnet utilisé par défaut.",
+    "securityNote": {
+      "mainnet": "Vous devriez probablement être sur le mainnet pour des transactions Bitcoin réelles.",
+      "production": "Mode production : le réseau est verrouillé sur Mainnet pour des raisons de sécurité."
+    },
+    "status": {
+      "connected": "Connecté à {{network}}",
+      "disconnected": "Déconnecté"
+    },
+    "switching": "Changement de réseau..."
   },
   "notifications": {
     "days_ago": "Il y a {{count}}j",
@@ -119,6 +214,14 @@
     "scanning": "Analyse...",
     "title": "Scanner un QR"
   },
+  "seedPhraseScreen": {
+    "copiedMessage": "Phrase de récupération copiée dans le presse-papiers",
+    "copyButton": "Copier dans le presse-papiers",
+    "description": "Écrivez ces 12 mots dans l’ordre exact indiqué. Conservez-les en lieu sûr hors ligne : toute personne ayant accès à ces mots peut contrôler votre portefeuille.",
+    "header": "Phrase de récupération",
+    "savedButton": "J’ai sauvegardé ma phrase de récupération",
+    "title": "Sécurisez votre portefeuille"
+  },
   "seedSetup": {
     "create": {
       "subtitle": "Générez une nouvelle phrase de récupération de 12 mots pour sécuriser votre portefeuille",
@@ -142,30 +245,29 @@
     "general": {
       "bitcoinUnit": {
         "subtitle": "Choisissez entre BTC et SATS",
-        "title": "Unités Bitcoin"
+        "title": "Unités de Bitcoin"
       },
       "country": {
         "subtitle": "Sélectionnez votre pays pour une expérience personnalisée",
         "title": "Pays"
       },
       "language": {
-        "subtitle": "Choisissez votre langue préférée",
+        "subtitle": "Sélectionnez la langue de l'application",
         "title": "Langue"
       },
       "networks": {
-        "subtitle": "Gérer et configurer vos réseaux",
+        "subtitle": "Gérez et configurez vos réseaux",
         "title": "Réseaux"
       }
     },
-    "help": "Assistance",
-    "legal": "Confidentialité, Conditions et Logiciels Open Source de Grimm Technologies",
+    "help": "Aide et support",
     "preferences": {
       "appearance": {
-        "subtitle": "Basculez entre les modes clair et sombre",
+        "subtitle": "Passez du mode clair au mode sombre",
         "title": "Apparence"
       },
       "notifications": {
-        "subtitle": "Personnalisez les paramètres de notification",
+        "subtitle": "Personnalisez les notifications de l'application",
         "title": "Notifications"
       }
     },
@@ -176,26 +278,17 @@
     },
     "security": {
       "backup": {
-        "subtitle": "Sécurisez et gérez votre clé de récupération",
+        "subtitle": "Sécurisez et gérez votre clé de récupération de portefeuille",
         "title": "Clé de sauvegarde"
-      },
-      "faceId": {
-        "subtitle": "Utilisez Face ID pour un accès rapide",
-        "title": "Activer Face ID"
-      },
-      "pin": {
-        "subtitle": "Mettre à jour le code PIN de votre portefeuille",
-        "title": "Changer le code PIN"
       }
     },
-    "signOut": "Se déconnecter",
+    "signOut": "Déconnexion",
     "signOutAlert": {
       "cancel": "Annuler",
       "message": "Êtes-vous sûr de vouloir vous déconnecter ?",
       "title": "Déconnexion"
     },
-    "title": "Paramètres",
-    "version": "Version {{version}}"
+    "title": "Paramètres"
   },
   "signIn": {
     "button": "Envoyer le code",
@@ -221,6 +314,21 @@
       "processing": "Traitement..."
     },
     "title": "Synchronisation"
+  },
+  "theme": {
+    "dark": {
+      "description": "Reposant pour les yeux, idéal en environnement peu éclairé",
+      "name": "Mode sombre"
+    },
+    "header_title": "Apparence",
+    "light": {
+      "description": "Interface claire et lumineuse pour une utilisation en journée",
+      "name": "Mode clair"
+    },
+    "system": {
+      "description": "S'adapte automatiquement aux paramètres d'apparence de votre appareil",
+      "name": "Par défaut"
+    }
   },
   "transaction": {
     "date": "à la date du",

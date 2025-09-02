@@ -129,10 +129,7 @@ const NotificationItem: React.FC<{ notification: Notification; onPress?: (notifi
   );
 };
 
-const NotificationsHeaderTitle = () => {
-  const { t } = useTranslation();
-  return <HeaderTitle title={t('notifications.title')} />;
-};
+const NotificationsHeaderTitle = (title: string) => <HeaderTitle title={title} />;
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();
@@ -194,7 +191,7 @@ export default function NotificationsScreen() {
           <Stack.Screen
             options={{
               headerTitleAlign: 'center',
-              headerTitle: NotificationsHeaderTitle,
+              headerTitle: () => NotificationsHeaderTitle(t('notifications.title')),
               headerShown: true,
               headerShadowVisible: false,
               headerLeft: HeaderLeft,

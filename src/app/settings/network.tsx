@@ -1,9 +1,11 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
 import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -35,9 +37,8 @@ const NetworkOption = React.memo<NetworkOptionProps>(({ title, description, isSe
   </Pressable>
 ));
 
-const NetworkSwitcherHeaderTitle = () => <HeaderTitle title="Network" />;
-
 export default function NetworkSwitcher() {
+  const { t } = useTranslation();
   const { liquidNetwork, setLiquidNetwork, isConnected, isSyncing } = useBreez();
   const [isChangingNetwork, setIsChangingNetwork] = useState(false);
 
@@ -48,12 +49,12 @@ export default function NetworkSwitcher() {
         await setLiquidNetwork(network);
       } catch (error) {
         console.error('Error switching network:', error);
-        Alert.alert('Network Switch Failed', 'Failed to switch network. Please try again.', [{ text: 'OK' }]);
+        Alert.alert(t('networkSwitcher.alerts.switchFailed.title'), t('networkSwitcher.alerts.switchFailed.message'), [{ text: t('networkSwitcher.alerts.ok') }]);
       } finally {
         setIsChangingNetwork(false);
       }
     },
-    [setLiquidNetwork],
+    [setLiquidNetwork, t],
   );
 
   const handleNetworkChange = useCallback(
@@ -61,13 +62,10 @@ export default function NetworkSwitcher() {
       if (network === liquidNetwork || isProduction) return;
 
       if (network === LiquidNetwork.MAINNET && liquidNetwork !== LiquidNetwork.MAINNET) {
-        Alert.alert('Switch to Mainnet', 'You are about to switch to the Bitcoin mainnet. This will disconnect your current session and reconnect to the live Bitcoin network. Are you sure?', [
+        Alert.alert(t('networkSwitcher.alerts.switchMainnet.title'), t('networkSwitcher.alerts.switchMainnet.message'), [
+          { text: t('networkSwitcher.alerts.cancel'), style: 'cancel' },
           {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Switch',
+            text: t('networkSwitcher.alerts.switch'),
             style: 'default',
             onPress: () => performNetworkSwitch(network),
           },
@@ -76,7 +74,7 @@ export default function NetworkSwitcher() {
         performNetworkSwitch(network);
       }
     },
-    [liquidNetwork, performNetworkSwitch],
+    [liquidNetwork, performNetworkSwitch, t],
   );
 
   const handleMainnetPress = useCallback(() => {
@@ -92,21 +90,21 @@ export default function NetworkSwitcher() {
   const networkOptions = useMemo(
     () => [
       {
-        title: 'Mainnet (Bitcoin)',
-        description: 'The primary Bitcoin network with real BTC',
+        title: t('networkSwitcher.options.mainnet.title'),
+        description: t('networkSwitcher.options.mainnet.description'),
         isSelected: liquidNetwork === LiquidNetwork.MAINNET,
         onPress: handleMainnetPress,
         key: 'mainnet',
       },
       {
-        title: 'Testnet',
-        description: 'A test network for Bitcoin developers',
+        title: t('networkSwitcher.options.testnet.title'),
+        description: t('networkSwitcher.options.testnet.description'),
         isSelected: liquidNetwork === LiquidNetwork.TESTNET,
         onPress: handleTestnetPress,
         key: 'testnet',
       },
     ],
-    [liquidNetwork, handleMainnetPress, handleTestnetPress],
+    [liquidNetwork, handleMainnetPress, handleTestnetPress, t],
   );
 
   const isDisabled = isChangingNetwork || isSyncing || isProduction;
@@ -117,7 +115,7 @@ export default function NetworkSwitcher() {
         <View className="flex h-full px-4">
           <Stack.Screen
             options={{
-              headerTitle: NetworkSwitcherHeaderTitle,
+              headerTitle: () => <HeaderTitle title={t('networkSwitcher.headerTitle')} />,
               headerTitleAlign: 'center',
               headerShown: true,
               headerShadowVisible: false,
@@ -129,20 +127,20 @@ export default function NetworkSwitcher() {
           {isChangingNetwork && (
             <View className="mt-4 flex-row items-center justify-center rounded-lg bg-blue-50 py-3">
               <ActivityIndicator size="small" color={colors.primary[600]} />
-              <Text className="ml-2 text-sm text-blue-700">Switching network...</Text>
+              <Text className="ml-2 text-sm text-blue-700">{t('networkSwitcher.switching')}</Text>
             </View>
           )}
 
           <View className="mb-2 mt-4 px-2">
             <View className="flex-row items-center">
               <View className={`mr-2 size-2 rounded-full ${isConnected ? 'bg-primary-500' : 'bg-red-500'}`} />
-              <Text className="text-sm text-gray-600">{isConnected ? `Connected to ${liquidNetwork}` : 'Disconnected'}</Text>
+              <Text className="text-sm text-gray-600">{isConnected ? t('networkSwitcher.status.connected', { network: liquidNetwork }) : t('networkSwitcher.status.disconnected')}</Text>
             </View>
           </View>
 
           {isProduction && (
             <View className="mt-4 rounded-lg bg-yellow-50 p-3">
-              <Text className="text-sm text-yellow-800">Network switching is disabled in production. Using Mainnet by default.</Text>
+              <Text className="text-sm text-yellow-800">{t('networkSwitcher.productionNotice')}</Text>
             </View>
           )}
 
@@ -153,7 +151,7 @@ export default function NetworkSwitcher() {
           </View>
 
           <View className="mt-6">
-            <Text className="text-xs text-gray-600">{isProduction ? 'Production mode: Network is locked to Mainnet for security.' : 'You should most likely be on mainnet for real Bitcoin transactions.'}</Text>
+            <Text className="text-xs text-gray-600">{isProduction ? t('networkSwitcher.securityNote.production') : t('networkSwitcher.securityNote.mainnet')}</Text>
           </View>
         </View>
       </SafeAreaView>

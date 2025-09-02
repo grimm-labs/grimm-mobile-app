@@ -1,6 +1,8 @@
+/* eslint-disable react/no-unstable-nested-components */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -41,46 +43,50 @@ const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
   </Pressable>
 );
 
-const ServiceHours = () => (
-  <View className="mx-2">
-    <View className="mb-4 border-b-[0.5px] border-gray-300">
-      <Text className="my-6 text-sm font-medium">Customer Service Hours (UTC +1:00)</Text>
+const ServiceHours: React.FC = () => {
+  const { t } = useTranslation();
+  return (
+    <View className="mx-2">
+      <View className="mb-4 border-b-[0.5px] border-gray-300">
+        <Text className="my-6 text-sm font-medium">{t('help.service_hours_title')}</Text>
+      </View>
+      <View className="mb-4 flex flex-row justify-between">
+        <Text className="text-sm font-medium">{t('help.monday_friday')}</Text>
+        <Text>{t('help.hours_mon_fri')}</Text>
+      </View>
+      <View className="mb-4 flex flex-row justify-between">
+        <Text className="text-sm font-medium">{t('help.saturday')}</Text>
+        <Text>{t('help.hours_saturday')}</Text>
+      </View>
+      <View className="mb-4 flex flex-row justify-between">
+        <Text className="text-sm font-medium">{t('help.sunday_holidays')}</Text>
+        <Text className="text-sm font-extrabold text-danger-600">{t('help.closed')}</Text>
+      </View>
     </View>
-    <View className="mb-4 flex flex-row justify-between">
-      <Text className="text-sm font-medium">Mon-Fri</Text>
-      <Text>9:00-16:00hrs</Text>
-    </View>
-    <View className="mb-4 flex flex-row justify-between">
-      <Text className="text-sm font-medium">Saturday</Text>
-      <Text>9:00-12:00hrs</Text>
-    </View>
-    <View className="mb-4 flex flex-row justify-between">
-      <Text className="text-sm font-medium">Sunday & Public Holidays</Text>
-      <Text className="text-sm font-extrabold text-danger-600">Closed</Text>
-    </View>
-  </View>
-);
+  );
+};
 
-const SupportItems = () => {
+const SupportItems: React.FC = () => {
+  const { t } = useTranslation();
+
   const openLink = (url: string) => {
     Linking.openURL(url).catch((err) => console.error(`Error opening link: ${url}`, err));
   };
 
   return (
     <View className="mb-6">
-      <Item title="Talk to us" icon="call-outline" onPress={() => openLink(supportLinks.call)} />
-      <Item title="Send us an E-mail" icon="mail-outline" onPress={() => openLink(supportLinks.email)} />
-      <Item title="Reach us on Facebook" icon="logo-facebook" onPress={() => openLink(supportLinks.facebook)} />
-      <Item title="Follow us on LinkedIn" icon="logo-linkedin" onPress={() => openLink(supportLinks.linkedIn)} />
-      <Item title="Reach out on X (Formerly Twitter)" icon="logo-twitter" onPress={() => openLink(supportLinks.twitter)} />
-      <Item title="Access our Help Center" icon="help-circle-outline" onPress={() => openLink(supportLinks.helpCenter)} />
+      <Item title={t('help.talk_us')} icon="call-outline" onPress={() => openLink(supportLinks.call)} />
+      <Item title={t('help.send_email')} icon="mail-outline" onPress={() => openLink(supportLinks.email)} />
+      <Item title={t('help.facebook')} icon="logo-facebook" onPress={() => openLink(supportLinks.facebook)} />
+      <Item title={t('help.linkedin')} icon="logo-linkedin" onPress={() => openLink(supportLinks.linkedIn)} />
+      <Item title={t('help.twitter')} icon="logo-twitter" onPress={() => openLink(supportLinks.twitter)} />
+      <Item title={t('help.help_center')} icon="help-circle-outline" onPress={() => openLink(supportLinks.helpCenter)} />
     </View>
   );
 };
 
-const NeedHelpScreenHeaderTitle = () => <HeaderTitle title="Help & Support" />;
-
 export default function NeedHelp() {
+  const { t } = useTranslation();
   return (
     <SafeAreaProvider>
       <SafeAreaView>
@@ -89,7 +95,7 @@ export default function NeedHelp() {
             options={{
               headerShown: true,
               headerTitleAlign: 'center',
-              headerTitle: NeedHelpScreenHeaderTitle,
+              headerTitle: () => <HeaderTitle title={t('help.header')} />,
               headerLeft: HeaderLeft,
               headerRight: () => null,
               headerShadowVisible: false,

@@ -10,10 +10,7 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
 
-const LightningPaymentScreenHeaderTitle = () => {
-  const { t } = useTranslation();
-  return <HeaderTitle title={t('lightningPayment.title')} />;
-};
+const LightningPaymentScreenHeaderTitle = (title: string) => <HeaderTitle title={title} />;
 
 type SearchParams = {
   input: string;
@@ -80,7 +77,7 @@ export default function LightningPaymentScreen() {
       <SafeAreaView className="flex-1 bg-white">
         <Stack.Screen
           options={{
-            headerTitle: LightningPaymentScreenHeaderTitle,
+            headerTitle: () => LightningPaymentScreenHeaderTitle(t('lightningPayment.title')),
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,
