@@ -1,7 +1,9 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -55,9 +57,8 @@ const AVAILABLE_LANGUAGES: readonly Language[] = [
   },
 ] as const;
 
-const LanguageSelectorHeaderTitle = () => <HeaderTitle title="Languages" />;
-
 export default function LanguageSelector() {
+  const { t } = useTranslation();
   const [selectedLanguageCode, setSelectedLanguageCode] = useState<string>('fr');
 
   const handleLanguageSelect = useCallback((languageCode: string) => {
@@ -84,13 +85,13 @@ export default function LanguageSelector() {
 
   const screenOptions = useMemo(
     () => ({
-      headerTitle: LanguageSelectorHeaderTitle,
+      headerTitle: () => <HeaderTitle title={t('language.header_title')} />,
       headerTitleAlign: 'center' as const,
       headerShown: true,
       headerShadowVisible: false,
       headerLeft: HeaderLeft,
     }),
-    [],
+    [t],
   );
 
   return (
@@ -107,7 +108,7 @@ export default function LanguageSelector() {
           </View>
 
           <View className="mb-4 mt-6 px-2">
-            <Text className="text-center text-xs leading-4 text-gray-500">Language changes will be applied immediately to the interface</Text>
+            <Text className="text-center text-xs leading-4 text-gray-500">{t('language.info_text')}</Text>
           </View>
         </View>
       </SafeAreaView>

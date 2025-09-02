@@ -1,7 +1,10 @@
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useContext, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -31,25 +34,27 @@ const UnitOption = React.memo<UnitOptionProps>(({ title, description, isSelected
 
 UnitOption.displayName = 'UnitOption';
 
-const UNIT_OPTIONS_DATA = [
-  {
-    key: 'btc',
-    unit: BitcoinUnit.Btc,
-    title: 'Bitcoin (BTC)',
-    description: 'Standard unit of Bitcoin, 1 BTC = 100,000,000 Satoshis',
-  },
-  {
-    key: 'sats',
-    unit: BitcoinUnit.Sats,
-    title: 'Satoshi (SATS)',
-    description: 'Smallest Bitcoin unit, 1 SAT = 0.00000001 BTC',
-  },
-] as const;
-
-const BitcoinUnitScreenHeaderTitle = () => <HeaderTitle title="Bitcoin Unit" />;
-
 export default function BitcoinUnitScreen() {
+  const { t } = useTranslation();
   const { bitcoinUnit, setBitcoinUnit } = useContext(AppContext);
+
+  const UNIT_OPTIONS_DATA = useMemo(
+    () => [
+      {
+        key: 'btc',
+        unit: BitcoinUnit.Btc,
+        title: t('bitcoinUnit.btc.title'),
+        description: t('bitcoinUnit.btc.description'),
+      },
+      {
+        key: 'sats',
+        unit: BitcoinUnit.Sats,
+        title: t('bitcoinUnit.sats.title'),
+        description: t('bitcoinUnit.sats.description'),
+      },
+    ],
+    [t],
+  );
 
   const handleBtcPress = useCallback(() => {
     setBitcoinUnit(BitcoinUnit.Btc);
@@ -74,18 +79,18 @@ export default function BitcoinUnitScreen() {
         isSelected: bitcoinUnit === option.unit,
         onPress: handlersMap[option.unit],
       })),
-    [bitcoinUnit, handlersMap],
+    [bitcoinUnit, handlersMap, UNIT_OPTIONS_DATA],
   );
 
   const screenOptions = useMemo(
     () => ({
       headerTitleAlign: 'center' as const,
-      headerTitle: BitcoinUnitScreenHeaderTitle,
+      headerTitle: () => <HeaderTitle title={t('bitcoinUnit.header_title')} />,
       headerShown: true,
       headerShadowVisible: false,
       headerLeft: HeaderLeft,
     }),
-    [],
+    [t],
   );
 
   return (
@@ -102,7 +107,7 @@ export default function BitcoinUnitScreen() {
           </View>
 
           <View className="mt-6 px-2">
-            <Text className="text-xs leading-5 text-gray-500">The Bitcoin unit determines how balances are displayed in the wallet.</Text>
+            <Text className="text-xs leading-5 text-gray-500">{t('bitcoinUnit.info_text')}</Text>
           </View>
         </View>
       </SafeAreaView>

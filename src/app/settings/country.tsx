@@ -1,7 +1,9 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ListRenderItem } from 'react-native';
 import { FlatList, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -43,15 +45,17 @@ const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelecte
   );
 });
 
-const EmptyState: React.FC<EmptyStateProps> = React.memo(({ searchTerm }) => (
-  <View className="flex-1 items-center justify-center py-8">
-    <Text className="text-neutral-500">{searchTerm ? `No countries found for "${searchTerm}"` : 'No countries available'}</Text>
-  </View>
-));
-
-const CountrySelectorHeaderTitle = () => <HeaderTitle title="Country" />;
+const EmptyState: React.FC<EmptyStateProps> = React.memo(({ searchTerm }) => {
+  const { t } = useTranslation();
+  return (
+    <View className="flex-1 items-center justify-center py-8">
+      <Text className="text-neutral-500">{searchTerm ? t('country.no_results', { searchTerm }) : t('country.no_countries')}</Text>
+    </View>
+  );
+});
 
 export default function CountrySelector() {
+  const { t } = useTranslation();
   const { selectedCountry, setSelectedCountry } = useContext(AppContext);
   const router = useRouter();
   const [localSelectedCountry, setLocalSelectedCountry] = useState(selectedCountry);
@@ -94,7 +98,7 @@ export default function CountrySelector() {
           <Stack.Screen
             options={{
               headerTitleAlign: 'center',
-              headerTitle: CountrySelectorHeaderTitle,
+              headerTitle: () => <HeaderTitle title={t('country.header_title')} />,
               headerShown: true,
               headerShadowVisible: false,
               headerLeft: HeaderLeft,
@@ -104,7 +108,7 @@ export default function CountrySelector() {
           <View className="pb-4">
             <View className=" flex flex-row items-center rounded-lg bg-gray-100 px-3 py-2">
               <Ionicons name="search-outline" size={20} color={colors.neutral[500]} />
-              <TextInput className="ml-2 flex-1 text-sm" placeholder="Search country..." value={searchQuery} onChangeText={setSearchQuery} autoCapitalize="none" autoCorrect={false} />
+              <TextInput className="ml-2 flex-1 text-sm" placeholder={t('country.search_placeholder')} value={searchQuery} onChangeText={setSearchQuery} autoCapitalize="none" autoCorrect={false} />
               {searchQuery.length > 0 && (
                 <Pressable onPress={() => setSearchQuery('')}>
                   <Ionicons name="close-circle" size={20} color={colors.neutral[500]} />
@@ -132,7 +136,7 @@ export default function CountrySelector() {
           />
 
           <View>
-            <Button label="Save" onPress={handleSave} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button label={t('common.save')} onPress={handleSave} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
       </SafeAreaView>

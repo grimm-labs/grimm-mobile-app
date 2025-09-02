@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import { fetchLightningLimits, fetchOnchainLimits } from '@breeztech/react-native-breez-sdk-liquid';
@@ -18,11 +19,6 @@ import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
   type: 'onchain' | 'lightning';
-};
-
-const EnterAmountScreenHeaderTitle = () => {
-  const { t } = useTranslation();
-  return <HeaderTitle title={t('enterAmount.headerTitle')} />;
 };
 
 export default function EnterAmountScreen() {
@@ -118,7 +114,7 @@ export default function EnterAmountScreen() {
 
         <Stack.Screen
           options={{
-            headerTitle: EnterAmountScreenHeaderTitle,
+            headerTitle: () => <HeaderTitle title={t('enterAmount.headerTitle')} />,
             headerTitleAlign: 'center',
             headerLeft: HeaderLeft,
             headerShadowVisible: false,

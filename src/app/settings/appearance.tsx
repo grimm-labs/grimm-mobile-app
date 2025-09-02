@@ -1,7 +1,10 @@
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -72,34 +75,36 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
 
 ThemeOption.displayName = 'ThemeOption';
 
-const THEME_CONFIGURATIONS: readonly ThemeConfig[] = [
-  {
-    id: 'system',
-    name: 'System Default',
-    description: 'Automatically matches your device appearance settings',
-    icon: 'phone-portrait-outline',
-    iconColor: '#6B7280',
-  },
-  {
-    id: 'light',
-    name: 'Light Mode',
-    description: 'Clean and bright interface for daytime use',
-    icon: 'sunny-outline',
-    iconColor: '#F59E0B',
-  },
-  {
-    id: 'dark',
-    name: 'Dark Mode',
-    description: 'Easy on the eyes, perfect for low-light environments',
-    icon: 'moon-outline',
-    iconColor: '#4F46E5',
-  },
-] as const;
-
-const ThemeSelectorHeaderTitle = () => <HeaderTitle title="Appearance" />;
-
 export default function ThemeSelector() {
+  const { t } = useTranslation();
   const [selectedTheme, setSelectedTheme] = useState<ThemeMode>('system');
+
+  const THEME_CONFIGURATIONS: readonly ThemeConfig[] = useMemo(
+    () => [
+      {
+        id: 'system',
+        name: t('theme.system.name'),
+        description: t('theme.system.description'),
+        icon: 'phone-portrait-outline',
+        iconColor: '#6B7280',
+      },
+      {
+        id: 'light',
+        name: t('theme.light.name'),
+        description: t('theme.light.description'),
+        icon: 'sunny-outline',
+        iconColor: '#F59E0B',
+      },
+      {
+        id: 'dark',
+        name: t('theme.dark.name'),
+        description: t('theme.dark.description'),
+        icon: 'moon-outline',
+        iconColor: '#4F46E5',
+      },
+    ],
+    [t],
+  );
 
   const handleThemeSelect = useCallback((themeId: ThemeMode) => {
     setSelectedTheme(themeId);
@@ -111,7 +116,7 @@ export default function ThemeSelector() {
       handlers[theme.id] = () => handleThemeSelect(theme.id);
     });
     return handlers;
-  }, [handleThemeSelect]);
+  }, [THEME_CONFIGURATIONS, handleThemeSelect]);
 
   const themeOptions = useMemo(
     () =>
@@ -120,18 +125,18 @@ export default function ThemeSelector() {
         isSelected: selectedTheme === theme.id,
         onPress: themeHandlers[theme.id],
       })),
-    [selectedTheme, themeHandlers],
+    [THEME_CONFIGURATIONS, selectedTheme, themeHandlers],
   );
 
   const screenOptions = useMemo(
     () => ({
-      headerTitle: ThemeSelectorHeaderTitle,
+      headerTitle: () => <HeaderTitle title={t('theme.header_title')} />,
       headerTitleAlign: 'center' as const,
       headerShown: true,
       headerShadowVisible: false,
       headerLeft: HeaderLeft,
     }),
-    [],
+    [t],
   );
 
   return (

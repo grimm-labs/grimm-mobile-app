@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
@@ -29,8 +30,6 @@ const AboutItem = React.memo<AboutItemProps>(({ title, onPress }) => (
 
 AboutItem.displayName = 'AboutItem';
 
-const ThemeSelectorHeaderTitle = () => <HeaderTitle title="Appearance" />;
-
 export default function AboutScreen() {
   const { t } = useTranslation();
 
@@ -40,35 +39,27 @@ export default function AboutScreen() {
       if (supported) {
         await Linking.openURL(url);
       } else {
-        Alert.alert('Error', `Unable to open the link: ${url}`);
+        Alert.alert(t('about.error_title'), t('about.error_unable_link', { url }));
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred while opening the link');
+      Alert.alert(t('about.error_title'), t('about.error_generic'));
       console.error('Error opening URL:', error);
     }
   };
 
-  const handleTermsPress = () => {
-    openURL('https://usegrimm.app/terms');
-  };
-
-  const handlePrivacyPress = () => {
-    openURL('https://usegrimm.app/privacy');
-  };
-
-  const handleWebsitePress = () => {
-    openURL('https://usegrimm.app');
-  };
+  const handleTermsPress = () => openURL('https://usegrimm.app/terms');
+  const handlePrivacyPress = () => openURL('https://usegrimm.app/privacy');
+  const handleWebsitePress = () => openURL('https://usegrimm.app');
 
   const screenOptions = useMemo(
     () => ({
-      headerTitle: ThemeSelectorHeaderTitle,
+      headerTitle: () => <HeaderTitle title={t('about.header_title')} />,
       headerTitleAlign: 'center' as const,
       headerShown: true,
       headerShadowVisible: false,
       headerLeft: HeaderLeft,
     }),
-    [],
+    [t],
   );
 
   return (
@@ -83,13 +74,13 @@ export default function AboutScreen() {
                 <Logo />
               </View>
               <Text className="my-6 text-2xl font-bold">Grimm App</Text>
-              <Text className="text-base text-gray-400">{t('settings.version', { version: Env.VERSION })}</Text>
+              <Text className="text-base text-gray-400">{t('about.version', { version: Env.VERSION })}</Text>
             </View>
           </View>
           <View className="flex-1 px-4">
-            <AboutItem title="Terms of Service" onPress={handleTermsPress} />
-            <AboutItem title="Privacy Policy" onPress={handlePrivacyPress} />
-            <AboutItem title="Visit Website" onPress={handleWebsitePress} />
+            <AboutItem title={t('about.terms_of_service')} onPress={handleTermsPress} />
+            <AboutItem title={t('about.privacy_policy')} onPress={handlePrivacyPress} />
+            <AboutItem title={t('about.visit_website')} onPress={handleWebsitePress} />
           </View>
         </View>
       </SafeAreaView>
