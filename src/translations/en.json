@@ -64,6 +64,11 @@
     "talk_us": "Talk to us",
     "twitter": "Reach out on X (Formerly Twitter)"
   },
+  "home": {
+    "spending": "Spending",
+    "title": "Home",
+    "walletName": "Bitcoin"
+  },
   "importSeed": {
     "error": "Please enter a valid 12-word seed phrase.",
     "placeholder": "Enter your 12 or 24-word seed phrase separated by spaces",
@@ -189,6 +194,17 @@
     "total": "Total",
     "unknown": "Unknown"
   },
+  "quickActions": {
+    "airtime": "Airtime",
+    "betting": "Betting",
+    "cableTv": "Cable TV",
+    "electricity": "Electricity",
+    "internet": "Internet",
+    "merchant": "Merchant",
+    "sendMoney": "Send Money",
+    "title": "Quick Actions",
+    "water": "Water"
+  },
   "receive_payment": {
     "close": "Close",
     "copied": "Payment address has been copied to clipboard",
@@ -213,6 +229,11 @@
     "processing": "Processing...",
     "scanning": "Scanning...",
     "title": "Scan QR"
+  },
+  "seedPhraseBackup": {
+    "cta": "Back up now",
+    "description": "Protect your funds by backing up your recovery phrase now. Without it, you could lose access to your wallet permanently.",
+    "title": "Back up your recovery phrase"
   },
   "seedPhraseScreen": {
     "copiedMessage": "Recovery phrase copied to clipboard",
@@ -337,6 +358,33 @@
     "received": "You received",
     "sent": "Transaction sent"
   },
+  "transactionItem": {
+    "date": {
+      "daysAgo": "{{count}} days ago",
+      "inDays": "In {{count}} days",
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "received": "You received",
+    "sent": "You paid",
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending"
+    }
+  },
+  "transactions": {
+    "empty": {
+      "button": "Receive",
+      "description": "You haven't made a transaction yet.",
+      "title": "No Transactions"
+    },
+    "filters": {
+      "all": "All",
+      "confirmed": "Confirmed",
+      "pending": "Pending"
+    },
+    "title": "Transactions"
+  },
   "verifyOTP": {
     "accessibility": {
       "button": "Verify OTP code",
@@ -352,5 +400,12 @@
     },
     "subtitle": "To confirm phone number, please enter the 6-digit pin we sent to {{phoneNumber}}.",
     "title": "We just sent you an SMS"
+  },
+  "walletOverview": {
+    "hiddenBalance": "********",
+    "receive": "Receive",
+    "scanQr": "Scan QR",
+    "send": "Send",
+    "totalBalance": "Total Balance"
   }
 }
