@@ -64,6 +64,11 @@
     "talk_us": "Parlez-nous",
     "twitter": "Suivez-nous sur X (anciennement Twitter)"
   },
+  "home": {
+    "spending": "Dépenses",
+    "title": "Accueil",
+    "walletName": "Bitcoin"
+  },
   "importSeed": {
     "error": "Veuillez entrer une phrase de récupération de 12 mots valide.",
     "placeholder": "Saisissez votre phrase de 12 ou 24 mots séparés par des espaces",
@@ -189,6 +194,17 @@
     "total": "Total",
     "unknown": "Inconnu"
   },
+  "quickActions": {
+    "airtime": "Crédit téléphonique",
+    "betting": "Paris sportifs",
+    "cableTv": "Télévision",
+    "electricity": "Électricité",
+    "internet": "Internet mobile",
+    "merchant": "Marchand",
+    "sendMoney": "Envoyer de l’argent",
+    "title": "Actions rapides",
+    "water": "Eau"
+  },
   "receive_payment": {
     "close": "Fermer",
     "copied": "Adresse de paiement copiée dans le presse-papiers",
@@ -213,6 +229,11 @@
     "processing": "Traitement...",
     "scanning": "Analyse...",
     "title": "Scanner un QR"
+  },
+  "seedPhraseBackup": {
+    "cta": "Sauvegarder maintenant",
+    "description": "Protégez vos fonds en sauvegardant votre phrase de récupération dès maintenant. Sans elle, vous pourriez perdre définitivement l’accès à votre portefeuille.",
+    "title": "Sauvegardez votre phrase de récupération"
   },
   "seedPhraseScreen": {
     "copiedMessage": "Phrase de récupération copiée dans le presse-papiers",
@@ -337,6 +358,33 @@
     "received": "Vous avez reçu",
     "sent": "Transaction envoyée"
   },
+  "transactionItem": {
+    "date": {
+      "daysAgo": "Il y a {{count}} jours",
+      "inDays": "Dans {{count}} jours",
+      "today": "Aujourd'hui",
+      "yesterday": "Hier"
+    },
+    "received": "Vous avez reçu",
+    "sent": "Vous avez payé",
+    "status": {
+      "confirmed": "Confirmée",
+      "pending": "En attente"
+    }
+  },
+  "transactions": {
+    "empty": {
+      "button": "Recevoir",
+      "description": "Vous n'avez pas encore effectué de transaction.",
+      "title": "Aucune transaction"
+    },
+    "filters": {
+      "all": "Toutes",
+      "confirmed": "Confirmées",
+      "pending": "En attente"
+    },
+    "title": "Transactions"
+  },
   "verifyOTP": {
     "accessibility": {
       "button": "Vérifier le code OTP",
@@ -352,5 +400,12 @@
     },
     "subtitle": "Pour confirmer le numéro de téléphone, veuillez saisir le code à 6 chiffres envoyé à {{phoneNumber}}.",
     "title": "Nous venons de vous envoyer un SMS"
+  },
+  "walletOverview": {
+    "hiddenBalance": "********",
+    "receive": "Recevoir",
+    "scanQr": "Scanner QR",
+    "send": "Envoyer",
+    "totalBalance": "Solde Total"
   }
 }

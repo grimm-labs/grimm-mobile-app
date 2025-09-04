@@ -73,7 +73,7 @@ export default function AboutScreen() {
               <View className="mb-8 size-20 items-center justify-center rounded-full bg-white" style={{ backgroundColor: '#ffffff' }}>
                 <Logo />
               </View>
-              <Text className="my-6 text-2xl font-bold">Grimm App</Text>
+              <Text className="my-6 text-2xl font-bold text-gray-600">Grimm App</Text>
               <Text className="text-base text-gray-400">{t('about.version', { version: Env.VERSION })}</Text>
             </View>
           </View>

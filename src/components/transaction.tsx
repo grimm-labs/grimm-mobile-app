@@ -2,6 +2,7 @@
 import { type Payment, PaymentType } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 
 import { Text, View } from '@/components/ui';
@@ -9,20 +10,9 @@ import { convertSatsToBtc } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { BitcoinUnit } from '@/types/enum';
 
-type TransactionType = 'received' | 'sent' | 'pending';
-
-export type Transaction = {
-  id: string;
-  type: TransactionType;
-  amount: number;
-  description?: string;
-  timestamp: Date;
-  status: 'completed' | 'pending' | 'failed';
-  fee?: number;
-};
-
 export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => {
   const { bitcoinUnit } = useContext(AppContext);
+  const { t } = useTranslation();
 
   const getTransactionIcon = () => (payment.paymentType === PaymentType.RECEIVE ? 'arrow-down' : 'arrow-up');
 
@@ -59,13 +49,13 @@ export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => 
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      return 'Today';
+      return t('transactionItem.date.today');
     } else if (diffDays === 1) {
-      return 'Yesterday';
+      return t('transactionItem.date.yesterday');
     } else if (diffDays > 0 && diffDays <= 7) {
-      return `${diffDays} days ago`;
+      return t('transactionItem.date.daysAgo', { count: diffDays });
     } else if (diffDays < 0 && diffDays >= -7) {
-      return `In ${Math.abs(diffDays)} days`;
+      return t('transactionItem.date.inDays', { count: Math.abs(diffDays) });
     } else {
       return targetDate.toLocaleDateString('en-US', {
         day: '2-digit',
@@ -84,9 +74,9 @@ export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => 
       </View>
       <View className="flex-1 flex-row items-center justify-between">
         <View>
-          <Text className="text-left text-base font-semibold text-gray-900">{payment.paymentType === PaymentType.RECEIVE ? 'You received' : 'You paid'}</Text>
+          <Text className="text-left text-base font-semibold text-gray-900">{payment.paymentType === PaymentType.RECEIVE ? t('transactionItem.received') : t('transactionItem.sent')}</Text>
           <Text className="text-left text-xs text-gray-600">
-            {formatDate(payment.timestamp)} • {payment.status === 'pending' ? 'Pending' : 'Confirmed'}
+            {formatDate(payment.timestamp)} • {payment.status === 'pending' ? t('transactionItem.status.pending') : t('transactionItem.status.confirmed')}
           </Text>
         </View>
         <Text className="my-2 text-center text-base font-semibold" style={{ color: getTransactionColor() }}>
