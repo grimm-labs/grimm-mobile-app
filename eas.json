@@ -18,7 +18,8 @@
         "EXPO_NO_DOTENV": "1",
         "APP_ENV": "production",
         "FLIPPER_DISABLE": "1"
-      }
+      },
+      "autoIncrement": true
     },
     "staging": {
       "channel": "staging",
