@@ -38,7 +38,7 @@ const tabBarIcon =
   ({ color }: { color: string }) => <TabBarIcon name={iconName} color={color} />;
 
 const TabLayout = () => {
-  const { isDataLoaded, seedPhrase, user } = useContext(AppContext);
+  const { isDataLoaded, seedPhrase } = useContext(AppContext);
   const { isInitialized, initializeBreez } = useBreez();
   const splashHiddenRef = useRef(false);
 
@@ -50,10 +50,10 @@ const TabLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded && user && seedPhrase && seedPhrase.length > 0 && !isInitialized) {
+    if (isDataLoaded && seedPhrase && seedPhrase.length > 0 && !isInitialized) {
       initializeBreez();
     }
-  }, [isDataLoaded, user, seedPhrase, isInitialized, initializeBreez]);
+  }, [isDataLoaded, seedPhrase, isInitialized, initializeBreez]);
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -78,7 +78,7 @@ const TabLayout = () => {
     return null;
   }
 
-  if (!user || seedPhrase?.length === 0) {
+  if (seedPhrase?.length === 0) {
     return <Redirect href="/onboarding" />;
   }
 

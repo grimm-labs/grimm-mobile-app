@@ -1,12 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
-import { QuickActions } from '@/components/quick-actions';
 import { SeedPhraseBackupNotification } from '@/components/seed-phrase-backup-notification';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { WalletOverview } from '@/components/wallet-overview';
@@ -23,8 +21,7 @@ const SvgComponent = () => {
 
 export default function Home() {
   const router = useRouter();
-  const { isSeedPhraseBackup, selectedCountry } = useContext(AppContext);
-  const [notificationCount, _setNotificationCount] = React.useState(10);
+  const { isSeedPhraseBackup } = useContext(AppContext);
   const { t } = useTranslation();
 
   return (
@@ -37,10 +34,6 @@ export default function Home() {
             <View className="flex py-3">
               <Text className="text-2xl font-bold text-gray-800">{t('home.title')}</Text>
             </View>
-            <Pressable className="relative" onPress={() => router.push('/notifications')}>
-              <Ionicons name="notifications-outline" size={24} color="gray" />
-              {notificationCount > 0 && <View className="absolute -right-0.5 -top-1 size-3 items-center justify-center rounded-full bg-primary-600" />}
-            </Pressable>
           </View>
 
           {/* Content */}
@@ -50,7 +43,6 @@ export default function Home() {
                 <WalletOverview />
                 <View className="mb-8" />
                 {!isSeedPhraseBackup && <SeedPhraseBackupNotification />}
-                {isSeedPhraseBackup && selectedCountry.isoCode === 'CM' && <QuickActions />}
                 <View className="mb-4" />
                 <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
                   <View className="flex-row justify-between">

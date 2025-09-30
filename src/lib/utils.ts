@@ -6,8 +6,7 @@ import examples from 'libphonenumber-js/mobile/examples';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
-import type { RatesResponse as OriginalRatesResponse } from '@/api';
-import { supportedFiatCurrencies } from '@/constant';
+import { type BitcoinCurrencyCode, type RatesResponse, supportedBitcoinCurrencies } from '@/api';
 import type { Country } from '@/interfaces';
 import { BitcoinUnit } from '@/types/enum';
 
@@ -121,10 +120,8 @@ export const isMnemonicValid = async (mnemonic: string, allowedWordCounts: numbe
 };
 
 export const getFiatCurrency = (country: Country): string => {
-  return supportedFiatCurrencies.includes(country.currency) ? country.currency : 'USD';
+  return supportedBitcoinCurrencies.includes(country.currency as BitcoinCurrencyCode) ? country.currency : 'USD';
 };
-
-type RatesResponse = OriginalRatesResponse & { [currency: string]: number };
 
 /**
  * Converts a Bitcoin amount to fiat currency
@@ -134,13 +131,19 @@ type RatesResponse = OriginalRatesResponse & { [currency: string]: number };
  * @param bitcoinPrices - The object containing Bitcoin prices in various currencies
  * @returns The amount converted into fiat currency
  */
-export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, outputCurrency: string, bitcoinPrices: RatesResponse): number => {
-  if (!(outputCurrency.toLowerCase() in bitcoinPrices)) {
-    throw new Error(`Currency ${outputCurrency} not supported`);
+export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, outputCurrency: string, bitcoinPrices: RatesResponse | null): number => {
+  if (!bitcoinPrices) {
+    console.warn('Bitcoin prices data is not available.');
+    return 0;
+  }
+
+  if (!(outputCurrency.toUpperCase() in bitcoinPrices.BTC)) {
+    console.warn(`Currency ${outputCurrency} not supported.`);
+    return 0;
   }
 
   // Get the Bitcoin price in the output currency
-  const bitcoinPriceInOutputCurrency = bitcoinPrices[outputCurrency.toLowerCase()];
+  const bitcoinPriceInOutputCurrency = bitcoinPrices.BTC[outputCurrency.toUpperCase() as BitcoinCurrencyCode];
 
   // Convert the amount to BTC if necessary
   let amountInBTC: number;

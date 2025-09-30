@@ -9,7 +9,7 @@ type Variables = {}; // as react-query-kit is strongly typed, we need to specify
 export const useGetBitcoinPrice = createMutation<RatesResponse, Variables, AxiosError>({
   mutationFn: async (_variables) =>
     client({
-      url: '/rates',
+      url: '/exrates/BTC',
       method: 'GET',
     }).then((response) => response.data),
 });

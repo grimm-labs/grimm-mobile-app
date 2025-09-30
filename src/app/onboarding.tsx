@@ -41,7 +41,7 @@ function Onboarding() {
   const { t } = useTranslation();
 
   const handleGetStarted = React.useCallback(() => {
-    router.push('/auth/sign-in');
+    router.push('/auth/create-or-import-seed');
   }, [router]);
 
   return (
