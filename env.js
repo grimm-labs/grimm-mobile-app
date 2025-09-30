@@ -79,7 +79,7 @@ const client = z.object({
   VERSION: z.string(),
 
   // ADD YOUR CLIENT ENV VARS HERE
-  API_URL: z.string(),
+  YADIO_API_URL: z.string(),
   BREEZ_API_KEY: z.string(),
   VAR_NUMBER: z.number(),
   VAR_BOOL: z.boolean(),
@@ -104,7 +104,7 @@ const _clientEnv = {
   VERSION: packageJSON.version,
 
   // ADD YOUR ENV VARS HERE TOO
-  API_URL: process.env.API_URL,
+  YADIO_API_URL: process.env.YADIO_API_URL,
   BREEZ_API_KEY: process.env.BREEZ_API_KEY,
   VAR_NUMBER: Number(process.env.VAR_NUMBER),
   VAR_BOOL: process.env.VAR_BOOL === 'true',

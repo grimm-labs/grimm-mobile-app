@@ -8,20 +8,11 @@ import type { RatesResponse } from '@/api';
 import { useGetBitcoinPrice } from '@/api';
 
 type DefaultContextType = {
-  bitcoinPrices: RatesResponse;
+  bitcoinPrices: RatesResponse | null;
 };
 
 const defaultContext: DefaultContextType = {
-  bitcoinPrices: {
-    xaf: 1,
-    xof: 1,
-    ngn: 1,
-    kes: 1,
-    usd: 1,
-    eur: 1,
-    mad: 1,
-    timestamp: Date.now(),
-  },
+  bitcoinPrices: null,
 };
 
 const BitcoinContext = createContext(defaultContext);
@@ -49,6 +40,7 @@ export const BitcoinPriceProvider = ({ children }: Props) => {
         {},
         {
           onSuccess: (response) => {
+            console.log('Fetched Bitcoin price:', response);
             setBitcoinPrices(response);
           },
           onError: (error) => {

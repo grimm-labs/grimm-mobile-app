@@ -36,7 +36,7 @@ export default function ImportSeedPhrase() {
 
     setSeedPhrase(seedPhraseInput.trim());
     setIsSeedPhraseBackup(true);
-    router.push('/sync');
+    router.replace('/');
   };
 
   const isFormValid = seedPhraseInput.trim().length > 0;
