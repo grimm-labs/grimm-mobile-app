@@ -2,13 +2,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
+import { useSelectedLanguage } from '@/lib';
+import type { Language as LanguagesLib } from '@/lib/i18n/resources';
 
 interface LanguageOptionProps {
   language: string;
@@ -36,7 +38,7 @@ const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, 
 LanguageOption.displayName = 'LanguageOption';
 
 interface Language {
-  code: string;
+  code: LanguagesLib;
   name: string;
   nativeName: string;
   flag: string;
@@ -59,11 +61,17 @@ const AVAILABLE_LANGUAGES: readonly Language[] = [
 
 export default function LanguageSelector() {
   const { t } = useTranslation();
-  const [selectedLanguageCode, setSelectedLanguageCode] = useState<string>('fr');
+  const { language, setLanguage } = useSelectedLanguage();
 
-  const handleLanguageSelect = useCallback((languageCode: string) => {
-    setSelectedLanguageCode(languageCode);
-  }, []);
+  const handleLanguageSelect = useCallback(
+    (languageCode: LanguagesLib) => {
+      console.log('Selected language:', languageCode);
+      if (languageCode) {
+        setLanguage(languageCode);
+      }
+    },
+    [setLanguage],
+  );
 
   const languageHandlers = useMemo(() => {
     const handlers: Record<string, () => void> = {};
@@ -77,10 +85,10 @@ export default function LanguageSelector() {
     () =>
       AVAILABLE_LANGUAGES.map((lang) => ({
         ...lang,
-        isSelected: selectedLanguageCode === lang.code,
+        isSelected: language === lang.code,
         onPress: languageHandlers[lang.code],
       })),
-    [selectedLanguageCode, languageHandlers],
+    [language, languageHandlers],
   );
 
   const screenOptions = useMemo(
@@ -100,13 +108,11 @@ export default function LanguageSelector() {
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
           <FocusAwareStatusBar style="dark" />
-
           <View className="flex-1">
-            {languageOptions.map((language) => (
-              <LanguageOption key={language.code} language={language.name} nativeName={language.nativeName} flag={language.flag} isSelected={language.isSelected} onPress={language.onPress} />
+            {languageOptions.map((l) => (
+              <LanguageOption key={l.code} language={l.name} nativeName={l.nativeName} flag={l.flag} isSelected={l.isSelected} onPress={l.onPress} />
             ))}
           </View>
-
           <View className="mb-4 mt-6 px-2">
             <Text className="text-center text-xs leading-4 text-gray-500">{t('language.info_text')}</Text>
           </View>

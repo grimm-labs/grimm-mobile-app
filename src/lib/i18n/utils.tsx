@@ -1,9 +1,11 @@
 import type TranslateOptions from 'i18next';
 import i18n from 'i18next';
 import memoize from 'lodash.memoize';
-import { I18nManager, NativeModules, Platform } from 'react-native';
-import RNRestart from 'react-native-restart';
+import { useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import { I18nManager } from 'react-native';
 
+import { getItem, setItem } from '../storage';
 import type { Language, resources } from './resources';
 import type { RecursiveKeyOf } from './types';
 
@@ -12,7 +14,7 @@ export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
 
 export const LOCAL = 'local';
 
-// export const getLanguage = () => storage.getString(LOCAL); // 'Marc' getItem<Language | undefined>(LOCAL);
+export const getLanguage = async () => await getItem<Language | undefined>(LOCAL);
 
 export const translate = memoize(
   (key: TxKeyPath, options = undefined) => i18n.t(key, options) as unknown as string,
@@ -22,30 +24,26 @@ export const translate = memoize(
 export const changeLanguage = (lang: Language) => {
   i18n.changeLanguage(lang);
   I18nManager.forceRTL(false);
-
-  // if (lang === 'ar') {
-  //   I18nManager.forceRTL(true);
-  // } else {
-  //   I18nManager.forceRTL(false);
-  // }
-  if (Platform.OS === 'ios' || Platform.OS === 'android') {
-    if (__DEV__) NativeModules.DevSettings.reload();
-    else RNRestart.restart();
-  } else if (Platform.OS === 'web') {
-    window.location.reload();
-  }
 };
 
-// export const useSelectedLanguage = () => {
-//   const [language, setLang] = {};
+export const useSelectedLanguage = () => {
+  const [language, setLanguageState] = useState<Language | undefined>(undefined);
 
-//   const setLanguage = useCallback(
-//     (lang: Language) => {
-//       setLang(lang);
-//       if (lang !== undefined) changeLanguage(lang as Language);
-//     },
-//     [setLang],
-//   );
+  useEffect(() => {
+    let mounted = true;
+    getItem<Language>(LOCAL).then((lang) => {
+      if (mounted && lang) setLanguageState(lang);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-//   return { language: language as Language, setLanguage };
-// };
+  const setLanguage = useCallback((lang?: Language) => {
+    setItem(LOCAL, lang);
+    if (lang !== undefined) changeLanguage(lang as Language);
+    setLanguageState(lang);
+  }, []);
+
+  return { language, setLanguage };
+};
