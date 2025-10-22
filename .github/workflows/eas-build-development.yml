@@ -34,6 +34,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create .env.development
+        run: |
+          echo "BREEZ_API_KEY=${{ secrets.BREEZ_API_KEY }}" >> .env.development
+
       - name: 📦 Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 

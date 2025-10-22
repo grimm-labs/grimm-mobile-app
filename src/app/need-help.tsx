@@ -19,10 +19,9 @@ interface ItemProps {
 const supportLinks = {
   call: 'tel:+237692279214',
   email: 'mailto:support@usegrimm.app?subject=Support Request',
-  facebook: 'https://www.facebook.com/grimm-app',
-  helpCenter: 'https://help.usegrimm.app',
+  facebook: 'https://www.facebook.com/grimmtechnologies',
   twitter: 'https://twitter.com/useGrimmApp',
-  linkedIn: 'https://www.linkedin.com/company/usegrimmapp',
+  linkedIn: 'https://www.linkedin.com/company/grimm-technologies',
 };
 
 const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
@@ -80,7 +79,6 @@ const SupportItems: React.FC = () => {
       <Item title={t('help.facebook')} icon="logo-facebook" onPress={() => openLink(supportLinks.facebook)} />
       <Item title={t('help.linkedin')} icon="logo-linkedin" onPress={() => openLink(supportLinks.linkedIn)} />
       <Item title={t('help.twitter')} icon="logo-twitter" onPress={() => openLink(supportLinks.twitter)} />
-      <Item title={t('help.help_center')} icon="help-circle-outline" onPress={() => openLink(supportLinks.helpCenter)} />
     </View>
   );
 };

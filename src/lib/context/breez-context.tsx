@@ -5,7 +5,7 @@ import { Env } from '@env';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 import { useSecureStorage } from '../hooks/use-secure-storage';
 
@@ -49,40 +49,11 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const [state, setState] = useState<BreezState>(initialState);
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getLiquidNetwork, setItem: _setLiquidNetwork } = useAsyncStorage('liquidNetwork');
-  const { getItem: _getCachedBalance, setItem: _setCachedBalance } = useAsyncStorage('cachedBalance');
   const eventListenerRef = useRef<string | null>(null);
   const isInitializingRef = useRef<boolean>(false);
 
   const updateState = (updates: Partial<BreezState>) => {
     setState((prev) => ({ ...prev, ...updates }));
-  };
-
-  const loadCachedBalance = useCallback(async (): Promise<number> => {
-    try {
-      const cachedBalance = await _getCachedBalance();
-      if (cachedBalance) {
-        const parsedBalance = parseInt(cachedBalance, 10);
-        return isNaN(parsedBalance) ? 0 : parsedBalance;
-      }
-      return 0;
-    } catch (error) {
-      console.error('Error loading cached balance:', error);
-      return 0;
-    }
-  }, [_getCachedBalance]);
-
-  const updateBalanceIfDifferent = async (newBalance: number): Promise<void> => {
-    try {
-      const cachedBalance = await loadCachedBalance();
-
-      if (cachedBalance !== newBalance) {
-        await _setCachedBalance(newBalance.toString());
-        updateState({ balance: newBalance });
-      }
-    } catch (error) {
-      console.error('Error updating balance:', error);
-      updateState({ balance: newBalance });
-    }
   };
 
   const eventHandler = (event: SdkEvent) => {
@@ -126,7 +97,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         if (storedNetwork && Object.values(LiquidNetwork).includes(storedNetwork as LiquidNetwork)) {
           return storedNetwork as LiquidNetwork;
         }
-        return LiquidNetwork.TESTNET;
+        return LiquidNetwork.MAINNET;
       } catch (error) {
         console.error('Error loading liquid network:', error);
         return LiquidNetwork.TESTNET;
@@ -139,16 +110,6 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     };
     initializeNetwork();
   }, [_getLiquidNetwork]);
-
-  useEffect(() => {
-    const loadInitialBalance = async () => {
-      const cachedBalance = await loadCachedBalance();
-      if (cachedBalance > 0) {
-        updateState({ balance: cachedBalance });
-      }
-    };
-    loadInitialBalance();
-  }, [loadCachedBalance]);
 
   const initializeBreez = async (): Promise<void> => {
     if (isInitializingRef.current || state.isInitialized) {
@@ -230,11 +191,11 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       const getInfoRes = await getInfo();
       console.log('Wallet information:', getInfoRes);
 
+      const newBalance = getInfoRes.walletInfo.balanceSat || 0;
+      setState((prevState) => ({ ...prevState, balance: newBalance }));
+
       // Get payment history
       const payments = await listPayments({});
-
-      const newBalance = getInfoRes.walletInfo.balanceSat || 0;
-      await updateBalanceIfDifferent(newBalance);
 
       updateState({
         isSyncing: false,
@@ -269,7 +230,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
               const payments = await listPayments({});
 
               const newBalance = getInfoRes.walletInfo.balanceSat || 0;
-              await updateBalanceIfDifferent(newBalance);
+              setState((prevState) => ({ ...prevState, balance: newBalance }));
 
               updateState({
                 isSyncing: false,
@@ -316,8 +277,6 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         isInitialized: false,
         payments: [],
       });
-
-      await _setCachedBalance('0');
 
       // Reset initialization flag
       isInitializingRef.current = false;
