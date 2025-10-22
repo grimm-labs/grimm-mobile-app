@@ -48,5 +48,5 @@ jobs:
           GOOGLE_SERVICES_KEY_BASE64: ${{ secrets.GOOGLE_SERVICES_KEY_BASE64 }}
           ANDROID: true
           AUTO_SUBMIT_ANDROID: true
-          IOS: false
-          AUTO_SUBMIT_IOS: false
+          IOS: true
+          AUTO_SUBMIT_IOS: true
