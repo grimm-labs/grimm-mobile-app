@@ -10,6 +10,9 @@ import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
+import { Env } from '@/lib/env';
+
+const isProduction = Env.APP_ENV === 'production';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -54,7 +57,7 @@ export default function Settings() {
             <View className="mb-6 mt-3">
               <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.general')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-                <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} />
+                {!isProduction && <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} />}
                 <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} />
                 <SettingsItem icon="language" title={t('settings.general.language.title')} subtitle={t('settings.general.language.subtitle')} onPress={() => router.push('/settings/language')} />
                 <SettingsItem icon="options-sharp" title={t('settings.general.bitcoinUnit.title')} subtitle={t('settings.general.bitcoinUnit.subtitle')} onPress={() => router.push('/settings/bitcoin-unit')} />
