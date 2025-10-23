@@ -51,3 +51,4 @@ jobs:
           AUTO_SUBMIT_ANDROID: true
           IOS: true
           AUTO_SUBMIT_IOS: true
+          VERSION: $${{ github.ref_name }}
