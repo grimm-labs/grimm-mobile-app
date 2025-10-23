@@ -37,6 +37,7 @@ jobs:
       - name: Create .env.development
         run: |
           echo "BREEZ_API_KEY=${{ secrets.BREEZ_API_KEY }}" >> .env.development
+          echo "YADIO_API_URL=https://api.yadio.io" >> .env.development
 
       - name: 📦 Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
