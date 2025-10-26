@@ -48,9 +48,8 @@ export default function LnWalletDetails() {
   const { t } = useTranslation();
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
-  const { selectedCountry, bitcoinUnit } = useContext(AppContext);
+  const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
   const { balance, payments } = useBreez();
-
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   return (
@@ -73,13 +72,14 @@ export default function LnWalletDetails() {
           <View className="mb-6 mt-4">
             <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
               <Text className="mb-2 text-sm text-gray-500">{t('lnWallet.available')}</Text>
-              <Text className="mb-2 text-4xl font-bold text-gray-900">
-                {convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}
-              </Text>
-              <Text className="mb-4 text-sm text-gray-400">
-                {bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} {bitcoinUnit}
-              </Text>
-
+              <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
+                <Text className="mb-2 text-4xl font-bold text-gray-900">
+                  {hideBalance ? '********' : `${convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} ${selectedFiatCurrency}`}
+                </Text>
+                <Text className="mb-4 text-sm text-gray-400">
+                  {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} ${bitcoinUnit}`}
+                </Text>
+              </TouchableOpacity>
               <View className="mb-2 border-t border-gray-200 pt-4">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center">

@@ -3,18 +3,18 @@
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
-
-type ThemeMode = 'system' | 'light' | 'dark';
+import type { ColorSchemeType } from '@/lib';
+import { useSelectedTheme } from '@/lib';
 
 interface ThemeConfig {
-  id: ThemeMode;
+  id: ColorSchemeType;
   name: string;
   description: string;
   icon: React.ComponentProps<typeof Ionicons>['name'];
@@ -77,7 +77,7 @@ ThemeOption.displayName = 'ThemeOption';
 
 export default function ThemeSelector() {
   const { t } = useTranslation();
-  const [selectedTheme, setSelectedTheme] = useState<ThemeMode>('system');
+  const { selectedTheme, setSelectedTheme } = useSelectedTheme();
 
   const THEME_CONFIGURATIONS: readonly ThemeConfig[] = useMemo(
     () => [
@@ -106,12 +106,15 @@ export default function ThemeSelector() {
     [t],
   );
 
-  const handleThemeSelect = useCallback((themeId: ThemeMode) => {
-    setSelectedTheme(themeId);
-  }, []);
+  const handleThemeSelect = useCallback(
+    (themeId: ColorSchemeType) => {
+      setSelectedTheme(themeId);
+    },
+    [setSelectedTheme],
+  );
 
   const themeHandlers = useMemo(() => {
-    const handlers: Record<ThemeMode, () => void> = {} as Record<ThemeMode, () => void>;
+    const handlers: Record<ColorSchemeType, () => void> = {} as Record<ColorSchemeType, () => void>;
     THEME_CONFIGURATIONS.forEach((theme) => {
       handlers[theme.id] = () => handleThemeSelect(theme.id);
     });

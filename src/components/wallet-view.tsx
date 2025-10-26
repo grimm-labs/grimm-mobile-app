@@ -36,23 +36,23 @@ export const WalletView = ({ name, symbol, type }: Props) => {
 
   return (
     <View className="flex flex-row items-center py-2">
-      <Image className="mr-4 size-12 rounded-full" source={walletIcon} />
+      <Image className="mr-4 size-14 rounded-full" source={walletIcon} />
       <View className="flex-1 flex-row items-center justify-between">
-        <View className="">
-          <Text className="text-lg font-semibold text-gray-700">{name}</Text>
-          <View className="my" />
+        <View>
+          <Text className="text-xl font-bold text-gray-700">{name}</Text>
+          <View className="my-1" />
           <View className="flex-row items-center">
-            <Text className="text-sm font-medium text-gray-600">{symbol}</Text>
-            <Text className="text-xs text-gray-500">({type})</Text>
+            <Text className="text-sm font-bold text-gray-600">{symbol}</Text>
+            <Text className="mx-1 text-xs text-gray-500">({type})</Text>
           </View>
         </View>
-        <View className="">
+        <View>
           {hideBalance ? (
-            <Text className="text-right text-lg font-semibold text-gray-900">********</Text>
+            <Text className="text-right text-xl font-semibold text-gray-900">********</Text>
           ) : (
-            <View>
-              <Text className="text-right text-lg font-semibold text-gray-700">{formatBalance(balance, bitcoinUnit)}</Text>
-              <View className="my" />
+            <View className="text-right">
+              <Text className="text-right text-xl font-bold text-gray-700">{formatBalance(balance, bitcoinUnit)}</Text>
+              <View className="my-1" />
               <Text className="text-right text-sm font-medium text-gray-600">
                 {convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}{' '}
               </Text>

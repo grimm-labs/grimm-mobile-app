@@ -1,8 +1,10 @@
+/* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
-import React, { memo, useCallback, useContext, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { colors } from '@/components/ui';
+import { initializeLanguage } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 
@@ -41,6 +43,7 @@ const TabLayout = () => {
   const { isDataLoaded, seedPhrase } = useContext(AppContext);
   const { isInitialized, initializeBreez } = useBreez();
   const splashHiddenRef = useRef(false);
+  const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
 
   const hideSplash = useCallback(async () => {
     if (!splashHiddenRef.current) {
@@ -50,13 +53,27 @@ const TabLayout = () => {
   }, []);
 
   useEffect(() => {
+    const loadLanguage = async () => {
+      try {
+        await initializeLanguage();
+      } catch (error) {
+        console.error('Error initializing language:', error);
+      } finally {
+        setIsLanguageLoaded(true);
+      }
+    };
+
+    loadLanguage();
+  }, []);
+
+  useEffect(() => {
     if (isDataLoaded && seedPhrase && seedPhrase.length > 0 && !isInitialized) {
       initializeBreez();
     }
   }, [isDataLoaded, seedPhrase, isInitialized, initializeBreez]);
 
   useEffect(() => {
-    if (isDataLoaded) {
+    if (isDataLoaded && isLanguageLoaded) {
       if (seedPhrase?.length === 0) {
         hideSplash();
       } else {
@@ -64,7 +81,7 @@ const TabLayout = () => {
         return () => clearTimeout(timer);
       }
     }
-  }, [hideSplash, isDataLoaded, seedPhrase?.length]);
+  }, [hideSplash, isDataLoaded, isLanguageLoaded, seedPhrase?.length]);
 
   useEffect(() => {
     return () => {
@@ -74,7 +91,7 @@ const TabLayout = () => {
     };
   }, [hideSplash]);
 
-  if (!isDataLoaded) {
+  if (!isDataLoaded || !isLanguageLoaded) {
     return null;
   }
 

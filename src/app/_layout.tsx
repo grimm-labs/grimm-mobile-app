@@ -12,7 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { APIProvider } from '@/api';
-import { hydrateAuth } from '@/lib';
+import { hydrateAuth, loadSelectedTheme } from '@/lib';
 import { AppContextProvider } from '@/lib/context';
 import { BitcoinPriceProvider } from '@/lib/context/bitcoin-prices-context';
 import { BreezProvider } from '@/lib/context/breez-context';
@@ -26,7 +26,7 @@ export const unstable_settings = {
 
 hydrateAuth();
 
-// loadSelectedTheme();
+loadSelectedTheme();
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 

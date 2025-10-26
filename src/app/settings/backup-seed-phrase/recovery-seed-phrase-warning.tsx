@@ -41,7 +41,7 @@ export default function MnemonicWarning() {
             <View className="mt-8 border-t-[0.5px] border-gray-300" />
             <View className="mt-6 space-y-6">
               {warnings.map((text, index) => (
-                <View key={index} className="flex flex-row items-center space-x-4">
+                <View key={index} className="my-3 flex flex-row items-center space-x-4">
                   <View className="m-3">
                     <Ionicons name={index === 0 ? 'alert-circle-outline' : index === 1 ? 'help-circle-outline' : 'lock-closed-outline'} size={32} color="gray" />
                   </View>

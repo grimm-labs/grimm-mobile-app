@@ -49,7 +49,7 @@ export default function ScanQrScreen() {
   );
 
   const handleQrCodeScanned = useCallback(
-    ({ type, data }: { type: string; data: string }) => {
+    ({ data }: { data: string }) => {
       if (!isScanning) return;
 
       setIsScanning(false);
@@ -57,8 +57,6 @@ export default function ScanQrScreen() {
       if (scanTimeoutRef.current) {
         clearTimeout(scanTimeoutRef.current);
       }
-
-      console.log('QR Code:', { type, data });
 
       handleQrCodeDetected(data);
 
@@ -186,7 +184,7 @@ export default function ScanQrScreen() {
           <CameraView
             style={{ flex: 1 }}
             facing={facing}
-            flash={flashEnabled ? 'on' : 'off'}
+            enableTorch={flashEnabled}
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
             }}

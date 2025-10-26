@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Mnemonic } from 'bdk-rn';
 import { WordCount } from 'bdk-rn/lib/lib/enums';
 import { Stack, useRouter } from 'expo-router';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,24 +10,27 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 
 interface SeedOptionItemProps {
   title: string;
   subtitle: string;
-  isSelected: boolean;
-  onSelect: () => void;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  onPress: () => void;
 }
 
-const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, isSelected, onSelect }) => {
+const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, onPress, icon }) => {
   return (
-    <TouchableOpacity onPress={onSelect} className={`mb-3 flex-row items-center justify-between rounded-lg border-2 p-4 ${isSelected ? 'border-primary-500' : 'border-gray-200'}`} activeOpacity={0.7}>
+    <TouchableOpacity onPress={onPress} className={`mb-3 flex-row items-center justify-between p-4`} activeOpacity={0.7}>
+      <View className="mr-4">
+        <Ionicons name={icon} size={24} color={colors.neutral[800]} />
+      </View>
       <View className="flex-1 pr-4">
-        <Text className={`mb-1 text-xl font-normal ${isSelected ? 'text-primary-600' : 'text-gray-900'}`}>{title}</Text>
+        <Text className="mb-1 text-lg font-semibold text-gray-900">{title}</Text>
         <Text className="text-sm text-gray-600">{subtitle}</Text>
       </View>
-      {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
+      <Ionicons name="chevron-forward" size={24} color={colors.neutral[400]} />
     </TouchableOpacity>
   );
 };
@@ -35,26 +38,23 @@ const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, isSele
 export default function CreateOrImportSeed() {
   const { t } = useTranslation();
   const { setSeedPhrase } = useContext(AppContext);
-  const [selectedOption, setSelectedOption] = useState<'create' | 'import'>('create');
   const router = useRouter();
 
-  const handleContinue = async () => {
-    if (!selectedOption) return;
-
-    if (selectedOption === 'create') {
-      try {
-        const newMnemonic = (await new Mnemonic().create(WordCount.WORDS12)).asString();
-        if (!newMnemonic) {
-          throw new Error('Failed to generate seed phrase');
-        }
-        setSeedPhrase(newMnemonic);
-        router.replace('/');
-      } catch (error) {
-        console.error('Error generating seed phrase:', error);
+  const handleCreateSeed = async () => {
+    try {
+      const newMnemonic = (await new Mnemonic().create(WordCount.WORDS12)).asString();
+      if (!newMnemonic) {
+        throw new Error('Failed to generate seed phrase');
       }
-    } else if (selectedOption === 'import') {
-      router.push('/auth/import-seed-phrase');
+      await setSeedPhrase(newMnemonic);
+      router.replace('/');
+    } catch (error) {
+      console.error('Error generating seed phrase:', error);
     }
+  };
+
+  const handleImportSeed = async () => {
+    router.push('/auth/import-seed-phrase');
   };
 
   return (
@@ -71,21 +71,17 @@ export default function CreateOrImportSeed() {
             }}
           />
           <FocusAwareStatusBar style="dark" />
-
           <View className="flex-1">
             <ScreenTitle title={t('seedSetup.title')} />
             <View className="mb-3" />
-
             <ScreenSubtitle subtitle={t('seedSetup.subtitle')} />
             <View className="mb-3" />
-
             <View className="flex-1">
-              <SeedOptionItem title={t('seedSetup.create.title')} subtitle={t('seedSetup.create.subtitle')} isSelected={selectedOption === 'create'} onSelect={() => setSelectedOption('create')} />
-              <SeedOptionItem title={t('seedSetup.import.title')} subtitle={t('seedSetup.import.subtitle')} isSelected={selectedOption === 'import'} onSelect={() => setSelectedOption('import')} />
+              <SeedOptionItem icon="add-circle-outline" title={t('seedSetup.create.title')} subtitle={t('seedSetup.create.subtitle')} onPress={handleCreateSeed} />
+              <View className="my-2 border-b border-neutral-200" />
+              <SeedOptionItem icon="folder-open-outline" title={t('seedSetup.import.title')} subtitle={t('seedSetup.import.subtitle')} onPress={handleImportSeed} />
             </View>
           </View>
-
-          <Button testID="login-button" label={t('common.continue')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

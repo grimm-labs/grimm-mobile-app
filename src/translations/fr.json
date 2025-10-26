@@ -71,8 +71,8 @@
   },
   "importSeed": {
     "error": "Veuillez entrer une phrase de récupération de 12 mots valide.",
-    "placeholder": "Saisissez votre phrase de 12 ou 24 mots séparés par des espaces",
-    "subtitle": "Saisissez votre phrase de récupération de 12 ou 24 mots pour restaurer votre portefeuille Bitcoin.",
+    "placeholder": "Saisissez votre phrase de 12 mots séparés par des espaces",
+    "subtitle": "Saisissez votre phrase de récupération de 12 mots pour restaurer votre portefeuille Bitcoin.",
     "title": "Phrase de récupération",
     "validCount": "✓ {{count}} mots saisis",
     "words": "mots"
@@ -85,12 +85,13 @@
     "errors": {
       "bitcoinNotSupported": "Désolé, le paiement vers une adresse Bitcoin n'est pas encore pris en charge",
       "invalidInvoice": "Veuillez entrer une facture Lightning valide",
+      "lightningAddressNotSupported": "Désolé, nous ne prenons pas en charge les paiements par adresse Lightning",
       "preparePaymentFailed": "Impossible de préparer le paiement. Adresse invalide",
       "unsupportedAddress": "Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning",
       "zeroAmountNotSupported": "Désolé, nous ne prenons pas en charge les paiements Lightning sans montant"
     },
     "payButton": "Payer la facture",
-    "placeholder": "Facture | Adresse Lightning | Adresse BTC",
+    "placeholder": "Facture Bitcoin Lightning",
     "processing": "Traitement...",
     "title": "Paiement Lightning"
   },
@@ -103,6 +104,15 @@
     "receiveOnchain": "Recevoir via BTC on-chain",
     "seeAll": "Voir tout",
     "transactions": "Transactions"
+  },
+  "logoutBottomSheet": {
+    "backupButton": "Sauvegarder la phrase de récupération",
+    "cancelButton": "Annuler",
+    "description": "Vous pourrez vous reconnecter à tout moment avec votre phrase de récupération sauvegardée",
+    "logoutButton": "Supprimer le compte et se déconnecter",
+    "noBackupDanger": "Si vous vous déconnectez maintenant, vous risquez de perdre définitivement l'accès à vos actifs !",
+    "noBackupWarning": "Vous n'avez pas encore sauvegardé votre phrase de récupération.",
+    "title": "Supprimer le compte ?"
   },
   "mnemonicWarning": {
     "attention": "Attention",
@@ -165,7 +175,7 @@
     "getStarted": "Commencer",
     "help": "Besoin d'aide ?",
     "privacyPolicy": "Politique de confidentialité",
-    "subtitle": "La SuperApp Bitcoin nouvelle génération, auto-hébergée, pour des paiements On-chain et Lightning sans effort.",
+    "subtitle": "Plongez dans le futur de Bitcoin avec des paiements Lightning instantanés.",
     "termsOfService": "Conditions d'utilisation",
     "title": "Bienvenue sur Grimm App"
   },
@@ -252,8 +262,8 @@
       "subtitle": "Utilisez votre phrase de récupération de 12 mots existante pour restaurer votre portefeuille",
       "title": "Importer une phrase de récupération existante"
     },
-    "subtitle": "Choisissez comment vous souhaitez configurer votre portefeuille Bitcoin. Vous pouvez créer une nouvelle phrase de récupération ou en importer une existante.",
-    "title": "Configurer votre portefeuille"
+    "subtitle": "Choisissez comment vous souhaitez configurer votre portefeuille.",
+    "title": "Bienvenue sur Grimm App"
   },
   "selectCountry": {
     "empty": "Aucun pays disponible",

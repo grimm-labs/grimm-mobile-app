@@ -12,6 +12,7 @@ jest.mock('expo-localization', () => ({
   isoCurrencyCodes: ['EUR'],
   region: 'FR',
   isRTL: false,
+  getLocales: () => [{ languageTag: 'en-US', languageCode: 'en', countryCode: 'US', isRTL: false }],
 }));
 
 afterEach(cleanup);
