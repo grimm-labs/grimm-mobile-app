@@ -5,7 +5,7 @@ import { PaymentMethod, prepareReceivePayment, ReceiveAmountVariant, receivePaym
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next'; // Ajout i18n
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Clipboard, Pressable, ScrollView, Share } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
@@ -27,7 +27,7 @@ type SearchParams = {
 
 export default function ReceivePaymentScreen() {
   const { t } = useTranslation();
-  const { selectedCountry, bitcoinUnit } = useContext(AppContext);
+  const { selectedCountry } = useContext(AppContext);
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { satsAmount, note, type } = useLocalSearchParams<SearchParams>();
@@ -178,7 +178,7 @@ export default function ReceivePaymentScreen() {
               <View className="items-center rounded-2xl p-6">
                 <Text className="mb-2 text-2xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
                 <Text className="text-lg text-gray-500">
-                  {convertBitcoinToFiat(Number(satsAmount), bitcoinUnit, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                  {Number(convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)).toLocaleString()} {selectedFiatCurrency}
                 </Text>
                 <View className="rounded-lg bg-white p-3">
                   <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>

@@ -70,9 +70,9 @@
     "walletName": "Bitcoin"
   },
   "importSeed": {
-    "error": "Please enter a valid 12-word seed phrase.",
-    "placeholder": "Enter your 12 or 24-word seed phrase separated by spaces",
-    "subtitle": "Enter your 12 or 24-word recovery phrase to restore your Bitcoin wallet.",
+    "error": "Please enter a valid 12-words seed phrase.",
+    "placeholder": "Enter your 12-words seed phrase separated by spaces",
+    "subtitle": "Enter your 12-words recovery phrase to restore your Bitcoin wallet.",
     "title": "Recovery Phrase",
     "validCount": "✓ {{count}} words entered",
     "words": "words"
@@ -85,12 +85,13 @@
     "errors": {
       "bitcoinNotSupported": "Sorry, payment to a Bitcoin address is not supported yet",
       "invalidInvoice": "Please enter a valid Lightning invoice",
+      "lightningAddressNotSupported": "Sorry, we do not support Lightning Address payments",
       "preparePaymentFailed": "Unable to prepare payment. Invalid address",
       "unsupportedAddress": "Sorry, we do not support this Bitcoin or Lightning address",
       "zeroAmountNotSupported": "Sorry, we do not support zero-amount Lightning payments"
     },
     "payButton": "Pay Invoice",
-    "placeholder": "Invoice | Lightning Address | BTC Address",
+    "placeholder": "Bitcoin Lightning Invoice",
     "processing": "Processing...",
     "title": "Lightning Payment"
   },
@@ -103,6 +104,15 @@
     "receiveOnchain": "Receive via BTC on-chain",
     "seeAll": "See all",
     "transactions": "Transactions"
+  },
+  "logoutBottomSheet": {
+    "backupButton": "Back up seed phrase",
+    "cancelButton": "Cancel",
+    "description": "You can reconnect at any time with your saved recovery phrase",
+    "logoutButton": "Delete account & Logout",
+    "noBackupDanger": "If you log out now, you risk permanently losing access to your assets!",
+    "noBackupWarning": "You haven't backed up your recovery phrase yet.",
+    "title": "Delete account?"
   },
   "mnemonicWarning": {
     "attention": "Attention",
@@ -165,7 +175,7 @@
     "getStarted": "Get Started",
     "help": "Need help?",
     "privacyPolicy": "Privacy Policy",
-    "subtitle": "The next-gen self-custodial Bitcoin SuperApp for seamless On-chain & Lightning payments.",
+    "subtitle": "Experience the future of Bitcoin with seamless Lightning payments.",
     "termsOfService": "Terms of Service",
     "title": "Welcome to Grimm App"
   },
@@ -252,8 +262,8 @@
       "subtitle": "Use your existing 12-word recovery phrase to restore your wallet",
       "title": "Import existing seed phrase"
     },
-    "subtitle": "Choose how you want to set up your Bitcoin wallet. You can create a new seed phrase or import an existing one.",
-    "title": "Set up your wallet"
+    "subtitle": "Choose how you want to set up your wallet.",
+    "title": "Welcome to Grimm App"
   },
   "selectCountry": {
     "empty": "No countries available",
@@ -303,7 +313,7 @@
         "title": "Backup Key"
       }
     },
-    "signOut": "Sign Out",
+    "signOut": "Log Out",
     "signOutAlert": {
       "cancel": "Cancel",
       "message": "Are you sure you want to sign out?",

@@ -92,6 +92,7 @@
     "react-native-web": "~0.20.0",
     "react-query-kit": "^3.3.0",
     "tailwind-variants": "^0.2.1",
+    "validator": "^13.15.15",
     "zod": "^3.23.8",
     "zustand": "^4.5.5"
   },
@@ -108,6 +109,7 @@
     "@types/jest": "^29.5.12",
     "@types/lodash.memoize": "^4.1.9",
     "@types/react": "~19.0.14",
+    "@types/validator": "^13.15.3",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "babel-plugin-module-resolver": "^5.0.2",

@@ -133,7 +133,6 @@ export const getFiatCurrency = (country: Country): string => {
  */
 export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, outputCurrency: string, bitcoinPrices: RatesResponse | null): number => {
   if (!bitcoinPrices) {
-    console.warn('Bitcoin prices data is not available.');
     return 0;
   }
 

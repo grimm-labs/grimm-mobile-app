@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import validator from 'validator';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
@@ -32,6 +33,12 @@ export default function LightningPaymentScreen() {
   const handlePayment = async () => {
     if (!invoiceInput.trim()) {
       showErrorMessage(t('lightningPayment.errors.invalidInvoice'));
+      setAddressError(true);
+      return;
+    }
+    if (validator.isEmail(invoiceInput.trim())) {
+      showErrorMessage(t('lightningPayment.errors.lightningAddressNotSupported'));
+      setAddressError(true);
       return;
     }
 
@@ -41,7 +48,6 @@ export default function LightningPaymentScreen() {
       const parsed = await parse(invoiceInput.trim());
       switch (parsed.type) {
         case InputTypeVariant.BITCOIN_ADDRESS:
-          console.log(`Input is Bitcoin address ${parsed.address.address}`);
           showErrorMessage(t('lightningPayment.errors.bitcoinNotSupported'));
           setAddressError(true);
           break;
@@ -97,6 +103,7 @@ export default function LightningPaymentScreen() {
                 textAlignVertical="top"
                 autoCapitalize="none"
                 autoCorrect={false}
+                returnKeyType="done"
               />
             </View>
           </View>

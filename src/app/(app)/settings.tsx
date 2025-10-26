@@ -1,11 +1,11 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
 import { useRouter } from 'expo-router';
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { LogoutBottomSheet } from '@/components/logout-bottom-sheet';
 import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
@@ -16,31 +16,26 @@ const isProduction = Env.APP_ENV === 'production';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { setSeedPhrase, resetAppData } = useContext(AppContext);
+  const { setSeedPhrase, resetAppData, isSeedPhraseBackup } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const router = useRouter();
-
-  const handleSignOut = async () => {
-    setSeedPhrase('');
-    resetAppData();
-    await disconnectBreez();
-    router.push('/');
-  };
+  const logoutModalRef = useRef<any>(null);
 
   const signOut = () => {
-    Alert.alert(t('settings.signOutAlert.title'), t('settings.signOutAlert.message'), [
-      {
-        text: t('settings.signOutAlert.cancel'),
-        onPress: () => {
-          handleSignOut();
-        },
-        style: 'destructive',
-      },
-    ]);
+    if (logoutModalRef.current) {
+      logoutModalRef.current.present();
+    }
   };
 
-  const backupSeedPhrase = () => {
+  const redirectToBackupSeedPhrase = () => {
     router.push('/settings/backup-seed-phrase/recovery-seed-phrase-warning');
+  };
+
+  const handleLogout = async () => {
+    await setSeedPhrase('');
+    await resetAppData();
+    await disconnectBreez();
+    router.push('/');
   };
 
   return (
@@ -69,7 +64,7 @@ export default function Settings() {
               <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.security')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
                 {/* <SettingsItem icon="lock-closed" title={t('settings.security.pin.title')} subtitle={t('settings.security.pin.subtitle')} onPress={() => console.log('PIN change pressed')} /> */}
-                <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={backupSeedPhrase} />
+                <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} />
                 {/* <Pressable className="mb-1 flex-row items-center rounded py-2">
                   <View className="mr-1 rounded-full p-2">
                     <Ionicons name="scan-sharp" size={20} color="gray" />
@@ -117,6 +112,7 @@ export default function Settings() {
                 <Text className="text-center font-bold text-red-600">{t('settings.signOut')}</Text>
               </Pressable>
             </View>
+            <LogoutBottomSheet ref={logoutModalRef} onLogout={handleLogout} hasSeedBackup={isSeedPhraseBackup} onBackupSeed={redirectToBackupSeedPhrase} />
           </ScrollView>
         </View>
       </SafeAreaView>

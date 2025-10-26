@@ -50,7 +50,6 @@ export const loadSelectedTheme = async () => {
   try {
     const theme = await AsyncStorage.getItem(SELECTED_THEME);
     if (theme !== null) {
-      console.log('theme', theme);
       colorScheme.set(theme as ColorSchemeType);
     }
   } catch (error) {

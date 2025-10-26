@@ -40,7 +40,6 @@ export const BitcoinPriceProvider = ({ children }: Props) => {
         {},
         {
           onSuccess: (response) => {
-            console.log('Fetched Bitcoin price:', response);
             setBitcoinPrices(response);
           },
           onError: (error) => {
@@ -60,20 +59,16 @@ export const BitcoinPriceProvider = ({ children }: Props) => {
       intervalRef.current = null;
     }
 
-    console.log('Starting Bitcoin price updates');
-
     // Fetch price immediately
     fetchBitcoinPrice();
 
     // Start interval
     intervalRef.current = setInterval(() => {
-      console.log('Auto-updating Bitcoin price');
       fetchBitcoinPrice();
     }, 20000);
   }, [fetchBitcoinPrice]);
 
   const stopPriceUpdates = React.useCallback(() => {
-    console.log('Stopping Bitcoin price updates');
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -82,19 +77,15 @@ export const BitcoinPriceProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      console.log('App state change:', appStateRef.current, '->', nextAppState);
-
       const wasInBackground = appStateRef.current === 'background' || appStateRef.current === 'inactive';
       const isNowActive = nextAppState === 'active';
       const isGoingToBackground = nextAppState === 'background' || nextAppState === 'inactive';
 
       if (wasInBackground && isNowActive) {
         // App is back to foreground
-        console.log('App back to foreground - restarting updates');
         startPriceUpdates();
       } else if (isGoingToBackground) {
         // App going to background
-        console.log('App in background - stopping updates');
         stopPriceUpdates();
       }
 
@@ -103,7 +94,6 @@ export const BitcoinPriceProvider = ({ children }: Props) => {
 
     // Get the current app state
     const currentState = AppState.currentState;
-    console.log('Initial app state:', currentState);
     appStateRef.current = currentState;
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
@@ -114,7 +104,6 @@ export const BitcoinPriceProvider = ({ children }: Props) => {
     }
 
     return () => {
-      console.log('Cleaning up Bitcoin provider');
       stopPriceUpdates();
       subscription?.remove();
     };

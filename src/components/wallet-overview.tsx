@@ -25,7 +25,7 @@ export const WalletOverview = () => {
     <View>
       <View className="flex-row items-center justify-center">
         <Pressable onPress={() => setHideBalance(!hideBalance)} className="flex flex-row items-center">
-          <Text className="mr-2 text-center text-lg font-semibold text-gray-600">{t('walletOverview.totalBalance')}</Text>
+          <Text className="mr-2 text-center text-xl font-semibold text-gray-600">{t('walletOverview.totalBalance')}</Text>
           <View className="flex-row space-x-2">
             <Ionicons name={hideBalance ? 'eye-off' : 'eye'} size={16} color="gray" />
           </View>
