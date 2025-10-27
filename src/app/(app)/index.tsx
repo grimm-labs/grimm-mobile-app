@@ -33,7 +33,7 @@ export default function Home() {
                 {!isSeedPhraseBackup && <SeedPhraseBackupNotification />}
                 <View className="mb-4" />
                 <View className="mb-4 flex-row items-center justify-between">
-                  <Text className="text-xl font-semibold text-gray-600">Accounts</Text>
+                  <Text className="text-xl font-semibold text-gray-600">{t('home.accounts')}</Text>
                 </View>
                 <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
                   <WalletView name={t('home.walletName')} symbol="L-BTC" type="Lightning" />

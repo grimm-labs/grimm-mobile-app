@@ -184,7 +184,7 @@ export default function ScanQrScreen() {
           <CameraView
             style={{ flex: 1 }}
             facing={facing}
-            enableTorch={flashEnabled}
+            enableTorch={flashEnabled && facing === 'back'}
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
             }}
@@ -249,18 +249,20 @@ export default function ScanQrScreen() {
                 >
                   <Ionicons name="camera-reverse" size={24} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={toggleFlash}
-                  style={{
-                    backgroundColor: flashEnabled ? colors.primary[600] : 'rgba(255,255,255,0.2)',
-                    borderRadius: 30,
-                    padding: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Ionicons name={flashEnabled ? 'flash' : 'flash-off'} size={24} color="white" />
-                </TouchableOpacity>
+                {facing === 'back' && (
+                  <TouchableOpacity
+                    onPress={toggleFlash}
+                    style={{
+                      backgroundColor: flashEnabled ? colors.primary[600] : 'rgba(255,255,255,0.2)',
+                      borderRadius: 30,
+                      padding: 15,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Ionicons name={flashEnabled ? 'flash' : 'flash-off'} size={24} color="white" />
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   onPress={toggleClose}
                   style={{

@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
+import * as Application from 'expo-application';
 import { Stack } from 'expo-router';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -74,7 +75,9 @@ export default function AboutScreen() {
                 <Logo />
               </View>
               <Text className="my-6 text-2xl font-bold text-gray-600">Grimm App</Text>
-              <Text className="text-base text-gray-400">{t('about.version', { version: Env.VERSION })}</Text>
+              <Text className="text-base text-gray-400">
+                {t('about.version', { version: Env.VERSION })} {Application.nativeBuildVersion ? `(${Application.nativeBuildVersion})` : null}
+              </Text>
             </View>
           </View>
           <View className="flex-1 px-4">
