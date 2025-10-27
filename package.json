@@ -54,6 +54,7 @@
     "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git",
     "bignumber.js": "^9.1.2",
     "expo": "~53.0.23",
+    "expo-application": "~6.1.5",
     "expo-camera": "~16.1.11",
     "expo-constants": "~17.1.7",
     "expo-dev-client": "~5.2.4",
