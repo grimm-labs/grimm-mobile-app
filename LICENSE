@@ -1,71 +1,9 @@
-## License
+The MIT License (MIT)
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Copyright (c) 2025 Grimm Technologies SARL
 
-The MIT License is a permissive license that allows for reuse with minimal restrictions. You are free to use, modify, and distribute this software, even for commercial purposes, as long as you include the original copyright notice.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-## Disclaimer
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-**⚠️ IMPORTANT DISCLAIMER**
-
-This is Bitcoin wallet software. By using Grimm App, you acknowledge and agree to the following:
-
-- **Self-Custody Responsibility**: You are solely responsible for securing your seed phrase. If you lose your seed phrase, your Bitcoin will be permanently lost. There is no "forgot password" option and no one can help you recover your funds.
-
-- **No Warranty**: This software is provided "as is" without warranty of any kind. While we strive for the highest security and reliability, bugs may exist.
-
-- **User Responsibility**: You are responsible for understanding how Bitcoin works before using this wallet. Transactions are irreversible, and mistakes can result in permanent loss of funds.
-
-- **No Liability**: The developers and contributors are not liable for any losses, damages, or issues arising from the use of this software, including but not limited to loss of Bitcoin, failed transactions, or security breaches.
-
-- **Beta Software**: This is beta software under active development. Use caution and don't store more Bitcoin than you can afford to lose during the beta period.
-
-- **Regulatory Compliance**: You are responsible for complying with all applicable laws and regulations in your jurisdiction regarding the use of Bitcoin and cryptocurrency.
-
-- **Security Best Practices**: Always verify addresses before sending, never share your seed phrase, keep your device secure, and backup your wallet properly.
-
-**By using Grimm App, you accept full responsibility for your funds and actions.**
-
-## Acknowledgements
-
-### Built With
-
-- [Obytes Starter](https://starter.obytes.com) - Production-ready React Native template
-- [Breez SDK](https://breez.technology/) - Lightning Network integration
-- [Bitcoin Dev Kit (BDK)](https://bitcoindevkit.org/) - Bitcoin wallet functionality (planned)
-- [Liquid Wallet Kit (LWK)](https://github.com/Blockstream/lwk) - Liquid Network support (planned)
-
-### Inspired By
-
-- The Bitcoin self-custody movement
-- The cypherpunk vision of financial freedom
-- Open-source Bitcoin wallet projects: Electrum, Sparrow, Samourai, Zeus
-
-### Special Thanks
-
-- The Bitcoin Core developers
-- The Lightning Network developers
-- The Liquid Network team at Blockstream
-- The Breez team for their excellent SDK
-- The React Native community
-- All open-source contributors who make projects like this possible
-
-### Supporting Bitcoin Development
-
-This project is part of the broader Bitcoin ecosystem. We encourage users to support Bitcoin development through:
-
-- Running a Bitcoin full node
-- Contributing to Bitcoin open-source projects
-- Educating others about Bitcoin and self-custody
-- Donating to Bitcoin developers and projects
-
----
-
-<p align="center">
-  Made with ❤️ by the Grimm Labs team<br/>
-  <strong>Not your keys, not your coins.</strong>
-</p>
-
-<p align="center">
-  <sub>This project is based on <a href="https://starter.obytes.com">Obytes Starter</a></sub>
-</p>
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
