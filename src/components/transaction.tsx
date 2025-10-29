@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { type Payment, PaymentType } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
@@ -13,6 +14,7 @@ import { BitcoinUnit } from '@/types/enum';
 export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => {
   const { bitcoinUnit } = useContext(AppContext);
   const { t } = useTranslation();
+  const router = useRouter();
 
   const getTransactionIcon = () => (payment.paymentType === PaymentType.RECEIVE ? 'arrow-down' : 'arrow-up');
 
@@ -68,7 +70,18 @@ export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => 
   const bitcoinAmount = bitcoinUnit === BitcoinUnit.Sats ? payment.amountSat.toLocaleString('en-US') : convertSatsToBtc(payment.amountSat);
 
   return (
-    <TouchableOpacity className="flex-row items-center py-4" activeOpacity={0.7}>
+    <TouchableOpacity
+      className="flex-row items-center py-4"
+      activeOpacity={0.7}
+      onPress={() => {
+        router.push({
+          pathname: '/transaction-details/ln',
+          params: {
+            transactionData: JSON.stringify(payment),
+          },
+        });
+      }}
+    >
       <View className="mr-4 size-12 items-center justify-center rounded-full" style={{ backgroundColor: `${getTransactionColor()}15` }}>
         <Ionicons name={getTransactionIcon() as any} size={20} color={getTransactionColor()} />
       </View>

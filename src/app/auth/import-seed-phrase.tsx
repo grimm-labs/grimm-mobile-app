@@ -34,8 +34,8 @@ export default function ImportSeedPhrase() {
       return;
     }
 
-    setSeedPhrase(seedPhraseInput.trim());
-    setIsSeedPhraseBackup(true);
+    await setSeedPhrase(seedPhraseInput.trim());
+    await setIsSeedPhraseBackup(true);
     router.replace('/');
   };
 
