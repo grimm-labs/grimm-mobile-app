@@ -96,6 +96,19 @@
     "processing": "Traitement...",
     "title": "Paiement Lightning"
   },
+  "lnTransactionDetail": {
+    "date": "Date",
+    "description": "Description",
+    "details": "Détails de la transaction",
+    "fees": "Frais",
+    "invoice": "Facture",
+    "paymentHash": "Hash de paiement",
+    "preimage": "Preimage",
+    "received": "Reçu",
+    "sent": "Envoyé",
+    "total": "Total",
+    "transactionId": "ID de transaction"
+  },
   "lnWallet": {
     "actions": "Actions",
     "available": "Bitcoin Lightning disponible",
