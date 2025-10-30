@@ -5,10 +5,7 @@
   Grimm App
 </h1>
 
-<p align="center">
-  <strong>A self-custodial Bitcoin wallet for the modern era</strong><br/>
-  Taking control of your Bitcoin, one transaction at a time.
-</p>
+<p align="center">A self-custodial Bitcoin wallet for the modern era</p>
 
 ## About Grimm App
 
@@ -62,7 +59,6 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 - Clear transaction history with detailed information
 - Real-time balance updates
 - Support for both Bitcoin and Satoshi denominations
-- Dark mode support for comfortable viewing
 
 ### Wallet Security
 
@@ -70,22 +66,12 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 
 - Private keys stored in platform-specific secure storage (Keychain on iOS, Keystore on Android)
 - Keys only accessed when absolutely necessary (signing transactions, viewing backup)
-- Secure generation of cryptographic randomness for key creation
-
-**Access Control** (Coming Soon)
-
-- Optional PIN protection (6 digits)
-- Biometric authentication (fingerprint, Face ID)
-- Auto-lock after inactivity
-- Configurable security settings based on user preference
 
 ## Core Dependencies and Technology Stack
 
 ### Bitcoin and Lightning
 
 - **[Breez SDK](https://github.com/breez/breez-sdk)**: Production-ready Lightning Network implementation
-- **[BDK (Bitcoin Dev Kit)](https://github.com/bitcoindevkit/bdk)**: Modern Bitcoin wallet library (planned)
-- **[LWK (Liquid Wallet Kit)](https://github.com/Blockstream/lwk)**: Liquid Network wallet functionality (planned)
 
 ### Mobile Development
 
@@ -126,14 +112,6 @@ _Windows/macOS/Linux (for Android development)_
 - Android emulator or physical Android device
 - [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) (macOS/Linux only)
 
-**Recommended Tools**
-
-- [Cursor](https://www.cursor.com/) or [VS Code](https://code.visualstudio.com/download)
-  - ⚠️ Install all recommended extensions from `.vscode/extensions.json`
-  - These extensions provide linting, formatting, and TypeScript support
-- [React Native Debugger](https://github.com/jhen0409/react-native-debugger) for debugging
-- [Flipper](https://fbflipper.com/) for advanced debugging and inspection
-
 ## Getting Started
 
 ### Installation
@@ -151,13 +129,7 @@ cd grimm-mobile-app
 pnpm install
 ```
 
-3. **iOS Setup** (macOS only)
-
-```sh
-cd ios && pod install && cd ..
-```
-
-4. **Environment Configuration**
+3. **Environment Configuration**
 
 ```sh
 cp .env.example .env
@@ -170,63 +142,15 @@ cp .env.example .env
 
 ```sh
 # Run on iOS simulator
-pnpm ios
-
-# Run on specific iOS device
-pnpm ios --device "Your Device Name"
-
-# Run on physical device with specific scheme
-pnpm ios --scheme "Grimm" --device "Your Device"
+pnpm  run ios
 ```
 
 **Android Development**
 
 ```sh
 # Run on Android emulator or connected device
-pnpm android
-
-# Run on specific variant
-pnpm android --variant=debug
+pnpm run android
 ```
-
-**Development Tips**
-
-```sh
-# Start Metro bundler manually
-pnpm start
-
-# Clear cache if you encounter issues
-pnpm start --reset-cache
-
-# Run TypeScript type checking
-pnpm type-check
-
-# Run linting
-pnpm lint
-
-# Run tests
-pnpm test
-```
-
-## Documentation
-
-### General Documentation
-
-- **[Rules and Conventions](https://starter.obytes.com/getting-started/rules-and-conventions/)**: Coding standards and best practices
-- **[Project Structure](https://starter.obytes.com/getting-started/project-structure)**: Detailed explanation of folder organization
-- **[Environment Variables](https://starter.obytes.com/getting-started/environment-vars-config)**: Configuration management
-
-### UI Development
-
-- **[UI and Theming](https://starter.obytes.com/ui-and-theme/ui-theming)**: Styling approach and theme customization
-- **[Components](https://starter.obytes.com/ui-and-theme/components)**: Component library and usage
-- **[Forms](https://starter.obytes.com/ui-and-theme/Forms)**: Form handling and validation
-
-### Advanced Topics
-
-- **[Data Fetching](https://starter.obytes.com/guides/data-fetching)**: API integration patterns
-- **[State Management](https://starter.obytes.com/guides/state-management)**: Managing application state
-- **[Testing](https://starter.obytes.com/guides/testing)**: Testing strategies and tools
 
 ## Roadmap
 
@@ -246,16 +170,11 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 
 - [ ] Native Bitcoin wallet with bech32 addresses
 - [ ] Custom fee selection and RBF support
-- [ ] UTXO management and coin control
 - [ ] Transaction labeling for privacy
-- [ ] Batch transactions
-- [ ] Multiple wallet support
-- [ ] BIP39 passphrase support
 
 ### Phase 3: Liquid Network (Planned)
 
 - [ ] Liquid Network wallet integration
-- [ ] Confidential transactions
 - [ ] Bitcoin <> Liquid submarine swaps
 - [ ] Lightning <> Liquid instant swaps
 - [ ] Liquid asset support
@@ -264,29 +183,18 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 
 - [ ] Watch-only wallet support
 - [ ] Hardware wallet integration (Coldcard, Ledger, Trezor)
-- [ ] PSBT creation and signing
-- [ ] Air-gapped transaction signing
 - [ ] Multi-signature wallet support (future)
 
 ### Phase 5: Privacy and Security Enhancements
 
 - [ ] Tor support for network privacy
-- [ ] Custom electrum server configuration
 - [ ] Coin mixing integration (Whirlpool, JoinMarket)
 - [ ] Encrypted cloud backups with key server
 - [ ] Biometric authentication
 - [ ] Enhanced transaction privacy features
 
-### Phase 6: User Experience
+### Phase 6: Integration and Interoperability
 
-- [ ] Fiat currency conversion and display
-- [ ] Transaction fiat value at time of payment
-- [ ] Widget support for quick balance check
-
-### Phase 7: Integration and Interoperability
-
-- [ ] Integration with Bitcoin exchanges (optional)
-- [ ] Configurable swap providers
 - [ ] Support for additional Lightning implementations
 - [ ] BOLT12 offers support
 - [ ] Nostr integration for social payments
@@ -298,36 +206,12 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 - [ ] Fedimint integration
 - [ ] Cashu token support
 
-## Privacy & Security
-
-### Privacy Principles
-
-**No Data Collection**
-
-- We don't collect, store, or transmit any personal information
-- No analytics, no tracking, no telemetry
-- Your transaction history stays on your device
-
-**Network Privacy**
-
-- Default electrum servers don't keep logs
-- Planned Tor support for anonymous blockchain queries
-- No IP address logging or correlation
-
-**Transaction Privacy**
-
-- Coin control to avoid address reuse
-- Change address detection and management
-- Confidential transactions via Liquid Network
-
 ### Security Best Practices
 
 **Key Management**
 
 - Keys generated using cryptographically secure random number generation
 - BIP39 standard for mnemonic phrases
-- BIP32/BIP44 hierarchical deterministic wallet structure
-- Optional BIP39 passphrase for additional security layer
 
 **Secure Storage**
 
@@ -354,7 +238,6 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 
 **What Grimm App Cannot Protect Against**
 
-- ❌ Physical device theft without PIN/biometric lock
 - ❌ Malware with root/jailbreak access
 - ❌ Loss of seed phrase without backup
 - ❌ Social engineering attacks
@@ -362,7 +245,6 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 
 **User Responsibilities**
 
-- Secure your device with a strong PIN/password
 - Keep your device updated with latest security patches
 - Backup your seed phrase securely (offline, physically)
 - Never share your seed phrase with anyone
