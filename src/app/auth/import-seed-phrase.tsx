@@ -36,6 +36,7 @@ export default function ImportSeedPhrase() {
 
     await setSeedPhrase(seedPhraseInput.trim());
     await setIsSeedPhraseBackup(true);
+    router.dismissAll();
     router.replace('/');
   };
 

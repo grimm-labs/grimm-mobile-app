@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import LottieView from 'lottie-react-native';
@@ -36,7 +37,14 @@ export default function TransactionResultScreen() {
   const animation = useRef<LottieView>(null);
 
   const isReceived = transactionType === 'received';
-  const headerLeft = () => <HeaderLeft onPress={() => router.replace('/')} />;
+  const headerLeft = () => (
+    <HeaderLeft
+      onPress={() => {
+        router.dismissAll();
+        router.replace('/');
+      }}
+    />
+  );
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 

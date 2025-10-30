@@ -35,6 +35,7 @@ export default function SeedPhraseScreen() {
 
   const handleClose = async () => {
     await setIsSeedPhraseBackup(true);
+    router.dismissAll();
     router.replace('/');
   };
 

@@ -84,6 +84,7 @@ export default function ScanQrScreen() {
   };
 
   const toggleClose = () => {
+    router.dismissAll();
     router.replace('/');
   };
 

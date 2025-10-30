@@ -107,6 +107,7 @@ export default function ReceivePaymentScreen() {
   };
 
   const handleSubmit = () => {
+    router.dismissAll();
     router.replace('/');
   };
 

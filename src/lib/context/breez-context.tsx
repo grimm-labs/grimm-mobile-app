@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import type { Payment, SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
+import type { GetInfoResponse, Payment, SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
 import { addEventListener, connect, defaultConfig, disconnect, getInfo, LiquidNetwork, listPayments, PaymentType, removeEventListener, SdkEventVariant } from '@breeztech/react-native-breez-sdk-liquid';
 import { Env } from '@env';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
@@ -17,6 +17,7 @@ interface BreezState {
   isInitialized: boolean;
   payments: Payment[];
   liquidNetwork: LiquidNetwork;
+  breezWalletInfos: GetInfoResponse | null;
 }
 
 interface BreezContextType extends BreezState {
@@ -35,6 +36,7 @@ const initialState: BreezState = {
   isInitialized: false,
   payments: [],
   liquidNetwork: LiquidNetwork.MAINNET,
+  breezWalletInfos: null,
 };
 
 const BreezContext = createContext<BreezContextType | undefined>(undefined);
@@ -189,7 +191,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       }
 
       const getInfoRes = await getInfo();
-      console.log('Wallet information:', getInfoRes);
+      setState((prevState) => ({ ...prevState, breezWalletInfos: getInfoRes }));
 
       const newBalance = getInfoRes.walletInfo.balanceSat || 0;
       setState((prevState) => ({ ...prevState, balance: newBalance }));
@@ -225,7 +227,10 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
               }
 
               const getInfoRes = await getInfo();
-              console.log('Wallet information:', getInfoRes);
+              if (getInfoRes) {
+                console.log('Wallet information:', getInfoRes);
+                setState((prevState) => ({ ...prevState, breezWalletInfos: getInfoRes }));
+              }
 
               const payments = await listPayments({});
 

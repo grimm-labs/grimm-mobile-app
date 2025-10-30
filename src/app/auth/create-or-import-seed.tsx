@@ -47,6 +47,7 @@ export default function CreateOrImportSeed() {
         throw new Error('Failed to generate seed phrase');
       }
       await setSeedPhrase(newMnemonic);
+      router.dismissAll();
       router.replace('/');
     } catch (error) {
       console.error('Error generating seed phrase:', error);

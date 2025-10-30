@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { LogoutBottomSheet } from '@/components/logout-bottom-sheet';
 import { SettingsItem } from '@/components/settings-item';
-import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
+import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 import { Env } from '@/lib/env';
@@ -16,7 +17,7 @@ const isProduction = Env.APP_ENV === 'production';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { setSeedPhrase, resetAppData, isSeedPhraseBackup } = useContext(AppContext);
+  const { setSeedPhrase, resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const router = useRouter();
   const logoutModalRef = useRef<any>(null);
@@ -79,6 +80,20 @@ export default function Settings() {
                     </Switch.Root>
                   </View>
                 </Pressable> */}
+                <Pressable className="mb-1 flex-row items-center rounded py-2">
+                  <View className="mr-1 rounded-full p-2">
+                    <Ionicons name="eye" size={20} color="gray" />
+                  </View>
+                  <View className="ml-2 flex-1">
+                    <Text className="text-base font-medium text-gray-800">{t('settings.security.hideBalance.title')}</Text>
+                    <Text className="text-sm text-gray-500">{t('settings.security.hideBalance.subtitle')}</Text>
+                  </View>
+                  <View>
+                    <Switch.Root checked={hideBalance} onChange={setHideBalance} accessibilityLabel="switch" className="pb-2">
+                      <Switch.Icon checked={hideBalance} />
+                    </Switch.Root>
+                  </View>
+                </Pressable>
               </View>
             </View>
 
@@ -93,6 +108,14 @@ export default function Settings() {
                   onPress={() => router.push('/settings/notifications')}
                 /> */}
                 <SettingsItem icon="color-palette" title={t('settings.preferences.appearance.title')} subtitle={t('settings.preferences.appearance.subtitle')} onPress={() => router.push('/settings/appearance')} />
+              </View>
+            </View>
+
+            {/* Developers Section */}
+            <View className="mb-6">
+              <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.developers')}</Text>
+              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
+                <SettingsItem icon="color-palette" title={t('settings.developers.breez.title')} subtitle={t('settings.developers.breez.subtitle')} onPress={() => router.push('/settings/developers/breez-sdk')} />
               </View>
             </View>
 
