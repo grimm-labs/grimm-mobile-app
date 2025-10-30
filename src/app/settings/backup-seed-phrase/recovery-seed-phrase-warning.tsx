@@ -13,7 +13,10 @@ export default function MnemonicWarning() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const handleCancel = () => router.replace('/');
+  const handleCancel = () => {
+    router.dismissAll();
+    router.replace('/');
+  };
   const handleProceed = () => router.push('/settings/backup-seed-phrase/recovery-seed-phrase');
 
   const warnings = [t('mnemonicWarning.warning1'), t('mnemonicWarning.warning2'), t('mnemonicWarning.warning3')];

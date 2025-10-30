@@ -51,7 +51,7 @@ export default function TransactionDetailsScreen() {
           }}
         />
         <FocusAwareStatusBar style="dark" />
-        <ScrollView className="flex-1 px-3">
+        <ScrollView className="flex-1 px-3" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4 items-center">
             <View className={`rounded-full px-4 py-2 ${isComplete ? 'bg-green-100' : 'bg-yellow-100'}`}>
               <Text className={`text-sm font-semibold ${isComplete ? 'text-green-700' : 'text-yellow-700'}`}>{isComplete ? '✓ ' + t('transactionItem.status.confirmed') : t('transactionItem.status.pending')}</Text>

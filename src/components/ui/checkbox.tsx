@@ -157,7 +157,7 @@ export const Radio = Object.assign(RadioBase, {
 export const SwitchIcon = ({ checked = false }: IconProps) => {
   const translateX = checked ? THUMB_OFFSET : WIDTH - THUMB_WIDTH - THUMB_OFFSET;
 
-  const backgroundColor = checked ? colors.primary[300] : colors.charcoal[400];
+  const backgroundColor = checked ? colors.primary[600] : colors.charcoal[400];
 
   return (
     <View className="w-[50px] justify-center">

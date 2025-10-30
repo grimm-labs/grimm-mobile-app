@@ -12,7 +12,7 @@ import { AppContext } from '@/lib/context';
 import { BitcoinUnit } from '@/types/enum';
 
 export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => {
-  const { bitcoinUnit } = useContext(AppContext);
+  const { bitcoinUnit, hideBalance } = useContext(AppContext);
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -92,10 +92,14 @@ export const TransactionItem: React.FC<{ payment: Payment }> = ({ payment }) => 
             {formatDate(payment.timestamp)} • {payment.status === 'pending' ? t('transactionItem.status.pending') : t('transactionItem.status.confirmed')}
           </Text>
         </View>
-        <Text className="my-2 text-center text-base font-semibold" style={{ color: getTransactionColor() }}>
-          {getAmountPrefix()}
-          {bitcoinAmount} {bitcoinUnit}
-        </Text>
+        {hideBalance ? (
+          <Text className="my-2 text-center text-base font-bold">{t('walletOverview.hiddenBalance')}</Text>
+        ) : (
+          <Text className="my-2 text-center text-base font-semibold" style={{ color: getTransactionColor() }}>
+            {getAmountPrefix()}
+            {bitcoinAmount} {bitcoinUnit}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );

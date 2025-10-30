@@ -21,6 +21,14 @@
       "title": "Satoshi (SATS)"
     }
   },
+  "breezDetails": {
+    "balance": "Solde",
+    "bitcoin_tip": "Bitcoin Tip",
+    "fingerprint": "Empreinte",
+    "header_title": "Détails du SDK Breez",
+    "liquid_tip": "Liquid Tip",
+    "public_key": "Clé publique"
+  },
   "common": {
     "continue": "Continuer",
     "import": "Importer",
@@ -287,6 +295,12 @@
   },
   "settings": {
     "aboutApp": "À propos de Grimm App",
+    "developers": {
+      "breez": {
+        "subtitle": "Voir les informations détaillées sur l'intégration du SDK Breez",
+        "title": "Breez SDK"
+      }
+    },
     "general": {
       "bitcoinUnit": {
         "subtitle": "Choisissez entre BTC et SATS",
@@ -317,6 +331,7 @@
       }
     },
     "sections": {
+      "developers": "Développeurs",
       "general": "Général",
       "preferences": "Préférences",
       "security": "Sécurité"
@@ -325,6 +340,10 @@
       "backup": {
         "subtitle": "Sécurisez et gérez votre clé de récupération de portefeuille",
         "title": "Clé de sauvegarde"
+      },
+      "hideBalance": {
+        "subtitle": "Activer pour masquer ou afficher votre solde",
+        "title": "Masquer le solde"
       }
     },
     "signOut": "Déconnexion",
