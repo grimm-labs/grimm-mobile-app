@@ -5,6 +5,7 @@
     "error_unable_link": "Unable to open the link: {{url}}",
     "header_title": "About",
     "privacy_policy": "Privacy Policy",
+    "rate_our_app": "Rate our App",
     "terms_of_service": "Terms of Service",
     "version": "Version {{version}}",
     "visit_website": "Visit Website"
@@ -31,8 +32,11 @@
   },
   "common": {
     "continue": "Continue",
+    "home": "Home",
     "import": "Import",
-    "save": "Save"
+    "save": "Save",
+    "settings": "Settings",
+    "transactions": "Transactions"
   },
   "country": {
     "header_title": "Country",
@@ -99,7 +103,7 @@
       "unsupportedAddress": "Sorry, we do not support this Bitcoin or Lightning address",
       "zeroAmountNotSupported": "Sorry, we do not support zero-amount Lightning payments"
     },
-    "payButton": "Pay Invoice",
+    "payButton": "Continue to Pay",
     "placeholder": "Bitcoin Lightning Invoice",
     "processing": "Processing...",
     "title": "Lightning Payment"
