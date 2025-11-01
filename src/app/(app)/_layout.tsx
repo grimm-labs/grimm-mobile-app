@@ -2,6 +2,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { colors } from '@/components/ui';
 import { initializeLanguage } from '@/lib';
@@ -17,24 +18,6 @@ interface TabBarIconProps {
 
 const TabBarIcon = memo(({ name, color }: TabBarIconProps) => <Ionicons name={name as React.ComponentProps<typeof Ionicons>['name']} size={24} color={color} />);
 
-const TAB_CONFIG: Array<{ name: string; title: string; iconName: React.ComponentProps<typeof Ionicons>['name'] }> = [
-  {
-    name: 'index',
-    title: 'Home',
-    iconName: 'home',
-  },
-  {
-    name: 'transactions',
-    title: 'Transactions',
-    iconName: 'receipt',
-  },
-  {
-    name: 'settings',
-    title: 'Settings',
-    iconName: 'settings',
-  },
-];
-
 const tabBarIcon =
   (iconName: string) =>
   ({ color }: { color: string }) => <TabBarIcon name={iconName} color={color} />;
@@ -43,7 +26,26 @@ const TabLayout = () => {
   const { isDataLoaded, seedPhrase } = useContext(AppContext);
   const { isInitialized, initializeBreez } = useBreez();
   const splashHiddenRef = useRef(false);
+  const { t } = useTranslation();
   const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
+
+  const TAB_CONFIG: Array<{ name: string; title: string; iconName: React.ComponentProps<typeof Ionicons>['name'] }> = [
+    {
+      name: 'index',
+      title: t('common.home'),
+      iconName: 'home',
+    },
+    {
+      name: 'transactions',
+      title: t('common.transactions'),
+      iconName: 'receipt',
+    },
+    {
+      name: 'settings',
+      title: t('common.settings'),
+      iconName: 'settings',
+    },
+  ];
 
   const hideSplash = useCallback(async () => {
     if (!splashHiddenRef.current) {

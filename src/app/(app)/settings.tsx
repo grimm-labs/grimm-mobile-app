@@ -51,7 +51,7 @@ export default function Settings() {
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
             {/* General Section */}
             <View className="mb-6 mt-3">
-              <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.general')}</Text>
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-700">{t('settings.sections.general')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
                 {!isProduction && <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} />}
                 <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} />
@@ -62,7 +62,7 @@ export default function Settings() {
 
             {/* Security Section */}
             <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.security')}</Text>
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600">{t('settings.sections.security')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
                 {/* <SettingsItem icon="lock-closed" title={t('settings.security.pin.title')} subtitle={t('settings.security.pin.subtitle')} onPress={() => console.log('PIN change pressed')} /> */}
                 <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} />
@@ -99,7 +99,7 @@ export default function Settings() {
 
             {/* Preferences Section */}
             <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.preferences')}</Text>
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600">{t('settings.sections.preferences')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
                 {/* <SettingsItem
                   icon="notifications"
@@ -113,9 +113,9 @@ export default function Settings() {
 
             {/* Developers Section */}
             <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg text-gray-600">{t('settings.sections.developers')}</Text>
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600">{t('settings.sections.developers')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-                <SettingsItem icon="color-palette" title={t('settings.developers.breez.title')} subtitle={t('settings.developers.breez.subtitle')} onPress={() => router.push('/settings/developers/breez-sdk')} />
+                <SettingsItem icon="code-slash" title={t('settings.developers.breez.title')} subtitle={t('settings.developers.breez.subtitle')} onPress={() => router.push('/settings/developers/breez-sdk')} />
               </View>
             </View>
 

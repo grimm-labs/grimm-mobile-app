@@ -1,11 +1,13 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Application from 'expo-application';
 import { Stack } from 'expo-router';
+import * as StoreReview from 'expo-store-review';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -48,6 +50,26 @@ export default function AboutScreen() {
     }
   };
 
+  const handleRateApp = async () => {
+    try {
+      if ((await StoreReview.isAvailableAsync()) && (await StoreReview.hasAction()) && Platform.OS === 'ios') {
+        await StoreReview.requestReview();
+      } else {
+        const storeUrl = Platform.select({
+          ios: 'itms-apps://itunes.apple.com/app/viewContentsUserReviews/id6754340143?action=write-review',
+          android: `market://details?id=${Env.BUNDLE_ID}&showAllReviews=true`,
+        });
+
+        if (storeUrl) {
+          await openURL(storeUrl);
+        }
+      }
+    } catch (error) {
+      Alert.alert(t('about.error_title'), t('about.error_rating'));
+      console.error('Error requesting review:', error);
+    }
+  };
+
   const handleTermsPress = () => openURL('https://usegrimm.app/terms');
   const handlePrivacyPress = () => openURL('https://usegrimm.app/privacy');
   const handleWebsitePress = () => openURL('https://usegrimm.app');
@@ -81,6 +103,7 @@ export default function AboutScreen() {
             </View>
           </View>
           <View className="flex-1 px-4">
+            <AboutItem title={t('about.rate_our_app')} onPress={handleRateApp} />
             <AboutItem title={t('about.terms_of_service')} onPress={handleTermsPress} />
             <AboutItem title={t('about.privacy_policy')} onPress={handlePrivacyPress} />
             <AboutItem title={t('about.visit_website')} onPress={handleWebsitePress} />

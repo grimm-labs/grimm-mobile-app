@@ -5,6 +5,7 @@
     "error_unable_link": "Impossible d'ouvrir le lien : {{url}}",
     "header_title": "À propos",
     "privacy_policy": "Politique de confidentialité",
+    "rate_our_app": "Noter notre application",
     "terms_of_service": "Conditions d'utilisation",
     "version": "Version {{version}}",
     "visit_website": "Visiter le site web"
@@ -31,8 +32,11 @@
   },
   "common": {
     "continue": "Continuer",
+    "home": "Accueil",
     "import": "Importer",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "settings": "Paramètres",
+    "transactions": "Transactions"
   },
   "country": {
     "header_title": "Pays",
@@ -99,7 +103,7 @@
       "unsupportedAddress": "Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning",
       "zeroAmountNotSupported": "Désolé, nous ne prenons pas en charge les paiements Lightning sans montant"
     },
-    "payButton": "Payer la facture",
+    "payButton": "Continuer pour payer",
     "placeholder": "Facture Bitcoin Lightning",
     "processing": "Traitement...",
     "title": "Paiement Lightning"
@@ -243,7 +247,7 @@
     "default_note": "Paiement Grimm App de {{amount}} sats",
     "error_generic": "Erreur lors de la génération de la facture",
     "error_title": "Erreur de génération",
-    "fee_info": "Des frais de {{fees}} sats ({{fiat}} {{currency}}) seront appliqués à cette facture. Veuillez laisser l'application Grimm ouverte jusqu'à la fin du paiement.",
+    "fee_info": "Des frais de {{fees}} sats ({{fiat}} {{currency}}) seront appliqués à cette facture. Veuillez laisser l'application Grimm App ouverte jusqu'à la fin du paiement.",
     "header": "Recevoir du Bitcoin",
     "invalid_amount": "Montant invalide",
     "loading_subtitle": "Création de votre QR Code de paiement",

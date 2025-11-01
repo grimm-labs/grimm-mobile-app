@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
+import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -78,6 +79,16 @@ export default function LightningPaymentScreen() {
     }
   };
 
+  const pasteFromClipboard = async () => {
+    Clipboard.getStringAsync().then((text) => {
+      setInvoiceInput(text);
+    });
+  };
+
+  const scanQRCode = async () => {
+    router.push('/scan-qr');
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex-1 bg-white">
@@ -91,7 +102,7 @@ export default function LightningPaymentScreen() {
         />
         <FocusAwareStatusBar style="dark" />
         <ScrollView className="flex-1 px-4 pt-8">
-          <View className="mb-4">
+          <View className="mb-2">
             <View className="relative">
               <TextInput
                 value={invoiceInput}
@@ -111,7 +122,22 @@ export default function LightningPaymentScreen() {
           {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
 
           <View>
-            <Button label={isLoading ? t('lightningPayment.processing') : t('lightningPayment.payButton')} onPress={handlePayment} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <View className="my-2 flex flex-row justify-between space-x-2">
+              <View className="w-1/2 pr-2">
+                <Button fullWidth={true} label="Paste" onPress={pasteFromClipboard} variant="secondary" textClassName="text-base font-semibold text-white" size="lg" />
+              </View>
+              <View className="w-1/2 pl-2">
+                <Button fullWidth={true} label="Scan QR" onPress={scanQRCode} variant="secondary" textClassName="text-base font-semibold text-white" size="lg" />
+              </View>
+            </View>
+            <Button
+              label={isLoading ? t('lightningPayment.processing') : t('lightningPayment.payButton')}
+              onPress={handlePayment}
+              fullWidth={true}
+              variant="secondary"
+              textClassName="text-base font-bold text-white"
+              size="lg"
+            />
           </View>
         </ScrollView>
       </SafeAreaView>
