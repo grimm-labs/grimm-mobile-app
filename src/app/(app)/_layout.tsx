@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { colors } from '@/components/ui';
 import { initializeLanguage } from '@/lib';
-import { AppContext } from '@/lib/context';
+import { AppContext, useBdk } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 
 const SPLASH_HIDE_DELAY = 1000;
@@ -24,7 +24,9 @@ const tabBarIcon =
 
 const TabLayout = () => {
   const { isDataLoaded, seedPhrase } = useContext(AppContext);
-  const { isInitialized, initializeBreez } = useBreez();
+  const { isBreezInitialized, initializeBreez } = useBreez();
+  const { initializeBdk } = useBdk();
+
   const splashHiddenRef = useRef(false);
   const { t } = useTranslation();
   const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
@@ -69,10 +71,11 @@ const TabLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded && seedPhrase && seedPhrase.length > 0 && !isInitialized) {
+    if (isDataLoaded && seedPhrase && seedPhrase.length > 0 && !isBreezInitialized) {
       initializeBreez();
+      initializeBdk();
     }
-  }, [isDataLoaded, seedPhrase, isInitialized, initializeBreez]);
+  }, [isDataLoaded, seedPhrase, isBreezInitialized, initializeBreez, initializeBdk]);
 
   useEffect(() => {
     if (isDataLoaded && isLanguageLoaded) {

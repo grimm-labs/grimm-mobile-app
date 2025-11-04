@@ -14,7 +14,7 @@ interface BreezState {
   isSyncing: boolean;
   balance: number;
   error: string | null;
-  isInitialized: boolean;
+  isBreezInitialized: boolean;
   payments: Payment[];
   liquidNetwork: LiquidNetwork;
   breezWalletInfos: GetInfoResponse | null;
@@ -33,7 +33,7 @@ const initialState: BreezState = {
   isSyncing: false,
   balance: 0,
   error: null,
-  isInitialized: false,
+  isBreezInitialized: false,
   payments: [],
   liquidNetwork: LiquidNetwork.MAINNET,
   breezWalletInfos: null,
@@ -79,7 +79,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         updateState({ isSyncing: false });
         // Use setState with callback to get updated state
         setState((currentState) => {
-          if (currentState.isConnected && currentState.isInitialized) {
+          if (currentState.isConnected && currentState.isBreezInitialized) {
             // Don't call refreshWalletInfo directly here to avoid loops
             // The function will be called from the main event handler
             setTimeout(() => refreshWalletInfoWithCurrentState(), 0);
@@ -114,7 +114,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   }, [_getLiquidNetwork]);
 
   const initializeBreez = async (): Promise<void> => {
-    if (isInitializingRef.current || state.isInitialized) {
+    if (isInitializingRef.current || state.isBreezInitialized) {
       console.log('Breez already initialized or initialization in progress');
       return;
     }
@@ -154,8 +154,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
       updateState({
         isConnected: true,
-        isInitialized: true,
-        isSyncing: false, // Important: set to false after success
+        isBreezInitialized: true,
+        isSyncing: false,
       });
 
       await refreshWalletInfo();
@@ -173,11 +173,10 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
   const refreshWalletInfo = async (): Promise<void> => {
     try {
-      // Use reference to current state instead of state
       const currentState = state;
 
       // STOP if not connected or not initialized
-      if (!currentState.isConnected || !currentState.isInitialized) {
+      if (!currentState.isConnected || !currentState.isBreezInitialized) {
         console.log('Stopping refreshWalletInfo: not connected or not initialized');
         return;
       }
@@ -214,7 +213,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     return new Promise((resolve) => {
       setState((currentState) => {
         // Execute refresh logic only if connected and initialized
-        if (currentState.isConnected && currentState.isInitialized) {
+        if (currentState.isConnected && currentState.isBreezInitialized) {
           // Execute async function
           (async () => {
             try {
@@ -228,7 +227,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
               const getInfoRes = await getInfo();
               if (getInfoRes) {
-                console.log('Wallet information:', getInfoRes);
+                // console.log('Wallet information:', getInfoRes);
                 setState((prevState) => ({ ...prevState, breezWalletInfos: getInfoRes }));
               }
 
@@ -263,14 +262,12 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     try {
       console.log('Disconnecting from Breez...');
 
-      // Remove event listener
       if (eventListenerRef.current) {
         await removeEventListener(eventListenerRef.current);
         eventListenerRef.current = null;
         console.log('Event listener removed');
       }
 
-      // Disconnect from SDK
       await disconnect();
       console.log('Disconnected from Breez SDK');
 
@@ -279,7 +276,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         isSyncing: false,
         balance: 0,
         error: null,
-        isInitialized: false,
+        isBreezInitialized: false,
         payments: [],
       });
 
@@ -322,7 +319,6 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    // Cleanup function to remove event listeners on unmount
     return () => {
       if (eventListenerRef.current) {
         removeEventListener(eventListenerRef.current).catch(console.error);

@@ -13,9 +13,6 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { useBreez } from '@/lib/context/breez-context';
-import { Env } from '@/lib/env';
-
-const isProduction = Env.APP_ENV === 'production';
 
 interface NetworkOptionProps {
   title: string;
@@ -59,8 +56,6 @@ export default function NetworkSwitcher() {
 
   const handleNetworkChange = useCallback(
     async (network: LiquidNetwork) => {
-      if (network === liquidNetwork || isProduction) return;
-
       if (network === LiquidNetwork.MAINNET && liquidNetwork !== LiquidNetwork.MAINNET) {
         Alert.alert(t('networkSwitcher.alerts.switchMainnet.title'), t('networkSwitcher.alerts.switchMainnet.message'), [
           { text: t('networkSwitcher.alerts.cancel'), style: 'cancel' },
@@ -78,12 +73,10 @@ export default function NetworkSwitcher() {
   );
 
   const handleMainnetPress = useCallback(() => {
-    if (isProduction) return;
     handleNetworkChange(LiquidNetwork.MAINNET);
   }, [handleNetworkChange]);
 
   const handleTestnetPress = useCallback(() => {
-    if (isProduction) return;
     handleNetworkChange(LiquidNetwork.TESTNET);
   }, [handleNetworkChange]);
 
@@ -107,7 +100,7 @@ export default function NetworkSwitcher() {
     [liquidNetwork, handleMainnetPress, handleTestnetPress, t],
   );
 
-  const isDisabled = isChangingNetwork || isSyncing || isProduction;
+  const isDisabled = isChangingNetwork || isSyncing;
 
   return (
     <SafeAreaProvider>
@@ -138,12 +131,6 @@ export default function NetworkSwitcher() {
             </View>
           </View>
 
-          {isProduction && (
-            <View className="mt-4 rounded-lg bg-yellow-50 p-3">
-              <Text className="text-sm text-yellow-800">{t('networkSwitcher.productionNotice')}</Text>
-            </View>
-          )}
-
           <View className="mt-2">
             {networkOptions.map((option) => (
               <NetworkOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} disabled={isDisabled} />
@@ -151,7 +138,7 @@ export default function NetworkSwitcher() {
           </View>
 
           <View className="mt-6">
-            <Text className="text-xs text-gray-600">{isProduction ? t('networkSwitcher.securityNote.production') : t('networkSwitcher.securityNote.mainnet')}</Text>
+            <Text className="text-xs text-gray-600">{t('networkSwitcher.securityNote.mainnet')}</Text>
           </View>
         </View>
       </SafeAreaView>
