@@ -230,6 +230,20 @@
     "termsOfService": "Terms of Service",
     "title": "Welcome to Grimm App"
   },
+  "onchainTransactionDetail": {
+    "blockHeight": "Block Height",
+    "date": "Date",
+    "details": "Transaction Details",
+    "networkFee": "Network Fee",
+    "received": "Received",
+    "sent": "Sent",
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending"
+    },
+    "total": "Total Amount",
+    "transactionId": "Transaction ID"
+  },
   "paymentDetails": {
     "amount": "Amount",
     "errorDescription": "We couldn't process your payment request. Please check your invoice and try again.",
@@ -465,6 +479,8 @@
     "filters": {
       "all": "All",
       "confirmed": "Confirmed",
+      "lightning": "Lightning",
+      "onchain": "On-Chain",
       "pending": "Pending"
     },
     "title": "Transactions"

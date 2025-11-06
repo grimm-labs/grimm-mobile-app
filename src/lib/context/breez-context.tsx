@@ -5,22 +5,22 @@ import { Env } from '@env';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { useSecureStorage } from '../hooks/use-secure-storage';
 
-interface BreezState {
+const SYNC_INTERVAL = 10000;
+
+interface BreezContextType {
   isConnected: boolean;
   isSyncing: boolean;
   balance: number;
-  error: string | null;
+  breezError: string | null;
   isBreezInitialized: boolean;
   payments: Payment[];
   liquidNetwork: LiquidNetwork;
   breezWalletInfos: GetInfoResponse | null;
-}
-
-interface BreezContextType extends BreezState {
+  isDataLoaded: boolean;
   initializeBreez: () => Promise<void>;
   refreshWalletInfo: () => Promise<void>;
   disconnectBreez: () => Promise<void>;
@@ -28,295 +28,180 @@ interface BreezContextType extends BreezState {
   getLiquidNetwork: () => LiquidNetwork;
 }
 
-const initialState: BreezState = {
+const defaultContext: BreezContextType = {
   isConnected: false,
   isSyncing: false,
   balance: 0,
-  error: null,
+  breezError: null,
   isBreezInitialized: false,
   payments: [],
   liquidNetwork: LiquidNetwork.MAINNET,
   breezWalletInfos: null,
+  isDataLoaded: false,
+  initializeBreez: async () => {},
+  refreshWalletInfo: async () => {},
+  disconnectBreez: async () => {},
+  setLiquidNetwork: async () => {},
+  getLiquidNetwork: () => LiquidNetwork.MAINNET,
 };
 
-const BreezContext = createContext<BreezContextType | undefined>(undefined);
+const BreezContext = createContext<BreezContextType>(defaultContext);
 
 interface BreezProviderProps {
   children: ReactNode;
-  mnemonic?: string;
 }
 
 export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const router = useRouter();
-  const [state, setState] = useState<BreezState>(initialState);
+
+  const [isConnected, _setIsConnected] = useState(defaultContext.isConnected);
+  const [isSyncing, _setIsSyncing] = useState(defaultContext.isSyncing);
+  const [balance, _setBalance] = useState(defaultContext.balance);
+  const [breezError, _setBreezError] = useState(defaultContext.breezError);
+  const [isBreezInitialized, _setIsBreezInitialized] = useState(defaultContext.isBreezInitialized);
+  const [payments, _setPayments] = useState<Payment[]>(defaultContext.payments);
+  const [liquidNetwork, _setLiquidNetwork] = useState<LiquidNetwork>(defaultContext.liquidNetwork);
+  const [breezWalletInfos, _setBreezWalletInfos] = useState<GetInfoResponse | null>(defaultContext.breezWalletInfos);
+  const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
+
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
-  const { getItem: _getLiquidNetwork, setItem: _setLiquidNetwork } = useAsyncStorage('liquidNetwork');
+  const { getItem: _getLiquidNetwork, setItem: _updateLiquidNetwork } = useAsyncStorage('liquidNetwork');
+
   const eventListenerRef = useRef<string | null>(null);
   const isInitializingRef = useRef<boolean>(false);
 
-  const updateState = (updates: Partial<BreezState>) => {
-    setState((prev) => ({ ...prev, ...updates }));
-  };
-
-  const eventHandler = (event: SdkEvent) => {
-    console.log('Breez event:', event);
-
-    switch (event.type) {
-      case SdkEventVariant.PAYMENT_SUCCEEDED:
-        const { amountSat, paymentType } = event.details;
-        refreshWalletInfo();
-        if (paymentType === PaymentType.RECEIVE) {
-          router.push({
-            pathname: '/transaction-result/success-screen',
-            params: { transactionType: 'received', satsAmount: amountSat.toString() },
-          });
-        }
-        break;
-      case SdkEventVariant.PAYMENT_FAILED:
-        console.error('Payment failed:', event);
-        break;
-      case SdkEventVariant.SYNCED:
-        updateState({ isSyncing: false });
-        // Use setState with callback to get updated state
-        setState((currentState) => {
-          if (currentState.isConnected && currentState.isBreezInitialized) {
-            // Don't call refreshWalletInfo directly here to avoid loops
-            // The function will be called from the main event handler
-            setTimeout(() => refreshWalletInfoWithCurrentState(), 0);
-          }
-          return { ...currentState, isSyncing: false };
-        });
-        break;
-      default:
-        break;
+  const _loadLiquidNetwork = useCallback(async () => {
+    const saved = await _getLiquidNetwork();
+    if (saved !== null) {
+      _setLiquidNetwork(saved as LiquidNetwork);
     }
-  };
+  }, [_getLiquidNetwork]);
 
   useEffect(() => {
-    const loadLiquidNetwork = async (): Promise<LiquidNetwork> => {
+    const loadData = async () => {
       try {
-        const storedNetwork = await _getLiquidNetwork();
-        if (storedNetwork && Object.values(LiquidNetwork).includes(storedNetwork as LiquidNetwork)) {
-          return storedNetwork as LiquidNetwork;
-        }
-        return LiquidNetwork.MAINNET;
+        await _loadLiquidNetwork();
       } catch (error) {
-        console.error('Error loading liquid network:', error);
-        return LiquidNetwork.TESTNET;
+        console.error('[AsyncStorage] Error loading liquidNetwork:', error);
+      } finally {
+        _setIsDataLoaded(true);
       }
     };
 
-    const initializeNetwork = async () => {
-      const network = await loadLiquidNetwork();
-      updateState({ liquidNetwork: network });
-    };
-    initializeNetwork();
-  }, [_getLiquidNetwork]);
+    loadData();
+  }, [_loadLiquidNetwork]);
 
-  const initializeBreez = async (): Promise<void> => {
-    if (isInitializingRef.current || state.isBreezInitialized) {
-      console.log('Breez already initialized or initialization in progress');
-      return;
+  const disconnectBreez = useCallback(async (): Promise<void> => {
+    try {
+      if (eventListenerRef.current) {
+        await removeEventListener(eventListenerRef.current);
+        eventListenerRef.current = null;
+      }
+
+      await disconnect();
+
+      _setIsConnected(false);
+      _setIsSyncing(false);
+      _setBalance(0);
+      _setBreezError(null);
+      _setIsBreezInitialized(false);
+      _setPayments([]);
+      _setBreezWalletInfos(null);
+    } catch (error) {
+      console.error('Error during Breez disconnection:', error);
+      _setBreezError(error?.toString() || 'Disconnection error');
     }
+  }, []);
+
+  const refreshWalletInfo = useCallback(async (): Promise<void> => {
+    try {
+      if (!isConnected || !isBreezInitialized) return;
+
+      const seedPhrase = await _getSeedPhrase();
+      if (!seedPhrase) {
+        await disconnectBreez();
+        return;
+      }
+
+      const info = await getInfo();
+      const paymentsList = await listPayments({});
+      const newBalance = info.walletInfo.balanceSat || 0;
+
+      _setBreezWalletInfos(info);
+      _setPayments(paymentsList || []);
+      _setBalance(newBalance);
+    } catch (error) {
+      console.error('Error refreshing wallet info:', error);
+      _setBreezError(error?.toString() || 'Refresh error');
+    }
+  }, [_getSeedPhrase, disconnectBreez, isBreezInitialized, isConnected]);
+
+  const eventHandler = useCallback(
+    (event: SdkEvent) => {
+      switch (event.type) {
+        case SdkEventVariant.PAYMENT_SUCCEEDED:
+          const { amountSat, paymentType } = event.details;
+          refreshWalletInfo();
+          if (paymentType === PaymentType.RECEIVE) {
+            router.push({
+              pathname: '/transaction-result/success-screen',
+              params: { transactionType: 'received', satsAmount: amountSat.toString() },
+            });
+          }
+          break;
+        case SdkEventVariant.PAYMENT_FAILED:
+          console.error('Payment failed:', event);
+          break;
+        case SdkEventVariant.SYNCED:
+          _setIsSyncing(false);
+          setTimeout(() => refreshWalletInfo(), 0);
+          break;
+        default:
+          break;
+      }
+    },
+    [refreshWalletInfo, router],
+  );
+
+  const initializeBreez = useCallback(async (): Promise<void> => {
+    if (isInitializingRef.current || isBreezInitialized) return;
 
     try {
       isInitializingRef.current = true;
-      updateState({ isSyncing: true, error: null });
+      _setIsSyncing(true);
+      _setBreezError(null);
 
-      let seedPhrase = null;
-      if (!seedPhrase) {
-        seedPhrase = await _getSeedPhrase();
-      }
+      const seedPhrase = await _getSeedPhrase();
+      if (!seedPhrase) throw new Error('No recovery phrase found');
 
-      if (!seedPhrase) {
-        throw new Error('No recovery phrase found');
-      }
-
-      const config = await defaultConfig(state.liquidNetwork, Env.BREEZ_API_KEY);
+      const config = await defaultConfig(liquidNetwork, Env.BREEZ_API_KEY);
 
       try {
         await connect({ config, mnemonic: seedPhrase });
-        console.log(`Breez connected successfully on ${state.liquidNetwork}`);
       } catch (error: any) {
-        if (error?.message?.includes('Already initialized')) {
-          console.log('Breez SDK already initialized, continuing...');
-        } else {
-          throw error;
-        }
+        if (!error?.message?.includes('Already initialized')) throw error;
       }
 
-      // Register event listener only if it doesn't already exist
       if (!eventListenerRef.current) {
         const listenerId = await addEventListener(eventHandler);
         eventListenerRef.current = listenerId;
-        console.log('Event listener added:', listenerId);
       }
 
-      updateState({
-        isConnected: true,
-        isBreezInitialized: true,
-        isSyncing: false,
-      });
+      console.log(`Breez connected successfully ${liquidNetwork}`);
+      _setIsConnected(true);
+      _setIsBreezInitialized(true);
+      _setIsSyncing(false);
 
       await refreshWalletInfo();
     } catch (error) {
       console.error('Error during Breez initialization:', error);
-      updateState({
-        error: error?.toString(),
-        isSyncing: false,
-        isConnected: false,
-      });
+      _setBreezError(error?.toString() || 'Initialization error');
+      _setIsSyncing(false);
+      _setIsConnected(false);
     } finally {
       isInitializingRef.current = false;
     }
-  };
-
-  const refreshWalletInfo = async (): Promise<void> => {
-    try {
-      const currentState = state;
-
-      // STOP if not connected or not initialized
-      if (!currentState.isConnected || !currentState.isBreezInitialized) {
-        console.log('Stopping refreshWalletInfo: not connected or not initialized');
-        return;
-      }
-
-      // Check if seed phrase still exists
-      const seedPhrase = await _getSeedPhrase();
-      if (!seedPhrase) {
-        console.log('Seed phrase deleted, automatic disconnection');
-        await disconnectBreez();
-        return;
-      }
-
-      const getInfoRes = await getInfo();
-      setState((prevState) => ({ ...prevState, breezWalletInfos: getInfoRes }));
-
-      const newBalance = getInfoRes.walletInfo.balanceSat || 0;
-      setState((prevState) => ({ ...prevState, balance: newBalance }));
-
-      // Get payment history
-      const payments = await listPayments({});
-
-      updateState({
-        isSyncing: false,
-        payments: payments || [],
-      });
-    } catch (error) {
-      console.error('Error retrieving information:', error);
-      updateState({ error: error?.toString() });
-    }
-  };
-
-  // Enhanced version of refreshWalletInfo that uses current state
-  const refreshWalletInfoWithCurrentState = async (): Promise<void> => {
-    return new Promise((resolve) => {
-      setState((currentState) => {
-        // Execute refresh logic only if connected and initialized
-        if (currentState.isConnected && currentState.isBreezInitialized) {
-          // Execute async function
-          (async () => {
-            try {
-              const seedPhrase = await _getSeedPhrase();
-              if (!seedPhrase) {
-                console.log('Seed phrase deleted, automatic disconnection');
-                await disconnectBreez();
-                resolve();
-                return;
-              }
-
-              const getInfoRes = await getInfo();
-              if (getInfoRes) {
-                // console.log('Wallet information:', getInfoRes);
-                setState((prevState) => ({ ...prevState, breezWalletInfos: getInfoRes }));
-              }
-
-              const payments = await listPayments({});
-
-              const newBalance = getInfoRes.walletInfo.balanceSat || 0;
-              setState((prevState) => ({ ...prevState, balance: newBalance }));
-
-              updateState({
-                isSyncing: false,
-                payments: payments || [],
-              });
-
-              resolve();
-            } catch (error) {
-              console.error('Error retrieving information:', error);
-              updateState({ error: error?.toString() });
-              resolve();
-            }
-          })();
-        } else {
-          console.log('Stopping refreshWalletInfo: not connected or not initialized');
-          resolve();
-        }
-
-        return currentState;
-      });
-    });
-  };
-
-  const disconnectBreez = async (): Promise<void> => {
-    try {
-      console.log('Disconnecting from Breez...');
-
-      if (eventListenerRef.current) {
-        await removeEventListener(eventListenerRef.current);
-        eventListenerRef.current = null;
-        console.log('Event listener removed');
-      }
-
-      await disconnect();
-      console.log('Disconnected from Breez SDK');
-
-      updateState({
-        isConnected: false,
-        isSyncing: false,
-        balance: 0,
-        error: null,
-        isBreezInitialized: false,
-        payments: [],
-      });
-
-      // Reset initialization flag
-      isInitializingRef.current = false;
-    } catch (error) {
-      console.error('Error during disconnection:', error);
-      updateState({ error: error?.toString() });
-    }
-  };
-
-  const setLiquidNetwork = async (network: LiquidNetwork): Promise<void> => {
-    if (network === state.liquidNetwork) {
-      console.log('Network is already set to:', network);
-      return;
-    }
-
-    try {
-      console.log(`Changing network from ${state.liquidNetwork} to ${network}`);
-
-      await _setLiquidNetwork(network);
-
-      if (state.isConnected) {
-        await disconnectBreez();
-      }
-
-      updateState({ liquidNetwork: network });
-
-      setTimeout(async () => {
-        await initializeBreez();
-      }, 100);
-    } catch (error) {
-      console.error('Error changing liquid network:', error);
-      updateState({ error: error?.toString() });
-    }
-  };
-
-  const getLiquidNetwork = (): LiquidNetwork => {
-    return state.liquidNetwork;
-  };
+  }, [_getSeedPhrase, eventHandler, refreshWalletInfo, isBreezInitialized, liquidNetwork]);
 
   useEffect(() => {
     return () => {
@@ -326,10 +211,49 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     };
   }, []);
 
+  const setLiquidNetwork = useCallback(
+    async (network: LiquidNetwork) => {
+      try {
+        await _updateLiquidNetwork(network);
+        _setLiquidNetwork(network);
+        await disconnectBreez();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await initializeBreez();
+      } catch (e) {
+        console.error(`[AsyncStorage] (liquidNetwork) Error saving data: ${e} [${network}]`);
+        throw new Error('Error setting liquidNetwork');
+      }
+    },
+    [_updateLiquidNetwork, disconnectBreez, initializeBreez],
+  );
+
+  const getLiquidNetwork = useCallback((): LiquidNetwork => {
+    return liquidNetwork;
+  }, [liquidNetwork]);
+
+  useEffect(() => {
+    const syncInterval = setInterval(async () => {
+      await refreshWalletInfo();
+    }, SYNC_INTERVAL);
+
+    return () => {
+      console.log('Stopping automatic synchronization');
+      clearInterval(syncInterval);
+    };
+  }, [refreshWalletInfo]);
+
   const contextValue: BreezContextType = {
-    ...state,
+    isConnected,
+    isSyncing,
+    balance,
+    breezError,
+    isBreezInitialized,
+    payments,
+    liquidNetwork,
+    breezWalletInfos,
+    isDataLoaded,
     initializeBreez,
-    refreshWalletInfo: refreshWalletInfoWithCurrentState,
+    refreshWalletInfo,
     disconnectBreez,
     setLiquidNetwork,
     getLiquidNetwork,

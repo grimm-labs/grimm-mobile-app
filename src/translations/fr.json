@@ -230,6 +230,20 @@
     "termsOfService": "Conditions d'utilisation",
     "title": "Bienvenue sur Grimm App"
   },
+  "onchainTransactionDetail": {
+    "blockHeight": "Hauteur du bloc",
+    "date": "Date",
+    "details": "Détails de la transaction",
+    "networkFee": "Frais réseau",
+    "received": "Reçue",
+    "sent": "Envoyée",
+    "status": {
+      "confirmed": "Confirmée",
+      "pending": "En attente"
+    },
+    "total": "Montant total",
+    "transactionId": "Identifiant de la transaction"
+  },
   "paymentDetails": {
     "amount": "Montant",
     "errorDescription": "Nous n'avons pas pu traiter votre demande de paiement. Veuillez vérifier votre facture et réessayer.",
@@ -465,6 +479,8 @@
     "filters": {
       "all": "Toutes",
       "confirmed": "Confirmées",
+      "lightning": "Lightning",
+      "onchain": "On-Chain",
       "pending": "En attente"
     },
     "title": "Transactions"

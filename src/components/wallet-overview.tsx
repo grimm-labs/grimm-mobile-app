@@ -6,7 +6,7 @@ import { Pressable } from 'react-native';
 
 import { Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
-import { AppContext } from '@/lib/context';
+import { AppContext, useBdk } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
@@ -15,8 +15,10 @@ export const WalletOverview = () => {
   const router = useRouter();
   const { hideBalance, setHideBalance, selectedCountry, bitcoinUnit } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { balance } = useBreez();
+  const { balance: balanceBreez } = useBreez();
+  const { balance: balanceBdk } = useBdk();
   const { t } = useTranslation();
+  const balance = balanceBreez + balanceBdk;
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const convertedVal = convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices);
@@ -36,7 +38,9 @@ export const WalletOverview = () => {
           <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{hideBalance ? t('walletOverview.hiddenBalance') : formatBalance(balance, bitcoinUnit)}</Text>
         </Pressable>
         <View className="mb-4">
-          <Text className="text-center text-lg font-medium text-gray-600">{hideBalance ? t('walletOverview.hiddenBalance') : `${convertedVal.toFixed(2)} ${selectedFiatCurrency}`}</Text>
+          <Text className="text-center text-lg font-medium text-gray-600">
+            {hideBalance ? t('walletOverview.hiddenBalance') : `${convertedVal.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${selectedFiatCurrency}`}
+          </Text>
         </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">

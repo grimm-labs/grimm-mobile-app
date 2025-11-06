@@ -11,7 +11,7 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { useBreez } from './breez-context';
 
-const SYNC_INTERVAL = 30000;
+const SYNC_INTERVAL = 20000;
 
 interface BdkState {
   isConnected: boolean;
@@ -56,6 +56,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const blockchainRef = useRef<Blockchain | null>(null);
   const walletRef = useRef<BdkWallet | null>(null);
   const { liquidNetwork } = useBreez();
+  const currentNetworkRef = useRef<LiquidNetwork | null>(null);
 
   const updateState = useCallback((updates: Partial<BdkState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -65,7 +66,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     try {
       console.log('Disconnecting BDK...');
 
-      // Reset references
       blockchainRef.current = null;
       walletRef.current = null;
 
@@ -81,7 +81,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         transactions: [],
       });
 
-      // Reset initialization flag
       isInitializingRef.current = false;
 
       console.log('BDK disconnection completed');
@@ -114,16 +113,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         await walletToUse.sync(blockchainRef.current);
         const balance: Balance = await walletToUse.getBalance();
-        const transactions: TransactionDetails[] = await walletToUse.listTransactions(false);
-
+        const transactions: TransactionDetails[] = await walletToUse.listTransactions(true);
         updateState({
-          balance: balance.confirmed,
+          balance: balance.spendable,
           confirmedBalance: balance.confirmed,
           unconfirmedBalance: balance.trustedPending + balance.untrustedPending,
           transactions: transactions.sort((a, b) => (b.confirmationTime?.timestamp || 0) - (a.confirmationTime?.timestamp || 0)),
           isSyncing: false,
         });
-
         console.log('Synchronization completed');
       } catch (error) {
         console.error('Error during synchronization:', error);
@@ -158,7 +155,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         const mnemonic = await new Mnemonic().fromString(seedPhrase);
 
-        let network: Network = Network.Bitcoin;
+        let network: Network = Network.Testnet;
+
         if (liquidNetwork === LiquidNetwork.MAINNET) {
           network = Network.Bitcoin;
         } else if (liquidNetwork === LiquidNetwork.TESTNET) {
@@ -174,9 +172,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, network, dbConfig);
 
-        // Configure blockchain (Electrum)
         const blockchainConfig = {
-          url: network === Network.Bitcoin ? 'ssl://electrum.blockstream.info:50002' : 'ssl://electrum.blockstream.info:60002',
+          url: network === Network.Testnet ? 'ssl://mempool.space:40002' : 'ssl://mempool.space:50002',
           sock5: null,
           retry: 5,
           timeout: 10,
@@ -188,7 +185,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         blockchainRef.current = blockchain;
         walletRef.current = wallet;
 
-        console.log('Wallet created:', wallet);
+        currentNetworkRef.current = liquidNetwork;
 
         updateState({
           wallet,
@@ -201,7 +198,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         await syncWallet(wallet);
       } catch (error) {
-        console.error('Error during BDK initialization:', error);
         updateState({
           error: error instanceof Error ? error.message : String(error),
           isSyncing: false,
@@ -214,21 +210,23 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     [state.isBdkInitialized, _getSeedPhrase, liquidNetwork, syncWallet, updateState],
   );
 
-  const initializeBdkRef = useRef(initializeBdk);
   useEffect(() => {
-    initializeBdkRef.current = initializeBdk;
-  }, [initializeBdk]);
+    const handleNetworkChange = async () => {
+      if (currentNetworkRef.current !== null && currentNetworkRef.current !== liquidNetwork && state.isBdkInitialized) {
+        await disconnectBdk();
+        setTimeout(async () => {
+          await initializeBdk(true);
+        }, 500);
+      }
+    };
 
-  useEffect(() => {
-    initializeBdkRef.current(true);
-  }, [liquidNetwork]);
+    handleNetworkChange();
+  }, [liquidNetwork, state.isBdkInitialized, disconnectBdk, initializeBdk]);
 
   useEffect(() => {
     if (!state.isBdkInitialized || !state.isConnected || !walletRef.current) {
       return;
     }
-
-    console.log('Starting automatic synchronization (30s)');
 
     const syncInterval = setInterval(() => {
       if (walletRef.current && blockchainRef.current && !isInitializingRef.current) {

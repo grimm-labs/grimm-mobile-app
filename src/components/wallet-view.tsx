@@ -62,7 +62,7 @@ export const WalletView = ({ name, symbol, type, balanceSats }: Props) => {
               <Text className="text-right text-xl font-bold text-gray-700">{formatBalance(balanceSats, bitcoinUnit)}</Text>
               <View className="my-1" />
               <Text className="text-right text-sm font-medium text-gray-600">
-                {convertBitcoinToFiat(balanceSats, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}{' '}
+                {convertBitcoinToFiat(balanceSats, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} {selectedFiatCurrency}{' '}
               </Text>
             </View>
           )}
