@@ -8,11 +8,10 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
+import DetailRow from '@/components/detail-row';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/components/ui';
 import { formatBalance } from '@/lib';
 import { AppContext } from '@/lib/context';
-
-import DetailRow from './detail-row';
 
 type SearchParams = {
   transactionData: string;

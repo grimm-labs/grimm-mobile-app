@@ -31,7 +31,7 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
       case UnifiedTransactionType.SEND:
         return '#ef4444';
       default:
-        return '#6b7280'; // gray
+        return '#6b7280';
     }
   };
 
@@ -86,16 +86,16 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
   const bitcoinAmount = bitcoinUnit === BitcoinUnit.Sats ? transaction.amountSat.toLocaleString('en-US') : convertSatsToBtc(transaction.amountSat);
 
   const handlePress = () => {
-    const pathname = transaction.source === TransactionSource.LIGHTNING ? '/transaction-details/ln' : '/transaction-details/onchain';
-
     const data = transaction.source === TransactionSource.LIGHTNING ? transaction.lightningData : transaction.onchainData;
-    console.log('Navigating to transaction details with data:', JSON.stringify(data));
-    router.push({
-      pathname,
-      params: {
-        transactionData: JSON.stringify(data),
-      },
-    });
+    if (transaction.source === TransactionSource.LIGHTNING) {
+      router.push(`/transaction-details/ln?transactionData=${encodeURIComponent(JSON.stringify(data))}`);
+      return;
+    }
+
+    if (transaction.source === TransactionSource.ONCHAIN) {
+      router.push(`/transaction-details/onchain?transactionData=${encodeURIComponent(JSON.stringify(data))}`);
+      return;
+    }
   };
 
   return (
