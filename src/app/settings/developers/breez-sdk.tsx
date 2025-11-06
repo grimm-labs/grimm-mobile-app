@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import DetailRow from '@/app/transaction-details/detail-row';
 import { HeaderLeft } from '@/components/back-button';
+import DetailRow from '@/components/detail-row';
 import { HeaderTitle } from '@/components/header-title';
 import { FocusAwareStatusBar, SafeAreaView } from '@/components/ui';
 import { useBreez } from '@/lib/context';

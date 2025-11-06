@@ -10,7 +10,6 @@ import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } 
 import { WalletOverview } from '@/components/wallet-overview';
 import { WalletView } from '@/components/wallet-view';
 import { AppContext, useBdk, useBreez } from '@/lib/context';
-import { convertBtcToSats } from '@/lib/utils';
 
 export default function Home() {
   const router = useRouter();
@@ -45,7 +44,7 @@ export default function Home() {
                   <Text className="text-xl font-bold text-gray-600">{t('home.accounts')}</Text>
                 </View>
                 <Pressable onPress={() => router.push('/wallets/bitcoin-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
-                  <WalletView name={t('home.walletName')} symbol="BTC" type="On-chain" balanceSats={convertBtcToSats(balanceBdk)} />
+                  <WalletView name={t('home.walletName')} symbol="BTC" type="On-chain" balanceSats={balanceBdk} />
                 </Pressable>
                 <View className="my-2" />
                 <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">

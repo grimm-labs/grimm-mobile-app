@@ -1,41 +1,49 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
-import { type Payment, PaymentState } from '@breeztech/react-native-breez-sdk-liquid';
 import { useRouter } from 'expo-router';
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { TransactionItem } from '@/components/transaction';
 import { FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { mergeAndSortTransactions } from '@/lib';
+import { useBdk } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
+import { TransactionSource, type UnifiedTransaction, UnifiedTransactionStatus } from '@/types/transaction';
 
-type FilterType = 'All' | 'Confirmed' | 'Pending';
+type FilterType = 'All' | 'Confirmed' | 'Pending' | 'Lightning' | 'OnChain';
 
 export default function Transactions() {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
   const { payments } = useBreez();
+  const { transactions: bdkTransactions } = useBdk();
   const router = useRouter();
   const { t } = useTranslation();
+  const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
+  const filters: FilterType[] = ['All', 'Confirmed', 'Pending', 'Lightning', 'OnChain'];
 
-  const filters: FilterType[] = ['All', 'Confirmed', 'Pending'];
-
-  const getFilteredPayments = (): Payment[] => {
+  const getFilteredTransactions = (): UnifiedTransaction[] => {
     if (selectedFilter === 'All') {
-      return payments;
+      return transactions;
     }
     if (selectedFilter === 'Confirmed') {
-      return payments.filter((payment) => payment.status === PaymentState.COMPLETE);
+      return transactions.filter((tx) => tx.status === UnifiedTransactionStatus.CONFIRMED);
     }
     if (selectedFilter === 'Pending') {
-      return payments.filter((payment) => payment.status === PaymentState.PENDING);
+      return transactions.filter((tx) => tx.status === UnifiedTransactionStatus.PENDING);
     }
-    return payments;
+    if (selectedFilter === 'Lightning') {
+      return transactions.filter((tx) => tx.source === TransactionSource.LIGHTNING);
+    }
+    if (selectedFilter === 'OnChain') {
+      return transactions.filter((tx) => tx.source === TransactionSource.ONCHAIN);
+    }
+    return transactions;
   };
 
-  const filteredPayments = getFilteredPayments();
+  const filteredTransactions = getFilteredTransactions();
 
   const renderFilterButton = (filter: FilterType) => {
     const isSelected = selectedFilter === filter;
@@ -46,7 +54,7 @@ export default function Transactions() {
     );
   };
 
-  const renderTransaction = ({ item }: { item: Payment }) => <TransactionItem payment={item} />;
+  const renderTransaction = ({ item }: { item: UnifiedTransaction }) => <TransactionItem transaction={item} />;
 
   const renderEmptyState = () => (
     <View className="flex-1 items-center justify-center px-6 py-20">
@@ -58,6 +66,11 @@ export default function Transactions() {
     </View>
   );
 
+  useEffect(() => {
+    const unified = mergeAndSortTransactions(payments, bdkTransactions);
+    setTransactions(unified);
+  }, [bdkTransactions, payments]);
+
   return (
     <SafeAreaProvider>
       <FocusAwareStatusBar style="dark" />
@@ -65,17 +78,17 @@ export default function Transactions() {
         <View className="flex border-b border-neutral-100 px-4 py-3">
           <Text className="text-2xl font-bold text-gray-800">{t('transactions.title')}</Text>
         </View>
-        <View className="p-4">
-          <View className="flex-row">{filters.map(renderFilterButton)}</View>
+        <View className="border-b border-neutral-100 py-4">
+          <FlatList data={filters} renderItem={({ item }) => renderFilterButton(item)} keyExtractor={(item) => item} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ flexDirection: 'row' }} />
         </View>
         <View className="flex-1">
-          {filteredPayments.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             renderEmptyState()
           ) : (
             <FlatList
-              data={filteredPayments}
+              data={filteredTransactions}
               renderItem={renderTransaction}
-              keyExtractor={(item, index) => item.txId || index.toString()}
+              keyExtractor={(item, index) => item.id || index.toString()}
               contentContainerStyle={{ paddingHorizontal: 16 }}
               showsVerticalScrollIndicator={false}
             />

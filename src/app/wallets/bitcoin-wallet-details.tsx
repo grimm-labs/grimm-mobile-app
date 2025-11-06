@@ -1,18 +1,21 @@
 /* eslint-disable max-lines-per-function */
+import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { EmptyTransactions } from '@/components/empty-transaction';
+import { TransactionItem } from '@/components/transaction';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView, Text, View } from '@/components/ui';
-import { convertBitcoinToFiat, convertBtcToSats, convertSatsToBtc, getFiatCurrency } from '@/lib';
-import { AppContext, useBdk } from '@/lib/context';
+import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency, mergeAndSortTransactions } from '@/lib';
+import { AppContext, useBdk, useBreez } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { BitcoinUnit } from '@/types/enum';
+import type { UnifiedTransaction } from '@/types/transaction';
 
 type MenuItemProps = {
   icon: string;
@@ -47,9 +50,15 @@ export default function BitcoinWalletDetails() {
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
-  const { balance, transactions } = useBdk();
-  const balanceSats = convertBtcToSats(balance);
+  const { balance, transactions: bdkTransactions } = useBdk();
+  const { liquidNetwork } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
+  const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
+
+  useEffect(() => {
+    const unified = mergeAndSortTransactions([], bdkTransactions);
+    setTransactions(unified);
+  }, [bdkTransactions]);
 
   return (
     <SafeAreaProvider>
@@ -67,16 +76,21 @@ export default function BitcoinWalletDetails() {
           }}
         />
         <FocusAwareStatusBar style="dark" />
+        {liquidNetwork === LiquidNetwork.TESTNET && (
+          <View className="bg-danger-500 py-2">
+            <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
+          </View>
+        )}
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
             <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
               <Text className="mb-2 text-sm text-gray-500">{t('btcWallet.available')}</Text>
               <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
                 <Text className="mb-2 text-4xl font-bold text-gray-900">
-                  {hideBalance ? '********' : `${convertBitcoinToFiat(balanceSats, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} ${selectedFiatCurrency}`}
+                  {hideBalance ? '********' : `${convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${selectedFiatCurrency}`}
                 </Text>
                 <Text className="mb-4 text-sm text-gray-400">
-                  {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balanceSats).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balanceSats)} ${bitcoinUnit}`}
+                  {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} ${bitcoinUnit}`}
                 </Text>
               </TouchableOpacity>
               <View className="mb-2 border-t border-gray-200 pt-4">
@@ -86,7 +100,7 @@ export default function BitcoinWalletDetails() {
                     <Text className="text-sm text-gray-700">{t('btcWallet.currentPrice')}</Text>
                   </View>
                   <Text className="text-sm font-semibold text-gray-900">
-                    {convertBitcoinToFiat(1, BitcoinUnit.Btc, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedFiatCurrency}
+                    {convertBitcoinToFiat(1, BitcoinUnit.Btc, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
@@ -130,7 +144,10 @@ export default function BitcoinWalletDetails() {
               ) : (
                 <View className="">
                   {transactions.slice(0, 4).map((transaction, index) => (
-                    <View key={transaction.txid}>{index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100" />}</View>
+                    <View key={transaction.id}>
+                      <TransactionItem transaction={transaction} />
+                      {index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100" />}
+                    </View>
                   ))}
                 </View>
               )}

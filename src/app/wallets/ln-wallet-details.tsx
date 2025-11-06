@@ -1,7 +1,8 @@
 /* eslint-disable max-lines-per-function */
+import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,11 +11,12 @@ import { HeaderLeft } from '@/components/back-button';
 import { EmptyTransactions } from '@/components/empty-transaction';
 import { TransactionItem } from '@/components/transaction';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView, Text, View } from '@/components/ui';
-import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency, mergeAndSortTransactions } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
+import type { UnifiedTransaction } from '@/types/transaction';
 
 type MenuItemProps = {
   icon: string;
@@ -49,8 +51,14 @@ export default function LnWalletDetails() {
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
-  const { balance, payments } = useBreez();
+  const { balance, payments, liquidNetwork } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
+  const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
+
+  useEffect(() => {
+    const unified = mergeAndSortTransactions(payments, []);
+    setTransactions(unified);
+  }, [payments]);
 
   return (
     <SafeAreaProvider>
@@ -68,6 +76,11 @@ export default function LnWalletDetails() {
           }}
         />
         <FocusAwareStatusBar style="dark" />
+        {liquidNetwork === LiquidNetwork.TESTNET && (
+          <View className="bg-danger-500 py-2">
+            <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
+          </View>
+        )}
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
             <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
@@ -126,7 +139,7 @@ export default function LnWalletDetails() {
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-xl font-bold text-gray-600">{t('lnWallet.transactions')}</Text>
-              {payments.length > 4 && (
+              {transactions.length > 4 && (
                 <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/transactions')}>
                   <Text className="text-base font-medium text-primary-600">{t('lnWallet.seeAll')}</Text>
                 </TouchableOpacity>
@@ -134,14 +147,14 @@ export default function LnWalletDetails() {
             </View>
 
             <View>
-              {payments.length === 0 ? (
+              {transactions.length === 0 ? (
                 <EmptyTransactions type="ln" />
               ) : (
                 <View className="">
-                  {payments.slice(0, 4).map((payment, index) => (
-                    <View key={payment.txId}>
-                      <TransactionItem payment={payment} />
-                      {index < payments.length - 1 && <View className="ml-16 border-t border-gray-100" />}
+                  {transactions.slice(0, 4).map((transaction, index) => (
+                    <View key={transaction.id}>
+                      <TransactionItem transaction={transaction} />
+                      {index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100" />}
                     </View>
                   ))}
                 </View>

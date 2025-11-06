@@ -1,11 +1,16 @@
 /* eslint-disable max-params */
+import type { Payment } from '@breeztech/react-native-breez-sdk-liquid';
+import { PaymentState, PaymentType } from '@breeztech/react-native-breez-sdk-liquid';
 import { Mnemonic } from 'bdk-rn';
+import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { type BitcoinCurrencyCode, type RatesResponse, supportedBitcoinCurrencies } from '@/api';
 import type { Country } from '@/interfaces';
 import { BitcoinUnit } from '@/types/enum';
+import type { UnifiedTransaction } from '@/types/transaction';
+import { TransactionSource, UnifiedTransactionStatus, UnifiedTransactionType } from '@/types/transaction';
 
 export function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url));
@@ -118,4 +123,39 @@ export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, o
   const fiatAmount = amountInBTC * bitcoinPriceInOutputCurrency;
 
   return fiatAmount;
+};
+
+export const mapLightningToUnified = (payment: Payment): UnifiedTransaction => {
+  return {
+    id: payment.txId || `ln_${payment.timestamp}`,
+    timestamp: payment.timestamp,
+    amountSat: payment.amountSat,
+    feesSat: payment.feesSat + (payment.swapperFeesSat || 0),
+    type: payment.paymentType === PaymentType.RECEIVE ? UnifiedTransactionType.RECEIVE : UnifiedTransactionType.SEND,
+    status: payment.status === PaymentState.COMPLETE ? UnifiedTransactionStatus.CONFIRMED : UnifiedTransactionStatus.PENDING,
+    source: TransactionSource.LIGHTNING,
+    lightningData: payment,
+  };
+};
+
+export const mapOnchainToUnified = (tx: TransactionDetails): UnifiedTransaction => {
+  const isReceive = tx.received > tx.sent;
+  const amount = isReceive ? tx.received - tx.sent : tx.sent - tx.received;
+
+  return {
+    id: tx.txid,
+    timestamp: tx.confirmationTime?.timestamp || Date.now() / 1000,
+    amountSat: amount,
+    feesSat: tx.fee || 0,
+    type: isReceive ? UnifiedTransactionType.RECEIVE : UnifiedTransactionType.SEND,
+    status: (tx.confirmationTime?.timestamp || 0) > 0 ? UnifiedTransactionStatus.CONFIRMED : UnifiedTransactionStatus.PENDING,
+    source: TransactionSource.ONCHAIN,
+    onchainData: tx,
+  };
+};
+
+export const mergeAndSortTransactions = (lightningPayments: Payment[], onchainTransactions: TransactionDetails[]): UnifiedTransaction[] => {
+  const unified = [...lightningPayments.map(mapLightningToUnified), ...onchainTransactions.map(mapOnchainToUnified)];
+
+  return unified.sort((a, b) => b.timestamp - a.timestamp);
 };
