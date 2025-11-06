@@ -2,9 +2,7 @@ import React, { useContext } from 'react';
 
 import { Image, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
-import { AppContext } from '@/lib/context';
-import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
-import { useBreez } from '@/lib/context/breez-context';
+import { AppContext, useBitcoin } from '@/lib/context';
 import { BitcoinUnit } from '@/types/enum';
 
 type WalletType = 'On-chain' | 'Lightning' | 'Liquid';
@@ -13,6 +11,7 @@ type Props = {
   name: string;
   symbol: string;
   type: WalletType;
+  balanceSats: number;
 };
 
 const getWalletIcon = (type: WalletType) => {
@@ -26,10 +25,19 @@ const getWalletIcon = (type: WalletType) => {
   }
 };
 
-export const WalletView = ({ name, symbol, type }: Props) => {
+const getNetwork = (type: WalletType) => {
+  if (type === 'On-chain') {
+    return 'Bitcoin Network';
+  } else if (type === 'Lightning') {
+    return 'Lightning Network';
+  } else {
+    return 'Unknown Network';
+  }
+};
+
+export const WalletView = ({ name, symbol, type, balanceSats }: Props) => {
   const { hideBalance, selectedCountry, bitcoinUnit } = useContext(AppContext);
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
-  const { balance } = useBreez();
   const { bitcoinPrices } = useBitcoin();
 
   const walletIcon = getWalletIcon(type);
@@ -43,7 +51,7 @@ export const WalletView = ({ name, symbol, type }: Props) => {
           <View className="my-1" />
           <View className="flex-row items-center">
             <Text className="text-sm font-bold text-gray-600">{symbol}</Text>
-            <Text className="mx-1 text-xs text-gray-500">({type})</Text>
+            <Text className="mx-1 text-xs text-gray-500">({getNetwork(type)})</Text>
           </View>
         </View>
         <View>
@@ -51,10 +59,10 @@ export const WalletView = ({ name, symbol, type }: Props) => {
             <Text className="text-right text-xl font-semibold text-gray-900">********</Text>
           ) : (
             <View className="text-right">
-              <Text className="text-right text-xl font-bold text-gray-700">{formatBalance(balance, bitcoinUnit)}</Text>
+              <Text className="text-right text-xl font-bold text-gray-700">{formatBalance(balanceSats, bitcoinUnit)}</Text>
               <View className="my-1" />
               <Text className="text-right text-sm font-medium text-gray-600">
-                {convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}{' '}
+                {convertBitcoinToFiat(balanceSats, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} {selectedFiatCurrency}{' '}
               </Text>
             </View>
           )}

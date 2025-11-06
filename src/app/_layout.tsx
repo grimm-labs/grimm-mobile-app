@@ -13,9 +13,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { APIProvider } from '@/api';
 import { hydrateAuth, loadSelectedTheme } from '@/lib';
-import { AppContextProvider } from '@/lib/context';
-import { BitcoinPriceProvider } from '@/lib/context/bitcoin-prices-context';
-import { BreezProvider } from '@/lib/context/breez-context';
+import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider } from '@/lib/context';
 import { useThemeConfig } from '@/lib/use-theme-config';
 
 export { ErrorBoundary } from 'expo-router';
@@ -58,10 +56,12 @@ function Providers({ children }: { children: React.ReactNode }) {
             <ThemeProvider value={theme}>
               <APIProvider>
                 <BitcoinPriceProvider>
-                  <BottomSheetModalProvider>
-                    {children}
-                    <FlashMessage position="top" />
-                  </BottomSheetModalProvider>
+                  <BdkProvider>
+                    <BottomSheetModalProvider>
+                      {children}
+                      <FlashMessage position="top" />
+                    </BottomSheetModalProvider>
+                  </BdkProvider>
                 </BitcoinPriceProvider>
               </APIProvider>
             </ThemeProvider>

@@ -8,12 +8,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { EmptyTransactions } from '@/components/empty-transaction';
-import { TransactionItem } from '@/components/transaction';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView, Text, View } from '@/components/ui';
-import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency } from '@/lib';
-import { AppContext } from '@/lib/context';
+import { convertBitcoinToFiat, convertBtcToSats, convertSatsToBtc, getFiatCurrency } from '@/lib';
+import { AppContext, useBdk } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
-import { useBreez } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 
 type MenuItemProps = {
@@ -39,17 +37,18 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress, sho
 
 const HeaderTitle = () => (
   <View className="flex-row items-center">
-    <Image className="mr-2 size-8 rounded-full" source={require('@/assets/images/bitcoin_lightning_logo.png')} />
-    <Text className="text-normal">Lightning</Text>
+    <Image className="mr-2 size-8 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
+    <Text className="text-normal">Bitcoin</Text>
   </View>
 );
 
-export default function LnWalletDetails() {
+export default function BitcoinWalletDetails() {
   const { t } = useTranslation();
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
-  const { balance, payments } = useBreez();
+  const { balance, transactions } = useBdk();
+  const balanceSats = convertBtcToSats(balance);
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   return (
@@ -71,20 +70,20 @@ export default function LnWalletDetails() {
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
             <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
-              <Text className="mb-2 text-sm text-gray-500">{t('lnWallet.available')}</Text>
+              <Text className="mb-2 text-sm text-gray-500">{t('btcWallet.available')}</Text>
               <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
                 <Text className="mb-2 text-4xl font-bold text-gray-900">
-                  {hideBalance ? '********' : `${convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} ${selectedFiatCurrency}`}
+                  {hideBalance ? '********' : `${convertBitcoinToFiat(balanceSats, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} ${selectedFiatCurrency}`}
                 </Text>
                 <Text className="mb-4 text-sm text-gray-400">
-                  {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} ${bitcoinUnit}`}
+                  {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balanceSats).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balanceSats)} ${bitcoinUnit}`}
                 </Text>
               </TouchableOpacity>
               <View className="mb-2 border-t border-gray-200 pt-4">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center">
                     <Image className="mr-2 size-6 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
-                    <Text className="text-sm text-gray-700">{t('lnWallet.currentPrice')}</Text>
+                    <Text className="text-sm text-gray-700">{t('btcWallet.currentPrice')}</Text>
                   </View>
                   <Text className="text-sm font-semibold text-gray-900">
                     {convertBitcoinToFiat(1, BitcoinUnit.Btc, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedFiatCurrency}
@@ -95,54 +94,43 @@ export default function LnWalletDetails() {
           </View>
 
           <View className="mb-8">
-            <Text className="mb-3 text-xl font-bold text-gray-600">{t('lnWallet.actions')}</Text>
+            <Text className="mb-3 text-xl font-bold text-gray-600">{t('btcWallet.actions')}</Text>
             <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
               <MenuItem
                 icon="add-outline"
-                title={t('lnWallet.createInvoice')}
+                title={t('btcWallet.receiveBitcoin')}
                 onPress={() => {
-                  router.push({
-                    pathname: '/receive/amount-description',
-                    params: { type: 'lightning' },
-                  });
+                  router.push('/receive-btc');
                 }}
               />
               <View className="ml-14 border-t border-gray-200" />
               <MenuItem
                 icon="link"
-                title={t('lnWallet.receiveOnchain')}
+                title={t('btcWallet.sendBitcoin')}
                 onPress={() => {
-                  router.push({
-                    pathname: '/receive/amount-description',
-                    params: { type: 'onchain' },
-                  });
+                  router.push('/send-btc');
                 }}
               />
-              <View className="ml-14 border-t border-gray-200" />
-              <MenuItem icon="arrow-up-outline" title={t('lnWallet.payInvoice')} onPress={() => router.push('/send/enter-address')} />
             </View>
           </View>
 
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-gray-600">{t('lnWallet.transactions')}</Text>
-              {payments.length > 4 && (
+              <Text className="text-xl font-bold text-gray-600">{t('btcWallet.transactions')}</Text>
+              {transactions.length > 4 && (
                 <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/transactions')}>
-                  <Text className="text-base font-medium text-primary-600">{t('lnWallet.seeAll')}</Text>
+                  <Text className="text-base font-medium text-primary-600">{t('btcWallet.seeAll')}</Text>
                 </TouchableOpacity>
               )}
             </View>
 
             <View>
-              {payments.length === 0 ? (
-                <EmptyTransactions type="ln" />
+              {transactions.length === 0 ? (
+                <EmptyTransactions type="onchain" />
               ) : (
                 <View className="">
-                  {payments.slice(0, 4).map((payment, index) => (
-                    <View key={payment.txId}>
-                      <TransactionItem payment={payment} />
-                      {index < payments.length - 1 && <View className="ml-16 border-t border-gray-100" />}
-                    </View>
+                  {transactions.slice(0, 4).map((transaction, index) => (
+                    <View key={transaction.txid}>{index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100" />}</View>
                   ))}
                 </View>
               )}

@@ -10,6 +10,13 @@
     "version": "Version {{version}}",
     "visit_website": "Visit Website"
   },
+  "addressConfig": {
+    "amount": "Amount (optional)",
+    "note": "Note (optional)",
+    "notePlaceholder": "Add a note...",
+    "saveButton": "Generate address",
+    "title": "Configure address"
+  },
   "bitcoinUnit": {
     "btc": {
       "description": "Standard unit of Bitcoin, 1 BTC = 100,000,000 Satoshis",
@@ -30,6 +37,15 @@
     "liquid_tip": "Liquid Tip",
     "public_key": "Public Key"
   },
+  "btcWallet": {
+    "actions": "Actions",
+    "available": "Available Bitcoin",
+    "currentPrice": "Current Bitcoin price",
+    "receiveBitcoin": "Receive BTC",
+    "seeAll": "See all",
+    "sendBitcoin": "Send BTC",
+    "transactions": "Transactions"
+  },
   "common": {
     "continue": "Continue",
     "home": "Home",
@@ -43,6 +59,15 @@
     "no_countries": "No countries available",
     "no_results": "No countries found for \"{{searchTerm}}\"",
     "search_placeholder": "Search country..."
+  },
+  "emptyTransactions": {
+    "ln": {
+      "message": "Your Lightning transactions will appear here."
+    },
+    "onchain": {
+      "message": "Your on-chain transactions will appear here."
+    },
+    "title": "No transactions"
   },
   "enterAmount": {
     "addNote": "+ Add a note (optional)",
@@ -78,6 +103,8 @@
   },
   "home": {
     "accounts": "Accounts",
+    "l2WalletName": "L2 Bitcoin",
+    "networkWarning": "You are connected to Test Network",
     "spending": "Spending",
     "title": "Home",
     "walletName": "Bitcoin"
@@ -175,10 +202,8 @@
         "title": "Testnet"
       }
     },
-    "productionNotice": "Network switching is disabled in production. Using Mainnet by default.",
     "securityNote": {
-      "mainnet": "You should most likely be on mainnet for real Bitcoin transactions.",
-      "production": "Production mode: Network is locked to Mainnet for security."
+      "mainnet": "You should most likely be on mainnet for real Bitcoin transactions."
     },
     "status": {
       "connected": "Connected to {{network}}",
@@ -240,6 +265,18 @@
     "sendMoney": "Send Money",
     "title": "Quick Actions",
     "water": "Water"
+  },
+  "receive_onchain": {
+    "address_settings": "Address Settings",
+    "copied": "Address copied to clipboard",
+    "error_generic": "An error occurred while generating the address.",
+    "error_title": "Receiving Error",
+    "header": "Receive",
+    "loading_subtitle": "Please wait while we create a new receiving address.",
+    "loading_title": "Generating address...",
+    "new_address": "New Address",
+    "scan_text": "Scan this QR code to send funds to this address",
+    "share_title": "Share Bitcoin address"
   },
   "receive_payment": {
     "close": "Close",
