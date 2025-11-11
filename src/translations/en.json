@@ -17,6 +17,10 @@
     "saveButton": "Generate address",
     "title": "Configure address"
   },
+  "addressDisplay": {
+    "closeButton": "Close",
+    "title": "Bitcoin Address"
+  },
   "bitcoinUnit": {
     "btc": {
       "description": "Standard unit of Bitcoin, 1 BTC = 100,000,000 Satoshis",
@@ -38,12 +42,11 @@
     "public_key": "Public Key"
   },
   "btcWallet": {
-    "actions": "Actions",
     "available": "Available Bitcoin",
     "currentPrice": "Current Bitcoin price",
-    "receiveBitcoin": "Receive BTC",
+    "receiveBitcoin": "Receive",
     "seeAll": "See all",
-    "sendBitcoin": "Send BTC",
+    "sendBitcoin": "Send",
     "transactions": "Transactions"
   },
   "common": {
@@ -211,16 +214,6 @@
     },
     "switching": "Switching network..."
   },
-  "notifications": {
-    "days_ago": "{{count}}d ago",
-    "hours_ago": "{{count}}h ago",
-    "just_now": "Just now",
-    "loading": "Loading...",
-    "mark_all_as_read": "Mark all as read",
-    "no_notifications": "No notifications",
-    "no_notifications_subtext": "You haven't received any notifications yet",
-    "title": "Notifications"
-  },
   "onboarding": {
     "agreementText": "By Continuing, You agree to the",
     "getStarted": "Get Started",
@@ -230,7 +223,54 @@
     "termsOfService": "Terms of Service",
     "title": "Welcome to Grimm App"
   },
+  "onchainSend": {
+    "enterAddress": {
+      "continueButton": "Continue",
+      "errors": {
+        "addressVerificationFailed": "Address verification failed",
+        "invalidAddress": "Please enter a valid address",
+        "unsupportedAddress": "Unsupported address type"
+      },
+      "placeholder": "Input address or Scan QR",
+      "title": "Send Bitcoin"
+    },
+    "enterAmount": {
+      "alert": {
+        "errorMessage": "Please enter a valid amount before continuing.",
+        "errorTitle": "Invalid Amount"
+      },
+      "continueButton": "Continue",
+      "feeSelection": "Transaction Fee Selection",
+      "fees": {
+        "fast": "Fast (~10 min)",
+        "low": "Slow (~60 min)",
+        "medium": "Normal (~30 min)"
+      },
+      "headerTitle": "Send Bitcoin",
+      "invalidAmount": "Invalid amount",
+      "loadingFees": "Loading fees..."
+    },
+    "summary": {
+      "amount": "Amount",
+      "feeSpeed": {
+        "fast": "Fast (Priority)",
+        "low": "Slow (Economy)",
+        "medium": "Medium (Balanced)"
+      },
+      "headerTitle": "Transaction Summary",
+      "networkFee": "Network Fee",
+      "recipient": "Recipient",
+      "totalAmount": "Total Amount"
+    },
+    "transactionResult": {
+      "date": "On",
+      "exploreTransaction": "Explore transaction",
+      "fiatEquivalent": "≈ {{amount}} {{currency}}",
+      "sent": "Transaction sent successfully!"
+    }
+  },
   "onchainTransactionDetail": {
+    "amount": "Amount",
     "blockHeight": "Block Height",
     "date": "Date",
     "details": "Transaction Details",

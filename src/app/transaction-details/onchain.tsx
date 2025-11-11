@@ -4,14 +4,14 @@ import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import DetailRow from '@/components/detail-row';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/components/ui';
-import { formatBalance } from '@/lib';
-import { AppContext } from '@/lib/context';
+import { formatBalance, generateTxUrl } from '@/lib';
+import { AppContext, useBreez } from '@/lib/context';
 
 type SearchParams = {
   transactionData: string;
@@ -21,16 +21,13 @@ export default function OnchainTransactionDetailsScreen() {
   const { t } = useTranslation();
   const { transactionData } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit } = useContext(AppContext);
+  const { liquidNetwork } = useBreez();
 
   const transaction = JSON.parse(transactionData) as TransactionDetails;
-
   const isSent = transaction.sent > transaction.received;
   const isConfirmed = (transaction.confirmationTime?.timestamp || 0) > 0;
-
-  const netAmount = isSent ? transaction.sent - transaction.received : transaction.received - transaction.sent;
-
-  const totalAmount = isSent && transaction.fee ? netAmount + transaction.fee : netAmount;
-
+  const netAmount = isSent ? transaction.sent - transaction.received + (transaction.fee || 0) : transaction.received - transaction.sent;
+  const netAmountWithoutFee = isSent ? transaction.sent - transaction.received : transaction.received - transaction.sent;
   const formattedDate =
     transaction.confirmationTime && typeof transaction.confirmationTime.timestamp === 'number'
       ? new Date(transaction.confirmationTime.timestamp * 1000).toLocaleDateString('en-US', {
@@ -42,9 +39,14 @@ export default function OnchainTransactionDetailsScreen() {
         })
       : t('onchainTransactionDetail.status.pending');
 
+  const openLink = (txId: string) => {
+    const url = generateTxUrl(txId, liquidNetwork);
+    Linking.openURL(url).catch((err) => console.error(`Error opening link: ${url}`, err));
+  };
+
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white px-4">
         <Stack.Screen
           options={{
             headerShown: true,
@@ -55,7 +57,7 @@ export default function OnchainTransactionDetailsScreen() {
           }}
         />
         <FocusAwareStatusBar style="dark" />
-        <ScrollView className="flex-1 px-3" showsVerticalScrollIndicator={false}>
+        <View className="flex-1">
           <View className="mb-6 mt-4 items-center">
             <View className={`rounded-full px-4 py-2 ${isConfirmed ? 'bg-green-100' : 'bg-yellow-100'}`}>
               <Text className={`text-sm font-semibold ${isConfirmed ? 'text-green-700' : 'text-yellow-700'}`}>
@@ -80,17 +82,18 @@ export default function OnchainTransactionDetailsScreen() {
           </View>
           <View className="mb-6 mt-4">
             <Text className="mb-4 text-xl font-semibold text-gray-900">{t('onchainTransactionDetail.details')}</Text>
-            <DetailRow label={t('onchainTransactionDetail.date')} value={formattedDate} />
+            {isConfirmed && <DetailRow label={t('onchainTransactionDetail.date')} value={formattedDate} />}
             {isConfirmed && <DetailRow label={t('onchainTransactionDetail.blockHeight')} value={transaction.confirmationTime?.height?.toString() || ''} />}
-            {isSent && transaction.fee && (
-              <>
-                <DetailRow label={t('onchainTransactionDetail.networkFee')} value={formatBalance(transaction.fee, bitcoinUnit)} />
-                <DetailRow label={t('onchainTransactionDetail.total')} value={formatBalance(totalAmount, bitcoinUnit)} />
-              </>
-            )}
+            <DetailRow label={t('onchainTransactionDetail.amount')} value={formatBalance(netAmountWithoutFee, bitcoinUnit)} />
+            {isSent && transaction.fee && <DetailRow label={t('onchainTransactionDetail.networkFee')} value={formatBalance(transaction.fee, bitcoinUnit)} />}
             <DetailRow label={t('onchainTransactionDetail.transactionId')} value={transaction.txid} copyable expandable />
           </View>
-        </ScrollView>
+        </View>
+        <View className="mb-4 flex">
+          <TouchableOpacity onPress={() => openLink(transaction.txid)} className="items-center rounded-full bg-primary-600 px-6 py-4">
+            <Text className="text-base font-normal text-white">Explore transaction</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );

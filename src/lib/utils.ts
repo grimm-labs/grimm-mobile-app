@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 import type { Payment } from '@breeztech/react-native-breez-sdk-liquid';
-import { PaymentState, PaymentType } from '@breeztech/react-native-breez-sdk-liquid';
+import { LiquidNetwork, PaymentState, PaymentType } from '@breeztech/react-native-breez-sdk-liquid';
 import { Mnemonic } from 'bdk-rn';
 import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { Linking } from 'react-native';
@@ -11,6 +11,8 @@ import type { Country } from '@/interfaces';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
 import { TransactionSource, UnifiedTransactionStatus, UnifiedTransactionType } from '@/types/transaction';
+
+import { Env } from './env';
 
 export function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url));
@@ -140,7 +142,7 @@ export const mapLightningToUnified = (payment: Payment): UnifiedTransaction => {
 
 export const mapOnchainToUnified = (tx: TransactionDetails): UnifiedTransaction => {
   const isReceive = tx.received > tx.sent;
-  const amount = isReceive ? tx.received - tx.sent : tx.sent - tx.received;
+  const amount = isReceive ? tx.received - tx.sent : tx.sent - tx.received + (tx.fee || 0);
 
   return {
     id: tx.txid,
@@ -156,6 +158,19 @@ export const mapOnchainToUnified = (tx: TransactionDetails): UnifiedTransaction 
 
 export const mergeAndSortTransactions = (lightningPayments: Payment[], onchainTransactions: TransactionDetails[]): UnifiedTransaction[] => {
   const unified = [...lightningPayments.map(mapLightningToUnified), ...onchainTransactions.map(mapOnchainToUnified)];
-
   return unified.sort((a, b) => b.timestamp - a.timestamp);
+};
+
+export const splitStringIntoChunks = (input: string, chunkSize: number): string[] => {
+  const chunks: string[] = [];
+  for (let i = 0; i < input.length; i += chunkSize) {
+    chunks.push(input.slice(i, i + chunkSize));
+  }
+  return chunks;
+};
+
+export const generateTxUrl = (txId: string, liquidNetwork: LiquidNetwork): string => {
+  const isMainnet = liquidNetwork === LiquidNetwork.MAINNET;
+  const networkPath = isMainnet ? '' : '/testnet4';
+  return `${Env.MEMPOOL_URL}${networkPath}/tx/${txId}`;
 };

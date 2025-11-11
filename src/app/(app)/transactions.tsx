@@ -48,7 +48,7 @@ export default function Transactions() {
   const renderFilterButton = (filter: FilterType) => {
     const isSelected = selectedFilter === filter;
     return (
-      <TouchableOpacity key={filter} onPress={() => setSelectedFilter(filter)} className={`mr-3 rounded-full px-4 py-2 ${isSelected ? 'bg-primary-600' : 'bg-gray-100'}`} activeOpacity={0.7}>
+      <TouchableOpacity key={filter} onPress={() => setSelectedFilter(filter)} className={`mx-3 rounded-full px-4 py-2 ${isSelected ? 'bg-primary-600' : 'bg-gray-100'}`} activeOpacity={0.7}>
         <Text className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-gray-600'}`}>{t(`transactions.filters.${filter.toLowerCase()}`)}</Text>
       </TouchableOpacity>
     );

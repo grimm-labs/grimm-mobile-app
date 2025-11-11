@@ -81,6 +81,7 @@ const client = z.object({
   // ADD YOUR CLIENT ENV VARS HERE
   YADIO_API_URL: z.string(),
   BREEZ_API_KEY: z.string(),
+  MEMPOOL_URL: z.string(),
 });
 
 const buildTime = z.object({
@@ -103,6 +104,7 @@ const _clientEnv = {
   // ADD YOUR ENV VARS HERE TOO
   YADIO_API_URL: process.env.YADIO_API_URL,
   BREEZ_API_KEY: process.env.BREEZ_API_KEY,
+  MEMPOOL_URL: process.env.MEMPOOL_URL,
 };
 
 /**

@@ -1,12 +1,14 @@
 /* eslint-disable max-lines-per-function */
 import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import type { Blockchain, Wallet as BdkWallet } from 'bdk-rn';
-import { Blockchain as BdkBlockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, Wallet } from 'bdk-rn';
+import { Address, Blockchain as BdkBlockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, TxBuilder, Wallet } from 'bdk-rn';
 import type { Balance, TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { KeychainKind, Network } from 'bdk-rn/lib/lib/enums';
 import * as FileSystem from 'expo-file-system';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+
+import { MEMPOOL_SSL_URL, MEMPOOL_SSL_URL_TESTNET4 } from '@/lib/constant';
 
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { useBreez } from './breez-context';
@@ -29,6 +31,8 @@ interface BdkContextType extends BdkState {
   initializeBdk: () => Promise<void>;
   syncWallet: () => Promise<void>;
   disconnectBdk: () => Promise<void>;
+  sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
+  calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
 }
 
 const initialState: BdkState = {
@@ -57,6 +61,16 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const walletRef = useRef<BdkWallet | null>(null);
   const { liquidNetwork } = useBreez();
   const currentNetworkRef = useRef<LiquidNetwork | null>(null);
+
+  const getOnchainNetwork = useCallback((): Network => {
+    let n: Network = Network.Testnet;
+    if (liquidNetwork === LiquidNetwork.MAINNET) {
+      n = Network.Bitcoin;
+    } else if (liquidNetwork === LiquidNetwork.TESTNET) {
+      n = Network.Testnet;
+    }
+    return n;
+  }, [liquidNetwork]);
 
   const updateState = useCallback((updates: Partial<BdkState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -91,6 +105,68 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
       });
     }
   }, [updateState]);
+
+  const buildTransaction = async (address: string, amount: number, feeRate: number) => {
+    const txBuilder = await new TxBuilder().create();
+    const network = getOnchainNetwork();
+    const addressInstance = await new Address().create(address, network);
+    const script = await addressInstance.scriptPubKey();
+
+    await txBuilder.addRecipient(script, amount);
+    await txBuilder.enableRbf();
+    await txBuilder.feeRate(feeRate);
+
+    if (state.wallet) {
+      const txBuilderResult = await txBuilder.finish(state.wallet);
+      const psbt = await state.wallet.sign(txBuilderResult.psbt);
+      const tx = await psbt.extractTx();
+      return tx;
+    }
+  };
+
+  const validateWalletAndBlockchain = (wallet: Wallet | null, blockchain: Blockchain | null) => {
+    if (!wallet || !blockchain) {
+      throw new Error('Wallet ou blockchain not initialized');
+    }
+  };
+
+  const sendTransaction = async (address: string, amount: number, feeRate: number = 1.0): Promise<string> => {
+    try {
+      validateWalletAndBlockchain(state.wallet, blockchainRef.current);
+      updateState({ isSyncing: true });
+
+      const tx = await buildTransaction(address, amount, feeRate);
+      if (tx && blockchainRef.current) {
+        await blockchainRef.current.broadcast(tx);
+        const id = await tx.txid();
+        updateState({ isSyncing: false });
+        return id;
+      }
+      throw new Error('Failed to build send transaction');
+    } catch (error) {
+      console.error('Failed to send transaction:', error);
+      updateState({
+        error: error?.toString(),
+        isSyncing: false,
+      });
+      throw error;
+    }
+  };
+
+  const calculateTransactionFee = async (address: string, amount: number, feeRate: number = 1.0): Promise<number> => {
+    try {
+      validateWalletAndBlockchain(state.wallet, blockchainRef.current);
+      const tx = await buildTransaction(address, amount, feeRate);
+      if (tx) {
+        const vsize = await tx.vsize();
+        return vsize * feeRate;
+      }
+      throw new Error('Failed to calculate transaction fee');
+    } catch (error) {
+      console.error('Error calculating transaction fees:', error);
+      throw error;
+    }
+  };
 
   const syncWallet = useCallback(
     async (walletParam?: BdkWallet): Promise<void> => {
@@ -154,15 +230,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         }
 
         const mnemonic = await new Mnemonic().fromString(seedPhrase);
-
-        let network: Network = Network.Testnet;
-
-        if (liquidNetwork === LiquidNetwork.MAINNET) {
-          network = Network.Bitcoin;
-        } else if (liquidNetwork === LiquidNetwork.TESTNET) {
-          network = Network.Testnet;
-        }
-
+        const network = getOnchainNetwork();
         const descriptorSecretKey = await new DescriptorSecretKey().create(network, mnemonic);
         const externalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.External, network);
         const internalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.Internal, network);
@@ -173,7 +241,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, network, dbConfig);
 
         const blockchainConfig = {
-          url: network === Network.Testnet ? 'ssl://mempool.space:40002' : 'ssl://mempool.space:50002',
+          url: network === Network.Testnet ? MEMPOOL_SSL_URL_TESTNET4 : MEMPOOL_SSL_URL,
           sock5: null,
           retry: 5,
           timeout: 10,
@@ -207,7 +275,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         isInitializingRef.current = false;
       }
     },
-    [state.isBdkInitialized, _getSeedPhrase, liquidNetwork, syncWallet, updateState],
+    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, liquidNetwork, syncWallet],
   );
 
   useEffect(() => {
@@ -246,6 +314,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     initializeBdk,
     syncWallet,
     disconnectBdk,
+    sendTransaction,
+    calculateTransactionFee,
   };
 
   return <BdkContext.Provider value={contextValue}>{children}</BdkContext.Provider>;

@@ -74,16 +74,18 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
   };
 
   const getTransactionLabel = () => {
-    const typeLabel = transaction.type === UnifiedTransactionType.RECEIVE ? t('transactionItem.received') : t('transactionItem.sent');
-    const sourceLabel = transaction.source === TransactionSource.LIGHTNING ? ' ⚡' : ' 🔗';
-    return typeLabel + sourceLabel;
+    return transaction.type === UnifiedTransactionType.RECEIVE ? t('transactionItem.received') : t('transactionItem.sent');
   };
 
   const getStatusLabel = () => {
     return transaction.status === UnifiedTransactionStatus.PENDING ? t('transactionItem.status.pending') : t('transactionItem.status.confirmed');
   };
 
-  const bitcoinAmount = bitcoinUnit === BitcoinUnit.Sats ? transaction.amountSat.toLocaleString('en-US') : convertSatsToBtc(transaction.amountSat);
+  const getSourceIcon = () => {
+    return transaction.source === TransactionSource.LIGHTNING ? '⚡' : '🔗';
+  };
+
+  const bitcoinAmount = bitcoinUnit === BitcoinUnit.Sats ? transaction.amountSat.toLocaleString() : convertSatsToBtc(transaction.amountSat);
 
   const handlePress = () => {
     const data = transaction.source === TransactionSource.LIGHTNING ? transaction.lightningData : transaction.onchainData;
@@ -100,8 +102,13 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
 
   return (
     <TouchableOpacity className="flex-row items-center py-4" activeOpacity={0.7} onPress={handlePress}>
-      <View className="mr-4 size-12 items-center justify-center rounded-full" style={{ backgroundColor: `${getTransactionColor()}15` }}>
-        <Ionicons name={getTransactionIcon() as any} size={20} color={getTransactionColor()} />
+      <View className="relative mr-4">
+        <View className="size-12 items-center justify-center rounded-full" style={{ backgroundColor: `${getTransactionColor()}15` }}>
+          <Ionicons name={getTransactionIcon() as any} size={20} color={getTransactionColor()} />
+        </View>
+        <View className="absolute -right-1 -top-1 size-5 items-center justify-center rounded-full border border-neutral-300 bg-white shadow">
+          <Text className="text-xs">{getSourceIcon()}</Text>
+        </View>
       </View>
       <View className="flex-1 flex-row items-center justify-between">
         <View>

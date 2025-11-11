@@ -187,7 +187,7 @@ export default function ReceivePaymentScreen() {
               </View>
             </View>
             <View className="mb-8 items-center">
-              <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={type === 'onchain' ? 150 : 250} backgroundColor="white" color="black" />}</View>
+              <View className="rounded-xl border-4 border-neutral-700 bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={250} backgroundColor="white" color="black" />}</View>
               {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
               <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_payment.scan_text')}</Text>
             </View>

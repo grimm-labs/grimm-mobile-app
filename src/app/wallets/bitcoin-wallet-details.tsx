@@ -4,39 +4,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { EmptyTransactions } from '@/components/empty-transaction';
 import { TransactionItem } from '@/components/transaction';
-import { colors, FocusAwareStatusBar, Image, SafeAreaView, Text, View } from '@/components/ui';
+import { FocusAwareStatusBar, Image, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency, mergeAndSortTransactions } from '@/lib';
 import { AppContext, useBdk, useBreez } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
-
-type MenuItemProps = {
-  icon: string;
-  title: string;
-  subtitle?: string;
-  onPress?: () => void;
-  showArrow?: boolean;
-};
-
-const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress, showArrow = true }) => (
-  <TouchableOpacity className="flex-row items-center bg-gray-50 p-4" onPress={onPress} activeOpacity={0.7}>
-    <View className="mr-4 size-12 items-center justify-center rounded-full bg-primary-600">
-      <Ionicons name={icon as any} size={18} color="white" />
-    </View>
-    <View className="flex-1">
-      <Text className="text-base font-medium text-gray-900">{title}</Text>
-      {subtitle && <Text className="mt-1 text-sm text-gray-500">{subtitle}</Text>}
-    </View>
-    {showArrow && <Ionicons name="chevron-forward" size={20} color={colors.primary[600]} />}
-  </TouchableOpacity>
-);
 
 const HeaderTitle = () => (
   <View className="flex-row items-center">
@@ -108,23 +87,29 @@ export default function BitcoinWalletDetails() {
           </View>
 
           <View className="mb-8">
-            <Text className="mb-3 text-xl font-bold text-gray-600">{t('btcWallet.actions')}</Text>
-            <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
-              <MenuItem
-                icon="add-outline"
-                title={t('btcWallet.receiveBitcoin')}
-                onPress={() => {
-                  router.push('/receive-btc');
-                }}
-              />
-              <View className="ml-14 border-t border-gray-200" />
-              <MenuItem
-                icon="link"
-                title={t('btcWallet.sendBitcoin')}
-                onPress={() => {
-                  router.push('/send-btc');
-                }}
-              />
+            <View className="flex flex-row justify-center space-x-1">
+              <View className="mx-4 flex items-center justify-center">
+                <Pressable
+                  className="mb-2 rounded-full bg-primary-600 p-3 text-white"
+                  onPress={() => {
+                    router.push('/receive-btc');
+                  }}
+                >
+                  <Ionicons name="arrow-down" size={20} color="white" />
+                </Pressable>
+                <Text className="text-sm font-medium">{t('btcWallet.receiveBitcoin')}</Text>
+              </View>
+              <View className="mx-4 flex items-center justify-center">
+                <Pressable
+                  className="mb-2 rounded-full bg-neutral-700 p-3 text-white"
+                  onPress={() => {
+                    router.push('/send-onchain/enter-address');
+                  }}
+                >
+                  <Ionicons name="send" size={20} color="white" />
+                </Pressable>
+                <Text className="text-sm font-medium">{t('btcWallet.sendBitcoin')}</Text>
+              </View>
             </View>
           </View>
 
@@ -143,7 +128,7 @@ export default function BitcoinWalletDetails() {
                 <EmptyTransactions type="onchain" />
               ) : (
                 <View className="">
-                  {transactions.slice(0, 4).map((transaction, index) => (
+                  {transactions.slice(0, 6).map((transaction, index) => (
                     <View key={transaction.id}>
                       <TransactionItem transaction={transaction} />
                       {index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100" />}

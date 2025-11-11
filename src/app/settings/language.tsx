@@ -114,7 +114,7 @@ export default function LanguageSelector() {
           </View>
 
           <View className="mb-4 mt-6 px-2">
-            <Text className="text-center text-base leading-4 text-gray-500">{t('language.info_text')}</Text>
+            <Text className="text-center text-sm leading-4 text-gray-500">{t('language.info_text')}</Text>
           </View>
         </View>
       </SafeAreaView>
