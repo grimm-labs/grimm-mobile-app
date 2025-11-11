@@ -15,6 +15,7 @@ import { HeaderTitle } from '@/components/header-title';
 import type { AddressConfig } from '@/components/modal/address-config-bottom-sheet';
 import { AddressConfigBottomSheet } from '@/components/modal/address-config-bottom-sheet';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { splitStringIntoChunks } from '@/lib';
 import { useBdk } from '@/lib/context';
 
 export default function ReceivePaymentScreen() {
@@ -51,8 +52,10 @@ export default function ReceivePaymentScreen() {
       setLoading(true);
       setError('');
 
-      const res = await wallet?.getAddress(AddressIndex.New);
-      const bitcoinAddress = await res?.address.asString();
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const addressInfo = await wallet?.getAddress(AddressIndex.New);
+      const bitcoinAddress = await addressInfo?.address.asString();
 
       if (bitcoinAddress) {
         setAddress(bitcoinAddress);
@@ -147,21 +150,31 @@ export default function ReceivePaymentScreen() {
         <View className="flex-1 px-2">
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="mb-8 items-center">
-              <View className="bg-white p-6">
+              <View className="rounded-xl border-4 border-neutral-700 bg-white p-6">
                 <QRCode value={addAmountAndNoteToAddress(address, amount, note)} size={220} backgroundColor="white" color="black" />
               </View>
               <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_onchain.scan_text')}</Text>
             </View>
-            <View className="flex flex-row justify-center">
-              <Pressable className="mx-4 mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
-                <Ionicons name="copy" size={20} color="white" />
-              </Pressable>
-              <Pressable className="mx-4 mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={shareAddress}>
-                <Ionicons name="share" size={20} color="white" />
-              </Pressable>
+            <View className="my-8 flex flex-row justify-center space-x-1">
+              <View className="mx-4 flex items-center justify-center">
+                <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
+                  <Ionicons name="copy" size={20} color="white" />
+                </Pressable>
+                <Text className="text-sm font-medium">Copy</Text>
+              </View>
+              <View className="mx-4 flex items-center justify-center">
+                <Pressable className="mb-2 rounded-full bg-neutral-700 p-3 text-white" onPress={shareAddress}>
+                  <Ionicons name="share" size={20} color="white" />
+                </Pressable>
+                <Text className="text-sm font-medium">Share</Text>
+              </View>
             </View>
-            <Pressable onPress={copyToClipboard} className="mt-6 items-center">
-              <Text className="text-center text-sm font-medium text-gray-700">{address}</Text>
+            <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
+              {splitStringIntoChunks(address, 6).map((s) => (
+                <View className="m-2" key={s}>
+                  <Text className="text-base font-bold text-primary-600">{s}</Text>
+                </View>
+              ))}
             </Pressable>
           </ScrollView>
           <View>
