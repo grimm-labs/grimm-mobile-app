@@ -1,17 +1,18 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import DetailRow from '@/components/detail-row';
-import { colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Image, SafeAreaView, ScrollView } from '@/components/ui';
 import { formatBalance, generateTxUrl } from '@/lib';
-import { AppContext, useBreez } from '@/lib/context';
+import { AppContext, useBdk, useBreez } from '@/lib/context';
 
 type SearchParams = {
   transactionData: string;
@@ -22,6 +23,8 @@ export default function OnchainTransactionDetailsScreen() {
   const { transactionData } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit } = useContext(AppContext);
   const { liquidNetwork } = useBreez();
+  const { getBlockainHeight } = useBdk();
+  const [height, setHeight] = useState<number | undefined>(undefined);
 
   const transaction = JSON.parse(transactionData) as TransactionDetails;
   const isSent = transaction.sent > transaction.received;
@@ -44,6 +47,26 @@ export default function OnchainTransactionDetailsScreen() {
     Linking.openURL(url).catch((err) => console.error(`Error opening link: ${url}`, err));
   };
 
+  useEffect(() => {
+    async function fetchHeight() {
+      try {
+        const val = await getBlockainHeight();
+        setHeight(val);
+      } catch (err) {
+        console.error('Error fetching blockchain height', err);
+      }
+    }
+    fetchHeight();
+  }, [getBlockainHeight]);
+
+  const displayConfirmation = () => {
+    if (transaction.confirmationTime?.height && height) {
+      const diff = height - transaction.confirmationTime.height;
+      return diff > 10 ? `+10` : diff.toString();
+    }
+    return '';
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex-1 bg-white px-4">
@@ -57,7 +80,7 @@ export default function OnchainTransactionDetailsScreen() {
           }}
         />
         <FocusAwareStatusBar style="dark" />
-        <View className="flex-1">
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }} className="flex-1">
           <View className="mb-6 mt-4 items-center">
             <View className={`rounded-full px-4 py-2 ${isConfirmed ? 'bg-green-100' : 'bg-yellow-100'}`}>
               <Text className={`text-sm font-semibold ${isConfirmed ? 'text-green-700' : 'text-yellow-700'}`}>
@@ -84,11 +107,12 @@ export default function OnchainTransactionDetailsScreen() {
             <Text className="mb-4 text-xl font-semibold text-gray-900">{t('onchainTransactionDetail.details')}</Text>
             {isConfirmed && <DetailRow label={t('onchainTransactionDetail.date')} value={formattedDate} />}
             {isConfirmed && <DetailRow label={t('onchainTransactionDetail.blockHeight')} value={transaction.confirmationTime?.height?.toString() || ''} />}
+            {isConfirmed && height && <DetailRow label="Confirmations" value={displayConfirmation()} />}
             <DetailRow label={t('onchainTransactionDetail.amount')} value={formatBalance(netAmountWithoutFee, bitcoinUnit)} />
             {isSent && transaction.fee && <DetailRow label={t('onchainTransactionDetail.networkFee')} value={formatBalance(transaction.fee, bitcoinUnit)} />}
             <DetailRow label={t('onchainTransactionDetail.transactionId')} value={transaction.txid} copyable expandable />
           </View>
-        </View>
+        </ScrollView>
         <View className="mb-4 flex">
           <TouchableOpacity onPress={() => openLink(transaction.txid)} className="items-center rounded-full bg-primary-600 px-6 py-4">
             <Text className="text-base font-normal text-white">Explore transaction</Text>

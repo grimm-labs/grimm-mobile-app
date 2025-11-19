@@ -23,7 +23,7 @@ const appIconBadgeConfig: AppIconBadgeConfig = {
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.NAME,
-  description: `${Env.NAME} Mobile App`,
+  description: `${Env.NAME}`,
   owner: Env.EXPO_ACCOUNT_OWNER,
   scheme: Env.SCHEME,
   slug: 'grimm-app',
@@ -110,6 +110,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         cameraPermission: 'Allow $(PRODUCT_NAME) to access your camera',
         microphonePermission: 'Allow $(PRODUCT_NAME) to access your microphone',
         recordAudioAndroid: true,
+      },
+    ],
+    [
+      'expo-notifications',
+      {
+        icon: './assets/icon.png',
       },
     ],
   ],

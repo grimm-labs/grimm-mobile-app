@@ -157,7 +157,7 @@ export default function OnchainSendAmountScreen() {
             ) : (
               <View className="flex-row justify-between">
                 {feeOptions.map((fee) => (
-                  <Pressable key={fee.speed} onPress={() => setSelectedFee(fee.speed)} className={`mx-1 flex-1 rounded-xl p-3 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100'}`}>
+                  <Pressable key={fee.speed} onPress={() => setSelectedFee(fee.speed)} className={`mx-1 flex-1 rounded-xl p-2 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100'}`}>
                     <Text className={`text-center text-sm font-semibold ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700'}`}>{fee.label}</Text>
                     <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700'}`}>{fee.satsPerVbyte} sat/vB</Text>
                     <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700'}`}>{fee.estimatedTime}</Text>

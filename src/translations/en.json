@@ -214,6 +214,20 @@
     },
     "switching": "Switching network..."
   },
+  "notificationSettings": {
+    "cancel": "Cancel",
+    "disableMessage": "To disable notifications, please change the settings on your device",
+    "disableTitle": "Disable Notifications",
+    "disabled": "Disabled",
+    "enabled": "Enabled",
+    "header": "Notifications",
+    "info": "You will receive notifications for important transactions and security updates",
+    "openSettings": "Open Settings",
+    "permissionDeniedMessage": "To enable notifications, please allow access in your device settings",
+    "permissionDeniedTitle": "Permission Denied",
+    "pushNotifications": "Push Notifications",
+    "title": "Push Notifications"
+  },
   "onboarding": {
     "agreementText": "By Continuing, You agree to the",
     "getStarted": "Get Started",
@@ -242,9 +256,9 @@
       "continueButton": "Continue",
       "feeSelection": "Transaction Fee Selection",
       "fees": {
-        "fast": "Fast (~10 min)",
-        "low": "Slow (~60 min)",
-        "medium": "Normal (~30 min)"
+        "fast": "Fast",
+        "low": "Slow",
+        "medium": "Normal"
       },
       "headerTitle": "Send Bitcoin",
       "invalidAmount": "Invalid amount",
@@ -367,8 +381,17 @@
     "copyButton": "Copy to Clipboard",
     "description": "Write down these 12 words in the exact order shown. Store them safely offline - anyone with access to these words can control your wallet.",
     "header": "Recovery Phrase",
-    "savedButton": "I've Saved My Recovery Phrase",
-    "title": "Secure Your Wallet"
+    "title": "Secure Your Wallet",
+    "verify": "Verify"
+  },
+  "seedPhraseVerification": {
+    "description": "To confirm that you have properly saved your phrase, please enter the following words:",
+    "errorMessage": "One or more words are incorrect. Please try again.",
+    "header": "Verification",
+    "placeholder": "Enter the word",
+    "title": "Verify your recovery phrase",
+    "verifyButton": "Verify",
+    "wordLabel": "Word #{{number}}"
   },
   "seedSetup": {
     "create": {

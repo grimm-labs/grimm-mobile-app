@@ -33,6 +33,7 @@ interface BdkContextType extends BdkState {
   disconnectBdk: () => Promise<void>;
   sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
   calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
+  getBlockainHeight: () => Promise<number | undefined>;
 }
 
 const initialState: BdkState = {
@@ -166,6 +167,13 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
       console.error('Error calculating transaction fees:', error);
       throw error;
     }
+  };
+
+  const getBlockainHeight = async (): Promise<number | undefined> => {
+    if (blockchainRef) {
+      return await blockchainRef.current?.getHeight();
+    }
+    return undefined;
   };
 
   const syncWallet = useCallback(
@@ -316,6 +324,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     disconnectBdk,
     sendTransaction,
     calculateTransactionFee,
+    getBlockainHeight,
   };
 
   return <BdkContext.Provider value={contextValue}>{children}</BdkContext.Provider>;
