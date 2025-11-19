@@ -39,7 +39,7 @@ importers:
         specifier: ^1.7.5
         version: 1.7.5
       bdk-rn:
-        specifier: github:grimm-labs/bdk-rn#730e160cb56b739ed0d86f32e939aa064d4f718d
+        specifier: https://github.com/grimm-labs/bdk-rn.git
         version: https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/730e160cb56b739ed0d86f32e939aa064d4f718d(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       bignumber.js:
         specifier: ^9.1.2
