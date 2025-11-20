@@ -15,7 +15,7 @@ import { Button, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 
 export default function SeedPhraseScreen() {
-  const { seedPhrase, setIsSeedPhraseBackup } = useContext(AppContext);
+  const { seedPhrase } = useContext(AppContext);
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -33,10 +33,8 @@ export default function SeedPhraseScreen() {
     return rows;
   }, [seedPhrase]);
 
-  const handleClose = async () => {
-    await setIsSeedPhraseBackup(true);
-    router.dismissAll();
-    router.replace('/');
+  const continueToVerifyScreen = async () => {
+    router.push('/settings/backup-seed-phrase/verify');
   };
 
   const copyToClipboard = async () => {
@@ -88,9 +86,9 @@ export default function SeedPhraseScreen() {
               </View>
             </View>
           </ScrollView>
-          <View className="space-y-3">
+          <View className="space-y-3 pb-4">
             <Button testID="copy-button" label={t('seedPhraseScreen.copyButton')} fullWidth size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={copyToClipboard} />
-            <Button testID="saved-button" label={t('seedPhraseScreen.savedButton')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleClose} />
+            <Button testID="saved-button" label={t('seedPhraseScreen.verify')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={continueToVerifyScreen} />
           </View>
         </View>
       </SafeAreaView>

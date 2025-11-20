@@ -214,6 +214,20 @@
     },
     "switching": "Changement de réseau..."
   },
+  "notificationSettings": {
+    "cancel": "Annuler",
+    "disableMessage": "Pour désactiver les notifications, veuillez modifier les paramètres de votre appareil",
+    "disableTitle": "Désactiver les notifications",
+    "disabled": "Désactivées",
+    "enabled": "Activées",
+    "header": "Notifications",
+    "info": "Vous recevrez des notifications pour les transactions importantes et les mises à jour de sécurité",
+    "openSettings": "Ouvrir paramètres",
+    "permissionDeniedMessage": "Pour activer les notifications, veuillez autoriser l'accès dans les paramètres de votre appareil",
+    "permissionDeniedTitle": "Permission refusée",
+    "pushNotifications": "Notifications Push",
+    "title": "Notifications Push"
+  },
   "onboarding": {
     "agreementText": "En continuant, vous acceptez les",
     "getStarted": "Commencer",
@@ -242,9 +256,9 @@
       "continueButton": "Continuer",
       "feeSelection": "Sélection des frais de transaction",
       "fees": {
-        "fast": "Rapide (~10 min)",
-        "low": "Lent (~60 min)",
-        "medium": "Normal (~30 min)"
+        "fast": "Rapide",
+        "low": "Lent",
+        "medium": "Normal"
       },
       "headerTitle": "Envoyer du Bitcoin",
       "invalidAmount": "Montant invalide",
@@ -367,8 +381,17 @@
     "copyButton": "Copier dans le presse-papiers",
     "description": "Écrivez ces 12 mots dans l’ordre exact indiqué. Conservez-les en lieu sûr hors ligne : toute personne ayant accès à ces mots peut contrôler votre portefeuille.",
     "header": "Phrase de récupération",
-    "savedButton": "J’ai sauvegardé ma phrase de récupération",
-    "title": "Sécurisez votre portefeuille"
+    "title": "Sécurisez votre portefeuille",
+    "verify": "Verifier"
+  },
+  "seedPhraseVerification": {
+    "description": "Pour confirmer que vous avez bien sauvegardé votre phrase, veuillez entrer les mots suivants :",
+    "errorMessage": "Un ou plusieurs mots sont incorrects. Veuillez réessayer.",
+    "header": "Vérification",
+    "placeholder": "Entrez le mot",
+    "title": "Vérifiez votre phrase de récupération",
+    "verifyButton": "Vérifier",
+    "wordLabel": "Mot #{{number}}"
   },
   "seedSetup": {
     "create": {

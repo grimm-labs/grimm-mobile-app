@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -85,7 +85,6 @@ export default function BitcoinWalletDetails() {
               </View>
             </View>
           </View>
-
           <View className="mb-8">
             <View className="flex flex-row justify-center space-x-1">
               <View className="mx-4 flex items-center justify-center">
@@ -95,7 +94,7 @@ export default function BitcoinWalletDetails() {
                     router.push('/receive-btc');
                   }}
                 >
-                  <Ionicons name="arrow-down" size={20} color="white" />
+                  <MaterialIcons name="arrow-downward" size={20} color="white" />
                 </Pressable>
                 <Text className="text-sm font-medium">{t('btcWallet.receiveBitcoin')}</Text>
               </View>
@@ -106,13 +105,12 @@ export default function BitcoinWalletDetails() {
                     router.push('/send-onchain/enter-address');
                   }}
                 >
-                  <Ionicons name="send" size={20} color="white" />
+                  <MaterialIcons name="arrow-outward" size={20} color="white" />
                 </Pressable>
                 <Text className="text-sm font-medium">{t('btcWallet.sendBitcoin')}</Text>
               </View>
             </View>
           </View>
-
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-xl font-bold text-gray-600">{t('btcWallet.transactions')}</Text>
@@ -122,7 +120,6 @@ export default function BitcoinWalletDetails() {
                 </TouchableOpacity>
               )}
             </View>
-
             <View>
               {transactions.length === 0 ? (
                 <EmptyTransactions type="onchain" />

@@ -79,13 +79,13 @@ export default function Settings() {
                     </Switch.Root>
                   </View>
                 </Pressable> */}
-                <Pressable className="mb-1 flex-row items-center rounded py-2">
+                <Pressable className="mb-1 flex-row items-center rounded py-2" onPress={() => setHideBalance(!hideBalance)}>
                   <View className="mr-1 rounded-full p-2">
                     <Ionicons name="eye" size={20} color="gray" />
                   </View>
                   <View className="ml-2 flex-1">
-                    <Text className="text-base font-medium text-gray-800">{t('settings.security.hideBalance.title')}</Text>
-                    <Text className="text-sm text-gray-500">{t('settings.security.hideBalance.subtitle')}</Text>
+                    <Text className="text-base font-semibold text-gray-700">{t('settings.security.hideBalance.title')}</Text>
+                    <Text className="text-xs text-gray-500">{t('settings.security.hideBalance.subtitle')}</Text>
                   </View>
                   <View>
                     <Switch.Root checked={hideBalance} onChange={setHideBalance} accessibilityLabel="switch" className="pb-2">
@@ -100,12 +100,12 @@ export default function Settings() {
             <View className="mb-6">
               <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600">{t('settings.sections.preferences')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
-                {/* <SettingsItem
+                <SettingsItem
                   icon="notifications"
                   title={t('settings.preferences.notifications.title')}
                   subtitle={t('settings.preferences.notifications.subtitle')}
                   onPress={() => router.push('/settings/notifications')}
-                /> */}
+                />
                 <SettingsItem icon="color-palette" title={t('settings.preferences.appearance.title')} subtitle={t('settings.preferences.appearance.subtitle')} onPress={() => router.push('/settings/appearance')} />
               </View>
             </View>

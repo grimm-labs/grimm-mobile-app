@@ -53,7 +53,7 @@ export default function MnemonicWarning() {
               ))}
             </View>
           </View>
-          <View className="flex-col justify-between">
+          <View className="flex-col justify-between pb-4">
             <Button testID="cancel-button" label={t('mnemonicWarning.cancel')} fullWidth size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={handleCancel} />
             <Button testID="proceed-button" label={t('mnemonicWarning.proceed')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleProceed} />
           </View>
