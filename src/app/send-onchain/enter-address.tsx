@@ -5,12 +5,12 @@ import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, colors, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 
 const LightningPaymentScreenHeaderTitle = (title: string) => <HeaderTitle title={title} />;
 
@@ -83,11 +83,15 @@ export default function EnterAddressScreen() {
                 suffix={
                   <View className="flex flex-row">
                     <Ionicons name="scan" size={24} color={colors.primary[600]} className="mr-4" onPress={scanQRCode} />
-                    <Ionicons name="clipboard-outline" size={24} color={colors.primary[600]} onPress={pasteFromClipboard} />
                   </View>
                 }
               />
             </View>
+          </View>
+          <View className="my-2 items-center">
+            <TouchableWithoutFeedback onPress={pasteFromClipboard}>
+              <Text className="font-semibold text-primary-600">{t('onchainSend.enterAddress.paste')}</Text>
+            </TouchableWithoutFeedback>
           </View>
           {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
           <View>
