@@ -245,6 +245,7 @@
         "invalidAddress": "Veuillez entrer une adresse valide",
         "unsupportedAddress": "Type d’adresse non pris en charge"
       },
+      "paste": "Coller",
       "placeholder": "Saisir l’adresse ou scanner le QR code",
       "title": "Envoyer du Bitcoin"
     },

@@ -245,6 +245,7 @@
         "invalidAddress": "Please enter a valid address",
         "unsupportedAddress": "Unsupported address type"
       },
+      "paste": "Paste",
       "placeholder": "Input address or Scan QR",
       "title": "Send Bitcoin"
     },
