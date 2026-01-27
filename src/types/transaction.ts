@@ -1,3 +1,4 @@
+import type { Payment as SparkPayment } from '@breeztech/breez-sdk-spark-react-native';
 import type { Payment } from '@breeztech/react-native-breez-sdk-liquid';
 import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 
@@ -26,4 +27,5 @@ export interface UnifiedTransaction {
   source: TransactionSource;
   lightningData?: Payment;
   onchainData?: TransactionDetails;
+  sparkData?: SparkPayment;
 }

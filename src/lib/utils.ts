@@ -1,4 +1,6 @@
 /* eslint-disable max-params */
+import type { Payment as SparkPayment } from '@breeztech/breez-sdk-spark-react-native';
+import { PaymentStatus as SparkPaymentStatus, PaymentType as SparkPaymentType } from '@breeztech/breez-sdk-spark-react-native';
 import type { Payment } from '@breeztech/react-native-breez-sdk-liquid';
 import { LiquidNetwork, PaymentState, PaymentType } from '@breeztech/react-native-breez-sdk-liquid';
 import { Mnemonic } from 'bdk-rn';
@@ -140,6 +142,19 @@ export const mapLightningToUnified = (payment: Payment): UnifiedTransaction => {
   };
 };
 
+export const mapSparkToUnified = (payment: SparkPayment): UnifiedTransaction => {
+  return {
+    id: payment.id,
+    timestamp: Number(payment.timestamp),
+    amountSat: Number(payment.amount),
+    feesSat: Number(payment.fees),
+    type: payment.paymentType === SparkPaymentType.Receive ? UnifiedTransactionType.RECEIVE : UnifiedTransactionType.SEND,
+    status: payment.status === SparkPaymentStatus.Completed ? UnifiedTransactionStatus.CONFIRMED : UnifiedTransactionStatus.PENDING,
+    source: TransactionSource.LIGHTNING,
+    sparkData: payment,
+  };
+};
+
 export const mapOnchainToUnified = (tx: TransactionDetails): UnifiedTransaction => {
   const isReceive = tx.received > tx.sent;
   const amount = isReceive ? tx.received - tx.sent : tx.sent - tx.received + (tx.fee || 0);
@@ -158,6 +173,11 @@ export const mapOnchainToUnified = (tx: TransactionDetails): UnifiedTransaction 
 
 export const mergeAndSortTransactions = (lightningPayments: Payment[], onchainTransactions: TransactionDetails[]): UnifiedTransaction[] => {
   const unified = [...lightningPayments.map(mapLightningToUnified), ...onchainTransactions.map(mapOnchainToUnified)];
+  return unified.sort((a, b) => b.timestamp - a.timestamp);
+};
+
+export const mergeAndSortSparkTransactions = (sparkPayments: SparkPayment[], onchainTransactions: TransactionDetails[]): UnifiedTransaction[] => {
+  const unified = [...sparkPayments.map(mapSparkToUnified), ...onchainTransactions.map(mapOnchainToUnified)];
   return unified.sort((a, b) => b.timestamp - a.timestamp);
 };
 

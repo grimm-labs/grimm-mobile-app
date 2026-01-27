@@ -6,12 +6,14 @@ import { AppContext, useBitcoin } from '@/lib/context';
 import { BitcoinUnit } from '@/types/enum';
 
 type WalletType = 'On-chain' | 'Lightning' | 'Liquid';
+type LightningNetworkType = 'liquid' | 'spark';
 
 type Props = {
   name: string;
   symbol: string;
   type: WalletType;
   balanceSats: number;
+  lightningNetworkType?: LightningNetworkType;
 };
 
 const getWalletIcon = (type: WalletType) => {
@@ -25,6 +27,17 @@ const getWalletIcon = (type: WalletType) => {
   }
 };
 
+const getLightningNetworkIcon = (networkType: LightningNetworkType) => {
+  switch (networkType) {
+    case 'liquid':
+      return require('../assets/images/liquid_logo.png');
+    case 'spark':
+      return require('../assets/images/spark_logo.png');
+    default:
+      return null;
+  }
+};
+
 const getNetwork = (type: WalletType) => {
   if (type === 'On-chain') {
     return 'Bitcoin Network';
@@ -35,16 +48,24 @@ const getNetwork = (type: WalletType) => {
   }
 };
 
-export const WalletView = ({ name, symbol, type, balanceSats }: Props) => {
+export const WalletView = ({ name, symbol, type, balanceSats, lightningNetworkType }: Props) => {
   const { hideBalance, selectedCountry, bitcoinUnit } = useContext(AppContext);
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const { bitcoinPrices } = useBitcoin();
 
   const walletIcon = getWalletIcon(type);
+  const lightningNetworkIcon = lightningNetworkType ? getLightningNetworkIcon(lightningNetworkType) : null;
 
   return (
     <View className="flex flex-row items-center py-2">
-      <Image className="mr-4 size-14 rounded-full" source={walletIcon} />
+      <View className="relative mr-4">
+        <Image className="size-14 rounded-full" source={walletIcon} />
+        {lightningNetworkIcon && (
+          <View className="absolute -bottom-1 -right-1 size-6 items-center justify-center rounded-full border-2 border-white bg-white">
+            <Image className="size-5 rounded-full" source={lightningNetworkIcon} />
+          </View>
+        )}
+      </View>
       <View className="flex-1 flex-row items-center justify-between">
         <View>
           <Text className="text-xl font-bold text-gray-700">{name}</Text>
