@@ -9,14 +9,16 @@ import { SeedPhraseBackupNotification } from '@/components/seed-phrase-backup-no
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { WalletOverview } from '@/components/wallet-overview';
 import { WalletView } from '@/components/wallet-view';
-import { AppContext, useBdk, useBreez, useSpark } from '@/lib/context';
+import { AppContext, useBdk, useBreez, useSparkSafe } from '@/lib/context';
+import { Env } from '@/lib/env';
 
 export default function Home() {
   const router = useRouter();
   const { isSeedPhraseBackup } = useContext(AppContext);
   const { balance: balanceBreez, liquidNetwork } = useBreez();
   const { balance: balanceBdk } = useBdk();
-  const { balance: balanceSpark } = useSpark();
+  const sparkContext = useSparkSafe();
+  const balanceSpark = sparkContext?.balance || 0;
   const { t } = useTranslation();
 
   return (
@@ -51,10 +53,14 @@ export default function Home() {
                 <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
                   <WalletView name={t('home.l2WalletName')} symbol="L-BTC" type="Lightning" balanceSats={balanceBreez} lightningNetworkType="liquid" />
                 </Pressable>
-                <View className="my-2" />
-                <Pressable onPress={() => router.push('/wallets/spark-ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
-                  <WalletView name="BTC Lightning" symbol="BTC" type="Lightning" balanceSats={balanceSpark} lightningNetworkType="spark" />
-                </Pressable>
+                {Env.USE_SPARK && (
+                  <>
+                    <View className="my-2" />
+                    <Pressable onPress={() => router.push('/wallets/spark-ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
+                      <WalletView name="BTC Lightning" symbol="BTC" type="Lightning" balanceSats={balanceSpark} lightningNetworkType="spark" />
+                    </Pressable>
+                  </>
+                )}
               </View>
             </ScrollView>
           </View>

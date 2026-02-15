@@ -14,6 +14,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { APIProvider } from '@/api';
 import { hydrateAuth, loadSelectedTheme } from '@/lib';
 import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider, SparkProvider } from '@/lib/context';
+import { Env } from '@/lib/env';
 import { useThemeConfig } from '@/lib/use-theme-config';
 
 export { ErrorBoundary } from 'expo-router';
@@ -47,7 +48,8 @@ export default function RootLayout() {
 
 function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
-  return (
+
+  const content = (
     <AppContextProvider>
       <BreezProvider>
         <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
@@ -56,12 +58,10 @@ function Providers({ children }: { children: React.ReactNode }) {
               <APIProvider>
                 <BitcoinPriceProvider>
                   <BdkProvider>
-                    <SparkProvider>
-                      <BottomSheetModalProvider>
-                        {children}
-                        <FlashMessage position="top" />
-                      </BottomSheetModalProvider>
-                    </SparkProvider>
+                    <BottomSheetModalProvider>
+                      {children}
+                      <FlashMessage position="top" />
+                    </BottomSheetModalProvider>
                   </BdkProvider>
                 </BitcoinPriceProvider>
               </APIProvider>
@@ -71,6 +71,36 @@ function Providers({ children }: { children: React.ReactNode }) {
       </BreezProvider>
     </AppContextProvider>
   );
+
+  // Conditionally wrap with SparkProvider if USE_SPARK is enabled
+  if (Env.USE_SPARK) {
+    return (
+      <AppContextProvider>
+        <BreezProvider>
+          <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
+            <KeyboardProvider>
+              <ThemeProvider value={theme}>
+                <APIProvider>
+                  <BitcoinPriceProvider>
+                    <BdkProvider>
+                      <SparkProvider>
+                        <BottomSheetModalProvider>
+                          {children}
+                          <FlashMessage position="top" />
+                        </BottomSheetModalProvider>
+                      </SparkProvider>
+                    </BdkProvider>
+                  </BitcoinPriceProvider>
+                </APIProvider>
+              </ThemeProvider>
+            </KeyboardProvider>
+          </GestureHandlerRootView>
+        </BreezProvider>
+      </AppContextProvider>
+    );
+  }
+
+  return content;
 }
 
 const styles = StyleSheet.create({

@@ -276,3 +276,17 @@ export const useSpark = (): SparkContextType => {
   }
   return context;
 };
+
+/**
+ * Safe hook to use Spark context with feature flag support
+ * Returns null if USE_SPARK is false
+ */
+export const useSparkSafe = (): SparkContextType | null => {
+  const context = useSpark();
+
+  if (!Env.USE_SPARK) {
+    return null;
+  }
+
+  return context;
+};
