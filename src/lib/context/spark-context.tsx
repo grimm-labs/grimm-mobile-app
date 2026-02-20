@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
-import type { BreezSdkInterface, EventListener, GetInfoResponse, ListPaymentsRequest, Payment, SdkEvent } from '@breeztech/breez-sdk-spark-react-native';
-import { connect, defaultConfig, Network, PaymentType, SdkEvent_Tags, Seed } from '@breeztech/breez-sdk-spark-react-native';
+import type { BreezSdkInterface, EventListener, GetInfoResponse, ListPaymentsRequest, Payment, ReceivePaymentResponse, SdkEvent } from '@breeztech/breez-sdk-spark-react-native';
+import { connect, defaultConfig, Network, PaymentType, ReceivePaymentMethod, SdkEvent_Tags, Seed } from '@breeztech/breez-sdk-spark-react-native';
 import { Env } from '@env';
 import * as FileSystem from 'expo-file-system';
 import type { ReactNode } from 'react';
@@ -21,6 +21,8 @@ interface SparkContextType {
   initializeSpark: () => Promise<void>;
   refreshWalletInfo: () => Promise<void>;
   disconnectSpark: () => Promise<void>;
+  receiveBolt11: (description: string, amountSats?: number, expirySecs?: number) => Promise<ReceivePaymentResponse>;
+  receiveBitcoinAddress: () => Promise<ReceivePaymentResponse>;
 }
 
 const defaultContext: SparkContextType = {
@@ -34,6 +36,12 @@ const defaultContext: SparkContextType = {
   initializeSpark: async () => {},
   refreshWalletInfo: async () => {},
   disconnectSpark: async () => {},
+  receiveBolt11: async () => {
+    throw new Error('Spark not initialized');
+  },
+  receiveBitcoinAddress: async () => {
+    throw new Error('Spark not initialized');
+  },
 };
 
 const SparkContext = createContext<SparkContextType>(defaultContext);
@@ -146,6 +154,30 @@ export const SparkProvider: React.FC<SparkProviderProps> = ({ children }) => {
       _setSparkError(error?.toString() || 'Refresh error');
     }
   }, [_getSeedPhrase, disconnectSpark, isSparkInitialized, isConnected]);
+
+  const receiveBolt11 = useCallback(async (description: string, amountSats?: number, expirySecs?: number): Promise<ReceivePaymentResponse> => {
+    if (!sdkRef.current) throw new Error('Spark SDK not initialized');
+
+    const response = await sdkRef.current.receivePayment({
+      paymentMethod: ReceivePaymentMethod.Bolt11Invoice.new({
+        description,
+        amountSats: amountSats !== undefined ? BigInt(amountSats) : undefined,
+        expirySecs: expirySecs ?? 3600,
+      }),
+    });
+
+    return response;
+  }, []);
+
+  const receiveBitcoinAddress = useCallback(async (): Promise<ReceivePaymentResponse> => {
+    if (!sdkRef.current) throw new Error('Spark SDK not initialized');
+
+    const response = await sdkRef.current.receivePayment({
+      paymentMethod: ReceivePaymentMethod.BitcoinAddress.new(),
+    });
+
+    return response;
+  }, []);
 
   const initializeSpark = useCallback(async (): Promise<void> => {
     if (isInitializingRef.current || isSparkInitialized) return;
@@ -264,6 +296,8 @@ export const SparkProvider: React.FC<SparkProviderProps> = ({ children }) => {
     initializeSpark,
     refreshWalletInfo,
     disconnectSpark,
+    receiveBolt11,
+    receiveBitcoinAddress,
   };
 
   return <SparkContext.Provider value={contextValue}>{children}</SparkContext.Provider>;

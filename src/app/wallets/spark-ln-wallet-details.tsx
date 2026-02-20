@@ -108,7 +108,7 @@ export default function LnWalletDetails() {
                 title={t('lnWallet.createInvoice')}
                 onPress={() => {
                   router.push({
-                    pathname: '/receive/amount-description',
+                    pathname: '/receive-ln-spark/amount',
                     params: { type: 'lightning' },
                   });
                 }}
@@ -119,8 +119,8 @@ export default function LnWalletDetails() {
                 title={t('lnWallet.receiveOnchain')}
                 onPress={() => {
                   router.push({
-                    pathname: '/receive/amount-description',
-                    params: { type: 'onchain' },
+                    pathname: '/receive-ln-spark/ln-qrcode',
+                    params: { satsAmount: '0', type: 'onchain' },
                   });
                 }}
               />
