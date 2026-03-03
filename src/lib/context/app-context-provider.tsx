@@ -13,7 +13,7 @@ type defaultContextType = {
   hideBalance: boolean;
   onboarding: boolean;
   isDataLoaded: boolean;
-  seedPhrase: string;
+  hasSeedPhrase: boolean;
   isSeedPhraseBackup: boolean;
   selectedCountry: Country;
   bitcoinUnit: BitcoinUnit;
@@ -30,7 +30,7 @@ const defaultContext: defaultContextType = {
   hideBalance: false,
   onboarding: false,
   isDataLoaded: false,
-  seedPhrase: '',
+  hasSeedPhrase: false,
   isSeedPhraseBackup: false,
   selectedCountry: {
     currency: 'XAF',
@@ -57,7 +57,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [hideBalance, _setHideBalance] = useState(defaultContext.hideBalance);
   const [onboarding, _setOnboarding] = useState(defaultContext.onboarding);
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
-  const [seedPhrase, _setSeedPhrase] = useState(defaultContext.seedPhrase);
+  const [hasSeedPhrase, _setHasSeedPhrase] = useState(defaultContext.hasSeedPhrase);
   const [isSeedPhraseBackup, _setIsSeedPhraseBackup] = useState(defaultContext.isSeedPhraseBackup);
   const [selectedCountry, _setSelectedCountry] = useState<Country>(defaultContext.selectedCountry);
   const [bitcoinUnit, _setBitcoinUnit] = useState<BitcoinUnit>(defaultContext.bitcoinUnit);
@@ -65,7 +65,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
   const { getItem: _getOnboarding, setItem: _updateOnboarding } = useAsyncStorage('onboarding');
   const { getItem: _getSelectedCountry, setItem: _updateSelectedCountry } = useAsyncStorage('selectedCountry');
-  const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase } = useSecureStorage('seedPhrase');
+  const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase, deleteItem: _deleteSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getIsSeedPhraseBackup, setItem: _updateIsSeedPhraseBackup } = useAsyncStorage('isSeedPhraseBackup');
   const { getItem: _getBitcoinUnit, setItem: _updateBitcoinUnit } = useAsyncStorage('bitcoinUnit');
 
@@ -92,10 +92,8 @@ export const AppContextProvider = ({ children }: Props) => {
 
   const _loadSeedPhrase = useCallback(async () => {
     const ob = await _getSeedPhrase();
-    if (ob !== null) {
-      _setSeedPhrase(ob);
-    }
-  }, [_getSeedPhrase, _setSeedPhrase]);
+    _setHasSeedPhrase(ob !== null && ob.length > 0);
+  }, [_getSeedPhrase]);
 
   const _loadIsSeedPhraseBackup = useCallback(async () => {
     const ob = await _getIsSeedPhraseBackup();
@@ -154,14 +152,14 @@ export const AppContextProvider = ({ children }: Props) => {
   const setSeedPhrase = useCallback(
     async (arg: string) => {
       try {
-        await _setSeedPhrase(arg);
         await _updateSeedPhrase(arg);
+        _setHasSeedPhrase(arg.length > 0);
       } catch (e) {
-        console.error(`[AsyncStorage] (seedPhrase) Error loading data: ${e} [${arg}]`);
+        console.error('[SecureStore] (seedPhrase) Error saving data:', e);
         throw new Error('Error setting seedPhrase');
       }
     },
-    [_setSeedPhrase, _updateSeedPhrase],
+    [_updateSeedPhrase],
   );
 
   const setIsSeedPhraseBackup = useCallback(
@@ -206,14 +204,15 @@ export const AppContextProvider = ({ children }: Props) => {
   const resetAppData = useCallback(async () => {
     try {
       await setOnboarding(true);
-      await setSeedPhrase('');
+      await _deleteSeedPhrase();
+      _setHasSeedPhrase(false);
       await setIsSeedPhraseBackup(false);
       await setBitcoinUnit(BitcoinUnit.Sats);
     } catch (e) {
-      console.error(`[AsyncStorage] (Reset app data) Error loading data: ${e}`);
+      console.error('[AsyncStorage] (Reset app data) Error resetting:', e);
       throw new Error('Unable to reset app data');
     }
-  }, [setOnboarding, setSeedPhrase, setIsSeedPhraseBackup, setBitcoinUnit]);
+  }, [setOnboarding, _deleteSeedPhrase, setIsSeedPhraseBackup, setBitcoinUnit]);
 
   return (
     <AppContext.Provider
@@ -221,7 +220,7 @@ export const AppContextProvider = ({ children }: Props) => {
         hideBalance,
         onboarding,
         isDataLoaded,
-        seedPhrase,
+        hasSeedPhrase,
         isSeedPhraseBackup,
         selectedCountry,
         bitcoinUnit,

@@ -254,7 +254,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           retry: 5,
           timeout: 10,
           stopGap: 100,
-          validateDomain: false,
+          validateDomain: true,
         };
 
         const blockchain = await new BdkBlockchain().create(blockchainConfig);

@@ -12,6 +12,7 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, Input, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useSecureStorage } from '@/lib/hooks';
 
 interface WordToVerify {
   position: number;
@@ -20,33 +21,38 @@ interface WordToVerify {
 }
 
 export default function SeedPhraseVerificationScreen() {
-  const { seedPhrase, setIsSeedPhraseBackup } = useContext(AppContext);
+  const { setIsSeedPhraseBackup } = useContext(AppContext);
+  const { getItem: getSeedPhrase } = useSecureStorage('seedPhrase');
   const router = useRouter();
   const { t } = useTranslation();
 
   const [wordsToVerify, setWordsToVerify] = useState<WordToVerify[]>([]);
 
   useEffect(() => {
-    if (seedPhrase) {
-      const words = seedPhrase.split(' ');
-      const positions = new Set<number>();
+    const loadAndSelectWords = async () => {
+      const seedPhrase = await getSeedPhrase();
+      if (seedPhrase) {
+        const words = seedPhrase.split(' ');
+        const positions = new Set<number>();
 
-      while (positions.size < 4) {
-        const randomIndex = Math.floor(Math.random() * words.length);
-        positions.add(randomIndex);
+        while (positions.size < 4) {
+          const randomIndex = Math.floor(Math.random() * words.length);
+          positions.add(randomIndex);
+        }
+
+        const selectedWords = Array.from(positions)
+          .sort((a, b) => a - b)
+          .map((index) => ({
+            position: index + 1,
+            word: words[index],
+            userInput: '',
+          }));
+
+        setWordsToVerify(selectedWords);
       }
-
-      const selectedWords = Array.from(positions)
-        .sort((a, b) => a - b)
-        .map((index) => ({
-          position: index + 1,
-          word: words[index],
-          userInput: '',
-        }));
-
-      setWordsToVerify(selectedWords);
-    }
-  }, [seedPhrase]);
+    };
+    loadAndSelectWords();
+  }, [getSeedPhrase]);
 
   const handleInputChange = (index: number, value: string) => {
     const updated = [...wordsToVerify];

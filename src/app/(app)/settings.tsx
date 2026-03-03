@@ -9,14 +9,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LogoutBottomSheet } from '@/components/logout-bottom-sheet';
 import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
-import { AppContext, useBdk } from '@/lib/context';
+import { AppContext, useBdk, useSpark } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { setSeedPhrase, resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance } = useContext(AppContext);
+  const { resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const { disconnectBdk } = useBdk();
+  const { disconnectSpark } = useSpark();
+
   const router = useRouter();
   const logoutModalRef = useRef<any>(null);
 
@@ -31,10 +33,10 @@ export default function Settings() {
   };
 
   const handleLogout = async () => {
-    await setSeedPhrase('');
     await resetAppData();
     await disconnectBreez();
     await disconnectBdk();
+    await disconnectSpark();
     router.push('/');
   };
 

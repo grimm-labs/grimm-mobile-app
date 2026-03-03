@@ -12,7 +12,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { APIProvider } from '@/api';
-import { hydrateAuth, loadSelectedTheme } from '@/lib';
+import { WalletErrorBoundary } from '@/components/wallet-error-boundary';
+import { loadSelectedTheme } from '@/lib';
 import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider, SparkProvider } from '@/lib/context';
 import { Env } from '@/lib/env';
 import { useThemeConfig } from '@/lib/use-theme-config';
@@ -22,8 +23,6 @@ export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
   initialRouteName: '(app)',
 };
-
-hydrateAuth();
 
 loadSelectedTheme();
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -51,24 +50,28 @@ function Providers({ children }: { children: React.ReactNode }) {
 
   const content = (
     <AppContextProvider>
-      <BreezProvider>
-        <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
-          <KeyboardProvider>
-            <ThemeProvider value={theme}>
-              <APIProvider>
-                <BitcoinPriceProvider>
-                  <BdkProvider>
-                    <BottomSheetModalProvider>
-                      {children}
-                      <FlashMessage position="top" />
-                    </BottomSheetModalProvider>
-                  </BdkProvider>
-                </BitcoinPriceProvider>
-              </APIProvider>
-            </ThemeProvider>
-          </KeyboardProvider>
-        </GestureHandlerRootView>
-      </BreezProvider>
+      <WalletErrorBoundary name="Lightning (Breez)">
+        <BreezProvider>
+          <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
+            <KeyboardProvider>
+              <ThemeProvider value={theme}>
+                <APIProvider>
+                  <BitcoinPriceProvider>
+                    <WalletErrorBoundary name="On-chain (BDK)">
+                      <BdkProvider>
+                        <BottomSheetModalProvider>
+                          {children}
+                          <FlashMessage position="top" />
+                        </BottomSheetModalProvider>
+                      </BdkProvider>
+                    </WalletErrorBoundary>
+                  </BitcoinPriceProvider>
+                </APIProvider>
+              </ThemeProvider>
+            </KeyboardProvider>
+          </GestureHandlerRootView>
+        </BreezProvider>
+      </WalletErrorBoundary>
     </AppContextProvider>
   );
 
@@ -76,26 +79,32 @@ function Providers({ children }: { children: React.ReactNode }) {
   if (Env.USE_SPARK) {
     return (
       <AppContextProvider>
-        <BreezProvider>
-          <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
-            <KeyboardProvider>
-              <ThemeProvider value={theme}>
-                <APIProvider>
-                  <BitcoinPriceProvider>
-                    <BdkProvider>
-                      <SparkProvider>
-                        <BottomSheetModalProvider>
-                          {children}
-                          <FlashMessage position="top" />
-                        </BottomSheetModalProvider>
-                      </SparkProvider>
-                    </BdkProvider>
-                  </BitcoinPriceProvider>
-                </APIProvider>
-              </ThemeProvider>
-            </KeyboardProvider>
-          </GestureHandlerRootView>
-        </BreezProvider>
+        <WalletErrorBoundary name="Lightning (Breez)">
+          <BreezProvider>
+            <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
+              <KeyboardProvider>
+                <ThemeProvider value={theme}>
+                  <APIProvider>
+                    <BitcoinPriceProvider>
+                      <WalletErrorBoundary name="On-chain (BDK)">
+                        <BdkProvider>
+                          <WalletErrorBoundary name="Spark">
+                            <SparkProvider>
+                              <BottomSheetModalProvider>
+                                {children}
+                                <FlashMessage position="top" />
+                              </BottomSheetModalProvider>
+                            </SparkProvider>
+                          </WalletErrorBoundary>
+                        </BdkProvider>
+                      </WalletErrorBoundary>
+                    </BitcoinPriceProvider>
+                  </APIProvider>
+                </ThemeProvider>
+              </KeyboardProvider>
+            </GestureHandlerRootView>
+          </BreezProvider>
+        </WalletErrorBoundary>
       </AppContextProvider>
     );
   }
