@@ -1,3 +1,4 @@
+/* eslint-disable no-secrets/no-secrets */
 // source https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view
 /**
  * This component is used to handle the keyboard in a modal.

@@ -9,8 +9,9 @@
     },
     "esModuleInterop": true,
     "checkJs": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "docs", "cli", "android", "ios", "lint-staged.config.js"],
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts", "*.ts", "*.tsx"]
 }

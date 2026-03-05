@@ -1,0 +1,48 @@
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+# Description:
+# Dependabot will automatically open PRs to update dependencies.
+# This helps keep the project secure by catching known vulnerabilities early.
+
+version: 2
+updates:
+  # npm / pnpm dependencies
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 10
+    reviewers: []
+    labels:
+      - 'dependencies'
+    groups:
+      expo:
+        patterns:
+          - 'expo*'
+          - '@expo/*'
+      react-native:
+        patterns:
+          - 'react-native*'
+          - '@react-native*'
+      testing:
+        patterns:
+          - 'jest*'
+          - '@testing-library/*'
+          - 'ts-jest'
+      linting:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+          - 'prettier'
+
+  # GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'ci'

@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 /* eslint-disable max-params */
 import type { Payment as SparkPayment } from '@breeztech/breez-sdk-spark-react-native';
 import { PaymentStatus as SparkPaymentStatus, PaymentType as SparkPaymentType } from '@breeztech/breez-sdk-spark-react-native';

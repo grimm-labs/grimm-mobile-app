@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
   // Configuration for JavaScript files
-  extends: ['@react-native-community', 'plugin:prettier/recommended'],
-  plugins: ['unicorn'],
+  extends: ['@react-native-community', 'plugin:prettier/recommended', 'plugin:security/recommended-legacy'],
+  plugins: ['unicorn', 'security', 'no-secrets'],
   rules: {
     'prettier/prettier': [
       'error',
@@ -24,8 +24,8 @@ module.exports = {
     // Configuration for TypeScript files
     {
       files: ['**/*.ts', '**/*.tsx', '**/*.js'],
-      plugins: ['@typescript-eslint', 'unused-imports', 'tailwindcss', 'simple-import-sort'],
-      extends: ['plugin:tailwindcss/recommended', '@react-native-community', 'plugin:prettier/recommended'],
+      plugins: ['@typescript-eslint', 'unused-imports', 'tailwindcss', 'simple-import-sort', 'security', 'no-secrets'],
+      extends: ['plugin:tailwindcss/recommended', '@react-native-community', 'plugin:prettier/recommended', 'plugin:security/recommended-legacy'],
       parserOptions: {
         project: './tsconfig.json',
       },
@@ -63,6 +63,7 @@ module.exports = {
             caughtErrorsIgnorePattern: '^_',
           },
         ],
+        'no-secrets/no-secrets': 'error',
       },
     },
     // Configuration for  translations files (i18next)

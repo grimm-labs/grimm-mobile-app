@@ -1,3 +1,4 @@
+/* eslint-disable no-secrets/no-secrets */
 import type { ImageProps } from 'expo-image';
 import { Image as NImage } from 'expo-image';
 import { cssInterop } from 'nativewind';

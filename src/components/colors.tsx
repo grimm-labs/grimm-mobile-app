@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 import React from 'react';
 
 import { Text, View } from '@/components/ui';

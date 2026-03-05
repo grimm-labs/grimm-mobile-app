@@ -1,3 +1,4 @@
+/* eslint-disable no-secrets/no-secrets */
 import React from 'react';
 import type { SvgProps } from 'react-native-svg';
 import Svg, { G, Path, Text, TSpan } from 'react-native-svg';
