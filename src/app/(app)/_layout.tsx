@@ -23,7 +23,7 @@ const tabBarIcon =
   ({ color }: { color: string }) => <TabBarIcon name={iconName} color={color} />;
 
 const TabLayout = () => {
-  const { isDataLoaded, seedPhrase } = useContext(AppContext);
+  const { isDataLoaded, hasSeedPhrase } = useContext(AppContext);
   const { isBreezInitialized, initializeBreez } = useBreez();
   const { initializeBdk } = useBdk();
 
@@ -71,22 +71,22 @@ const TabLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded && seedPhrase && seedPhrase.length > 0 && !isBreezInitialized) {
+    if (isDataLoaded && hasSeedPhrase && !isBreezInitialized) {
       initializeBreez();
       initializeBdk();
     }
-  }, [isDataLoaded, seedPhrase, isBreezInitialized, initializeBreez, initializeBdk]);
+  }, [isDataLoaded, hasSeedPhrase, isBreezInitialized, initializeBreez, initializeBdk]);
 
   useEffect(() => {
     if (isDataLoaded && isLanguageLoaded) {
-      if (seedPhrase?.length === 0) {
+      if (!hasSeedPhrase) {
         hideSplash();
       } else {
         const timer = setTimeout(hideSplash, SPLASH_HIDE_DELAY);
         return () => clearTimeout(timer);
       }
     }
-  }, [hideSplash, isDataLoaded, isLanguageLoaded, seedPhrase?.length]);
+  }, [hideSplash, isDataLoaded, isLanguageLoaded, hasSeedPhrase]);
 
   useEffect(() => {
     return () => {
@@ -100,7 +100,7 @@ const TabLayout = () => {
     return null;
   }
 
-  if (seedPhrase?.length === 0) {
+  if (!hasSeedPhrase) {
     return <Redirect href="/onboarding" />;
   }
 

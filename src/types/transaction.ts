@@ -1,4 +1,4 @@
-import type { Payment } from '@breeztech/react-native-breez-sdk-liquid';
+import type { Payment } from '@breeztech/breez-sdk-spark-react-native';
 import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 
 export enum TransactionSource {

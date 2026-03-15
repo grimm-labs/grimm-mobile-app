@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import { type Payment } from '@breeztech/react-native-breez-sdk-liquid';
+import { type Payment, PaymentStatus, PaymentType } from '@breeztech/breez-sdk-spark-react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useContext } from 'react';
@@ -24,10 +24,10 @@ export default function LightningTransactionDetailsScreen() {
 
   const transaction = JSON.parse(transactionData as string) as Payment;
 
-  const isSent = transaction.paymentType === 'send';
-  const isComplete = transaction.status === 'complete';
+  const isSent = transaction.paymentType === PaymentType.Send;
+  const isComplete = transaction.status === PaymentStatus.Completed;
 
-  const formattedDate = new Date(transaction.timestamp * 1000).toLocaleDateString('en-US', {
+  const formattedDate = new Date(Number(transaction.timestamp) * 1000).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -35,7 +35,9 @@ export default function LightningTransactionDetailsScreen() {
     minute: '2-digit',
   });
 
-  const totalAmount = isSent ? transaction.amountSat + transaction.feesSat : transaction.amountSat;
+  const amountSat = Number(transaction.amount);
+  const feesSat = Number(transaction.fees);
+  const totalAmount = isSent ? amountSat + feesSat : amountSat;
 
   return (
     <SafeAreaProvider>
@@ -63,7 +65,7 @@ export default function LightningTransactionDetailsScreen() {
               </View>
               <Text className={`text-4xl font-bold ${isSent ? 'text-red-600' : 'text-green-600'}`}>
                 {isSent ? '- ' : '+ '}
-                {formatBalance(transaction.amountSat, bitcoinUnit)}
+                {formatBalance(amountSat, bitcoinUnit)}
               </Text>
             </View>
           </View>
@@ -76,17 +78,17 @@ export default function LightningTransactionDetailsScreen() {
             <DetailRow label={t('lnTransactionDetail.date')} value={formattedDate} />
             {isSent && (
               <>
-                <DetailRow label={t('lnTransactionDetail.fees')} value={`${formatBalance(transaction.feesSat, bitcoinUnit)}`} />
+                <DetailRow label={t('lnTransactionDetail.fees')} value={`${formatBalance(feesSat, bitcoinUnit)}`} />
                 <DetailRow label={t('lnTransactionDetail.total')} value={`${formatBalance(totalAmount, bitcoinUnit)}`} />
               </>
             )}
-            <DetailRow label={t('lnTransactionDetail.transactionId')} value={transaction.txId || ''} copyable />
-            {transaction.details.type === 'lightning' && (
+            <DetailRow label={t('lnTransactionDetail.transactionId')} value={transaction.id || ''} copyable />
+            {transaction.details && (transaction.details as any).tag === 'Lightning' && (
               <>
-                {transaction.details.paymentHash && <DetailRow label={t('lnTransactionDetail.paymentHash')} value={transaction.details.paymentHash} copyable expandable />}
-                {transaction.details.preimage && <DetailRow label={t('lnTransactionDetail.preimage')} value={transaction.details.preimage} copyable expandable />}
-                {transaction.details.description && <DetailRow label={t('lnTransactionDetail.description')} value={transaction.details.description} />}
-                {transaction.details.invoice && <DetailRow label={t('lnTransactionDetail.invoice')} value={transaction.details.invoice} copyable expandable />}
+                {(transaction.details as any).inner.paymentHash && <DetailRow label={t('lnTransactionDetail.paymentHash')} value={(transaction.details as any).inner.paymentHash} copyable expandable />}
+                {(transaction.details as any).inner.preimage && <DetailRow label={t('lnTransactionDetail.preimage')} value={(transaction.details as any).inner.preimage} copyable expandable />}
+                {(transaction.details as any).inner.description && <DetailRow label={t('lnTransactionDetail.description')} value={(transaction.details as any).inner.description} />}
+                {(transaction.details as any).inner.invoice && <DetailRow label={t('lnTransactionDetail.invoice')} value={(transaction.details as any).inner.invoice} copyable expandable />}
               </>
             )}
           </View>

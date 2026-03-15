@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';

@@ -1,7 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
-import type { ReceiveAmount } from '@breeztech/react-native-breez-sdk-liquid';
-import { PaymentMethod, prepareReceivePayment, ReceiveAmountVariant, receivePayment } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
@@ -17,6 +15,7 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { useBreez } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
@@ -30,10 +29,11 @@ export default function ReceivePaymentScreen() {
   const { selectedCountry } = useContext(AppContext);
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
+  const { receiveBolt11, receiveBitcoinAddress } = useBreez();
   const { satsAmount, note, type } = useLocalSearchParams<SearchParams>();
   const [loading, setLoading] = useState(true);
   const [paymentRequest, setPaymentRequest] = useState<string>('');
-  const [fees, setFees] = useState<number>(0);
+  const [fees, setFees] = useState<bigint>(BigInt(0));
   const [error, setError] = useState<string>('');
 
   const defaultNotes = t('receive_payment.default_note', { amount: Number(satsAmount).toLocaleString() });
@@ -48,31 +48,22 @@ export default function ReceivePaymentScreen() {
         throw new Error(t('receive_payment.invalid_amount'));
       }
 
-      const optionalAmount: ReceiveAmount = {
-        type: ReceiveAmountVariant.BITCOIN,
-        payerAmountSat: Number(satsAmount),
-      };
-
-      const prepareResponse = await prepareReceivePayment({
-        paymentMethod: type === 'onchain' ? PaymentMethod.BITCOIN_ADDRESS : PaymentMethod.BOLT11_INVOICE,
-        amount: optionalAmount,
-      });
-
-      setFees(prepareResponse.feesSat);
-
-      const receiveResponse = await receivePayment({
-        prepareResponse,
-        ...(type === 'lightning' && { description: note || defaultNotes }),
-      });
-
-      setPaymentRequest(receiveResponse.destination);
+      if (type === 'onchain') {
+        const receiveResponse = await receiveBitcoinAddress();
+        setPaymentRequest(receiveResponse.paymentRequest);
+        setFees(receiveResponse.fee);
+      } else {
+        const receiveResponse = await receiveBolt11(note || defaultNotes, parseInt(satsAmount, 10), 3600);
+        setPaymentRequest(receiveResponse.paymentRequest);
+        setFees(receiveResponse.fee);
+      }
     } catch (err) {
       console.error('Error generating invoice:', err);
       setError(err instanceof Error ? err.message : t('receive_payment.error_generic'));
     } finally {
       setLoading(false);
     }
-  }, [satsAmount, type, note, defaultNotes, t]);
+  }, [satsAmount, type, note, defaultNotes, t, receiveBolt11, receiveBitcoinAddress]);
 
   useEffect(() => {
     generatePaymentRequest();
@@ -187,7 +178,7 @@ export default function ReceivePaymentScreen() {
               </View>
             </View>
             <View className="mb-8 items-center">
-              <View className="rounded-xl border-4 border-neutral-700 bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={250} backgroundColor="white" color="black" />}</View>
+              <View className="rounded-xl border-4 border-neutral-700 bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={200} backgroundColor="white" color="black" />}</View>
               {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
               <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_payment.scan_text')}</Text>
             </View>
@@ -203,11 +194,13 @@ export default function ReceivePaymentScreen() {
                 </Pressable>
               </View>
             </View>
-            <View className="my-4 rounded-lg bg-blue-50 p-4">
-              <Text className="text-center text-sm text-blue-700">
-                {t('receive_payment.fee_info', { fees, fiat: convertBitcoinToFiat(fees, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2), currency: selectedFiatCurrency })}
-              </Text>
-            </View>
+            {fees > 0 && (
+              <View className="my-4 rounded-lg bg-blue-50 p-4">
+                <Text className="text-center text-sm text-blue-700">
+                  {t('receive_payment.fee_info', { fees, fiat: convertBitcoinToFiat(Number(fees), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2), currency: selectedFiatCurrency })}
+                </Text>
+              </View>
+            )}
           </ScrollView>
           <View>
             <Button label={t('receive_payment.close')} disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />

@@ -1,6 +1,4 @@
 /* eslint-disable max-lines-per-function */
-import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
-import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +9,8 @@ import validator from 'validator';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, View } from '@/components/ui';
+import { useBreez } from '@/lib/context/breez-context';
+import { InputType_Tags } from '@/lib/context/breez-context';
 
 const LightningPaymentScreenHeaderTitle = (title: string) => <HeaderTitle title={title} />;
 
@@ -22,6 +22,7 @@ export default function LightningPaymentScreen() {
   const { t } = useTranslation();
   const { input } = useLocalSearchParams<SearchParams>();
   const router = useRouter();
+  const { parseInput } = useBreez();
 
   const [invoiceInput, setInvoiceInput] = useState(input || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,14 +47,14 @@ export default function LightningPaymentScreen() {
     try {
       setIsLoading(true);
       setAddressError(false);
-      const parsed = await parse(invoiceInput.trim());
-      switch (parsed.type) {
-        case InputTypeVariant.BITCOIN_ADDRESS:
+      const parsed = await parseInput(invoiceInput.trim());
+      switch (parsed.tag) {
+        case InputType_Tags.BitcoinAddress:
           showErrorMessage(t('lightningPayment.errors.bitcoinNotSupported'));
           setAddressError(true);
           break;
-        case InputTypeVariant.BOLT11:
-          if (parsed.invoice.amountMsat === null) {
+        case InputType_Tags.Bolt11Invoice:
+          if (parsed.inner[0].amountMsat === undefined) {
             showErrorMessage(t('lightningPayment.errors.zeroAmountNotSupported'));
             setAddressError(true);
             return;
@@ -61,7 +62,7 @@ export default function LightningPaymentScreen() {
           router.push({
             pathname: '/send/transaction-details',
             params: {
-              rawInvoice: parsed.invoice.bolt11,
+              rawInvoice: parsed.inner[0].invoice.bolt11,
             },
           });
           break;
@@ -77,16 +78,6 @@ export default function LightningPaymentScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const pasteFromClipboard = async () => {
-    Clipboard.getStringAsync().then((text) => {
-      setInvoiceInput(text);
-    });
-  };
-
-  const scanQRCode = async () => {
-    router.push('/scan-qr');
   };
 
   return (
@@ -122,14 +113,6 @@ export default function LightningPaymentScreen() {
           {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
 
           <View>
-            <View className="my-2 flex flex-row justify-between space-x-2">
-              <View className="w-1/2 pr-2">
-                <Button fullWidth={true} label="Paste" onPress={pasteFromClipboard} variant="secondary" textClassName="text-base font-semibold text-white" size="lg" />
-              </View>
-              <View className="w-1/2 pl-2">
-                <Button fullWidth={true} label="Scan QR" onPress={scanQRCode} variant="secondary" textClassName="text-base font-semibold text-white" size="lg" />
-              </View>
-            </View>
             <Button
               label={isLoading ? t('lightningPayment.processing') : t('lightningPayment.payButton')}
               onPress={handlePayment}

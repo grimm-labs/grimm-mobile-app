@@ -1,8 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
-import type { LnInvoice, PrepareSendResponse } from '@breeztech/react-native-breez-sdk-liquid';
-import { InputTypeVariant, parse, prepareSendPayment, sendPayment } from '@breeztech/react-native-breez-sdk-liquid';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
@@ -17,6 +15,9 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Te
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import type { Bolt11InvoiceDetails, PrepareSendPaymentResponse } from '@/lib/context/breez-context';
+import { useBreez } from '@/lib/context/breez-context';
+import { InputType_Tags } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
@@ -30,33 +31,39 @@ export default function PaymentDetailsScreen() {
 
   const { selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
+  const { parseInput, prepareSend, executeSend } = useBreez();
 
   const [isLoading, setIsLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState('');
   const [decodeError, setDecodeError] = useState<string | undefined>(undefined);
   const [feesSat, setFeesSat] = useState(0);
-  const [decodedInvoiceData, setDecodedInvoiceData] = useState<LnInvoice>();
+  const [decodedInvoiceData, setDecodedInvoiceData] = useState<Bolt11InvoiceDetails>();
   const [paymentIsProcessing, setPaymentIsProcessing] = useState(false);
-  const [savedPrepareResponse, setSavedPrepareResponse] = useState<PrepareSendResponse | null>(null);
+  const [savedPrepareResponse, setSavedPrepareResponse] = useState<PrepareSendPaymentResponse | null>(null);
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
-  const convertMsatToSats = (msat: number | undefined) => {
+  const convertMsatToSats = (msat: bigint | undefined) => {
     if (msat === undefined) return 0;
-    return Math.floor(msat / 1000);
+    return Number(msat / 1000n);
   };
 
   useEffect(() => {
     if (rawInvoice) {
       const parseInvoice = async () => {
         try {
-          const parsed = await parse(rawInvoice.trim());
-          if (parsed.type === InputTypeVariant.BOLT11 && parsed.invoice.amountMsat !== null) {
-            setDecodedInvoiceData(parsed.invoice);
-            const prepareResponse = await prepareSendPayment({
-              destination: parsed.invoice.bolt11,
-            });
-            setFeesSat(prepareResponse.feesSat || 0);
+          const parsed = await parseInput(rawInvoice.trim());
+          if (parsed.tag === InputType_Tags.Bolt11Invoice && parsed.inner[0].amountMsat !== undefined) {
+            setDecodedInvoiceData(parsed.inner[0]);
+            const prepareResponse = await prepareSend(parsed.inner[0].invoice.bolt11);
+            // Extract fee from prepare response
+            const method = prepareResponse.paymentMethod;
+            let totalFees = 0;
+            if (method && 'inner' in method) {
+              const inner = method.inner as any;
+              totalFees = Number(inner.sparkTransferFeeSats || 0n) + Number(inner.lightningFeeSats || 0n);
+            }
+            setFeesSat(totalFees);
             setSavedPrepareResponse(prepareResponse);
           } else {
             setDecodeError(t('paymentDetails.errors.decode'));
@@ -74,14 +81,14 @@ export default function PaymentDetailsScreen() {
       };
       parseInvoice();
     }
-  }, [rawInvoice, router, t]);
+  }, [parseInput, prepareSend, rawInvoice, router, t]);
 
   useEffect(() => {
     if (!decodedInvoiceData?.expiry || !decodedInvoiceData?.timestamp) return;
 
     const updateTimer = () => {
       const now = Math.floor(Date.now() / 1000);
-      const expiryTime = decodedInvoiceData.timestamp + decodedInvoiceData.expiry;
+      const expiryTime = Number(decodedInvoiceData.timestamp) + Number(decodedInvoiceData.expiry);
       const remaining = expiryTime - now;
 
       if (remaining <= 0) {
@@ -122,14 +129,12 @@ export default function PaymentDetailsScreen() {
     if (savedPrepareResponse) {
       setPaymentIsProcessing(true);
       try {
-        const sendResponse = await sendPayment({
-          prepareResponse: savedPrepareResponse,
-        });
+        const sendResponse = await executeSend(savedPrepareResponse);
         const payment = sendResponse.payment;
-        if (payment.txId) {
+        if (payment) {
           router.push({
             pathname: '/transaction-result/success-screen',
-            params: { transactionType: 'sent', satsAmount: payment.amountSat.toString() },
+            params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
           });
         }
       } finally {
@@ -216,7 +221,7 @@ export default function PaymentDetailsScreen() {
                 <View className="items-end">
                   <Text className="text-lg font-medium text-gray-900">{convertMsatToSats(decodedInvoiceData?.amountMsat)} SAT</Text>
                   <Text className="text-sm text-gray-500">
-                    {convertBitcoinToFiat(Number(convertMsatToSats(decodedInvoiceData?.amountMsat || 0)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                    {convertBitcoinToFiat(Number(convertMsatToSats(decodedInvoiceData?.amountMsat || 0n)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
@@ -232,9 +237,9 @@ export default function PaymentDetailsScreen() {
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
                 <Text className="text-lg text-gray-600">{t('paymentDetails.total')}</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0))} SAT</Text>
+                  <Text className="text-lg font-medium text-gray-900">{Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0n))} SAT</Text>
                   <Text className="text-sm text-gray-500">
-                    {convertBitcoinToFiat(Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                    {convertBitcoinToFiat(Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0n)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>

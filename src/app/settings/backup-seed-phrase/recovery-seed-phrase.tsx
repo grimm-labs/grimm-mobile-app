@@ -2,10 +2,10 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/Ionicons';
+import * as ExpoClipboard from 'expo-clipboard';
 import { Stack, useRouter } from 'expo-router';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clipboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -13,11 +13,27 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useSecureStorage } from '@/lib/hooks';
+
+const CLIPBOARD_CLEAR_DELAY = 60_000;
 
 export default function SeedPhraseScreen() {
-  const { seedPhrase, isSeedPhraseBackup } = useContext(AppContext);
+  const { isSeedPhraseBackup } = useContext(AppContext);
+  const { getItem: getSeedPhrase } = useSecureStorage('seedPhrase');
+  const [seedPhrase, setSeedPhrase] = useState<string | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const loadSeedPhrase = async () => {
+      const phrase = await getSeedPhrase();
+      setSeedPhrase(phrase);
+    };
+    loadSeedPhrase();
+    return () => {
+      setSeedPhrase(null);
+    };
+  }, [getSeedPhrase]);
 
   const organizedWords = useMemo(() => {
     if (!seedPhrase) return [];
@@ -39,13 +55,16 @@ export default function SeedPhraseScreen() {
 
   const copyToClipboard = async () => {
     if (seedPhrase) {
-      await Clipboard.setString(seedPhrase);
+      await ExpoClipboard.setStringAsync(seedPhrase);
       showMessage({
         message: t('seedPhraseScreen.copiedMessage'),
         type: 'success',
         duration: 2000,
         icon: 'success',
       });
+      setTimeout(async () => {
+        await ExpoClipboard.setStringAsync('');
+      }, CLIPBOARD_CLEAR_DELAY);
     }
   };
 

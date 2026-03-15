@@ -1,8 +1,8 @@
-# 🔗 Links:
+# Links:
 # Source file: https://github.com/obytes/react-native-template-obytes/blob/master/.github/workflows/lint-ts.yml
 # Starter releasing process: https://starter.obytes.com/ci-cd/app-releasing-process/
 
-# ✍️ Description:
+# Description:
 # This workflow is used to create a new version of the app and push a new tag to the repo.
 # As this workflow will push code to the repo, we set up GitHub Bot as a Git user.
 # This Workflow need to be triggered manually from the Actions tab in the repo.
@@ -14,7 +14,7 @@
 #             - Push the new tag to the repo
 #
 
-# 🚨 GITHUB SECRETS REQUIRED:
+# GITHUB SECRETS REQUIRED:
 #         - GH_TOKEN: A GitHub token with write repo access.
 #           You can generate one from here: https://docs.github.com/en/enterprise-server@3.6/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 #           make sure to add it to the repo secrets with the name GH_TOKEN
@@ -41,13 +41,13 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 🔍 GH_TOKEN
+      - name: GH_TOKEN
         if: env.GH_TOKEN == ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: echo "GH_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
-      - name: 📦 Checkout project repo
-        uses: actions/checkout@v3
+      - name: Checkout project repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
@@ -58,14 +58,14 @@ jobs:
           echo "YADIO_API_URL=https://api.yadio.io" >> .env.development
           echo "MEMPOOL_URL=https://mempool.space" >> .env.development
 
-      - name: 📝 Git User Setup
+      - name: Git User Setup
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      - name: 📦 Setup Node + PNPM + install deps
+      - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 
-      - name: 🏃‍♂️ Run App release
+      - name: Run App release
         run: |
           pnpm app-release ${{ github.event.inputs.release-type }}

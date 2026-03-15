@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-unsafe-regex */
 const validate = (message = '') => {
   if (!(message || '').trim()) {
     throw new SyntaxError('Message is Empty.');

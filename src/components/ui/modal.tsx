@@ -40,6 +40,7 @@ import { Text } from './text';
 
 type ModalProps = BottomSheetModalProps & {
   title?: string;
+  showCloseButton?: boolean;
 };
 
 type ModalRef = React.ForwardedRef<BottomSheetModal>;
@@ -47,6 +48,7 @@ type ModalRef = React.ForwardedRef<BottomSheetModal>;
 type ModalHeaderProps = {
   title?: string;
   dismiss: () => void;
+  showCloseButton?: boolean;
 };
 
 export const useModal = () => {
@@ -60,7 +62,7 @@ export const useModal = () => {
   return { ref, present, dismiss };
 };
 
-export const Modal = React.forwardRef(({ snapPoints: _snapPoints = ['60%'], title, detached = false, ...props }: ModalProps, ref: ModalRef) => {
+export const Modal = React.forwardRef(({ snapPoints: _snapPoints = ['60%'], title, detached = false, showCloseButton = true, ...props }: ModalProps, ref: ModalRef) => {
   const detachedProps = React.useMemo(() => getDetachedProps(detached), [detached]);
   const modal = useModal();
   const snapPoints = React.useMemo(() => _snapPoints, [_snapPoints]);
@@ -70,11 +72,11 @@ export const Modal = React.forwardRef(({ snapPoints: _snapPoints = ['60%'], titl
   const renderHandleComponent = React.useCallback(
     () => (
       <>
-        <View className="mb-8 mt-2 h-1 w-12 self-center rounded-lg bg-gray-400 dark:bg-gray-700" />
-        <ModalHeader title={title} dismiss={modal.dismiss} />
+        <View className="mb-8 mt-4 h-2 w-16 self-center rounded-lg bg-gray-300 dark:bg-gray-700" />
+        <ModalHeader title={title} dismiss={modal.dismiss} showCloseButton={showCloseButton} />
       </>
     ),
-    [title, modal.dismiss],
+    [title, modal.dismiss, showCloseButton],
   );
 
   return (
@@ -128,7 +130,7 @@ const getDetachedProps = (detached: boolean) => {
  * ModalHeader
  */
 
-const ModalHeader = React.memo(({ title, dismiss }: ModalHeaderProps) => {
+const ModalHeader = React.memo(({ title, dismiss, showCloseButton = true }: ModalHeaderProps) => {
   return (
     <>
       {title && (
@@ -139,7 +141,7 @@ const ModalHeader = React.memo(({ title, dismiss }: ModalHeaderProps) => {
           </View>
         </View>
       )}
-      <CloseButton close={dismiss} />
+      {showCloseButton && <CloseButton close={dismiss} />}
     </>
   );
 });

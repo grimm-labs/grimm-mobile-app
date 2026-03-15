@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +9,12 @@ import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } 
 import { WalletOverview } from '@/components/wallet-overview';
 import { WalletView } from '@/components/wallet-view';
 import { AppContext, useBdk, useBreez } from '@/lib/context';
+import { AppNetwork } from '@/lib/context/breez-context';
 
 export default function Home() {
   const router = useRouter();
   const { isSeedPhraseBackup } = useContext(AppContext);
-  const { balance: balanceBreez, liquidNetwork } = useBreez();
+  const { balance: balanceBreez, network } = useBreez();
   const { balance: balanceBdk } = useBdk();
   const { t } = useTranslation();
 
@@ -28,7 +28,7 @@ export default function Home() {
               <Text className="text-2xl font-bold text-gray-800">{t('home.title')}</Text>
             </View>
           </View>
-          {liquidNetwork === LiquidNetwork.TESTNET && (
+          {network === AppNetwork.TESTNET && (
             <View className="bg-danger-500 py-2">
               <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
             </View>
@@ -48,7 +48,7 @@ export default function Home() {
                 </Pressable>
                 <View className="my-2" />
                 <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl bg-gray-50 p-2 ">
-                  <WalletView name={t('home.l2WalletName')} symbol="L-BTC" type="Lightning" balanceSats={balanceBreez} />
+                  <WalletView name={t('home.l2WalletName')} symbol="BTC" type="Lightning" balanceSats={balanceBreez} lightningNetworkType="spark" />
                 </Pressable>
               </View>
             </ScrollView>

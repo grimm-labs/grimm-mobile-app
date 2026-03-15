@@ -1,0 +1,34 @@
+# Description:
+# Runs `pnpm audit` to detect known vulnerabilities in dependencies.
+# Fails the build if critical or high severity vulnerabilities are found.
+
+name: Security Audit
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  schedule:
+    # Run every Monday at 07:00 UTC
+    - cron: '0 7 * * 1'
+
+jobs:
+  audit:
+    name: Dependency Audit (pnpm)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node + PNPM + install deps
+        uses: ./.github/actions/setup-node-pnpm-install
+
+      - name: Run pnpm audit
+        run: pnpm audit --prod --audit-level=high

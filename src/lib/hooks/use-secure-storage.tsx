@@ -23,5 +23,14 @@ export const useSecureStorage = (key: string) => {
     [key],
   );
 
-  return { getItem, setItem };
+  const deleteItem = useCallback(async () => {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (error) {
+      console.error(`[SecureStore] Error deleting ${key}:`, error);
+      throw error;
+    }
+  }, [key]);
+
+  return { getItem, setItem, deleteItem };
 };

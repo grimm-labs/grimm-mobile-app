@@ -15,11 +15,8 @@ export const SeedPhraseBackupNotification: React.FC = () => {
   };
 
   return (
-    <View className="mb-4 rounded-xl border-l-4 border-yellow-400 bg-yellow-50 p-4">
+    <View className="mb-4 rounded-xl bg-yellow-50 p-4">
       <View className="flex-row items-start">
-        <View className="mr-3 p-2">
-          <Ionicons name="warning" size={20} color="#D97706" />
-        </View>
         <View className="flex-1">
           <Text className="mb-1 text-sm font-semibold text-gray-900">{t('seedPhraseBackup.title')}</Text>
           <Text className="mb-3 text-xs leading-4 text-gray-700">{t('seedPhraseBackup.description')}</Text>

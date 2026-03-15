@@ -1,6 +1,7 @@
+/* eslint-disable security/detect-object-injection */
 /* eslint-disable max-params */
-import type { Payment } from '@breeztech/react-native-breez-sdk-liquid';
-import { LiquidNetwork, PaymentState, PaymentType } from '@breeztech/react-native-breez-sdk-liquid';
+import type { Payment } from '@breeztech/breez-sdk-spark-react-native';
+import { PaymentStatus, PaymentType } from '@breeztech/breez-sdk-spark-react-native';
 import { Mnemonic } from 'bdk-rn';
 import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { Linking } from 'react-native';
@@ -129,12 +130,12 @@ export const convertBitcoinToFiat = (amount: number, bitcoinUnit: BitcoinUnit, o
 
 export const mapLightningToUnified = (payment: Payment): UnifiedTransaction => {
   return {
-    id: payment.txId || `ln_${payment.timestamp}`,
-    timestamp: payment.timestamp,
-    amountSat: payment.amountSat,
-    feesSat: payment.feesSat + (payment.swapperFeesSat || 0),
-    type: payment.paymentType === PaymentType.RECEIVE ? UnifiedTransactionType.RECEIVE : UnifiedTransactionType.SEND,
-    status: payment.status === PaymentState.COMPLETE ? UnifiedTransactionStatus.CONFIRMED : UnifiedTransactionStatus.PENDING,
+    id: payment.id,
+    timestamp: Number(payment.timestamp),
+    amountSat: Number(payment.amount),
+    feesSat: Number(payment.fees),
+    type: payment.paymentType === PaymentType.Receive ? UnifiedTransactionType.RECEIVE : UnifiedTransactionType.SEND,
+    status: payment.status === PaymentStatus.Completed ? UnifiedTransactionStatus.CONFIRMED : UnifiedTransactionStatus.PENDING,
     source: TransactionSource.LIGHTNING,
     lightningData: payment,
   };
@@ -169,8 +170,13 @@ export const splitStringIntoChunks = (input: string, chunkSize: number): string[
   return chunks;
 };
 
-export const generateTxUrl = (txId: string, liquidNetwork: LiquidNetwork): string => {
-  const isMainnet = liquidNetwork === LiquidNetwork.MAINNET;
+export const generateTxUrl = (txId: string, network: string): string => {
+  const isMainnet = network === 'mainnet';
   const networkPath = isMainnet ? '' : '/testnet4';
   return `${Env.MEMPOOL_URL}${networkPath}/tx/${txId}`;
+};
+
+export const capitalize = (str: string): string => {
+  if (!str) return str;
+  return str[0].toUpperCase() + str.slice(1);
 };

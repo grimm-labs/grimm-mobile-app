@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
@@ -14,13 +13,13 @@ import { FocusAwareStatusBar, Image, SafeAreaView, Text, View } from '@/componen
 import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency, mergeAndSortTransactions } from '@/lib';
 import { AppContext, useBdk, useBreez } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { AppNetwork } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
 
 const HeaderTitle = () => (
   <View className="flex-row items-center">
-    <Image className="mr-2 size-8 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
-    <Text className="text-normal">Bitcoin</Text>
+    <Text className="text-normal">Bitcoin Wallet</Text>
   </View>
 );
 
@@ -30,7 +29,7 @@ export default function BitcoinWalletDetails() {
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
   const { balance, transactions: bdkTransactions } = useBdk();
-  const { liquidNetwork } = useBreez();
+  const { network } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
 
@@ -55,7 +54,7 @@ export default function BitcoinWalletDetails() {
           }}
         />
         <FocusAwareStatusBar style="dark" />
-        {liquidNetwork === LiquidNetwork.TESTNET && (
+        {network === AppNetwork.TESTNET && (
           <View className="bg-danger-500 py-2">
             <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
           </View>

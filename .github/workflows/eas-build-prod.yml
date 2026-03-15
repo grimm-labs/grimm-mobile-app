@@ -1,13 +1,13 @@
-# 🔗 Links:
+# Links:
 # Source file: https://github.com/obytes/react-native-template-obytes/blob/master/.github/workflows/eas-build-prod.yml
 # Starter releasing process: https://starter.obytes.com/ci-cd/app-releasing-process/
 
-# ✍️ Description:
+# Description:
 # This workflow is used to trigger a build on EAS for Prod environment.
 # Can be triggered manually from the actions tab.
 # This workflow will use ./actions/eas-build action to trigger the build on EAS with production env.
 
-# 🚨 GITHUB SECRETS REQUIRED:
+# GITHUB SECRETS REQUIRED:
 #         - EXPO_TOKEN: Expo token to authenticate with EAS
 #         - You can get it from https://expo.dev/settings/access-tokens
 
@@ -28,8 +28,8 @@ jobs:
             exit 1
           fi
 
-      - name: 📦 Checkout project repo
-        uses: actions/checkout@v3
+      - name: Checkout project repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -39,10 +39,10 @@ jobs:
           echo "YADIO_API_URL=https://api.yadio.io" >> .env.production
           echo "MEMPOOL_URL=https://mempool.space" >> .env.production
 
-      - name: 📦 Setup Node + PNPM + install deps
+      - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 
-      - name: ⏱️ EAS Build
+      - name: EAS Build
         uses: ./.github/actions/eas-build
         with:
           APP_ENV: production

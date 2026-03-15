@@ -14,9 +14,10 @@ import { useBreez } from '@/lib/context/breez-context';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { setSeedPhrase, resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance } = useContext(AppContext);
+  const { resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
   const { disconnectBdk } = useBdk();
+
   const router = useRouter();
   const logoutModalRef = useRef<any>(null);
 
@@ -31,7 +32,6 @@ export default function Settings() {
   };
 
   const handleLogout = async () => {
-    await setSeedPhrase('');
     await resetAppData();
     await disconnectBreez();
     await disconnectBdk();
