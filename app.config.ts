@@ -5,7 +5,7 @@ import type { AppIconBadgeConfig } from 'app-icon-badge/types';
 import { ClientEnv, Env } from './env';
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
-  enabled: Env.APP_ENV !== 'production',
+  enabled: Env.APP_ENV !== 'production' && process.env.CI !== 'true',
   badges: [
     {
       text: Env.APP_ENV,
