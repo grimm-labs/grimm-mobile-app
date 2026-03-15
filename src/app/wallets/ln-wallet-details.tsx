@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
@@ -15,6 +14,7 @@ import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency, mergeAndSortTr
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
+import { AppNetwork } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
 
@@ -32,7 +32,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress, sho
       <Ionicons name={icon as any} size={18} color="white" />
     </View>
     <View className="flex-1">
-      <Text className="text-base font-medium text-gray-900">{title}</Text>
+      <Text className="text-sm font-medium text-gray-900">{title}</Text>
       {subtitle && <Text className="mt-1 text-sm text-gray-500">{subtitle}</Text>}
     </View>
     {showArrow && <Ionicons name="chevron-forward" size={20} color={colors.primary[600]} />}
@@ -41,8 +41,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress, sho
 
 const HeaderTitle = () => (
   <View className="flex-row items-center">
-    <Image className="mr-2 size-8 rounded-full" source={require('@/assets/images/bitcoin_lightning_logo.png')} />
-    <Text className="text-normal">Lightning</Text>
+    <Text className="text-normal">Lightning Wallet</Text>
   </View>
 );
 
@@ -51,7 +50,7 @@ export default function LnWalletDetails() {
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
-  const { balance, payments, liquidNetwork } = useBreez();
+  const { balance, payments, network } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
 
@@ -76,7 +75,7 @@ export default function LnWalletDetails() {
           }}
         />
         <FocusAwareStatusBar style="dark" />
-        {liquidNetwork === LiquidNetwork.TESTNET && (
+        {network === AppNetwork.TESTNET && (
           <View className="bg-danger-500 py-2">
             <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
           </View>
@@ -111,28 +110,15 @@ export default function LnWalletDetails() {
             <Text className="mb-3 text-xl font-bold text-gray-600">{t('lnWallet.actions')}</Text>
             <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
               <MenuItem
-                icon="add-outline"
-                title={t('lnWallet.createInvoice')}
-                onPress={() => {
-                  router.push({
-                    pathname: '/receive/amount-description',
-                    params: { type: 'lightning' },
-                  });
-                }}
-              />
-              <View className="ml-14 border-t border-gray-200" />
-              <MenuItem
                 icon="link"
                 title={t('lnWallet.receiveOnchain')}
                 onPress={() => {
                   router.push({
-                    pathname: '/receive/amount-description',
+                    pathname: '/receive/ln-qrcode',
                     params: { type: 'onchain' },
                   });
                 }}
               />
-              <View className="ml-14 border-t border-gray-200" />
-              <MenuItem icon="arrow-up-outline" title={t('lnWallet.payInvoice')} onPress={() => router.push('/send/enter-address')} />
             </View>
           </View>
 

@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import type { Blockchain, Wallet as BdkWallet } from 'bdk-rn';
 import { Address, Blockchain as BdkBlockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, TxBuilder, Wallet } from 'bdk-rn';
 import type { Balance, TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
@@ -60,18 +59,12 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const isInitializingRef = useRef<boolean>(false);
   const blockchainRef = useRef<Blockchain | null>(null);
   const walletRef = useRef<BdkWallet | null>(null);
-  const { liquidNetwork } = useBreez();
-  const currentNetworkRef = useRef<LiquidNetwork | null>(null);
+  const { network } = useBreez();
+  const currentNetworkRef = useRef<string | null>(null);
 
   const getOnchainNetwork = useCallback((): Network => {
-    let n: Network = Network.Testnet;
-    if (liquidNetwork === LiquidNetwork.MAINNET) {
-      n = Network.Bitcoin;
-    } else if (liquidNetwork === LiquidNetwork.TESTNET) {
-      n = Network.Testnet;
-    }
-    return n;
-  }, [liquidNetwork]);
+    return network === 'mainnet' ? Network.Bitcoin : Network.Testnet;
+  }, [network]);
 
   const updateState = useCallback((updates: Partial<BdkState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -109,8 +102,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
   const buildTransaction = async (address: string, amount: number, feeRate: number) => {
     const txBuilder = await new TxBuilder().create();
-    const network = getOnchainNetwork();
-    const addressInstance = await new Address().create(address, network);
+    const addressInstance = await new Address().create(address, getOnchainNetwork());
     const script = await addressInstance.scriptPubKey();
 
     await txBuilder.addRecipient(script, amount);
@@ -238,18 +230,17 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         }
 
         const mnemonic = await new Mnemonic().fromString(seedPhrase);
-        const network = getOnchainNetwork();
-        const descriptorSecretKey = await new DescriptorSecretKey().create(network, mnemonic);
-        const externalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.External, network);
-        const internalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.Internal, network);
+        const descriptorSecretKey = await new DescriptorSecretKey().create(getOnchainNetwork(), mnemonic);
+        const externalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.External, getOnchainNetwork());
+        const internalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.Internal, getOnchainNetwork());
 
-        const dbPath = `${FileSystem.documentDirectory}/bdk-wallet-${network}.db`;
+        const dbPath = `${FileSystem.documentDirectory}/bdk-wallet-${getOnchainNetwork()}.db`;
         const dbConfig = await new DatabaseConfig().sqlite(dbPath);
 
-        const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, network, dbConfig);
+        const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, getOnchainNetwork(), dbConfig);
 
         const blockchainConfig = {
-          url: network === Network.Testnet ? MEMPOOL_SSL_URL_TESTNET4 : MEMPOOL_SSL_URL,
+          url: getOnchainNetwork() === Network.Testnet ? MEMPOOL_SSL_URL_TESTNET4 : MEMPOOL_SSL_URL,
           sock5: null,
           retry: 5,
           timeout: 10,
@@ -261,7 +252,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         blockchainRef.current = blockchain;
         walletRef.current = wallet;
 
-        currentNetworkRef.current = liquidNetwork;
+        currentNetworkRef.current = getOnchainNetwork();
 
         updateState({
           wallet,
@@ -270,7 +261,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           isSyncing: false,
         });
 
-        console.log(`BDK successfully initialized on ${network}`);
+        console.log(`BDK successfully initialized on ${getOnchainNetwork()}`);
 
         await syncWallet(wallet);
       } catch (error) {
@@ -283,12 +274,12 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         isInitializingRef.current = false;
       }
     },
-    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, liquidNetwork, syncWallet],
+    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, syncWallet],
   );
 
   useEffect(() => {
     const handleNetworkChange = async () => {
-      if (currentNetworkRef.current !== null && currentNetworkRef.current !== liquidNetwork && state.isBdkInitialized) {
+      if (currentNetworkRef.current !== null && currentNetworkRef.current !== getOnchainNetwork() && state.isBdkInitialized) {
         await disconnectBdk();
         setTimeout(async () => {
           await initializeBdk(true);
@@ -297,7 +288,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     };
 
     handleNetworkChange();
-  }, [liquidNetwork, state.isBdkInitialized, disconnectBdk, initializeBdk]);
+  }, [getOnchainNetwork, state.isBdkInitialized, disconnectBdk, initializeBdk]);
 
   useEffect(() => {
     if (!state.isBdkInitialized || !state.isConnected || !walletRef.current) {

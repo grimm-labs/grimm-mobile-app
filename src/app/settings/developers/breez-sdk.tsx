@@ -33,11 +33,7 @@ export default function BreezSdkDetailsScreen() {
         <FocusAwareStatusBar style="dark" />
         <ScrollView className="flex-1 px-3" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
-            <DetailRow label={t('breezDetails.public_key')} value={breezWalletInfos?.walletInfo.pubkey || ''} expandable />
-            <DetailRow label={t('breezDetails.fingerprint')} value={breezWalletInfos?.walletInfo.fingerprint || ''} expandable />
-            <DetailRow label={t('breezDetails.balance')} value={breezWalletInfos?.walletInfo.balanceSat.toString() || ''} expandable />
-            <DetailRow label={t('breezDetails.liquid_tip')} value={breezWalletInfos?.blockchainInfo.bitcoinTip.toString() || ''} copyable expandable />
-            <DetailRow label={t('breezDetails.bitcoin_tip')} value={breezWalletInfos?.blockchainInfo.liquidTip.toString() || ''} copyable expandable />
+            <DetailRow label={t('breezDetails.balance')} value={breezWalletInfos?.balanceSats?.toString() || ''} expandable />
           </View>
         </ScrollView>
       </SafeAreaView>

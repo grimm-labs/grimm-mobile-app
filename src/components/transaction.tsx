@@ -89,13 +89,14 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
 
   const handlePress = () => {
     const data = transaction.source === TransactionSource.LIGHTNING ? transaction.lightningData : transaction.onchainData;
+    const serialized = encodeURIComponent(JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? Number(v) : v)));
     if (transaction.source === TransactionSource.LIGHTNING) {
-      router.push(`/transaction-details/ln?transactionData=${encodeURIComponent(JSON.stringify(data))}`);
+      router.push(`/transaction-details/ln?transactionData=${serialized}`);
       return;
     }
 
     if (transaction.source === TransactionSource.ONCHAIN) {
-      router.push(`/transaction-details/onchain?transactionData=${encodeURIComponent(JSON.stringify(data))}`);
+      router.push(`/transaction-details/onchain?transactionData=${serialized}`);
       return;
     }
   };

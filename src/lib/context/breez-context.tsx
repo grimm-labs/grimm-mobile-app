@@ -1,13 +1,31 @@
 /* eslint-disable max-lines-per-function */
-import type { GetInfoResponse, ListPaymentsRequest, Payment, SdkEvent } from '@breeztech/react-native-breez-sdk-liquid';
-import { addEventListener, connect, defaultConfig, disconnect, getInfo, LiquidNetwork, listPayments, PaymentType, removeEventListener, SdkEventVariant } from '@breeztech/react-native-breez-sdk-liquid';
+import type {
+  Bolt11InvoiceDetails,
+  BreezSdkInterface,
+  EventListener,
+  GetInfoResponse,
+  InputType,
+  ListPaymentsRequest,
+  Payment,
+  PrepareSendPaymentResponse,
+  ReceivePaymentResponse,
+  SdkEvent,
+  SendPaymentResponse,
+} from '@breeztech/breez-sdk-spark-react-native';
+import { connect, defaultConfig, Network, PaymentType, PrepareSendPaymentRequest, ReceivePaymentMethod, SdkEvent_Tags, Seed, SendPaymentOptions, SendPaymentRequest } from '@breeztech/breez-sdk-spark-react-native';
 import { Env } from '@env';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { useSecureStorage } from '../hooks/use-secure-storage';
+
+export enum AppNetwork {
+  MAINNET = 'mainnet',
+  TESTNET = 'testnet',
+}
 
 const SYNC_INTERVAL = 10000;
 
@@ -18,14 +36,19 @@ interface BreezContextType {
   breezError: string | null;
   isBreezInitialized: boolean;
   payments: Payment[];
-  liquidNetwork: LiquidNetwork;
+  network: AppNetwork;
   breezWalletInfos: GetInfoResponse | null;
   isDataLoaded: boolean;
   initializeBreez: () => Promise<void>;
   refreshWalletInfo: () => Promise<void>;
   disconnectBreez: () => Promise<void>;
-  setLiquidNetwork: (network: LiquidNetwork) => Promise<void>;
-  getLiquidNetwork: () => LiquidNetwork;
+  setNetwork: (network: AppNetwork) => Promise<void>;
+  getNetwork: () => AppNetwork;
+  receiveBolt11: (description: string, amountSats?: number, expirySecs?: number) => Promise<ReceivePaymentResponse>;
+  receiveBitcoinAddress: () => Promise<ReceivePaymentResponse>;
+  parseInput: (input: string) => Promise<InputType>;
+  prepareSend: (paymentRequest: string, amountSats?: number) => Promise<PrepareSendPaymentResponse>;
+  executeSend: (prepareResponse: PrepareSendPaymentResponse) => Promise<SendPaymentResponse>;
 }
 
 const defaultContext: BreezContextType = {
@@ -35,20 +58,66 @@ const defaultContext: BreezContextType = {
   breezError: null,
   isBreezInitialized: false,
   payments: [],
-  liquidNetwork: LiquidNetwork.MAINNET,
+  network: AppNetwork.MAINNET,
   breezWalletInfos: null,
   isDataLoaded: false,
   initializeBreez: async () => {},
   refreshWalletInfo: async () => {},
   disconnectBreez: async () => {},
-  setLiquidNetwork: async () => {},
-  getLiquidNetwork: () => LiquidNetwork.MAINNET,
+  setNetwork: async () => {},
+  getNetwork: () => AppNetwork.MAINNET,
+  receiveBolt11: async () => {
+    throw new Error('Breez not initialized');
+  },
+  receiveBitcoinAddress: async () => {
+    throw new Error('Breez not initialized');
+  },
+  parseInput: async () => {
+    throw new Error('Breez not initialized');
+  },
+  prepareSend: async () => {
+    throw new Error('Breez not initialized');
+  },
+  executeSend: async () => {
+    throw new Error('Breez not initialized');
+  },
 };
 
 const BreezContext = createContext<BreezContextType>(defaultContext);
 
 interface BreezProviderProps {
   children: ReactNode;
+}
+
+// Event listener implementation
+class BreezEventListener implements EventListener {
+  private onSynced: () => void;
+  private onPaymentSucceeded: (event: SdkEvent) => void;
+  private onPaymentFailed: (event: SdkEvent) => void;
+
+  constructor(onSynced: () => void, onPaymentSucceeded: (event: SdkEvent) => void, onPaymentFailed: (event: SdkEvent) => void) {
+    this.onSynced = onSynced;
+    this.onPaymentSucceeded = onPaymentSucceeded;
+    this.onPaymentFailed = onPaymentFailed;
+  }
+
+  async onEvent(event: SdkEvent): Promise<void> {
+    switch (event.tag) {
+      case SdkEvent_Tags.PaymentSucceeded:
+        console.log('Payment succeeded:', event);
+        this.onPaymentSucceeded(event);
+        break;
+      case SdkEvent_Tags.PaymentFailed:
+        console.error('Payment failed:', event);
+        this.onPaymentFailed(event);
+        break;
+      case SdkEvent_Tags.Synced:
+        this.onSynced();
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
@@ -60,45 +129,49 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const [breezError, _setBreezError] = useState(defaultContext.breezError);
   const [isBreezInitialized, _setIsBreezInitialized] = useState(defaultContext.isBreezInitialized);
   const [payments, _setPayments] = useState<Payment[]>(defaultContext.payments);
-  const [liquidNetwork, _setLiquidNetwork] = useState<LiquidNetwork>(defaultContext.liquidNetwork);
+  const [network, _setNetwork] = useState<AppNetwork>(AppNetwork.MAINNET);
   const [breezWalletInfos, _setBreezWalletInfos] = useState<GetInfoResponse | null>(defaultContext.breezWalletInfos);
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
 
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
-  const { getItem: _getLiquidNetwork, setItem: _updateLiquidNetwork } = useAsyncStorage('liquidNetwork');
+  const { getItem: _getNetwork, setItem: _updateNetwork } = useAsyncStorage('appNetwork');
 
+  const sdkRef = useRef<BreezSdkInterface | null>(null);
   const eventListenerRef = useRef<string | null>(null);
   const isInitializingRef = useRef<boolean>(false);
 
-  const _loadLiquidNetwork = useCallback(async () => {
-    const saved = await _getLiquidNetwork();
+  const _loadNetwork = useCallback(async () => {
+    const saved = await _getNetwork();
     if (saved !== null) {
-      _setLiquidNetwork(saved as LiquidNetwork);
+      _setNetwork(saved as AppNetwork);
     }
-  }, [_getLiquidNetwork]);
+  }, [_getNetwork]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        await _loadLiquidNetwork();
+        await _loadNetwork();
       } catch (error) {
-        console.error('[AsyncStorage] Error loading liquidNetwork:', error);
+        console.error('[AsyncStorage] Error loading network:', error);
       } finally {
         _setIsDataLoaded(true);
       }
     };
 
     loadData();
-  }, [_loadLiquidNetwork]);
+  }, [_loadNetwork]);
 
   const disconnectBreez = useCallback(async (): Promise<void> => {
     try {
-      if (eventListenerRef.current) {
-        await removeEventListener(eventListenerRef.current);
-        eventListenerRef.current = null;
-      }
+      if (sdkRef.current) {
+        if (eventListenerRef.current) {
+          await sdkRef.current.removeEventListener(eventListenerRef.current);
+          eventListenerRef.current = null;
+        }
 
-      await disconnect();
+        await sdkRef.current.disconnect();
+        sdkRef.current = null;
+      }
 
       _setIsConnected(false);
       _setIsSyncing(false);
@@ -115,7 +188,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
   const refreshWalletInfo = useCallback(async (): Promise<void> => {
     try {
-      if (!isConnected || !isBreezInitialized) return;
+      if (!isConnected || !isBreezInitialized || !sdkRef.current) return;
 
       const seedPhrase = await _getSeedPhrase();
       if (!seedPhrase) {
@@ -123,13 +196,23 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         return;
       }
 
-      const info = await getInfo();
-      const listPaymentsRequest: ListPaymentsRequest = {};
-      const paymentsList = await listPayments(listPaymentsRequest);
-      const newBalance = info.walletInfo.balanceSat || 0;
+      const info = await sdkRef.current.getInfo({ ensureSynced: false });
+      const listPaymentsRequest: ListPaymentsRequest = {
+        typeFilter: [PaymentType.Send, PaymentType.Receive],
+        statusFilter: undefined,
+        assetFilter: undefined,
+        paymentDetailsFilter: undefined,
+        fromTimestamp: undefined,
+        toTimestamp: undefined,
+        offset: undefined,
+        limit: undefined,
+        sortAscending: undefined,
+      };
+      const paymentsList = await sdkRef.current.listPayments(listPaymentsRequest);
+      const newBalance = Number(info.balanceSats) || 0;
 
       _setBreezWalletInfos(info);
-      _setPayments(paymentsList || []);
+      _setPayments(paymentsList.payments || []);
       _setBalance(newBalance);
     } catch (error) {
       console.error('Error refreshing wallet info:', error);
@@ -137,32 +220,55 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     }
   }, [_getSeedPhrase, disconnectBreez, isBreezInitialized, isConnected]);
 
-  const eventHandler = useCallback(
-    (event: SdkEvent) => {
-      switch (event.type) {
-        case SdkEventVariant.PAYMENT_SUCCEEDED:
-          const { amountSat, paymentType } = event.details;
-          refreshWalletInfo();
-          if (paymentType === PaymentType.RECEIVE) {
-            router.push({
-              pathname: '/transaction-result/success-screen',
-              params: { transactionType: 'received', satsAmount: amountSat.toString() },
-            });
-          }
-          break;
-        case SdkEventVariant.PAYMENT_FAILED:
-          console.error('Payment failed:', event);
-          break;
-        case SdkEventVariant.SYNCED:
-          _setIsSyncing(false);
-          setTimeout(() => refreshWalletInfo(), 0);
-          break;
-        default:
-          break;
-      }
-    },
-    [refreshWalletInfo, router],
-  );
+  const receiveBolt11 = useCallback(async (description: string, amountSats?: number, expirySecs?: number): Promise<ReceivePaymentResponse> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+
+    return sdkRef.current.receivePayment({
+      paymentMethod: ReceivePaymentMethod.Bolt11Invoice.new({
+        description,
+        amountSats: amountSats !== undefined ? BigInt(amountSats) : undefined,
+        expirySecs: expirySecs ?? 3600,
+      }),
+    });
+  }, []);
+
+  const receiveBitcoinAddress = useCallback(async (): Promise<ReceivePaymentResponse> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+
+    return sdkRef.current.receivePayment({
+      paymentMethod: new ReceivePaymentMethod.BitcoinAddress(),
+    });
+  }, []);
+
+  const parseInput = useCallback(async (input: string): Promise<InputType> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    return sdkRef.current.parse(input);
+  }, []);
+
+  const prepareSend = useCallback(async (paymentRequest: string, amountSats?: number): Promise<PrepareSendPaymentResponse> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+
+    return sdkRef.current.prepareSendPayment(
+      PrepareSendPaymentRequest.new({
+        paymentRequest,
+        amount: amountSats !== undefined ? BigInt(amountSats) : undefined,
+      }),
+    );
+  }, []);
+
+  const executeSend = useCallback(async (prepareResponse: PrepareSendPaymentResponse): Promise<SendPaymentResponse> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+
+    return sdkRef.current.sendPayment(
+      SendPaymentRequest.new({
+        prepareResponse,
+        options: SendPaymentOptions.Bolt11Invoice.new({
+          preferSpark: false,
+          completionTimeoutSecs: 60,
+        }),
+      }),
+    );
+  }, []);
 
   const initializeBreez = useCallback(async (): Promise<void> => {
     if (isInitializingRef.current || isBreezInitialized) return;
@@ -175,25 +281,77 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       const seedPhrase = await _getSeedPhrase();
       if (!seedPhrase) throw new Error('No recovery phrase found');
 
-      const config = await defaultConfig(liquidNetwork, Env.BREEZ_API_KEY);
+      const sparkNetwork = network === AppNetwork.MAINNET ? Network.Mainnet : Network.Regtest;
+      const config = defaultConfig(sparkNetwork);
+      config.apiKey = Env.BREEZ_API_KEY;
+
+      // Get the storage directory path
+      const baseDir = (FileSystem.documentDirectory || '').replace('file://', '');
+      const storageDir = `${baseDir}spark-data`;
+
+      // Ensure the storage directory exists
+      const storageDirForExpo = `${FileSystem.documentDirectory}spark-data`;
+      const dirInfo = await FileSystem.getInfoAsync(storageDirForExpo);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(storageDirForExpo, { intermediates: true });
+      }
+
+      const seed = Seed.Mnemonic.new({
+        mnemonic: seedPhrase,
+        passphrase: undefined,
+      });
 
       try {
-        await connect({ config, mnemonic: seedPhrase });
+        const sdk = await connect({
+          config,
+          seed,
+          storageDir,
+        });
+        sdkRef.current = sdk;
       } catch (error: any) {
         if (!error?.message?.includes('Already initialized')) throw error;
       }
 
-      if (!eventListenerRef.current) {
-        const listenerId = await addEventListener(eventHandler);
+      if (sdkRef.current && !eventListenerRef.current) {
+        const eventListener = new BreezEventListener(
+          () => {
+            _setIsSyncing(false);
+            setTimeout(() => refreshWalletInfo(), 0);
+          },
+          (event) => {
+            refreshWalletInfo();
+            if (event.tag === SdkEvent_Tags.PaymentSucceeded) {
+              const payment = (event as any).inner?.payment;
+              if (payment && payment.paymentType === PaymentType.Receive) {
+                const amountSat = Number(payment.amount) || 0;
+                router.push({
+                  pathname: '/transaction-result/success-screen',
+                  params: { transactionType: 'received', satsAmount: amountSat.toString() },
+                });
+              }
+            }
+          },
+          (event) => {
+            console.error('Payment failed:', event);
+          },
+        );
+
+        const listenerId = await sdkRef.current.addEventListener(eventListener);
         eventListenerRef.current = listenerId;
       }
 
-      console.log(`Breez connected successfully ${liquidNetwork}`);
+      console.log(`Breez (Spark) connected successfully on ${network}`);
       _setIsConnected(true);
       _setIsBreezInitialized(true);
       _setIsSyncing(false);
 
-      await refreshWalletInfo();
+      // Get initial wallet info
+      if (sdkRef.current) {
+        const info = await sdkRef.current.getInfo({ ensureSynced: false });
+        const initialBalance = Number(info.balanceSats) || 0;
+        _setBreezWalletInfos(info);
+        _setBalance(initialBalance);
+      }
     } catch (error) {
       console.error('Error during Breez initialization:', error);
       _setBreezError(error?.toString() || 'Initialization error');
@@ -202,35 +360,35 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     } finally {
       isInitializingRef.current = false;
     }
-  }, [_getSeedPhrase, eventHandler, refreshWalletInfo, isBreezInitialized, liquidNetwork]);
+  }, [_getSeedPhrase, refreshWalletInfo, isBreezInitialized, network, router]);
 
   useEffect(() => {
     return () => {
-      if (eventListenerRef.current) {
-        removeEventListener(eventListenerRef.current).catch(console.error);
+      if (sdkRef.current && eventListenerRef.current) {
+        sdkRef.current.removeEventListener(eventListenerRef.current).catch(console.error);
       }
     };
   }, []);
 
-  const setLiquidNetwork = useCallback(
-    async (network: LiquidNetwork) => {
+  const setNetwork = useCallback(
+    async (newNetwork: AppNetwork) => {
       try {
-        await _updateLiquidNetwork(network);
-        _setLiquidNetwork(network);
+        await _updateNetwork(newNetwork);
+        _setNetwork(newNetwork);
         await disconnectBreez();
         await new Promise((resolve) => setTimeout(resolve, 500));
         await initializeBreez();
       } catch (e) {
-        console.error(`[AsyncStorage] (liquidNetwork) Error saving data: ${e} [${network}]`);
-        throw new Error('Error setting liquidNetwork');
+        console.error(`[AsyncStorage] (network) Error saving data: ${e} [${newNetwork}]`);
+        throw new Error('Error setting network');
       }
     },
-    [_updateLiquidNetwork, disconnectBreez, initializeBreez],
+    [_updateNetwork, disconnectBreez, initializeBreez],
   );
 
-  const getLiquidNetwork = useCallback((): LiquidNetwork => {
-    return liquidNetwork;
-  }, [liquidNetwork]);
+  const getNetwork = useCallback((): AppNetwork => {
+    return network;
+  }, [network]);
 
   useEffect(() => {
     const syncInterval = setInterval(async () => {
@@ -250,14 +408,19 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     breezError,
     isBreezInitialized,
     payments,
-    liquidNetwork,
+    network,
     breezWalletInfos,
     isDataLoaded,
     initializeBreez,
     refreshWalletInfo,
     disconnectBreez,
-    setLiquidNetwork,
-    getLiquidNetwork,
+    setNetwork,
+    getNetwork,
+    receiveBolt11,
+    receiveBitcoinAddress,
+    parseInput,
+    prepareSend,
+    executeSend,
   };
 
   return <BreezContext.Provider value={contextValue}>{children}</BreezContext.Provider>;
@@ -270,3 +433,7 @@ export const useBreez = (): BreezContextType => {
   }
   return context;
 };
+
+// Re-export types and enums that consumers need
+export type { Bolt11InvoiceDetails, GetInfoResponse, InputType, Payment, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
+export { InputType_Tags, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';

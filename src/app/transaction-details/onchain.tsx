@@ -12,7 +12,8 @@ import { HeaderLeft } from '@/components/back-button';
 import DetailRow from '@/components/detail-row';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView, ScrollView } from '@/components/ui';
 import { formatBalance, generateTxUrl } from '@/lib';
-import { AppContext, useBdk, useBreez } from '@/lib/context';
+import { AppContext, useBdk } from '@/lib/context';
+import { useBreez } from '@/lib/context/breez-context';
 
 type SearchParams = {
   transactionData: string;
@@ -22,7 +23,7 @@ export default function OnchainTransactionDetailsScreen() {
   const { t } = useTranslation();
   const { transactionData } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit } = useContext(AppContext);
-  const { liquidNetwork } = useBreez();
+  const { network } = useBreez();
   const { getBlockainHeight } = useBdk();
   const [height, setHeight] = useState<number | undefined>(undefined);
 
@@ -43,7 +44,7 @@ export default function OnchainTransactionDetailsScreen() {
       : t('onchainTransactionDetail.status.pending');
 
   const openLink = (txId: string) => {
-    const url = generateTxUrl(txId, liquidNetwork);
+    const url = generateTxUrl(txId, network);
     Linking.openURL(url).catch((err) => console.error(`Error opening link: ${url}`, err));
   };
 

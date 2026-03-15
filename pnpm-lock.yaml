@@ -11,9 +11,6 @@ importers:
       '@breeztech/breez-sdk-spark-react-native':
         specifier: ^0.7.10
         version: 0.7.10(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
-      '@breeztech/react-native-breez-sdk-liquid':
-        specifier: 0.11.13
-        version: 0.11.13(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       '@expo/config-plugins':
         specifier: ~10.1.1
         version: 10.1.2
@@ -892,12 +889,6 @@ packages:
 
   '@breeztech/breez-sdk-spark-react-native@0.7.10':
     resolution: {integrity: sha512-JfM8DKFv+Pd9UY4fU71R0PgnkX6cLte0AxkIz0BCLi+Dfd1Wvc6xjmwAXWLuktHUrxpdOJhRIGucrNDdXaFVwA==}
-    peerDependencies:
-      react: '*'
-      react-native: '*'
-
-  '@breeztech/react-native-breez-sdk-liquid@0.11.13':
-    resolution: {integrity: sha512-UU7nci4hbJLVFarOXu8iVRGl08suBuXCFh5FrEv/bhG0chuevwJna/04Y2A5JcLTqYB7fLw24ceU3WGqeqbYOA==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -7988,11 +7979,6 @@ snapshots:
       react: 19.0.0
       react-native: 0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0)
       uniffi-bindgen-react-native: 0.28.3-5
-
-  '@breeztech/react-native-breez-sdk-liquid@0.11.13(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      react: 19.0.0
-      react-native: 0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0)
 
   '@commitlint/cli@19.2.2(@types/node@22.9.1)(typescript@5.8.3)':
     dependencies:

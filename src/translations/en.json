@@ -73,7 +73,7 @@
     "title": "No transactions"
   },
   "enterAmount": {
-    "addNote": "+ Add a note (optional)",
+    "addNote": "Add a note (optional)",
     "alert": {
       "errorMessage": "Please enter a valid amount",
       "errorTitle": "Error",
@@ -133,7 +133,7 @@
       "unsupportedAddress": "Sorry, we do not support this Bitcoin or Lightning address",
       "zeroAmountNotSupported": "Sorry, we do not support zero-amount Lightning payments"
     },
-    "payButton": "Continue to Pay",
+    "payButton": "Continue",
     "placeholder": "Bitcoin Lightning Invoice",
     "processing": "Processing...",
     "title": "Lightning Payment"
@@ -323,6 +323,12 @@
     "to": "To",
     "total": "Total",
     "unknown": "Unknown"
+  },
+  "paymentMethod": {
+    "lightningDescription": "Fast & low fees",
+    "onchainDescription": "Standard Bitcoin transaction",
+    "receiveTitle": "Receive via",
+    "sendTitle": "Send via"
   },
   "quickActions": {
     "airtime": "Airtime",

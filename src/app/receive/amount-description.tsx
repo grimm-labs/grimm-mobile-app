@@ -1,17 +1,15 @@
 /* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
-import { fetchLightningLimits, fetchOnchainLimits } from '@breeztech/react-native-breez-sdk-liquid';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Keyboard, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Modal, Platform, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, NumericKeypad, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
@@ -32,51 +30,28 @@ export default function EnterAmountScreen() {
   const [satsAmount, setSatsAmount] = useState('0');
   const [fiatAmount, setFiatAmount] = useState('0');
   const [note, setNote] = useState('');
-  const [showNoteInput, setShowNoteInput] = useState(false);
+  const [noteModalVisible, setNoteModalVisible] = useState(false);
+  const [draftNote, setDraftNote] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [receiveMinSatsLimit, setReceiveMinSatsLimit] = useState(0);
-  const [receiveMaxSatsLimit, setReceiveMaxSatsLimit] = useState(0);
+  const noteInputRef = useRef<TextInput>(null);
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
-  useEffect(() => {
-    const fetchLimits = async () => {
-      if (type === 'onchain') {
-        const currentLimits = await fetchOnchainLimits();
-        setReceiveMinSatsLimit(currentLimits.receive.minSat);
-        setReceiveMaxSatsLimit(currentLimits.receive.maxSat);
-      }
-
-      if (type === 'lightning') {
-        const currentLimits = await fetchLightningLimits();
-        setReceiveMinSatsLimit(currentLimits.receive.minSat);
-        setReceiveMaxSatsLimit(currentLimits.receive.maxSat);
-      }
-    };
-    fetchLimits();
-  }, [type]);
-
   const validateAmount = (satsValue: number): string => {
-    if (satsValue < receiveMinSatsLimit) {
-      return t('enterAmount.errors.min', { value: receiveMinSatsLimit.toLocaleString() });
-    }
-    if (satsValue > receiveMaxSatsLimit) {
-      return t('enterAmount.errors.max', { value: receiveMaxSatsLimit.toLocaleString() });
+    if (satsValue <= 0) {
+      return t('enterAmount.errors.min', { value: '1' });
     }
     return '';
   };
 
-  const handleSatsChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, '');
-    setSatsAmount((+numericValue).toString());
+  const handleAmountChange = (value: string) => {
+    setSatsAmount(value);
+    const satsValue = parseInt(value, 10);
 
-    if (numericValue && numericValue !== '0') {
-      const satsValue = parseInt(numericValue, 10);
+    if (!isNaN(satsValue) && satsValue > 0) {
       const fiat = convertBitcoinToFiat(satsValue, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2);
       setFiatAmount(fiat);
-
-      const error = validateAmount(satsValue);
-      setValidationError(error);
+      setValidationError(validateAmount(satsValue));
     } else {
       setFiatAmount('0');
       setValidationError('');
@@ -104,7 +79,22 @@ export default function EnterAmountScreen() {
 
   const isValidAmount = () => {
     const satsValue = parseInt(satsAmount, 10);
-    return !isNaN(satsValue) && satsValue > 0 && satsValue >= receiveMinSatsLimit && satsValue <= receiveMaxSatsLimit;
+    return !isNaN(satsValue) && satsValue > 0;
+  };
+
+  const openNoteModal = () => {
+    setDraftNote(note);
+    setNoteModalVisible(true);
+  };
+
+  const saveNote = () => {
+    setNote(draftNote.trim());
+    setNoteModalVisible(false);
+  };
+
+  const cancelNote = () => {
+    setDraftNote('');
+    setNoteModalVisible(false);
   };
 
   return (
@@ -119,70 +109,78 @@ export default function EnterAmountScreen() {
             headerShadowVisible: false,
           }}
         />
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="flex-1 px-4 pt-8">
-            <View className="mb-8 items-center">
-              <Text className="mb-4 text-lg font-semibold text-gray-700">{t('enterAmount.satsLabel')}</Text>
-              <TextInput
-                textAlign="center"
-                textAlignVertical="center"
-                value={satsAmount}
-                onChangeText={handleSatsChange}
-                className={`w-full text-center text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-400'}`}
-                keyboardType="numeric"
-                placeholder="0"
-                placeholderTextColor="#D1D5DB"
-              />
-              {validationError ? <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text> : null}
-            </View>
-            <View className="mb-8 items-center">
-              <View className="rounded-full bg-primary-600 p-2">
-                <MaterialCommunityIcons name="approximately-equal" size={20} color={colors.white} />
-              </View>
-            </View>
-            <View className="mb-12 items-center">
-              <View className="flex-row items-center">
-                <Text className="mr-2 text-xl font-semibold text-gray-700">{selectedFiatCurrency}</Text>
-                <Text className="text-bold text-2xl font-medium">{fiatAmount}</Text>
-              </View>
-            </View>
-            {type === 'lightning' && (
-              <View className="mb-8">
-                {!showNoteInput ? (
-                  <TouchableOpacity onPress={() => setShowNoteInput(true)} className="items-center">
-                    <Text className="text-base text-gray-400">{t('enterAmount.addNote')}</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <View className="rounded border bg-white p-4" style={{ borderColor: '#9CA3AF' }}>
-                    <TextInput
-                      value={note}
-                      onChangeText={setNote}
-                      returnKeyType="done"
-                      placeholder={t('enterAmount.notePlaceholder')}
-                      placeholderTextColor="#9CA3AF"
-                      className="min-h-[40px] text-base text-gray-700"
-                      multiline
-                      autoFocus
-                    />
-                    <TouchableOpacity
-                      onPress={() => {
-                        setShowNoteInput(false);
-                        setNote('');
-                      }}
-                      className="absolute right-2 top-2"
-                    >
-                      <Ionicons name="close" size={20} color="#9CA3AF" />
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            )}
-            <View className="flex-1" />
-            <View>
-              <Button label={t('enterAmount.continueButton')} disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+        <View className="flex-1 px-4 pt-8">
+          <View className="mb-4 items-center">
+            <Text className="mb-2 text-lg font-semibold text-gray-700">{t('enterAmount.satsLabel')}</Text>
+            <Text className={`text-5xl font-light ${validationError ? 'text-red-400' : 'text-gray-800'}`}>{satsAmount}</Text>
+            {validationError ? <Text className="mt-1 text-center text-sm text-red-500">{validationError}</Text> : null}
+          </View>
+          <View className="mb-4 items-center">
+            <View className="rounded-full bg-primary-600 p-2">
+              <MaterialCommunityIcons name="approximately-equal" size={20} color={colors.white} />
             </View>
           </View>
-        </TouchableWithoutFeedback>
+          <View className="mb-4 items-center">
+            <View className="flex-row items-center">
+              <Text className="mr-2 text-xl font-semibold text-gray-700">{selectedFiatCurrency}</Text>
+              <Text className="text-bold text-2xl font-medium">{fiatAmount}</Text>
+            </View>
+          </View>
+          {type === 'lightning' && (
+            <View className="mb-4 items-center">
+              {note ? (
+                <TouchableOpacity onPress={openNoteModal} className="flex-row items-center rounded-full bg-gray-100 px-4 py-2">
+                  <Ionicons name="document-text-outline" size={16} color="#6B7280" />
+                  <Text className="ml-2 text-sm text-gray-600" numberOfLines={1}>
+                    {note}
+                  </Text>
+                  <TouchableOpacity onPress={() => setNote('')} className="ml-2" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Ionicons name="close-circle" size={16} color="#9CA3AF" />
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={openNoteModal} className="flex-row items-center">
+                  <Ionicons name="add-circle-outline" size={18} color="#9CA3AF" />
+                  <Text className="ml-1 text-base text-gray-400">{t('enterAmount.addNote')}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+          <View className="flex-1" />
+          <NumericKeypad amount={satsAmount} setAmount={handleAmountChange} isBtcUnit={false} />
+          <View className="mb-2">
+            <Button label={t('enterAmount.continueButton')} disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+          </View>
+        </View>
+
+        <Modal visible={noteModalVisible} animationType="slide" transparent={true} onRequestClose={cancelNote}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View className="flex-1 justify-end bg-black/50">
+              <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <View className="rounded-t-3xl bg-white px-4 pb-8 pt-6">
+                  <View className="mb-4 flex-row items-center justify-between">
+                    <Text className="text-lg font-semibold text-gray-800">{t('enterAmount.addNote')}</Text>
+                    <TouchableOpacity onPress={cancelNote} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                      <Ionicons name="close" size={24} color="#6B7280" />
+                    </TouchableOpacity>
+                  </View>
+                  <TextInput
+                    ref={noteInputRef}
+                    value={draftNote}
+                    onChangeText={setDraftNote}
+                    placeholder={t('enterAmount.notePlaceholder')}
+                    placeholderTextColor="#9CA3AF"
+                    className="mb-4 min-h-[80px] rounded-xl border border-gray-200 bg-gray-50 p-4 text-base text-gray-700"
+                    multiline
+                    autoFocus
+                    onSubmitEditing={saveNote}
+                  />
+                  <Button label={t('enterAmount.continueButton')} onPress={saveNote} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+                </View>
+              </KeyboardAvoidingView>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       </SafeAreaView>
     </SafeAreaProvider>
   );

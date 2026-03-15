@@ -6,9 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 import { colors } from '@/components/ui';
 import { initializeLanguage } from '@/lib';
-import { AppContext, useBdk, useSparkSafe } from '@/lib/context';
+import { AppContext, useBdk } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
-import { Env } from '@/lib/env';
 
 const SPLASH_HIDE_DELAY = 1000;
 
@@ -27,7 +26,6 @@ const TabLayout = () => {
   const { isDataLoaded, hasSeedPhrase } = useContext(AppContext);
   const { isBreezInitialized, initializeBreez } = useBreez();
   const { initializeBdk } = useBdk();
-  const sparkContext = useSparkSafe();
 
   const splashHiddenRef = useRef(false);
   const { t } = useTranslation();
@@ -76,11 +74,8 @@ const TabLayout = () => {
     if (isDataLoaded && hasSeedPhrase && !isBreezInitialized) {
       initializeBreez();
       initializeBdk();
-      if (Env.USE_SPARK && sparkContext) {
-        sparkContext.initializeSpark();
-      }
     }
-  }, [isDataLoaded, hasSeedPhrase, isBreezInitialized, initializeBreez, initializeBdk, sparkContext]);
+  }, [isDataLoaded, hasSeedPhrase, isBreezInitialized, initializeBreez, initializeBdk]);
 
   useEffect(() => {
     if (isDataLoaded && isLanguageLoaded) {

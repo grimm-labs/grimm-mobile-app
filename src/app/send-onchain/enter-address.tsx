@@ -1,16 +1,16 @@
 /* eslint-disable max-lines-per-function */
-import { InputTypeVariant, parse } from '@breeztech/react-native-breez-sdk-liquid';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, colors, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, View } from '@/components/ui';
+import { useBreez } from '@/lib/context/breez-context';
+import { InputType_Tags } from '@/lib/context/breez-context';
 
 const LightningPaymentScreenHeaderTitle = (title: string) => <HeaderTitle title={title} />;
 
@@ -22,6 +22,7 @@ export default function EnterAddressScreen() {
   const { t } = useTranslation();
   const { input } = useLocalSearchParams<SearchParams>();
   const router = useRouter();
+  const { parseInput } = useBreez();
 
   const [addressInput, setAddressInput] = useState(input?.trim() || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,9 +35,9 @@ export default function EnterAddressScreen() {
 
     try {
       setIsLoading(true);
-      const parsed = await parse(addressInput.trim());
-      switch (parsed.type) {
-        case InputTypeVariant.BITCOIN_ADDRESS:
+      const parsed = await parseInput(addressInput.trim());
+      switch (parsed.tag) {
+        case InputType_Tags.BitcoinAddress:
           router.push(`/send-onchain/enter-amount?recipientAddress=${encodeURIComponent(addressInput.trim())}`);
           break;
         default:
@@ -48,12 +49,6 @@ export default function EnterAddressScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const pasteFromClipboard = async () => {
-    Clipboard.getStringAsync().then((text) => {
-      setAddressInput(text);
-    });
   };
 
   const scanQRCode = async () => {
@@ -87,11 +82,6 @@ export default function EnterAddressScreen() {
                 }
               />
             </View>
-          </View>
-          <View className="my-2 items-center">
-            <TouchableWithoutFeedback onPress={pasteFromClipboard}>
-              <Text className="font-semibold text-primary-600">{t('onchainSend.enterAddress.paste')}</Text>
-            </TouchableWithoutFeedback>
           </View>
           {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
           <View>

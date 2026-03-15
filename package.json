@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@breeztech/breez-sdk-spark-react-native": "^0.7.10",
-    "@breeztech/react-native-breez-sdk-liquid": "0.11.13",
     "@expo/config-plugins": "~10.1.1",
     "@expo/metro-runtime": "^5.0.5",
     "@gorhom/bottom-sheet": "^5.0.5",

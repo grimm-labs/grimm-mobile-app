@@ -73,7 +73,7 @@
     "title": "Aucune transaction"
   },
   "enterAmount": {
-    "addNote": "+ Ajouter une note (optionnel)",
+    "addNote": "Ajouter une note (optionnel)",
     "alert": {
       "errorMessage": "Veuillez entrer un montant valide",
       "errorTitle": "Erreur",
@@ -133,7 +133,7 @@
       "unsupportedAddress": "Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning",
       "zeroAmountNotSupported": "Désolé, nous ne prenons pas en charge les paiements Lightning sans montant"
     },
-    "payButton": "Continuer pour payer",
+    "payButton": "Continuer",
     "placeholder": "Facture Bitcoin Lightning",
     "processing": "Traitement...",
     "title": "Paiement Lightning"
@@ -323,6 +323,12 @@
     "to": "À",
     "total": "Total",
     "unknown": "Inconnu"
+  },
+  "paymentMethod": {
+    "lightningDescription": "Rapide & frais réduits",
+    "onchainDescription": "Transaction Bitcoin standard",
+    "receiveTitle": "Recevoir via",
+    "sendTitle": "Envoyer via"
   },
   "quickActions": {
     "airtime": "Crédit téléphonique",

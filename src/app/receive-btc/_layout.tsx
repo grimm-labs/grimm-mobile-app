@@ -60,9 +60,11 @@ export default function ReceivePaymentScreen() {
       if (bitcoinAddress) {
         setAddress(bitcoinAddress);
       } else {
+        console.error('Failed to generate address: address is undefined');
         setError(t('receive_onchain.error_generic'));
       }
     } catch (err) {
+      console.error('Error generating address:', err);
       setError(err instanceof Error ? err.message : t('receive_onchain.error_generic'));
     } finally {
       setLoading(false);

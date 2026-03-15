@@ -14,8 +14,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { APIProvider } from '@/api';
 import { WalletErrorBoundary } from '@/components/wallet-error-boundary';
 import { loadSelectedTheme } from '@/lib';
-import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider, SparkProvider } from '@/lib/context';
-import { Env } from '@/lib/env';
+import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider } from '@/lib/context';
 import { useThemeConfig } from '@/lib/use-theme-config';
 
 export { ErrorBoundary } from 'expo-router';
@@ -48,7 +47,7 @@ export default function RootLayout() {
 function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
 
-  const content = (
+  return (
     <AppContextProvider>
       <WalletErrorBoundary name="Lightning (Breez)">
         <BreezProvider>
@@ -74,42 +73,6 @@ function Providers({ children }: { children: React.ReactNode }) {
       </WalletErrorBoundary>
     </AppContextProvider>
   );
-
-  // Conditionally wrap with SparkProvider if USE_SPARK is enabled
-  if (Env.USE_SPARK) {
-    return (
-      <AppContextProvider>
-        <WalletErrorBoundary name="Lightning (Breez)">
-          <BreezProvider>
-            <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
-              <KeyboardProvider>
-                <ThemeProvider value={theme}>
-                  <APIProvider>
-                    <BitcoinPriceProvider>
-                      <WalletErrorBoundary name="On-chain (BDK)">
-                        <BdkProvider>
-                          <WalletErrorBoundary name="Spark">
-                            <SparkProvider>
-                              <BottomSheetModalProvider>
-                                {children}
-                                <FlashMessage position="top" />
-                              </BottomSheetModalProvider>
-                            </SparkProvider>
-                          </WalletErrorBoundary>
-                        </BdkProvider>
-                      </WalletErrorBoundary>
-                    </BitcoinPriceProvider>
-                  </APIProvider>
-                </ThemeProvider>
-              </KeyboardProvider>
-            </GestureHandlerRootView>
-          </BreezProvider>
-        </WalletErrorBoundary>
-      </AppContextProvider>
-    );
-  }
-
-  return content;
 }
 
 const styles = StyleSheet.create({

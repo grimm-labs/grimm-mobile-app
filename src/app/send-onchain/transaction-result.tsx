@@ -33,7 +33,7 @@ export default function TransactionResultScreen() {
   const router = useRouter();
   const { satsAmount, txId } = useLocalSearchParams<SearchParams>();
   const { selectedCountry, bitcoinUnit } = useContext(AppContext);
-  const { liquidNetwork } = useBreez();
+  const { network } = useBreez();
   const { bitcoinPrices } = useBitcoin();
   const animation = useRef<LottieView>(null);
 
@@ -49,7 +49,7 @@ export default function TransactionResultScreen() {
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
 
   const openLink = () => {
-    const url = generateTxUrl(txId, liquidNetwork);
+    const url = generateTxUrl(txId, network);
     Linking.openURL(url).catch((err) => console.error(`Error opening link: ${url}`, err));
   };
 

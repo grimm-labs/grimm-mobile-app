@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
-import { LiquidNetwork } from '@breeztech/react-native-breez-sdk-liquid';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -13,6 +12,7 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { useBreez } from '@/lib/context/breez-context';
+import { AppNetwork } from '@/lib/context/breez-context';
 
 interface NetworkOptionProps {
   title: string;
@@ -36,14 +36,14 @@ const NetworkOption = React.memo<NetworkOptionProps>(({ title, description, isSe
 
 export default function NetworkSwitcher() {
   const { t } = useTranslation();
-  const { liquidNetwork, setLiquidNetwork, isConnected, isSyncing } = useBreez();
+  const { network, setNetwork, isConnected, isSyncing } = useBreez();
   const [isChangingNetwork, setIsChangingNetwork] = useState(false);
 
   const performNetworkSwitch = useCallback(
-    async (network: LiquidNetwork) => {
+    async (newNetwork: AppNetwork) => {
       try {
         setIsChangingNetwork(true);
-        await setLiquidNetwork(network);
+        await setNetwork(newNetwork);
       } catch (error) {
         console.error('Error switching network:', error);
         Alert.alert(t('networkSwitcher.alerts.switchFailed.title'), t('networkSwitcher.alerts.switchFailed.message'), [{ text: t('networkSwitcher.alerts.ok') }]);
@@ -51,33 +51,33 @@ export default function NetworkSwitcher() {
         setIsChangingNetwork(false);
       }
     },
-    [setLiquidNetwork, t],
+    [setNetwork, t],
   );
 
   const handleNetworkChange = useCallback(
-    async (network: LiquidNetwork) => {
-      if (network === LiquidNetwork.MAINNET && liquidNetwork !== LiquidNetwork.MAINNET) {
+    async (newNetwork: AppNetwork) => {
+      if (newNetwork === AppNetwork.MAINNET && network !== AppNetwork.MAINNET) {
         Alert.alert(t('networkSwitcher.alerts.switchMainnet.title'), t('networkSwitcher.alerts.switchMainnet.message'), [
           { text: t('networkSwitcher.alerts.cancel'), style: 'cancel' },
           {
             text: t('networkSwitcher.alerts.switch'),
             style: 'default',
-            onPress: () => performNetworkSwitch(network),
+            onPress: () => performNetworkSwitch(newNetwork),
           },
         ]);
       } else {
-        performNetworkSwitch(network);
+        performNetworkSwitch(newNetwork);
       }
     },
-    [liquidNetwork, performNetworkSwitch, t],
+    [network, performNetworkSwitch, t],
   );
 
   const handleMainnetPress = useCallback(() => {
-    handleNetworkChange(LiquidNetwork.MAINNET);
+    handleNetworkChange(AppNetwork.MAINNET);
   }, [handleNetworkChange]);
 
   const handleTestnetPress = useCallback(() => {
-    handleNetworkChange(LiquidNetwork.TESTNET);
+    handleNetworkChange(AppNetwork.TESTNET);
   }, [handleNetworkChange]);
 
   const networkOptions = useMemo(
@@ -85,19 +85,19 @@ export default function NetworkSwitcher() {
       {
         title: t('networkSwitcher.options.mainnet.title'),
         description: t('networkSwitcher.options.mainnet.description'),
-        isSelected: liquidNetwork === LiquidNetwork.MAINNET,
+        isSelected: network === AppNetwork.MAINNET,
         onPress: handleMainnetPress,
         key: 'mainnet',
       },
       {
         title: t('networkSwitcher.options.testnet.title'),
         description: t('networkSwitcher.options.testnet.description'),
-        isSelected: liquidNetwork === LiquidNetwork.TESTNET,
+        isSelected: network === AppNetwork.TESTNET,
         onPress: handleTestnetPress,
         key: 'testnet',
       },
     ],
-    [liquidNetwork, handleMainnetPress, handleTestnetPress, t],
+    [network, handleMainnetPress, handleTestnetPress, t],
   );
 
   const isDisabled = isChangingNetwork || isSyncing;
@@ -127,7 +127,7 @@ export default function NetworkSwitcher() {
           <View className="mb-2 mt-4 px-2">
             <View className="flex-row items-center">
               <View className={`mr-2 size-2 rounded-full ${isConnected ? 'bg-primary-500' : 'bg-red-500'}`} />
-              <Text className="text-sm text-gray-600">{isConnected ? t('networkSwitcher.status.connected', { network: liquidNetwork }) : t('networkSwitcher.status.disconnected')}</Text>
+              <Text className="text-sm text-gray-600">{isConnected ? t('networkSwitcher.status.connected', { network }) : t('networkSwitcher.status.disconnected')}</Text>
             </View>
           </View>
 
