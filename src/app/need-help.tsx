@@ -14,6 +14,7 @@ interface ItemProps {
   title: string;
   icon: React.ComponentProps<typeof Ionicons>['name'];
   onPress: () => void;
+  testID?: string;
 }
 
 const supportLinks = {
@@ -24,15 +25,17 @@ const supportLinks = {
   linkedIn: 'https://www.linkedin.com/company/grimm-technologies',
 };
 
-const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
-  <Pressable onPress={onPress}>
+const Item: React.FC<ItemProps> = ({ title, icon, onPress, testID }) => (
+  <Pressable testID={testID} onPress={onPress}>
     <View className="flex flex-row justify-between">
       <View className="flex size-20 items-center justify-center ">
         <Ionicons name={icon} size={28} color="black" />
       </View>
       <View className="h-full flex-1 flex-row items-center justify-between border-b-[0.5px] border-gray-300">
         <View className="h-full flex-1 flex-row items-center">
-          <Text className="text-sm font-medium">{title}</Text>
+          <Text testID={testID ? `${testID}-title` : undefined} className="text-sm font-medium">
+            {title}
+          </Text>
         </View>
         <View className="flex size-20 items-center justify-center">
           <Ionicons name="chevron-forward" size={24} color={colors.primary[600]} />
@@ -45,21 +48,31 @@ const Item: React.FC<ItemProps> = ({ title, icon, onPress }) => (
 const ServiceHours: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <View className="mx-2">
+    <View testID="need-help-service-hours" className="mx-2">
       <View className="mb-4 border-b-[0.5px] border-gray-300">
-        <Text className="my-6 text-sm font-medium">{t('help.service_hours_title')}</Text>
+        <Text testID="need-help-service-hours-title" className="my-6 text-sm font-medium">
+          {t('help.service_hours_title')}
+        </Text>
       </View>
       <View className="mb-4 flex flex-row justify-between">
-        <Text className="text-sm font-medium">{t('help.monday_friday')}</Text>
-        <Text>{t('help.hours_mon_fri')}</Text>
+        <Text testID="need-help-hours-mon-fri-label" className="text-sm font-medium">
+          {t('help.monday_friday')}
+        </Text>
+        <Text testID="need-help-hours-mon-fri-value">{t('help.hours_mon_fri')}</Text>
       </View>
       <View className="mb-4 flex flex-row justify-between">
-        <Text className="text-sm font-medium">{t('help.saturday')}</Text>
-        <Text>{t('help.hours_saturday')}</Text>
+        <Text testID="need-help-hours-saturday-label" className="text-sm font-medium">
+          {t('help.saturday')}
+        </Text>
+        <Text testID="need-help-hours-saturday-value">{t('help.hours_saturday')}</Text>
       </View>
       <View className="mb-4 flex flex-row justify-between">
-        <Text className="text-sm font-medium">{t('help.sunday_holidays')}</Text>
-        <Text className="text-sm font-extrabold text-danger-600">{t('help.closed')}</Text>
+        <Text testID="need-help-hours-sunday-label" className="text-sm font-medium">
+          {t('help.sunday_holidays')}
+        </Text>
+        <Text testID="need-help-hours-sunday-value" className="text-sm font-extrabold text-danger-600">
+          {t('help.closed')}
+        </Text>
       </View>
     </View>
   );
@@ -73,12 +86,12 @@ const SupportItems: React.FC = () => {
   };
 
   return (
-    <View className="mb-6">
-      <Item title={t('help.talk_us')} icon="call-outline" onPress={() => openLink(supportLinks.call)} />
-      <Item title={t('help.send_email')} icon="mail-outline" onPress={() => openLink(supportLinks.email)} />
-      <Item title={t('help.facebook')} icon="logo-facebook" onPress={() => openLink(supportLinks.facebook)} />
-      <Item title={t('help.linkedin')} icon="logo-linkedin" onPress={() => openLink(supportLinks.linkedIn)} />
-      <Item title={t('help.twitter')} icon="logo-twitter" onPress={() => openLink(supportLinks.twitter)} />
+    <View testID="need-help-support-items" className="mb-6">
+      <Item testID="need-help-item-call" title={t('help.talk_us')} icon="call-outline" onPress={() => openLink(supportLinks.call)} />
+      <Item testID="need-help-item-email" title={t('help.send_email')} icon="mail-outline" onPress={() => openLink(supportLinks.email)} />
+      <Item testID="need-help-item-facebook" title={t('help.facebook')} icon="logo-facebook" onPress={() => openLink(supportLinks.facebook)} />
+      <Item testID="need-help-item-linkedin" title={t('help.linkedin')} icon="logo-linkedin" onPress={() => openLink(supportLinks.linkedIn)} />
+      <Item testID="need-help-item-twitter" title={t('help.twitter')} icon="logo-twitter" onPress={() => openLink(supportLinks.twitter)} />
     </View>
   );
 };
@@ -87,8 +100,8 @@ export default function NeedHelp() {
   const { t } = useTranslation();
   return (
     <SafeAreaProvider>
-      <SafeAreaView>
-        <View className="flex h-full px-4">
+      <SafeAreaView testID="need-help-screen">
+        <View testID="need-help-content" className="flex h-full px-4">
           <Stack.Screen
             options={{
               headerShown: true,

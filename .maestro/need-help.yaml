@@ -1,0 +1,50 @@
+appId: ${APP_ID}
+---
+- clearState
+- launchApp
+- assertVisible:
+    id: 'onboarding-screen'
+- tapOn:
+    id: 'onboarding-help'
+- assertVisible:
+    id: 'need-help-screen'
+- assertVisible:
+    id: 'need-help-content'
+- assertVisible:
+    id: 'need-help-support-items'
+- assertVisible:
+    id: 'need-help-item-call'
+- assertVisible:
+    id: 'need-help-item-call-title'
+- assertVisible:
+    id: 'need-help-item-email'
+- assertVisible:
+    id: 'need-help-item-email-title'
+- assertVisible:
+    id: 'need-help-item-facebook'
+- assertVisible:
+    id: 'need-help-item-facebook-title'
+- assertVisible:
+    id: 'need-help-item-linkedin'
+- assertVisible:
+    id: 'need-help-item-linkedin-title'
+- assertVisible:
+    id: 'need-help-item-twitter'
+- assertVisible:
+    id: 'need-help-item-twitter-title'
+- assertVisible:
+    id: 'need-help-service-hours'
+- assertVisible:
+    id: 'need-help-service-hours-title'
+- assertVisible:
+    id: 'need-help-hours-mon-fri-label'
+- assertVisible:
+    id: 'need-help-hours-mon-fri-value'
+- assertVisible:
+    id: 'need-help-hours-saturday-label'
+- assertVisible:
+    id: 'need-help-hours-saturday-value'
+- assertVisible:
+    id: 'need-help-hours-sunday-label'
+- assertVisible:
+    id: 'need-help-hours-sunday-value'

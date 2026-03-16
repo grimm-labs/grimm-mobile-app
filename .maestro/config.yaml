@@ -1,12 +1,6 @@
 flows:
-  - auth/*
-  - app/*
-
-excludeTags:
-  - util
+  - onboarding.yaml
+  - need-help.yaml
 
 executionOrder:
-    continueOnFailure: false # default is true
-    flowsOrder:
-        - onboarding
-        - login-with-validation
+  continueOnFailure: false

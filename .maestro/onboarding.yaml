@@ -1,0 +1,24 @@
+appId: ${APP_ID}
+---
+- clearState
+- launchApp
+- assertVisible:
+    id: 'onboarding-screen'
+- assertVisible:
+    id: 'onboarding-content'
+- assertVisible:
+    id: 'onboarding-title'
+- assertVisible:
+    id: 'onboarding-subtitle'
+- assertVisible:
+    id: 'onboarding-get-started'
+- assertVisible:
+    id: 'onboarding-get-started-label'
+- assertVisible:
+    id: 'onboarding-help'
+- assertVisible:
+    id: 'onboarding-agreement-text'
+- assertVisible:
+    id: 'onboarding-terms-text'
+- assertVisible:
+    id: 'onboarding-privacy-text'

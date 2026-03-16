@@ -13,8 +13,12 @@ const WelcomeText = memo(() => {
   const { t } = useTranslation();
   return (
     <>
-      <Text className="mt-5 text-center text-3xl">{t('onboarding.title')}</Text>
-      <Text className="mt-4 text-center text-gray-700">{t('onboarding.subtitle')}</Text>
+      <Text testID="onboarding-title" className="mt-5 text-center text-3xl">
+        {t('onboarding.title')}
+      </Text>
+      <Text testID="onboarding-subtitle" className="mt-4 text-center text-gray-700">
+        {t('onboarding.subtitle')}
+      </Text>
     </>
   );
 });
@@ -27,10 +31,16 @@ const Footer = memo(({ onGetStarted }: FooterProps) => {
   const { t } = useTranslation();
   return (
     <>
-      <Button label={t('onboarding.getStarted')} onPress={onGetStarted} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
-      <Text className="my-4 text-center text-gray-700">
-        {t('onboarding.agreementText')} <Text className="font-semibold text-primary-600 underline">{t('onboarding.termsOfService')}</Text> &{' '}
-        <Text className="font-semibold text-primary-600 underline">{t('onboarding.privacyPolicy')}</Text>
+      <Button testID="onboarding-get-started" label={t('onboarding.getStarted')} onPress={onGetStarted} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+      <Text testID="onboarding-agreement-text" className="my-4 text-center text-gray-700">
+        {t('onboarding.agreementText')}{' '}
+        <Text testID="onboarding-terms-text" className="font-semibold text-primary-600 underline">
+          {t('onboarding.termsOfService')}
+        </Text>{' '}
+        &{' '}
+        <Text testID="onboarding-privacy-text" className="font-semibold text-primary-600 underline">
+          {t('onboarding.privacyPolicy')}
+        </Text>
       </Text>
     </>
   );
@@ -46,8 +56,8 @@ function Onboarding() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1">
-        <View className="flex h-full justify-between px-4">
+      <SafeAreaView testID="onboarding-screen" className="flex-1">
+        <View testID="onboarding-content" className="flex h-full justify-between px-4">
           <Stack.Screen
             options={{
               headerShown: false,
@@ -59,7 +69,7 @@ function Onboarding() {
 
           <View className="my-2 flex flex-row items-center justify-between">
             <View className="flex" />
-            <Pressable className="relative" onPress={() => router.push('/need-help')} accessibilityLabel={t('onboarding.help')}>
+            <Pressable testID="onboarding-help" className="relative" onPress={() => router.push('/need-help')} accessibilityLabel={t('onboarding.help')}>
               <Ionicons name="chatbubble-ellipses" size={24} color={colors.neutral[500]} />
               <View className="-top-0,5 absolute -right-0.5 size-3 items-center justify-center rounded-full bg-primary-600" />
             </Pressable>
