@@ -15,6 +15,10 @@ Currently supporting Lightning Network payments via the Breez SDK, Grimm App is 
 
 Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and trustless. We believe that financial sovereignty should be accessible to everyone, and that transparency in code is essential for building trust in Bitcoin software.
 
+<p align="center">
+  <img alt="Grimm App screenshots poster" src="./assets/images/poster.png" width="100%" />
+</p>
+
 ## Why Grimm App?
 
 **Self-Custody First**: Unlike custodial wallets and exchanges, Grimm App generates and stores your private keys exclusively on your device. This means no third party can freeze, confiscate, or lose your Bitcoin.
