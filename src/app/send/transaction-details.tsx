@@ -31,7 +31,7 @@ export default function PaymentDetailsScreen() {
 
   const { selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { parseInput, prepareSend, executeSend } = useBreez();
+  const { parseInput, prepareSend, executeSend, balance } = useBreez();
 
   const [isLoading, setIsLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState('');
@@ -41,12 +41,15 @@ export default function PaymentDetailsScreen() {
   const [paymentIsProcessing, setPaymentIsProcessing] = useState(false);
   const [savedPrepareResponse, setSavedPrepareResponse] = useState<PrepareSendPaymentResponse | null>(null);
 
-  const selectedFiatCurrency = getFiatCurrency(selectedCountry);
-
   const convertMsatToSats = (msat: bigint | undefined) => {
     if (msat === undefined) return 0;
     return Number(msat / 1000n);
   };
+
+  const selectedFiatCurrency = getFiatCurrency(selectedCountry);
+  const amountSat = convertMsatToSats(decodedInvoiceData?.amountMsat || 0n);
+  const totalAmountSat = Number((feesSat || 0) + amountSat);
+  const hasInsufficientBalance = totalAmountSat > balance;
 
   useEffect(() => {
     if (rawInvoice) {
@@ -219,9 +222,9 @@ export default function PaymentDetailsScreen() {
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
                 <Text className="text-lg text-gray-600">{t('paymentDetails.amount')}</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{convertMsatToSats(decodedInvoiceData?.amountMsat)} SAT</Text>
+                  <Text className="text-lg font-medium text-gray-900">{amountSat} SAT</Text>
                   <Text className="text-sm text-gray-500">
-                    {convertBitcoinToFiat(Number(convertMsatToSats(decodedInvoiceData?.amountMsat || 0n)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                    {convertBitcoinToFiat(amountSat, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
@@ -237,9 +240,9 @@ export default function PaymentDetailsScreen() {
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
                 <Text className="text-lg text-gray-600">{t('paymentDetails.total')}</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0n))} SAT</Text>
+                  <Text className="text-lg font-medium text-gray-900">{totalAmountSat} SAT</Text>
                   <Text className="text-sm text-gray-500">
-                    {convertBitcoinToFiat(Number((feesSat || 0) + convertMsatToSats(decodedInvoiceData?.amountMsat || 0n)), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
+                    {convertBitcoinToFiat(totalAmountSat, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
@@ -265,7 +268,13 @@ export default function PaymentDetailsScreen() {
                 </Text>
               </View>
             )}
-            <SlideToConfirm onConfirm={handleSendPayment} loading={paymentIsProcessing} />
+            {hasInsufficientBalance ? (
+              <View className="mb-4 p-3">
+                <Text className="text-center text-sm font-medium text-red-500">{t('paymentDetails.errors.notEnoughFunds')}</Text>
+              </View>
+            ) : (
+              <SlideToConfirm onConfirm={handleSendPayment} loading={paymentIsProcessing} />
+            )}
           </View>
         </View>
       </SafeAreaView>

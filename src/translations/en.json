@@ -308,7 +308,7 @@
       "decode": "Error while decoding LN invoice",
       "invalidData": "Invalid invoice data",
       "invalidPayment": "Invalid payment data",
-      "notEnoughFunds": "Cannot pay: not enough funds"
+      "notEnoughFunds": "Your balance is insufficient"
     },
     "expired": "Expired",
     "expiredMessage": "This invoice has expired",

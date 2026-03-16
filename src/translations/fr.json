@@ -308,7 +308,7 @@
       "decode": "Erreur lors du décodage de la facture LN",
       "invalidData": "Données de facture invalides",
       "invalidPayment": "Données de paiement invalides",
-      "notEnoughFunds": "Impossible de payer : fonds insuffisants"
+      "notEnoughFunds": "Votre solde est insuffisant"
     },
     "expired": "Expirée",
     "expiredMessage": "Cette facture a expiré",
