@@ -1,17 +1,12 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![React Native](https://img.shields.io/badge/React%20Native-0.73-blue.svg)](https://reactnative.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 
 <h1 align="center">
-  <img alt="Grimm App Logo" src="./assets/icon.png" width="124px" style="border-radius:10px"/><br/>
-  Grimm App
+  <img alt="Grimm App Logo" src="./assets/icon.png" width="124px" style="border-radius:10px"/>
 </h1>
-
-<p align="center">A self-custodial Bitcoin wallet for the modern era</p>
-
-## About Grimm App
 
 Grimm App is a self-custodial Bitcoin wallet that empowers users to take full control of their Bitcoin while maintaining ease of use. Built on the principle that "not your keys, not your coins," Grimm App ensures that you—and only you—have access to your funds at all times.
 
-Currently supporting Lightning Network payments via the Breez SDK, Grimm App is actively expanding to include comprehensive on-chain Bitcoin and Liquid Network capabilities. Our mission is to create a wallet that serves both newcomers to Bitcoin and experienced users who demand advanced features and maximum control.
+Currently supporting Lightning payments via the Breez SDK Spark, Grimm App is actively expanding to include comprehensive on-chain Bitcoin capabilities. Our mission is to create a wallet that serves both newcomers to Bitcoin and experienced users who demand advanced features and maximum control.
 
 Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and trustless. We believe that financial sovereignty should be accessible to everyone, and that transparency in code is essential for building trust in Bitcoin software.
 
@@ -23,9 +18,9 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 
 **Self-Custody First**: Unlike custodial wallets and exchanges, Grimm App generates and stores your private keys exclusively on your device. This means no third party can freeze, confiscate, or lose your Bitcoin.
 
-**Lightning Native**: Experience instant Bitcoin payments with minimal fees through our Lightning Network integration. Send and receive payments in seconds, not hours.
+**Lightning Native**: Experience instant Bitcoin payments with minimal fees through our Lightning Network integration powered by Breez SDK Spark. Send and receive payments in seconds, not hours.
 
-**Future-Ready**: With upcoming support for on-chain Bitcoin and Liquid Network, Grimm App is designed to be your all-in-one Bitcoin solution, capable of handling everything from small everyday payments to large, secure transfers.
+**Future-Ready**: With upcoming support for on-chain Bitcoin, Grimm App is designed to be your all-in-one Bitcoin solution, capable of handling everything from small everyday payments to large, secure transfers.
 
 **Privacy-Focused**: We don't collect user data, don't require KYC, and implement best practices for maintaining your financial privacy.
 
@@ -33,16 +28,16 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 
 ## Current Features
 
-### Lightning Network Payments
+### Lightning Payments (Breez SDK Spark)
 
-**Instant Transactions via Breez SDK**
+**Instant Transactions via Breez SDK Spark**
 
-- Send and receive Bitcoin instantly over the Lightning Network
+- Send and receive Bitcoin instantly over the Lightning Network (powered by Breez SDK Spark)
 - Minimal transaction fees, typically less than a penny
 - Perfect for everyday purchases and micro-transactions
 - QR code scanning for easy payment initiation
 
-**Lightning Network Benefits**
+**Lightning Benefits**
 
 - Near-instant settlement (payments confirm in seconds)
 - Extremely low fees regardless of Bitcoin network congestion
@@ -75,7 +70,7 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 
 ### Bitcoin and Lightning
 
-- **[Breez SDK](https://github.com/breez/breez-sdk)**: Production-ready Lightning Network implementation
+- **[Breez SDK Spark](https://github.com/breez/breez-sdk)**: Lightning Network implementation (used for all Lightning features)
 
 ### Mobile Development
 
@@ -162,7 +157,7 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 
 ### Phase 1: Lightning Foundation (Current)
 
-- [x] Lightning Network integration via Breez SDK
+- [x] Lightning Network integration via Breez SDK Spark
 - [x] Send and receive Lightning payments
 - [x] QR code scanning and generation
 - [x] Basic wallet security with secure storage
@@ -175,13 +170,6 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 - [ ] Native Bitcoin wallet with bech32 addresses
 - [ ] Custom fee selection and RBF support
 - [ ] Transaction labeling for privacy
-
-### Phase 3: Liquid Network (Planned)
-
-- [ ] Liquid Network wallet integration
-- [ ] Bitcoin <> Liquid submarine swaps
-- [ ] Lightning <> Liquid instant swaps
-- [ ] Liquid asset support
 
 ### Phase 4: Advanced Features
 
@@ -199,13 +187,11 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 
 ### Phase 6: Integration and Interoperability
 
-- [ ] Support for additional Lightning implementations
 - [ ] BOLT12 offers support
 - [ ] Nostr integration for social payments
 
 ### Long-Term Vision
 
-- [ ] Submarine swap optimization
 - [ ] Advanced scripting support
 - [ ] Fedimint integration
 - [ ] Cashu token support
