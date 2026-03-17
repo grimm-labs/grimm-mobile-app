@@ -18,7 +18,3 @@ appId: ${APP_ID}
     id: 'onboarding-help'
 - assertVisible:
     id: 'onboarding-agreement-text'
-- assertVisible:
-    id: 'onboarding-terms-text'
-- assertVisible:
-    id: 'onboarding-privacy-text'

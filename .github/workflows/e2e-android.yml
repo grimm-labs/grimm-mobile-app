@@ -31,11 +31,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create .env.staging
+      - name: Create .env.production
         run: |
-          echo "BREEZ_API_KEY=${{ secrets.BREEZ_API_KEY }}" >> .env.staging
-          echo "YADIO_API_URL=https://api.yadio.io" >> .env.staging
-          echo "MEMPOOL_URL=https://mempool.space" >> .env.staging
+          echo "BREEZ_API_KEY=${{ secrets.BREEZ_API_KEY }}" >> .env.production
+          echo "YADIO_API_URL=https://api.yadio.io" >> .env.production
+          echo "MEMPOOL_URL=https://mempool.space" >> .env.production
 
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
@@ -43,7 +43,7 @@ jobs:
       - name: Set Up JDK + Generate Test APK
         uses: ./.github/actions/setup-jdk-generate-apk
         with:
-          APP_ENV: staging
+          APP_ENV: production
 
       - name: Upload Test APK
         uses: actions/upload-artifact@v4
@@ -110,7 +110,7 @@ jobs:
           profile: Nexus 6
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
-            $HOME/.maestro/bin/maestro test .maestro/ --env=APP_ID=com.grimm.labs.app.staging  --format junit
+            $HOME/.maestro/bin/maestro test .maestro/ --env=APP_ID=com.grimm.labs.app  --format junit
 
       - name: Upload artifacts
         if: always()
