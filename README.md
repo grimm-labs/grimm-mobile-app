@@ -70,7 +70,7 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 
 ### Bitcoin and Lightning
 
-- **[Breez SDK Spark](https://github.com/breez/breez-sdk)**: Lightning Network implementation (used for all Lightning features)
+- **[Breez SDK Spark](https://github.com/breez/spark-sdk)**: Lightning Network implementation (used for all Lightning features)
 
 ### Mobile Development
 

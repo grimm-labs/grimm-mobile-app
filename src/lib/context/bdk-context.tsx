@@ -7,8 +7,7 @@ import * as FileSystem from 'expo-file-system';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import { MEMPOOL_SSL_URL, MEMPOOL_SSL_URL_TESTNET4 } from '@/lib/constant';
-
+import { DEFAULT_SERVERS, DEFAULT_SERVERS_TESTNET } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { useBreez } from './breez-context';
 
@@ -239,8 +238,33 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, getOnchainNetwork(), dbConfig);
 
+        let electrumUrl: string;
+        if (getOnchainNetwork() === Network.Bitcoin) {
+          // mainnet
+          const servers = Object.entries(DEFAULT_SERVERS)
+            .map(([host, ports]) => {
+              const typedPorts = ports as { t?: string; s?: string };
+              return { host, port: typedPorts.s };
+            })
+            .filter(({ port }) => !!port);
+          const random = Math.floor(Math.random() * servers.length);
+          const { host, port } = servers[random];
+          electrumUrl = `ssl://${host}:${port}`;
+        } else {
+          // testnet
+          const servers = Object.entries(DEFAULT_SERVERS_TESTNET)
+            .map(([host, ports]) => {
+              const typedPorts = ports as { t?: string; s?: string };
+              return { host, port: typedPorts.s };
+            })
+            .filter(({ port }) => !!port);
+          const random = Math.floor(Math.random() * servers.length);
+          const { host, port } = servers[random];
+          electrumUrl = `ssl://${host}:${port}`;
+        }
+
         const blockchainConfig = {
-          url: getOnchainNetwork() === Network.Testnet ? MEMPOOL_SSL_URL_TESTNET4 : MEMPOOL_SSL_URL,
+          url: electrumUrl,
           sock5: null,
           retry: 5,
           timeout: 10,
@@ -248,7 +272,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           validateDomain: true,
         };
 
-        const blockchain = await new BdkBlockchain().create(blockchainConfig);
+        let blockchain;
+        try {
+          blockchain = await new BdkBlockchain().create(blockchainConfig);
+        } catch (error) {
+          console.error('Error creating blockchain instance:', error);
+          throw error;
+        }
+
         blockchainRef.current = blockchain;
         walletRef.current = wallet;
 
@@ -260,8 +291,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           isBdkInitialized: true,
           isSyncing: false,
         });
-
-        console.log(`BDK successfully initialized on ${getOnchainNetwork()}`);
 
         await syncWallet(wallet);
       } catch (error) {

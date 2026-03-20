@@ -25,7 +25,7 @@ const tabBarIcon =
 const TabLayout = () => {
   const { isDataLoaded, hasSeedPhrase } = useContext(AppContext);
   const { isBreezInitialized, initializeBreez } = useBreez();
-  const { initializeBdk } = useBdk();
+  const { isBdkInitialized, initializeBdk } = useBdk();
 
   const splashHiddenRef = useRef(false);
   const { t } = useTranslation();
@@ -71,11 +71,12 @@ const TabLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded && hasSeedPhrase && !isBreezInitialized) {
+    console.log('Data loaded:', isDataLoaded, 'Has seed phrase:', hasSeedPhrase, 'Breez initialized:', isBreezInitialized, 'BDK initialized:', isBdkInitialized);
+    if (isDataLoaded && hasSeedPhrase && (!isBreezInitialized || !isBdkInitialized)) {
       initializeBreez();
       initializeBdk();
     }
-  }, [isDataLoaded, hasSeedPhrase, isBreezInitialized, initializeBreez, initializeBdk]);
+  }, [isDataLoaded, hasSeedPhrase, isBreezInitialized, isBdkInitialized, initializeBreez, initializeBdk]);
 
   useEffect(() => {
     if (isDataLoaded && isLanguageLoaded) {

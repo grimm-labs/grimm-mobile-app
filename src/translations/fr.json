@@ -366,7 +366,8 @@
     "loading_title": "Génération de la facture...",
     "retry": "Réessayer",
     "scan_text": "Scannez ce QR Code pour effectuer le paiement",
-    "share_title": "Demande de paiement Lightning"
+    "share_title": "Demande de paiement Lightning",
+    "onchain_info": "Tout dépôt Bitcoin on-chain envoyé à cette adresse sera automatiquement crédité sur votre compte Bitcoin Lightning"
   },
   "scan_qr": {
     "instruction": "Placez le code QR dans la zone pour l'activer",

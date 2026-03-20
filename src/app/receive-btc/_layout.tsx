@@ -152,7 +152,7 @@ export default function ReceivePaymentScreen() {
         <View className="flex-1 px-2">
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="mb-8 items-center">
-              <View className="rounded-xl border-4 border-neutral-700 bg-white p-6">
+              <View className="p-6">
                 <QRCode value={addAmountAndNoteToAddress(address, amount, note)} size={220} backgroundColor="white" color="black" />
               </View>
               <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_onchain.scan_text')}</Text>

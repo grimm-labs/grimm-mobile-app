@@ -12,7 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
-import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, getFiatCurrency, splitStringIntoChunks } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
@@ -44,15 +44,14 @@ export default function ReceivePaymentScreen() {
       setLoading(true);
       setError('');
 
-      if (!satsAmount || parseInt(satsAmount, 10) <= 0) {
-        throw new Error(t('receive_payment.invalid_amount'));
-      }
-
       if (type === 'onchain') {
         const receiveResponse = await receiveBitcoinAddress();
         setPaymentRequest(receiveResponse.paymentRequest);
         setFees(receiveResponse.fee);
       } else {
+        if (!satsAmount || parseInt(satsAmount, 10) <= 0) {
+          throw new Error(t('receive_payment.invalid_amount'));
+        }
         const receiveResponse = await receiveBolt11(note || defaultNotes, parseInt(satsAmount, 10), 3600);
         setPaymentRequest(receiveResponse.paymentRequest);
         setFees(receiveResponse.fee);
@@ -91,10 +90,6 @@ export default function ReceivePaymentScreen() {
 
   const handleRetry = () => {
     generatePaymentRequest();
-  };
-
-  const isValidAmount = () => {
-    return paymentRequest && satsAmount && parseInt(satsAmount, 10) > 0;
   };
 
   const handleSubmit = () => {
@@ -164,22 +159,37 @@ export default function ReceivePaymentScreen() {
             headerShadowVisible: false,
           }}
         />
-        <View className="flex-1 px-2">
+        <View className="flex-1 px-4">
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <View className="mb-2 mt-3">
-              <View className="items-center rounded-2xl p-6">
-                <Text className="mb-2 text-2xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
-                <Text className="text-lg text-gray-500">
-                  {Number(convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)).toLocaleString()} {selectedFiatCurrency}
-                </Text>
-                <View className="rounded-lg bg-white p-3">
-                  <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>
+            {type === 'onchain' && (
+              <View className="mb-2 mt-3 rounded-lg bg-blue-500 px-2 py-4">
+                <Text className="text-center text-sm text-white">{t('receive_payment.onchain_info')}</Text>
+              </View>
+            )}
+            {type === 'lightning' && (
+              <View className="mb-2 mt-3">
+                <View className="items-center rounded-2xl p-6">
+                  <Text className="mb-2 text-2xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
+                  <Text className="text-lg text-gray-500">
+                    {Number(convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)).toLocaleString()} {selectedFiatCurrency}
+                  </Text>
+                  <View className="rounded-lg bg-white p-3">
+                    <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>
+                  </View>
                 </View>
               </View>
-            </View>
+            )}
             <View className="mb-8 items-center">
-              <View className="rounded-xl border-4 border-neutral-700 bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={200} backgroundColor="white" color="black" />}</View>
-              {type === 'onchain' && <Text className="mt-4 text-center text-sm text-gray-500">{paymentRequest}</Text>}
+              <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={200} backgroundColor="white" color="black" />}</View>
+              {type === 'onchain' && (
+                <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
+                  {splitStringIntoChunks(paymentRequest, 6).map((s) => (
+                    <View className="m-2" key={s}>
+                      <Text className="text-base font-bold text-primary-600">{s}</Text>
+                    </View>
+                  ))}
+                </Pressable>
+              )}
               <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_payment.scan_text')}</Text>
             </View>
             <View className="flex flex-row justify-center">
@@ -203,7 +213,7 @@ export default function ReceivePaymentScreen() {
             )}
           </ScrollView>
           <View>
-            <Button label={t('receive_payment.close')} disabled={!isValidAmount()} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button label={t('receive_payment.close')} disabled={!paymentRequest} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
       </SafeAreaView>
