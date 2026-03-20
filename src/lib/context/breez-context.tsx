@@ -188,11 +188,16 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
   const refreshWalletInfo = useCallback(async (): Promise<void> => {
     try {
-      if (!isConnected || !isBreezInitialized || !sdkRef.current) return;
+      _setIsSyncing(true);
+      if (!isConnected || !isBreezInitialized || !sdkRef.current) {
+        _setIsSyncing(false);
+        return;
+      }
 
       const seedPhrase = await _getSeedPhrase();
       if (!seedPhrase) {
         await disconnectBreez();
+        _setIsSyncing(false);
         return;
       }
 
@@ -217,6 +222,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Error refreshing wallet info:', error);
       _setBreezError(error?.toString() || 'Refresh error');
+    } finally {
+      _setIsSyncing(false);
     }
   }, [_getSeedPhrase, disconnectBreez, isBreezInitialized, isConnected]);
 
