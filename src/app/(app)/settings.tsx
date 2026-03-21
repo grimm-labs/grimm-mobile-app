@@ -56,6 +56,7 @@ export default function Settings() {
                 <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} />
                 <SettingsItem icon="language" title={t('settings.general.language.title')} subtitle={t('settings.general.language.subtitle')} onPress={() => router.push('/settings/language')} />
                 <SettingsItem icon="options-sharp" title={t('settings.general.bitcoinUnit.title')} subtitle={t('settings.general.bitcoinUnit.subtitle')} onPress={() => router.push('/settings/bitcoin-unit')} />
+                <SettingsItem icon="at" title={t('settings.general.lnAddress.title')} subtitle={t('settings.general.lnAddress.subtitle')} onPress={() => router.push('/settings/ln-address')} />
               </View>
             </View>
 

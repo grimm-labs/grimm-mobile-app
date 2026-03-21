@@ -1,9 +1,12 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -50,14 +53,56 @@ export default function LnWalletDetails() {
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
-  const { balance, payments, network } = useBreez();
+  const { balance, payments, network, lightningAddress } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
+  const [showLnModal, setShowLnModal] = React.useState(false);
+  const [addressInfo, setAddressInfo] = React.useState<any>(null);
+  const [loadingLn, setLoadingLn] = React.useState(false);
+  const [errorLn, setErrorLn] = React.useState<string | null>(null);
+  const { getLightningAddressInfo } = useBreez();
 
   useEffect(() => {
     const unified = mergeAndSortTransactions(payments, []);
     setTransactions(unified);
   }, [payments]);
+
+  const CreateLnAddressPrompt = () => <MenuItem icon="person-add" title={t('lnWallet.lnAddressTitle')} subtitle={t('lnWallet.lnAddressCreatePrompt')} onPress={() => router.push('/settings/ln-address')} />;
+
+  const openLnModal = async () => {
+    setShowLnModal(true);
+    setLoadingLn(true);
+    setErrorLn(null);
+    try {
+      const info = await getLightningAddressInfo();
+      setAddressInfo(info);
+    } catch (e: any) {
+      setErrorLn(e?.message || t('lnWallet.lnAddressQr.errorLoading'));
+    } finally {
+      setLoadingLn(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    if (addressInfo?.lightningAddress) {
+      await Clipboard.setStringAsync(addressInfo.lightningAddress);
+    }
+  };
+
+  const LnAddressDisplay = () => (
+    <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+      <TouchableOpacity className="flex-row items-center bg-gray-50 p-4" onPress={openLnModal} activeOpacity={0.7}>
+        <View className="mr-4 size-12 items-center justify-center rounded-full bg-primary-600">
+          <Ionicons name="at" size={18} color="white" />
+        </View>
+        <View className="flex-1">
+          <Text className="text-sm font-medium text-gray-900">{t('lnWallet.lnAddressTitle')}</Text>
+          <Text className="mt-1 text-sm text-gray-500">{lightningAddress}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color={colors.primary[600]} />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <SafeAreaProvider>
@@ -82,7 +127,7 @@ export default function LnWalletDetails() {
         )}
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
-            <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
+            <View className="mb-6 rounded-xl border border-gray-100 bg-gray-50 p-6">
               <Text className="mb-2 text-sm text-gray-500">{t('lnWallet.available')}</Text>
               <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
                 <Text className="mb-2 text-4xl font-bold text-gray-900">
@@ -104,8 +149,8 @@ export default function LnWalletDetails() {
                 </View>
               </View>
             </View>
+            {lightningAddress ? <LnAddressDisplay /> : <CreateLnAddressPrompt />}
           </View>
-
           <View className="mb-8">
             <Text className="mb-3 text-xl font-bold text-gray-600">{t('lnWallet.actions')}</Text>
             <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
@@ -121,7 +166,6 @@ export default function LnWalletDetails() {
               />
             </View>
           </View>
-
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-xl font-bold text-gray-600">{t('lnWallet.transactions')}</Text>
@@ -131,7 +175,6 @@ export default function LnWalletDetails() {
                 </TouchableOpacity>
               )}
             </View>
-
             <View>
               {transactions.length === 0 ? (
                 <EmptyTransactions type="ln" />
@@ -148,6 +191,33 @@ export default function LnWalletDetails() {
             </View>
           </View>
         </ScrollView>
+        {/* LN Address QR Modal */}
+        <Modal visible={showLnModal} animationType="slide" transparent={true} onRequestClose={() => setShowLnModal(false)}>
+          <View className="flex-1 items-center justify-center bg-black/50 px-4">
+            <View className="w-4/5 items-center rounded-2xl bg-white p-6">
+              <Text className="mb-4 text-lg font-bold">{t('lnWallet.lnAddressQr.lnAddressQrTitle')}</Text>
+              {loadingLn ? (
+                <Text>{t('common.loading')}</Text>
+              ) : errorLn ? (
+                <Text className="mb-4 text-danger-500">{t(errorLn)}</Text>
+              ) : addressInfo ? (
+                <>
+                  <View className="mb-6 flex items-center">
+                    <QRCode value={addressInfo.lightningAddress} size={200} />
+                  </View>
+                  <TouchableOpacity className="mb-2 flex-row items-center justify-center" onPress={handleCopy}>
+                    <Text className="mx-2 text-center text-base text-gray-500">{addressInfo.lightningAddress}</Text>
+                    <Ionicons name="copy" size={16} color={colors.primary[600]} />
+                  </TouchableOpacity>
+                  {addressInfo.description && <Text className="mb-4 text-center text-sm text-gray-400">{addressInfo.description}</Text>}
+                </>
+              ) : null}
+              <TouchableOpacity className="mt-3 rounded-lg bg-primary-600 px-6 py-2" onPress={() => setShowLnModal(false)} activeOpacity={0.8}>
+                <Text className="text-base text-white">{t('common.close')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </SafeAreaProvider>
   );
