@@ -153,7 +153,7 @@ export default function ReceivePaymentScreen() {
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="mb-8 items-center">
               <View className="p-6">
-                <QRCode value={addAmountAndNoteToAddress(address, amount, note)} size={220} backgroundColor="white" color="black" />
+                <QRCode value={addAmountAndNoteToAddress(address?.toUpperCase(), amount, note)} size={220} backgroundColor="white" color="black" />
               </View>
               <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_onchain.scan_text')}</Text>
             </View>
@@ -172,7 +172,7 @@ export default function ReceivePaymentScreen() {
               </View>
             </View>
             <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
-              {splitStringIntoChunks(address, 6).map((s) => (
+              {splitStringIntoChunks(address?.toUpperCase(), 6).map((s) => (
                 <View className="m-2" key={s}>
                   <Text className="text-base font-bold text-primary-600">{s}</Text>
                 </View>

@@ -180,10 +180,10 @@ export default function ReceivePaymentScreen() {
               </View>
             )}
             <View className="mb-8 items-center">
-              <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest} size={200} backgroundColor="white" color="black" />}</View>
+              <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest?.toUpperCase()} size={200} backgroundColor="white" color="black" />}</View>
               {type === 'onchain' && (
                 <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
-                  {splitStringIntoChunks(paymentRequest, 6).map((s) => (
+                  {splitStringIntoChunks(paymentRequest?.toUpperCase(), 6).map((s) => (
                     <View className="m-2" key={s}>
                       <Text className="text-base font-bold text-primary-600">{s}</Text>
                     </View>
