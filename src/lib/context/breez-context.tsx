@@ -20,6 +20,7 @@ import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
+import { GRIMM_APP_LN_URL_DOMAIN } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 
 export enum AppNetwork {
@@ -39,6 +40,12 @@ interface BreezContextType {
   network: AppNetwork;
   breezWalletInfos: GetInfoResponse | null;
   isDataLoaded: boolean;
+  lightningAddress: string | null;
+  setLightningAddress: (address: string | null) => Promise<void>;
+  checkLightningAddressAvailable: (username: string) => Promise<boolean>;
+  registerLightningAddress: (username: string, description?: string) => Promise<any>;
+  getLightningAddressInfo: () => Promise<any>;
+  deleteLightningAddress: () => Promise<void>;
   initializeBreez: () => Promise<void>;
   refreshWalletInfo: () => Promise<void>;
   disconnectBreez: () => Promise<void>;
@@ -61,6 +68,18 @@ const defaultContext: BreezContextType = {
   network: AppNetwork.MAINNET,
   breezWalletInfos: null,
   isDataLoaded: false,
+  lightningAddress: null,
+  setLightningAddress: async () => {},
+  checkLightningAddressAvailable: async () => false,
+  registerLightningAddress: async () => {
+    throw new Error('Breez not initialized');
+  },
+  getLightningAddressInfo: async () => {
+    throw new Error('Breez not initialized');
+  },
+  deleteLightningAddress: async () => {
+    throw new Error('Breez not initialized');
+  },
   initializeBreez: async () => {},
   refreshWalletInfo: async () => {},
   disconnectBreez: async () => {},
@@ -132,34 +151,69 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const [network, _setNetwork] = useState<AppNetwork>(AppNetwork.MAINNET);
   const [breezWalletInfos, _setBreezWalletInfos] = useState<GetInfoResponse | null>(defaultContext.breezWalletInfos);
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
+  const [lightningAddress, _setLightningAddress] = useState<string | null>(null);
 
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getNetwork, setItem: _updateNetwork } = useAsyncStorage('appNetwork');
+  const { getItem: _getLnAddress, setItem: _setLnAddressStorage } = useAsyncStorage('lnAddress');
 
   const sdkRef = useRef<BreezSdkInterface | null>(null);
   const eventListenerRef = useRef<string | null>(null);
   const isInitializingRef = useRef<boolean>(false);
 
-  const _loadNetwork = useCallback(async () => {
-    const saved = await _getNetwork();
-    if (saved !== null) {
-      _setNetwork(saved as AppNetwork);
-    }
-  }, [_getNetwork]);
-
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        await _loadNetwork();
-      } catch (error) {
-        console.error('[AsyncStorage] Error loading network:', error);
-      } finally {
-        _setIsDataLoaded(true);
-      }
+    // Load the Lightning address from storage on startup
+    const loadLnAddress = async () => {
+      const stored = await _getLnAddress();
+      if (stored) _setLightningAddress(stored);
     };
+    loadLnAddress();
+  }, [_getLnAddress]);
 
-    loadData();
-  }, [_loadNetwork]);
+  const setLightningAddress = useCallback(
+    async (address: string | null) => {
+      _setLightningAddress(address);
+      if (address) {
+        await _setLnAddressStorage(address);
+      } else {
+        await _setLnAddressStorage('');
+      }
+    },
+    [_setLnAddressStorage],
+  );
+
+  const checkLightningAddressAvailable = useCallback(async (username: string): Promise<boolean> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    const available = await sdkRef.current.checkLightningAddressAvailable({ username });
+    return available;
+  }, []);
+
+  const registerLightningAddress = useCallback(
+    async (username: string, description?: string) => {
+      if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+      const addressInfo = await sdkRef.current.registerLightningAddress({ username, description });
+      if (addressInfo?.lightningAddress) {
+        await setLightningAddress(addressInfo.lightningAddress);
+      }
+      return addressInfo;
+    },
+    [setLightningAddress],
+  );
+
+  const getLightningAddressInfo = useCallback(async () => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    const info = await sdkRef.current.getLightningAddress();
+    if (info?.lightningAddress) {
+      await setLightningAddress(info.lightningAddress);
+    }
+    return info;
+  }, [setLightningAddress]);
+
+  const deleteLightningAddress = useCallback(async () => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    await sdkRef.current.deleteLightningAddress();
+    await setLightningAddress(null);
+  }, [setLightningAddress]);
 
   const disconnectBreez = useCallback(async (): Promise<void> => {
     try {
@@ -291,6 +345,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       const sparkNetwork = network === AppNetwork.MAINNET ? Network.Mainnet : Network.Regtest;
       const config = defaultConfig(sparkNetwork);
       config.apiKey = Env.BREEZ_API_KEY;
+      config.lnurlDomain = GRIMM_APP_LN_URL_DOMAIN;
 
       // Get the storage directory path
       const baseDir = (FileSystem.documentDirectory || '').replace('file://', '');
@@ -358,6 +413,15 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         const initialBalance = Number(info.balanceSats) || 0;
         _setBreezWalletInfos(info);
         _setBalance(initialBalance);
+        // Load the Lightning address from the SDK and persist it
+        try {
+          const lnInfo = await sdkRef.current.getLightningAddress();
+          if (lnInfo?.lightningAddress) {
+            await setLightningAddress(lnInfo.lightningAddress);
+          }
+        } catch (e) {
+          // Ignore if not set
+        }
       }
     } catch (error) {
       console.error('Error during Breez initialization:', error);
@@ -367,9 +431,10 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     } finally {
       isInitializingRef.current = false;
     }
-  }, [_getSeedPhrase, refreshWalletInfo, isBreezInitialized, network, router]);
+  }, [_getSeedPhrase, refreshWalletInfo, isBreezInitialized, network, router, setLightningAddress]);
 
   useEffect(() => {
+    // Cleanup: remove event listener on unmount
     return () => {
       if (sdkRef.current && eventListenerRef.current) {
         sdkRef.current.removeEventListener(eventListenerRef.current).catch(console.error);
@@ -398,6 +463,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   }, [network]);
 
   useEffect(() => {
+    // Periodically refresh wallet info
     const syncInterval = setInterval(async () => {
       await refreshWalletInfo();
     }, SYNC_INTERVAL);
@@ -418,6 +484,12 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     network,
     breezWalletInfos,
     isDataLoaded,
+    lightningAddress,
+    setLightningAddress,
+    checkLightningAddressAvailable,
+    registerLightningAddress,
+    getLightningAddressInfo,
+    deleteLightningAddress,
     initializeBreez,
     refreshWalletInfo,
     disconnectBreez,

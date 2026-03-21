@@ -12,3 +12,5 @@ export const DEFAULT_SERVERS_TESTNET = {
   'blockstream.info': { s: '993', t: '143' },
   'electrum.blockstream.info': { s: '60002', t: '60001' },
 } as const;
+
+export const GRIMM_APP_LN_URL_DOMAIN = 'breez.sv';

@@ -50,9 +50,11 @@
     "transactions": "Transactions"
   },
   "common": {
+    "close": "Close",
     "continue": "Continue",
     "home": "Home",
     "import": "Import",
+    "loading": "Loading",
     "save": "Save",
     "settings": "Settings",
     "transactions": "Transactions"
@@ -156,6 +158,13 @@
     "available": "Available Bitcoin Lightning",
     "createInvoice": "Create BTC lightning invoice",
     "currentPrice": "Current Bitcoin price",
+    "lnAddressCreatePrompt": "Create your Lightning address",
+    "lnAddressQr": {
+      "close": "Close",
+      "errorLoading": "Error loading LN address",
+      "lnAddressQrTitle": "LN Address"
+    },
+    "lnAddressTitle": "LN Address",
     "payInvoice": "Pay a lightning invoice",
     "receiveOnchain": "Receive via BTC on-chain",
     "seeAll": "See all",
@@ -364,10 +373,10 @@
     "invalid_amount": "Invalid amount",
     "loading_subtitle": "Creating your payment QR Code",
     "loading_title": "Generating invoice...",
+    "onchain_info": "Any on-chain Bitcoin deposit sent to this address will automatically be credited to your Bitcoin Lightning account",
     "retry": "Try Again",
     "scan_text": "Scan this QR Code to make the payment",
-    "share_title": "Lightning Payment Request",
-    "onchain_info": "Any on-chain Bitcoin deposit sent to this address will automatically be credited to your Bitcoin Lightning account"
+    "share_title": "Lightning Payment Request"
   },
   "scan_qr": {
     "instruction": "Position the QR Code in view to activate",
@@ -439,6 +448,10 @@
       "language": {
         "subtitle": "Select your preferred app language",
         "title": "Language"
+      },
+      "lnAddress": {
+        "subtitle": "Manage and configure your Lightning Network address",
+        "title": "LN Address"
       },
       "networks": {
         "subtitle": "Manage and configure your networks",
