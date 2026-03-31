@@ -37,7 +37,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   assetBundlePatterns: ['**/*'],
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: Env.BUNDLE_ID,
     config: {
       usesNonExemptEncryption: false, // Avoid the export compliance warning on the app store
