@@ -180,3 +180,24 @@ export const capitalize = (str: string): string => {
   if (!str) return str;
   return str[0].toUpperCase() + str.slice(1);
 };
+
+const LN_USERNAME_REGEX = /^[a-z0-9-]+$/;
+export const LN_USERNAME_MIN_LENGTH = 2;
+const LN_USERNAME_MAX_LENGTH = 25;
+
+const RANDOM_ADJECTIVES = ['swift', 'bright', 'cosmic', 'noble', 'bold', 'calm', 'keen', 'pure', 'wise', 'cool'];
+const RANDOM_NOUNS = ['bolt', 'spark', 'flash', 'beam', 'wave', 'node', 'link', 'star', 'peak', 'volt'];
+
+export const generateRandomUsername = (): string => {
+  const adj = RANDOM_ADJECTIVES[Math.floor(Math.random() * RANDOM_ADJECTIVES.length)];
+  const noun = RANDOM_NOUNS[Math.floor(Math.random() * RANDOM_NOUNS.length)];
+  const num = Math.floor(Math.random() * 999);
+  return `${adj}-${noun}-${num}`;
+};
+
+export const validateLnUsername = (username: string, t: (key: string) => string): string | null => {
+  if (username.length < LN_USERNAME_MIN_LENGTH) return t('lnAddressSettings.create.tooShort');
+  if (username.length > LN_USERNAME_MAX_LENGTH) return t('lnAddressSettings.create.tooLong');
+  if (!LN_USERNAME_REGEX.test(username)) return t('lnAddressSettings.create.invalidFormat');
+  return null;
+};

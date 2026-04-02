@@ -140,6 +140,52 @@
     "processing": "Processing...",
     "title": "Lightning Payment"
   },
+  "lnAddressSettings": {
+    "confirm": {
+      "cancelButton": "Cancel",
+      "confirmButton": "Confirm",
+      "message": "You are about to create:",
+      "title": "Confirm Lightning Address"
+    },
+    "copiedToClipboard": "Address copied to clipboard",
+    "create": {
+      "generateRandom": "Generate random name",
+      "headerTitle": "Create Lightning Address",
+      "invalidFormat": "Only lowercase letters, numbers, and hyphens are allowed",
+      "taken": "Username already taken",
+      "tooLong": "Username must be at most 30 characters",
+      "tooShort": "Username must be at least 3 characters",
+      "usernamePlaceholder": "username"
+    },
+    "currentAddress": "Your Lightning Address",
+    "delete": {
+      "button": "Delete Address",
+      "cancelButton": "Cancel",
+      "confirmButton": "Delete",
+      "message": "Are you sure you want to delete your Lightning Address? You will no longer be able to receive payments at this address.",
+      "title": "Delete Lightning Address?"
+    },
+    "edit": {
+      "headerTitle": "Edit Lightning Address",
+      "save": "Save changes"
+    },
+    "emptyState": {
+      "cta": "Get started",
+      "subtitle": "A Lightning Address lets anyone send you Bitcoin instantly using a simple, memorable address.",
+      "title": "Create your Lightning Address"
+    },
+    "errors": {
+      "checkFailed": "Failed to check availability. Please try again.",
+      "createFailed": "Failed to create Lightning Address. Please try again.",
+      "deleteFailed": "Failed to delete Lightning Address. Please try again."
+    },
+    "headerTitle": "Lightning Address",
+    "success": {
+      "created": "Lightning Address created successfully!",
+      "deleted": "Lightning Address deleted successfully!",
+      "updated": "Lightning Address updated successfully!"
+    }
+  },
   "lnTransactionDetail": {
     "date": "Date",
     "description": "Description",

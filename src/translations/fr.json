@@ -140,6 +140,52 @@
     "processing": "Traitement...",
     "title": "Paiement Lightning"
   },
+  "lnAddressSettings": {
+    "confirm": {
+      "cancelButton": "Annuler",
+      "confirmButton": "Confirmer",
+      "message": "Vous êtes sur le point de créer :",
+      "title": "Confirmer l'adresse Lightning"
+    },
+    "copiedToClipboard": "Adresse copiée dans le presse-papiers",
+    "create": {
+      "generateRandom": "Générer un nom aléatoire",
+      "headerTitle": "Créer une adresse Lightning",
+      "invalidFormat": "Seuls les lettres minuscules, chiffres et tirets sont autorisés",
+      "taken": "Nom d'utilisateur déjà pris",
+      "tooLong": "Le nom d'utilisateur doit comporter au maximum 30 caractères",
+      "tooShort": "Le nom d'utilisateur doit comporter au moins 3 caractères",
+      "usernamePlaceholder": "nom d'utilisateur"
+    },
+    "currentAddress": "Votre adresse Lightning",
+    "delete": {
+      "button": "Supprimer l'adresse",
+      "cancelButton": "Annuler",
+      "confirmButton": "Supprimer",
+      "message": "Êtes-vous sûr de vouloir supprimer votre adresse Lightning ? Vous ne pourrez plus recevoir de paiements à cette adresse.",
+      "title": "Supprimer l'adresse Lightning ?"
+    },
+    "edit": {
+      "headerTitle": "Modifier l'adresse Lightning",
+      "save": "Enregistrer les modifications"
+    },
+    "emptyState": {
+      "cta": "Commencer",
+      "subtitle": "Une adresse Lightning permet à n'importe qui de vous envoyer des Bitcoin instantanément avec une adresse simple et mémorable.",
+      "title": "Créez votre adresse Lightning"
+    },
+    "errors": {
+      "checkFailed": "Échec de la vérification de la disponibilité. Veuillez réessayer.",
+      "createFailed": "Échec de la création de l'adresse Lightning. Veuillez réessayer.",
+      "deleteFailed": "Échec de la suppression de l'adresse Lightning. Veuillez réessayer."
+    },
+    "headerTitle": "Adresse Lightning",
+    "success": {
+      "created": "Adresse Lightning créée avec succès !",
+      "deleted": "Adresse Lightning supprimée avec succès !",
+      "updated": "Adresse Lightning mise à jour avec succès !"
+    }
+  },
   "lnTransactionDetail": {
     "date": "Date",
     "description": "Description",
