@@ -79,15 +79,10 @@ describe('NumericKeypad', () => {
       expect(setAmount).toHaveBeenCalledWith('0.');
     });
 
-    it('pressing 0 when amount is "0" does nothing', async () => {
+    it('calls setAmount with "0" when pressing 0 while amount is "0"', async () => {
       const setAmount = jest.fn();
       const { user } = setup(<NumericKeypad amount="0" setAmount={setAmount} isBtcUnit={false} />);
       await user.press(screen.getByText('0'));
-      // amount is '0' and num is not '.', so setAmount('0') should not be called
-      // because '0' !== '.' is true and the else-if branch for num !== '.' fires
-      // but amount is '0' so the first condition matches: setAmount(num) => setAmount('0')
-      // Actually re-reading the logic: if amount === '0' && num !== '.' => setAmount(num)
-      // So it calls setAmount('0')
       expect(setAmount).toHaveBeenCalledWith('0');
     });
   });
