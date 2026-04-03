@@ -15,23 +15,25 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Te
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
-import type { Bolt11InvoiceDetails, PrepareSendPaymentResponse } from '@/lib/context/breez-context';
+import type { Bolt11InvoiceDetails, PrepareLnurlPayResponse, PrepareSendPaymentResponse } from '@/lib/context/breez-context';
 import { useBreez } from '@/lib/context/breez-context';
 import { InputType_Tags } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
-  rawInvoice: string;
+  rawInvoice?: string;
+  lightningAddress?: string;
+  amountSats?: string;
 };
 
 export default function PaymentDetailsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { rawInvoice } = useLocalSearchParams<SearchParams>();
+  const { rawInvoice, lightningAddress, amountSats } = useLocalSearchParams<SearchParams>();
 
   const { selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { parseInput, prepareSend, executeSend, balance } = useBreez();
+  const { parseInput, prepareSend, executeSend, prepareLnurlPay, executeLnurlPay, balance } = useBreez();
 
   const [isLoading, setIsLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState('');
@@ -40,51 +42,84 @@ export default function PaymentDetailsScreen() {
   const [decodedInvoiceData, setDecodedInvoiceData] = useState<Bolt11InvoiceDetails>();
   const [paymentIsProcessing, setPaymentIsProcessing] = useState(false);
   const [savedPrepareResponse, setSavedPrepareResponse] = useState<PrepareSendPaymentResponse | null>(null);
+  const [savedLnurlPrepareResponse, setSavedLnurlPrepareResponse] = useState<PrepareLnurlPayResponse | null>(null);
 
   const convertMsatToSats = (msat: bigint | undefined) => {
     if (msat === undefined) return 0;
     return Number(msat / 1000n);
   };
 
+  const isLnAddress = !!lightningAddress && !!amountSats;
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
-  const amountSat = convertMsatToSats(decodedInvoiceData?.amountMsat || 0n);
+  const amountSat = isLnAddress ? Number(amountSats) : convertMsatToSats(decodedInvoiceData?.amountMsat || 0n);
   const totalAmountSat = Number((feesSat || 0) + amountSat);
   const hasInsufficientBalance = totalAmountSat > balance;
 
   useEffect(() => {
-    if (rawInvoice) {
-      const parseInvoice = async () => {
-        try {
-          const parsed = await parseInput(rawInvoice.trim());
-          if (parsed.tag === InputType_Tags.Bolt11Invoice && parsed.inner[0].amountMsat !== undefined) {
-            setDecodedInvoiceData(parsed.inner[0]);
-            const prepareResponse = await prepareSend(parsed.inner[0].invoice.bolt11);
-            // Extract fee from prepare response
-            const method = prepareResponse.paymentMethod;
-            let totalFees = 0;
-            if (method && 'inner' in method) {
-              const inner = method.inner as any;
-              totalFees = Number(inner.sparkTransferFeeSats || 0n) + Number(inner.lightningFeeSats || 0n);
-            }
-            setFeesSat(totalFees);
-            setSavedPrepareResponse(prepareResponse);
-          } else {
-            setDecodeError(t('paymentDetails.errors.decode'));
-          }
-        } catch (error) {
-          if ((error as Error).message?.includes('not enough funds')) {
-            setDecodeError(t('paymentDetails.errors.notEnoughFunds'));
-          } else {
-            showErrorMessage(t('paymentDetails.errors.invalidData'));
-          }
-          console.error('Error parsing invoice data:', (error as Error)?.message);
-        } finally {
-          setIsLoading(false);
+    const prepareLnAddress = async () => {
+      if (!lightningAddress || !amountSats) return;
+      try {
+        const parsed = await parseInput(lightningAddress);
+        let payRequest;
+        if (parsed.tag === InputType_Tags.LightningAddress) {
+          payRequest = parsed.inner[0].payRequest;
+        } else if (parsed.tag === InputType_Tags.LnurlPay) {
+          payRequest = parsed.inner[0];
+        } else {
+          setDecodeError(t('paymentDetails.errors.decode'));
+          return;
         }
-      };
+        const prepareResponse = await prepareLnurlPay(Number(amountSats), payRequest);
+        setFeesSat(Number(prepareResponse.feeSats));
+        setSavedLnurlPrepareResponse(prepareResponse);
+      } catch (error) {
+        if ((error as Error).message?.includes('not enough funds')) {
+          setDecodeError(t('paymentDetails.errors.notEnoughFunds'));
+        } else {
+          showErrorMessage(t('paymentDetails.errors.invalidData'));
+          console.error('Error preparing LN address payment:', (error as Error)?.message);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const parseInvoice = async () => {
+      if (!rawInvoice) return;
+      try {
+        const parsed = await parseInput(rawInvoice.trim());
+        if (parsed.tag === InputType_Tags.Bolt11Invoice && parsed.inner[0].amountMsat !== undefined) {
+          setDecodedInvoiceData(parsed.inner[0]);
+          const prepareResponse = await prepareSend(parsed.inner[0].invoice.bolt11);
+          const method = prepareResponse.paymentMethod;
+          let totalFees = 0;
+          if (method && 'inner' in method) {
+            const inner = method.inner as any;
+            totalFees = Number(inner.sparkTransferFeeSats || 0n) + Number(inner.lightningFeeSats || 0n);
+          }
+          setFeesSat(totalFees);
+          setSavedPrepareResponse(prepareResponse);
+        } else {
+          setDecodeError(t('paymentDetails.errors.decode'));
+        }
+      } catch (error) {
+        if ((error as Error).message?.includes('not enough funds')) {
+          setDecodeError(t('paymentDetails.errors.notEnoughFunds'));
+        } else {
+          showErrorMessage(t('paymentDetails.errors.invalidData'));
+        }
+        console.error('Error parsing invoice data:', (error as Error)?.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isLnAddress) {
+      prepareLnAddress();
+    } else if (rawInvoice) {
       parseInvoice();
     }
-  }, [parseInput, prepareSend, rawInvoice, router, t]);
+  }, [parseInput, prepareSend, prepareLnurlPay, rawInvoice, lightningAddress, amountSats, isLnAddress, router, t]);
 
   useEffect(() => {
     if (!decodedInvoiceData?.expiry || !decodedInvoiceData?.timestamp) return;
@@ -117,6 +152,9 @@ export default function PaymentDetailsScreen() {
   }, [decodedInvoiceData, t]);
 
   const getDestinationDisplay = () => {
+    if (isLnAddress) {
+      return lightningAddress;
+    }
     if (decodedInvoiceData?.payeePubkey) {
       return decodedInvoiceData?.payeePubkey;
     }
@@ -124,14 +162,22 @@ export default function PaymentDetailsScreen() {
   };
 
   const handleSendPayment = async () => {
-    if (!decodedInvoiceData) {
+    if (!isLnAddress && !decodedInvoiceData) {
       showErrorMessage(t('paymentDetails.errors.invalidPayment'));
       return;
     }
 
-    if (savedPrepareResponse) {
-      setPaymentIsProcessing(true);
-      try {
+    setPaymentIsProcessing(true);
+    try {
+      if (isLnAddress && savedLnurlPrepareResponse) {
+        const payment = await executeLnurlPay(savedLnurlPrepareResponse);
+        if (payment) {
+          router.push({
+            pathname: '/transaction-result/success-screen',
+            params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
+          });
+        }
+      } else if (savedPrepareResponse) {
         const sendResponse = await executeSend(savedPrepareResponse);
         const payment = sendResponse.payment;
         if (payment) {
@@ -140,9 +186,9 @@ export default function PaymentDetailsScreen() {
             params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
           });
         }
-      } finally {
-        setPaymentIsProcessing(false);
       }
+    } finally {
+      setPaymentIsProcessing(false);
     }
   };
 
@@ -255,7 +301,7 @@ export default function PaymentDetailsScreen() {
             </View>
           </ScrollView>
           <View className="border-t border-gray-100 bg-white px-4">
-            {timeRemaining && (
+            {!isLnAddress && timeRemaining && (
               <View className="my-4 items-center">
                 <Text className="text-sm text-gray-600">
                   {timeRemaining === t('paymentDetails.expired') ? (
