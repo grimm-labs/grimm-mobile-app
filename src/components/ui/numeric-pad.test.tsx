@@ -3,14 +3,6 @@ import React from 'react';
 
 import { cleanup, render, screen, setup } from '@/lib/test-utils';
 
-jest.mock('react-native-gesture-handler', () => {
-  const { Pressable } = require('react-native');
-  return {
-    ...jest.requireActual('react-native-gesture-handler/src/mocks.tsx'),
-    Pressable,
-  };
-});
-
 import { NumericKeypad } from './numeric-pad';
 
 afterEach(cleanup);
@@ -39,9 +31,9 @@ describe('NumericKeypad', () => {
       expect(screen.getByText('.')).toBeOnTheScreen();
     });
 
-    it('does not render the dot key when isBtcUnit is false', () => {
+    it('renders the dot key when isBtcUnit is false', () => {
       render(<NumericKeypad amount="0" setAmount={jest.fn()} isBtcUnit={false} />);
-      expect(screen.queryByText('.')).toBeNull();
+      expect(screen.getByText('.')).toBeOnTheScreen();
     });
   });
 
@@ -62,9 +54,8 @@ describe('NumericKeypad', () => {
 
     it('does not append dot when isBtcUnit is false', async () => {
       const setAmount = jest.fn();
-      setup(<NumericKeypad amount="0" setAmount={setAmount} isBtcUnit={false} />);
-      // dot key is not rendered, so nothing to press
-      expect(screen.queryByText('.')).toBeNull();
+      const { user } = setup(<NumericKeypad amount="1" setAmount={setAmount} isBtcUnit={false} />);
+      await user.press(screen.getByText('.'));
       expect(setAmount).not.toHaveBeenCalled();
     });
 
