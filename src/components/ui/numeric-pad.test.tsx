@@ -22,8 +22,7 @@ describe('NumericKeypad', () => {
 
     it('renders the delete key', () => {
       render(<NumericKeypad amount="0" setAmount={jest.fn()} isBtcUnit={false} />);
-      // backspace icon is rendered; the delete key is present in the tree
-      expect(screen.toJSON()).toBeTruthy();
+      expect(screen.getByTestId('delete-key')).toBeOnTheScreen();
     });
 
     it('renders the dot key when isBtcUnit is true', () => {
