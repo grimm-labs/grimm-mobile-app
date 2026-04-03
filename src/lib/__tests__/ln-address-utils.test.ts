@@ -11,6 +11,15 @@ jest.mock('@/api', () => ({
   supportedBitcoinCurrencies: [],
 }));
 
+jest.mock('expo-crypto', () => ({
+  getRandomValues: (array: Uint32Array) => {
+    for (let i = 0; i < array.length; i++) {
+      array[i] = Math.floor(Math.random() * 0xffffffff);
+    }
+    return array;
+  },
+}));
+
 import { generateRandomUsername, LN_USERNAME_MIN_LENGTH, validateLnUsername } from '../utils';
 
 const t = (key: string) => key;

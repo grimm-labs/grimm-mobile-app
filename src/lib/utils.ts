@@ -4,6 +4,7 @@ import type { Payment } from '@breeztech/breez-sdk-spark-react-native';
 import { PaymentStatus, PaymentType } from '@breeztech/breez-sdk-spark-react-native';
 import { Mnemonic } from 'bdk-rn';
 import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
+import * as Crypto from 'expo-crypto';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
@@ -189,9 +190,11 @@ const RANDOM_ADJECTIVES = ['swift', 'bright', 'cosmic', 'noble', 'bold', 'calm',
 const RANDOM_NOUNS = ['bolt', 'spark', 'flash', 'beam', 'wave', 'node', 'link', 'star', 'peak', 'volt'];
 
 export const generateRandomUsername = (): string => {
-  const adj = RANDOM_ADJECTIVES[Math.floor(Math.random() * RANDOM_ADJECTIVES.length)];
-  const noun = RANDOM_NOUNS[Math.floor(Math.random() * RANDOM_NOUNS.length)];
-  const num = Math.floor(Math.random() * 999);
+  const randomValues = new Uint32Array(3);
+  Crypto.getRandomValues(randomValues);
+  const adj = RANDOM_ADJECTIVES[randomValues[0] % RANDOM_ADJECTIVES.length];
+  const noun = RANDOM_NOUNS[randomValues[1] % RANDOM_NOUNS.length];
+  const num = randomValues[2] % 999;
   return `${adj}-${noun}-${num}`;
 };
 
