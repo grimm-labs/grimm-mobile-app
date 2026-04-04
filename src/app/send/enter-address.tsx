@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import validator from 'validator';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
@@ -38,11 +37,6 @@ export default function LightningPaymentScreen() {
       setAddressError(true);
       return;
     }
-    if (validator.isEmail(invoiceInput.trim())) {
-      showErrorMessage(t('lightningPayment.errors.lightningAddressNotSupported'));
-      setAddressError(true);
-      return;
-    }
 
     try {
       setIsLoading(true);
@@ -63,6 +57,15 @@ export default function LightningPaymentScreen() {
             pathname: '/send/transaction-details',
             params: {
               rawInvoice: parsed.inner[0].invoice.bolt11,
+            },
+          });
+          break;
+        case InputType_Tags.LnurlPay:
+        case InputType_Tags.LightningAddress:
+          router.push({
+            pathname: '/send/enter-amount',
+            params: {
+              paymentInput: invoiceInput.trim(),
             },
           });
           break;
