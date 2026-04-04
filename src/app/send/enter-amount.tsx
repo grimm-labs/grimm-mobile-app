@@ -17,13 +17,13 @@ import { useBreez } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
-  lightningAddress: string;
+  paymentInput: string;
 };
 
 export default function LightningAddressAmountScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { lightningAddress } = useLocalSearchParams<SearchParams>();
+  const { paymentInput } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit, selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
   const { balance } = useBreez();
@@ -67,7 +67,7 @@ export default function LightningAddressAmountScreen() {
     router.push({
       pathname: '/send/transaction-details',
       params: {
-        lightningAddress,
+        paymentInput,
         amountSats: satsValue.toString(),
       },
     });
@@ -88,7 +88,7 @@ export default function LightningAddressAmountScreen() {
         <View className="flex-1 px-4 pt-6">
           <View className="mb-4 items-center">
             <Text className="text-base text-gray-500">
-              {t('enterAmount.sendTo')} {lightningAddress}
+              {t('enterAmount.sendTo')} {paymentInput}
             </Text>
           </View>
           <View className="mb-6 items-center">
@@ -117,7 +117,7 @@ export default function LightningAddressAmountScreen() {
           <View className="flex-1" />
           <NumericKeypad amount={amount} setAmount={setAmount} isBtcUnit={isBtcUnit} />
           <View className="mb-4">
-            <Button label={t('common.continue')} onPress={handleContinue} fullWidth variant="secondary" size="lg" disabled={isAmountInvalid} textClassName="text-base text-white" />
+            <Button label={t('enterAmount.continueButton')} onPress={handleContinue} fullWidth variant="secondary" size="lg" disabled={isAmountInvalid} textClassName="text-base text-white" />
           </View>
         </View>
       </SafeAreaView>

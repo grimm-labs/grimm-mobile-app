@@ -65,7 +65,7 @@ export default function LightningPaymentScreen() {
           router.push({
             pathname: '/send/enter-amount',
             params: {
-              lightningAddress: invoiceInput.trim(),
+              paymentInput: invoiceInput.trim(),
             },
           });
           break;

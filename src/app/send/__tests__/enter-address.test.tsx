@@ -143,19 +143,19 @@ describe('LightningPaymentScreen (enter-address)', () => {
     it('navigates to enter-amount for LightningAddress type', async () => {
       mockParseInput.mockResolvedValueOnce({
         tag: 'LightningAddress',
-        inner: [{ address: 'alice@getalby.com', payRequest: {} }],
+        inner: [{ address: 'alice@pay.usegrimm.app', payRequest: {} }],
       });
 
       const { user } = setup(<LightningPaymentScreen />);
       const input = screen.getByPlaceholderText('lightningPayment.placeholder');
 
-      fireEvent.changeText(input, 'alice@getalby.com');
+      fireEvent.changeText(input, 'alice@pay.usegrimm.app');
       await user.press(screen.getByText('lightningPayment.payButton'));
 
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith({
           pathname: '/send/enter-amount',
-          params: { lightningAddress: 'alice@getalby.com' },
+          params: { paymentInput: 'alice@pay.usegrimm.app' },
         });
       });
     });
@@ -175,7 +175,7 @@ describe('LightningPaymentScreen (enter-address)', () => {
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith({
           pathname: '/send/enter-amount',
-          params: { lightningAddress: 'lnurl1...' },
+          params: { paymentInput: 'lnurl1...' },
         });
       });
     });

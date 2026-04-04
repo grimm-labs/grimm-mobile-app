@@ -259,7 +259,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
 
   describe('Lightning Address flow', () => {
     it('displays LN address as destination', async () => {
-      mockSearchParams = { lightningAddress: 'bob@pay.usegrimm.app', amountSats: '5000' };
+      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
       mockParseInput.mockResolvedValueOnce({
         tag: 'LightningAddress',
         inner: [{ address: 'bob@pay.usegrimm.app', payRequest: { callback: 'https://getalby.com/lnurlp/alice' } }],
@@ -279,7 +279,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('handles LnurlPay input type', async () => {
-      mockSearchParams = { lightningAddress: 'lnurl1...', amountSats: '3000' };
+      mockSearchParams = { paymentInput: 'lnurl1...', amountSats: '3000' };
       mockParseInput.mockResolvedValueOnce({
         tag: 'LnurlPay',
         inner: [{ callback: 'https://usegrimm.app/lnurlp' }],
@@ -297,7 +297,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('shows decode error for unsupported parsed type', async () => {
-      mockSearchParams = { lightningAddress: 'bad@pay.usegrimm.app', amountSats: '1000' };
+      mockSearchParams = { paymentInput: 'bad@pay.usegrimm.app', amountSats: '1000' };
       mockParseInput.mockResolvedValueOnce({
         tag: 'BitcoinAddress',
         inner: [{ address: 'bc1q...' }],
@@ -311,7 +311,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('shows not enough funds error for LN address', async () => {
-      mockSearchParams = { lightningAddress: 'bob@pay.usegrimm.app', amountSats: '5000' };
+      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
       mockParseInput.mockResolvedValueOnce({
         tag: 'LightningAddress',
         inner: [{ address: 'bob@pay.usegrimm.app', payRequest: {} }],
@@ -326,7 +326,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('shows invalidData error for generic LN address failure', async () => {
-      mockSearchParams = { lightningAddress: 'bob@pay.usegrimm.app', amountSats: '5000' };
+      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
       mockParseInput.mockResolvedValueOnce({
         tag: 'LightningAddress',
         inner: [{ address: 'bob@pay.usegrimm.app', payRequest: {} }],
@@ -336,12 +336,12 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
       setup(<PaymentDetailsScreen />);
 
       await waitFor(() => {
-        expect(mockShowErrorMessage).toHaveBeenCalledWith('paymentDetails.errors.invalidData');
+        expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
       });
     });
 
     it('executes LNURL payment on confirm', async () => {
-      mockSearchParams = { lightningAddress: 'bob@pay.usegrimm.app', amountSats: '5000' };
+      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
       const mockLnurlPrepareResponse = {
         amountSats: 5000n,
         feeSats: 10n,
@@ -372,7 +372,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('does not show expiry timer for LN address', async () => {
-      mockSearchParams = { lightningAddress: 'bob@pay.usegrimm.app', amountSats: '5000' };
+      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
       mockParseInput.mockResolvedValueOnce({
         tag: 'LightningAddress',
         inner: [{ address: 'bob@pay.usegrimm.app', payRequest: {} }],

@@ -57,7 +57,7 @@ jest.mock('expo-router', () => {
       back: mockBack,
     }),
     useLocalSearchParams: () => ({
-      lightningAddress: 'alice@getalby.com',
+      paymentInput: 'alice@pay.usegrimm.app',
     }),
     Stack: {
       Screen: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
@@ -116,7 +116,7 @@ describe('LightningAddressAmountScreen (enter-amount)', () => {
       setup(<LightningAddressAmountScreen />);
 
       expect(screen.getByText(/enterAmount.sendTo/)).toBeOnTheScreen();
-      expect(screen.getByText(/alice@getalby.com/)).toBeOnTheScreen();
+      expect(screen.getByText(/alice@pay.usegrimm.app/)).toBeOnTheScreen();
     });
 
     it('renders the numeric keypad keys', () => {
@@ -187,7 +187,7 @@ describe('LightningAddressAmountScreen (enter-amount)', () => {
         expect(mockPush).toHaveBeenCalledWith({
           pathname: '/send/transaction-details',
           params: {
-            lightningAddress: 'alice@getalby.com',
+            paymentInput: 'alice@pay.usegrimm.app',
             amountSats: '5432',
           },
         });

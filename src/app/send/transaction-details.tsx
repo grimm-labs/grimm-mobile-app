@@ -22,14 +22,14 @@ import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
   rawInvoice?: string;
-  lightningAddress?: string;
+  paymentInput?: string;
   amountSats?: string;
 };
 
 export default function PaymentDetailsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { rawInvoice, lightningAddress, amountSats } = useLocalSearchParams<SearchParams>();
+  const { rawInvoice, paymentInput, amountSats } = useLocalSearchParams<SearchParams>();
 
   const { selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
@@ -49,17 +49,23 @@ export default function PaymentDetailsScreen() {
     return Number(msat / 1000n);
   };
 
-  const isLnAddress = !!lightningAddress && !!amountSats;
+  const isLnAddress = !!paymentInput && !!amountSats;
+  const parsedAmountSats = parseInt(amountSats || '', 10);
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
-  const amountSat = isLnAddress ? Number(amountSats) : convertMsatToSats(decodedInvoiceData?.amountMsat || 0n);
+  const amountSat = isLnAddress ? (isNaN(parsedAmountSats) ? 0 : parsedAmountSats) : convertMsatToSats(decodedInvoiceData?.amountMsat || 0n);
   const totalAmountSat = Number((feesSat || 0) + amountSat);
   const hasInsufficientBalance = totalAmountSat > balance;
 
   useEffect(() => {
     const prepareLnAddress = async () => {
-      if (!lightningAddress || !amountSats) return;
+      if (!paymentInput || !amountSats) return;
+      if (isNaN(parsedAmountSats) || parsedAmountSats <= 0) {
+        setDecodeError(t('paymentDetails.errors.invalidData'));
+        setIsLoading(false);
+        return;
+      }
       try {
-        const parsed = await parseInput(lightningAddress);
+        const parsed = await parseInput(paymentInput.trim());
         let payRequest;
         if (parsed.tag === InputType_Tags.LightningAddress) {
           payRequest = parsed.inner[0].payRequest;
@@ -69,14 +75,14 @@ export default function PaymentDetailsScreen() {
           setDecodeError(t('paymentDetails.errors.decode'));
           return;
         }
-        const prepareResponse = await prepareLnurlPay(Number(amountSats), payRequest);
+        const prepareResponse = await prepareLnurlPay(parsedAmountSats, payRequest);
         setFeesSat(Number(prepareResponse.feeSats));
         setSavedLnurlPrepareResponse(prepareResponse);
       } catch (error) {
         if ((error as Error).message?.includes('not enough funds')) {
           setDecodeError(t('paymentDetails.errors.notEnoughFunds'));
         } else {
-          showErrorMessage(t('paymentDetails.errors.invalidData'));
+          setDecodeError(t('paymentDetails.errors.invalidData'));
           console.error('Error preparing LN address payment:', (error as Error)?.message);
         }
       } finally {
@@ -118,8 +124,11 @@ export default function PaymentDetailsScreen() {
       prepareLnAddress();
     } else if (rawInvoice) {
       parseInvoice();
+    } else {
+      setDecodeError(t('paymentDetails.errors.invalidData'));
+      setIsLoading(false);
     }
-  }, [parseInput, prepareSend, prepareLnurlPay, rawInvoice, lightningAddress, amountSats, isLnAddress, router, t]);
+  }, [parseInput, prepareSend, prepareLnurlPay, rawInvoice, paymentInput, amountSats, parsedAmountSats, isLnAddress, router, t]);
 
   useEffect(() => {
     if (!decodedInvoiceData?.expiry || !decodedInvoiceData?.timestamp) return;
@@ -153,7 +162,7 @@ export default function PaymentDetailsScreen() {
 
   const getDestinationDisplay = () => {
     if (isLnAddress) {
-      return lightningAddress;
+      return paymentInput;
     }
     if (decodedInvoiceData?.payeePubkey) {
       return decodedInvoiceData?.payeePubkey;
@@ -176,6 +185,8 @@ export default function PaymentDetailsScreen() {
             pathname: '/transaction-result/success-screen',
             params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
           });
+        } else {
+          showErrorMessage(t('paymentDetails.errors.invalidPayment'));
         }
       } else if (savedPrepareResponse) {
         const sendResponse = await executeSend(savedPrepareResponse);
