@@ -164,7 +164,11 @@
       "@expo/cli>undici": "6.24.0",
       "@expo/server>undici": "6.24.0",
       "@expo/cli>node-forge": "1.4.0",
-      "metro>image-size": "1.2.1"
+      "metro>image-size": "1.2.1",
+      "picomatch@<2.3.2": "2.3.2",
+      "picomatch@>=3.0.0 <3.0.2": "3.0.2",
+      "@xmldom/xmldom": "0.8.12",
+      "@expo/devcert>lodash": "4.18.0"
     }
   },
   "expo": {
