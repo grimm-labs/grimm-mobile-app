@@ -6,13 +6,28 @@ import type {
   GetInfoResponse,
   InputType,
   ListPaymentsRequest,
+  LnurlPayRequestDetails,
   Payment,
+  PrepareLnurlPayResponse,
   PrepareSendPaymentResponse,
   ReceivePaymentResponse,
   SdkEvent,
   SendPaymentResponse,
 } from '@breeztech/breez-sdk-spark-react-native';
-import { connect, defaultConfig, Network, PaymentType, PrepareSendPaymentRequest, ReceivePaymentMethod, SdkEvent_Tags, Seed, SendPaymentOptions, SendPaymentRequest } from '@breeztech/breez-sdk-spark-react-native';
+import {
+  connect,
+  defaultConfig,
+  LnurlPayRequest,
+  Network,
+  PaymentType,
+  PrepareLnurlPayRequest,
+  PrepareSendPaymentRequest,
+  ReceivePaymentMethod,
+  SdkEvent_Tags,
+  Seed,
+  SendPaymentOptions,
+  SendPaymentRequest,
+} from '@breeztech/breez-sdk-spark-react-native';
 import { Env } from '@env';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
@@ -56,6 +71,8 @@ interface BreezContextType {
   parseInput: (input: string) => Promise<InputType>;
   prepareSend: (paymentRequest: string, amountSats?: number) => Promise<PrepareSendPaymentResponse>;
   executeSend: (prepareResponse: PrepareSendPaymentResponse) => Promise<SendPaymentResponse>;
+  prepareLnurlPay: (amountSats: number, payRequest: LnurlPayRequestDetails) => Promise<PrepareLnurlPayResponse>;
+  executeLnurlPay: (prepareResponse: PrepareLnurlPayResponse) => Promise<Payment | undefined>;
 }
 
 const defaultContext: BreezContextType = {
@@ -98,6 +115,12 @@ const defaultContext: BreezContextType = {
     throw new Error('Breez not initialized');
   },
   executeSend: async () => {
+    throw new Error('Breez not initialized');
+  },
+  prepareLnurlPay: async () => {
+    throw new Error('Breez not initialized');
+  },
+  executeLnurlPay: async () => {
     throw new Error('Breez not initialized');
   },
 };
@@ -331,6 +354,26 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     );
   }, []);
 
+  const prepareLnurlPay = useCallback(async (amountSats: number, payRequest: LnurlPayRequestDetails): Promise<PrepareLnurlPayResponse> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    return sdkRef.current.prepareLnurlPay(
+      PrepareLnurlPayRequest.new({
+        amountSats: BigInt(amountSats),
+        payRequest,
+      }),
+    );
+  }, []);
+
+  const executeLnurlPay = useCallback(async (prepareResponse: PrepareLnurlPayResponse): Promise<Payment | undefined> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    const response = await sdkRef.current.lnurlPay(
+      LnurlPayRequest.new({
+        prepareResponse,
+      }),
+    );
+    return response.payment;
+  }, []);
+
   const initializeBreez = useCallback(async (): Promise<void> => {
     if (isInitializingRef.current || isBreezInitialized) return;
 
@@ -500,6 +543,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     parseInput,
     prepareSend,
     executeSend,
+    prepareLnurlPay,
+    executeLnurlPay,
   };
 
   return <BreezContext.Provider value={contextValue}>{children}</BreezContext.Provider>;
@@ -514,5 +559,5 @@ export const useBreez = (): BreezContextType => {
 };
 
 // Re-export types and enums that consumers need
-export type { Bolt11InvoiceDetails, GetInfoResponse, InputType, Payment, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
+export type { Bolt11InvoiceDetails, GetInfoResponse, InputType, LnurlPayRequestDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
 export { InputType_Tags, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';

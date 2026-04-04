@@ -87,8 +87,11 @@
       "min": "The minimum amount is {{value}} SATS"
     },
     "headerTitle": "Enter amount",
+    "insufficientBalance": "Your balance is insufficient",
+    "invalidAmount": "Please enter a valid amount",
     "notePlaceholder": "Add a note here...",
-    "satsLabel": "SATS"
+    "satsLabel": "SATS",
+    "sendTo": "Send to"
   },
   "help": {
     "closed": "Closed",
@@ -136,7 +139,7 @@
       "zeroAmountNotSupported": "Sorry, we do not support zero-amount Lightning payments"
     },
     "payButton": "Continue",
-    "placeholder": "Bitcoin Lightning Invoice",
+    "placeholder": "Lightning Invoice or Address",
     "processing": "Processing...",
     "title": "Lightning Payment"
   },

@@ -87,8 +87,11 @@
       "min": "Le montant minimum est de {{value}} SATS"
     },
     "headerTitle": "Entrer le montant",
+    "insufficientBalance": "Votre solde est insuffisant",
+    "invalidAmount": "Veuillez entrer un montant valide",
     "notePlaceholder": "Ajoutez une note ici...",
-    "satsLabel": "SATS"
+    "satsLabel": "SATS",
+    "sendTo": "Envoyer à"
   },
   "help": {
     "closed": "Fermé",
@@ -136,7 +139,7 @@
       "zeroAmountNotSupported": "Désolé, nous ne prenons pas en charge les paiements Lightning sans montant"
     },
     "payButton": "Continuer",
-    "placeholder": "Facture Bitcoin Lightning",
+    "placeholder": "Facture ou adresse Lightning",
     "processing": "Traitement...",
     "title": "Paiement Lightning"
   },
