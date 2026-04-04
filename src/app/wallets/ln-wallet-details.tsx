@@ -67,7 +67,11 @@ export default function LnWalletDetails() {
     setTransactions(unified);
   }, [payments]);
 
-  const CreateLnAddressPrompt = () => <MenuItem icon="person-add" title={t('lnWallet.lnAddressTitle')} subtitle={t('lnWallet.lnAddressCreatePrompt')} onPress={() => router.push('/settings/ln-address')} />;
+  const CreateLnAddressPrompt = () => (
+    <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+      <MenuItem icon="person-add" title={t('lnWallet.lnAddressTitle')} subtitle={t('lnWallet.lnAddressCreatePrompt')} onPress={() => router.push('/settings/ln-address')} />
+    </View>
+  );
 
   const openLnModal = async () => {
     setShowLnModal(true);
@@ -209,7 +213,6 @@ export default function LnWalletDetails() {
                     <Text className="mx-2 text-center text-base text-gray-500">{addressInfo.lightningAddress}</Text>
                     <Ionicons name="copy" size={16} color={colors.primary[600]} />
                   </TouchableOpacity>
-                  {addressInfo.description && <Text className="mb-4 text-center text-sm text-gray-400">{addressInfo.description}</Text>}
                 </>
               ) : null}
               <TouchableOpacity className="mt-3 rounded-lg bg-primary-600 px-6 py-2" onPress={() => setShowLnModal(false)} activeOpacity={0.8}>

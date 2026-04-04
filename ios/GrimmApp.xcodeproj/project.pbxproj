@@ -7,53 +7,53 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		077CD0314302FCA476A53A76 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45B76604629009E9044ACCF /* ExpoModulesProvider.swift */; };
-		077E7F466A1F4FB7830EC199 /* Roboto-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E16409AC1334BBABC6BD29B /* Roboto-BlackItalic.ttf */; };
-		0A14A533CE254D2487A0B3E8 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44C32623FD6440CFA8362419 /* Roboto-Thin.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		27D673B8CA3F475F829645C6 /* Roboto-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B93B87AB3FB74A0D811029D6 /* Roboto-BoldItalic.ttf */; };
-		2F32E09911404794864DE12C /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 98AD3ACC98374510840CA3E7 /* Roboto-Medium.ttf */; };
-		309845134026FDBAB18A45D3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F66ED79387EA1360BF98098F /* PrivacyInfo.xcprivacy */; };
+		177C8493FD844F03B4FDAD4C /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B9A73B16BE5641A2B76E0A5D /* Roboto-Thin.ttf */; };
+		1D35D94F2B75441E93C24D12 /* Roboto-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1245966ECA1C47F2852EF4ED /* Roboto-Black.ttf */; };
+		2AB3073E9A90477692EB4C5C /* Roboto-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7C8C586D2F2F4AD886D3C7F8 /* Roboto-LightItalic.ttf */; };
+		34A7DC6C25B34E4E84F8480D /* Roboto-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 53BF8A18F66A4CABB74EAAA1 /* Roboto-MediumItalic.ttf */; };
+		36A4CA6541106F95E4F80D14 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C77CB0845C797F3BEEC6DD /* ExpoModulesProvider.swift */; };
+		36E62C5F444CEF595DADA241 /* libPods-GrimmApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D93CDAFC26962AFD9CB6E69 /* libPods-GrimmApp.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		71E1116E99AA4372A4CD11A3 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1E9F909358D44B8CAB818690 /* Roboto-Regular.ttf */; };
-		850238AF5EC24A21862160A7 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1068C149F47D456DB51BA097 /* Roboto-Bold.ttf */; };
-		8579E8FF9B3E42E48CF15449 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A7476427A475B80C0466E /* Roboto-ThinItalic.ttf */; };
-		955172A13B1644D4991CE8A0 /* Roboto-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BED3C3299AD64D28BCAE3560 /* Roboto-MediumItalic.ttf */; };
-		9AEBD47ABEC247DC8758C589 /* Roboto-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4AD8DE3D47E84AD6A3563C1D /* Roboto-LightItalic.ttf */; };
+		49B2A96A908E4540AD3B59EB /* Roboto-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A15F036429084F9AA77ACCFD /* Roboto-Italic.ttf */; };
+		6AA23A9B70CB47FFA34BB548 /* Roboto-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2454C2CAAEE94A6FAE5E56E4 /* Roboto-BoldItalic.ttf */; };
+		7DB6C1346E3E47F89A9B75B9 /* Roboto-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7D2F359A68574651A473E727 /* Roboto-BlackItalic.ttf */; };
+		8D9B54FD7FDB49429C1DFDFA /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BBA91D2454654AC383CF715C /* Roboto-Medium.ttf */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		C8B5F12D9B5D43A7BA50447A /* Roboto-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A616DB53E8844DF0BF429F57 /* Roboto-Italic.ttf */; };
-		DC3D4F38A266409CBA6543A5 /* Roboto-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4EB70DA84D4F47F89A5CD95E /* Roboto-Black.ttf */; };
-		DD9D542997307FA348B922BD /* libPods-GrimmApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 457F136322D21E8179D1A418 /* libPods-GrimmApp.a */; };
-		E6B94559077E421ABD3761F1 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9CC642C15E4D4C8EA9AFD3F2 /* Roboto-Light.ttf */; };
+		D64F9F2F9C9B44009C627A02 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 19E6D42F78554B5E986019A7 /* Roboto-Light.ttf */; };
+		E1F6E26D888B41D7A53C3814 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 70E13839B2A3497B859BC7A5 /* Roboto-Bold.ttf */; };
+		E281DA56D9F14CBB9B3A6CA4 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A05279049A6641E2A948FE89 /* Roboto-ThinItalic.ttf */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		F2341817DA3B449E8CDA0469 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 575A84E7801F4DB8ACBE98B6 /* Roboto-Regular.ttf */; };
+		FBFDE1569F39F31947E4A69B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 46FB22AA79C784816550320D /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1068C149F47D456DB51BA097 /* Roboto-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Bold.ttf"; path = "../assets/fonts/Roboto/Roboto-Bold.ttf"; sourceTree = "<group>"; };
+		1245966ECA1C47F2852EF4ED /* Roboto-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Black.ttf"; path = "../assets/fonts/Roboto/Roboto-Black.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* GrimmApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrimmApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = GrimmApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GrimmApp/Info.plist; sourceTree = "<group>"; };
-		1AE70E2E284BB8DEDB415130 /* Pods-GrimmApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GrimmApp.debug.xcconfig"; path = "Target Support Files/Pods-GrimmApp/Pods-GrimmApp.debug.xcconfig"; sourceTree = "<group>"; };
-		1E9F909358D44B8CAB818690 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../assets/fonts/Roboto/Roboto-Regular.ttf"; sourceTree = "<group>"; };
-		44C32623FD6440CFA8362419 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Thin.ttf"; path = "../assets/fonts/Roboto/Roboto-Thin.ttf"; sourceTree = "<group>"; };
-		457F136322D21E8179D1A418 /* libPods-GrimmApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GrimmApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4AD8DE3D47E84AD6A3563C1D /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-LightItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
-		4EB70DA84D4F47F89A5CD95E /* Roboto-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Black.ttf"; path = "../assets/fonts/Roboto/Roboto-Black.ttf"; sourceTree = "<group>"; };
-		8C2A7476427A475B80C0466E /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
-		8E16409AC1334BBABC6BD29B /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BlackItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BlackItalic.ttf"; sourceTree = "<group>"; };
-		98AD3ACC98374510840CA3E7 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Medium.ttf"; path = "../assets/fonts/Roboto/Roboto-Medium.ttf"; sourceTree = "<group>"; };
-		9CC642C15E4D4C8EA9AFD3F2 /* Roboto-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Light.ttf"; path = "../assets/fonts/Roboto/Roboto-Light.ttf"; sourceTree = "<group>"; };
-		A616DB53E8844DF0BF429F57 /* Roboto-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Italic.ttf"; path = "../assets/fonts/Roboto/Roboto-Italic.ttf"; sourceTree = "<group>"; };
+		19E6D42F78554B5E986019A7 /* Roboto-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Light.ttf"; path = "../assets/fonts/Roboto/Roboto-Light.ttf"; sourceTree = "<group>"; };
+		1D93CDAFC26962AFD9CB6E69 /* libPods-GrimmApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GrimmApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2454C2CAAEE94A6FAE5E56E4 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BoldItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
+		46FB22AA79C784816550320D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = GrimmApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		53BF8A18F66A4CABB74EAAA1 /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-MediumItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-MediumItalic.ttf"; sourceTree = "<group>"; };
+		575A84E7801F4DB8ACBE98B6 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../assets/fonts/Roboto/Roboto-Regular.ttf"; sourceTree = "<group>"; };
+		70E13839B2A3497B859BC7A5 /* Roboto-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Bold.ttf"; path = "../assets/fonts/Roboto/Roboto-Bold.ttf"; sourceTree = "<group>"; };
+		7C8C586D2F2F4AD886D3C7F8 /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-LightItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
+		7D2F359A68574651A473E727 /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BlackItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BlackItalic.ttf"; sourceTree = "<group>"; };
+		81D81B017076FD9DED544B3E /* Pods-GrimmApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GrimmApp.debug.xcconfig"; path = "Target Support Files/Pods-GrimmApp/Pods-GrimmApp.debug.xcconfig"; sourceTree = "<group>"; };
+		A05279049A6641E2A948FE89 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
+		A15F036429084F9AA77ACCFD /* Roboto-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Italic.ttf"; path = "../assets/fonts/Roboto/Roboto-Italic.ttf"; sourceTree = "<group>"; };
+		A66095342C5EE2F9F8C9AE7C /* Pods-GrimmApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GrimmApp.release.xcconfig"; path = "Target Support Files/Pods-GrimmApp/Pods-GrimmApp.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = GrimmApp/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B45B76604629009E9044ACCF /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-GrimmApp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		B93B87AB3FB74A0D811029D6 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BoldItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
+		B9A73B16BE5641A2B76E0A5D /* Roboto-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Thin.ttf"; path = "../assets/fonts/Roboto/Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		BED3C3299AD64D28BCAE3560 /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-MediumItalic.ttf"; path = "../assets/fonts/Roboto/Roboto-MediumItalic.ttf"; sourceTree = "<group>"; };
-		C938B1E2DDCB48FA111670D3 /* Pods-GrimmApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GrimmApp.release.xcconfig"; path = "Target Support Files/Pods-GrimmApp/Pods-GrimmApp.release.xcconfig"; sourceTree = "<group>"; };
+		BBA91D2454654AC383CF715C /* Roboto-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Medium.ttf"; path = "../assets/fonts/Roboto/Roboto-Medium.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = GrimmApp/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* GrimmApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "GrimmApp-Bridging-Header.h"; path = "GrimmApp/GrimmApp-Bridging-Header.h"; sourceTree = "<group>"; };
-		F66ED79387EA1360BF98098F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = GrimmApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		F3C77CB0845C797F3BEEC6DD /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-GrimmApp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD9D542997307FA348B922BD /* libPods-GrimmApp.a in Frameworks */,
+				36E62C5F444CEF595DADA241 /* libPods-GrimmApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,36 +77,64 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				F66ED79387EA1360BF98098F /* PrivacyInfo.xcprivacy */,
+				46FB22AA79C784816550320D /* PrivacyInfo.xcprivacy */,
 			);
 			name = GrimmApp;
 			sourceTree = "<group>";
 		};
-		196F654D26BE9F9CA9F34A69 /* Pods */ = {
+		1865F43DD1D52B8DA20FE49F /* GrimmApp */ = {
 			isa = PBXGroup;
 			children = (
-				1AE70E2E284BB8DEDB415130 /* Pods-GrimmApp.debug.xcconfig */,
-				C938B1E2DDCB48FA111670D3 /* Pods-GrimmApp.release.xcconfig */,
+				F3C77CB0845C797F3BEEC6DD /* ExpoModulesProvider.swift */,
+			);
+			name = GrimmApp;
+			sourceTree = "<group>";
+		};
+		19151758911D7E59F29A9BAA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				81D81B017076FD9DED544B3E /* Pods-GrimmApp.debug.xcconfig */,
+				A66095342C5EE2F9F8C9AE7C /* Pods-GrimmApp.release.xcconfig */,
 			);
 			name = Pods;
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		257C92EBB9324734D80D4F55 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				1865F43DD1D52B8DA20FE49F /* GrimmApp */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				457F136322D21E8179D1A418 /* libPods-GrimmApp.a */,
+				1D93CDAFC26962AFD9CB6E69 /* libPods-GrimmApp.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		671AD58F9C47B17FCBE853DB /* ExpoModulesProviders */ = {
+		3D8E7D06B48A4E9D83D6FBAD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B869C9EA421D3870D3DB5EF6 /* GrimmApp */,
+				1245966ECA1C47F2852EF4ED /* Roboto-Black.ttf */,
+				7D2F359A68574651A473E727 /* Roboto-BlackItalic.ttf */,
+				70E13839B2A3497B859BC7A5 /* Roboto-Bold.ttf */,
+				2454C2CAAEE94A6FAE5E56E4 /* Roboto-BoldItalic.ttf */,
+				A15F036429084F9AA77ACCFD /* Roboto-Italic.ttf */,
+				19E6D42F78554B5E986019A7 /* Roboto-Light.ttf */,
+				7C8C586D2F2F4AD886D3C7F8 /* Roboto-LightItalic.ttf */,
+				BBA91D2454654AC383CF715C /* Roboto-Medium.ttf */,
+				53BF8A18F66A4CABB74EAAA1 /* Roboto-MediumItalic.ttf */,
+				575A84E7801F4DB8ACBE98B6 /* Roboto-Regular.ttf */,
+				B9A73B16BE5641A2B76E0A5D /* Roboto-Thin.ttf */,
+				A05279049A6641E2A948FE89 /* Roboto-ThinItalic.ttf */,
 			);
-			name = ExpoModulesProviders;
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -123,9 +151,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				D32FA1FD976C445193E94A16 /* Resources */,
-				196F654D26BE9F9CA9F34A69 /* Pods */,
-				671AD58F9C47B17FCBE853DB /* ExpoModulesProviders */,
+				3D8E7D06B48A4E9D83D6FBAD /* Resources */,
+				19151758911D7E59F29A9BAA /* Pods */,
+				257C92EBB9324734D80D4F55 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -140,14 +168,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B869C9EA421D3870D3DB5EF6 /* GrimmApp */ = {
-			isa = PBXGroup;
-			children = (
-				B45B76604629009E9044ACCF /* ExpoModulesProvider.swift */,
-			);
-			name = GrimmApp;
-			sourceTree = "<group>";
-		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -155,26 +175,6 @@
 			);
 			name = Supporting;
 			path = GrimmApp/Supporting;
-			sourceTree = "<group>";
-		};
-		D32FA1FD976C445193E94A16 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				4EB70DA84D4F47F89A5CD95E /* Roboto-Black.ttf */,
-				8E16409AC1334BBABC6BD29B /* Roboto-BlackItalic.ttf */,
-				1068C149F47D456DB51BA097 /* Roboto-Bold.ttf */,
-				B93B87AB3FB74A0D811029D6 /* Roboto-BoldItalic.ttf */,
-				A616DB53E8844DF0BF429F57 /* Roboto-Italic.ttf */,
-				9CC642C15E4D4C8EA9AFD3F2 /* Roboto-Light.ttf */,
-				4AD8DE3D47E84AD6A3563C1D /* Roboto-LightItalic.ttf */,
-				98AD3ACC98374510840CA3E7 /* Roboto-Medium.ttf */,
-				BED3C3299AD64D28BCAE3560 /* Roboto-MediumItalic.ttf */,
-				1E9F909358D44B8CAB818690 /* Roboto-Regular.ttf */,
-				44C32623FD6440CFA8362419 /* Roboto-Thin.ttf */,
-				8C2A7476427A475B80C0466E /* Roboto-ThinItalic.ttf */,
-			);
-			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -185,13 +185,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "GrimmApp" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				353009828325C60E2520B5C3 /* [Expo] Configure project */,
+				71D1C70670477270CEFB5B54 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				0A57AF28EE84278422C78B9C /* [CP] Embed Pods Frameworks */,
+				7E30C994613750D3822A98FC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -241,19 +241,19 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				DC3D4F38A266409CBA6543A5 /* Roboto-Black.ttf in Resources */,
-				077E7F466A1F4FB7830EC199 /* Roboto-BlackItalic.ttf in Resources */,
-				850238AF5EC24A21862160A7 /* Roboto-Bold.ttf in Resources */,
-				27D673B8CA3F475F829645C6 /* Roboto-BoldItalic.ttf in Resources */,
-				C8B5F12D9B5D43A7BA50447A /* Roboto-Italic.ttf in Resources */,
-				E6B94559077E421ABD3761F1 /* Roboto-Light.ttf in Resources */,
-				9AEBD47ABEC247DC8758C589 /* Roboto-LightItalic.ttf in Resources */,
-				2F32E09911404794864DE12C /* Roboto-Medium.ttf in Resources */,
-				955172A13B1644D4991CE8A0 /* Roboto-MediumItalic.ttf in Resources */,
-				71E1116E99AA4372A4CD11A3 /* Roboto-Regular.ttf in Resources */,
-				0A14A533CE254D2487A0B3E8 /* Roboto-Thin.ttf in Resources */,
-				8579E8FF9B3E42E48CF15449 /* Roboto-ThinItalic.ttf in Resources */,
-				309845134026FDBAB18A45D3 /* PrivacyInfo.xcprivacy in Resources */,
+				1D35D94F2B75441E93C24D12 /* Roboto-Black.ttf in Resources */,
+				7DB6C1346E3E47F89A9B75B9 /* Roboto-BlackItalic.ttf in Resources */,
+				E1F6E26D888B41D7A53C3814 /* Roboto-Bold.ttf in Resources */,
+				6AA23A9B70CB47FFA34BB548 /* Roboto-BoldItalic.ttf in Resources */,
+				49B2A96A908E4540AD3B59EB /* Roboto-Italic.ttf in Resources */,
+				D64F9F2F9C9B44009C627A02 /* Roboto-Light.ttf in Resources */,
+				2AB3073E9A90477692EB4C5C /* Roboto-LightItalic.ttf in Resources */,
+				8D9B54FD7FDB49429C1DFDFA /* Roboto-Medium.ttf in Resources */,
+				34A7DC6C25B34E4E84F8480D /* Roboto-MediumItalic.ttf in Resources */,
+				F2341817DA3B449E8CDA0469 /* Roboto-Regular.ttf in Resources */,
+				177C8493FD844F03B4FDAD4C /* Roboto-Thin.ttf in Resources */,
+				E281DA56D9F14CBB9B3A6CA4 /* Roboto-ThinItalic.ttf in Resources */,
+				FBFDE1569F39F31947E4A69B /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,25 +297,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		0A57AF28EE84278422C78B9C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GrimmApp/Pods-GrimmApp-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GrimmApp/Pods-GrimmApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		353009828325C60E2520B5C3 /* [Expo] Configure project */ = {
+		71D1C70670477270CEFB5B54 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -334,6 +316,24 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-GrimmApp/expo-configure-project.sh\"\n";
 		};
+		7E30C994613750D3822A98FC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GrimmApp/Pods-GrimmApp-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GrimmApp/Pods-GrimmApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -341,16 +341,16 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GrimmApp/Pods-GrimmApp-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ReachabilitySwift/ReachabilitySwift.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
@@ -363,16 +363,16 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ReachabilitySwift.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
@@ -396,7 +396,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				077CD0314302FCA476A53A76 /* ExpoModulesProvider.swift in Sources */,
+				36A4CA6541106F95E4F80D14 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,7 +405,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1AE70E2E284BB8DEDB415130 /* Pods-GrimmApp.debug.xcconfig */;
+			baseConfigurationReference = 81D81B017076FD9DED544B3E /* Pods-GrimmApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -430,18 +430,18 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.grimm.labs.app.development;
-				PRODUCT_NAME = "GrimmApp";
+				PRODUCT_NAME = GrimmApp;
 				SWIFT_OBJC_BRIDGING_HEADER = "GrimmApp/GrimmApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C938B1E2DDCB48FA111670D3 /* Pods-GrimmApp.release.xcconfig */;
+			baseConfigurationReference = A66095342C5EE2F9F8C9AE7C /* Pods-GrimmApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -461,10 +461,10 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.grimm.labs.app.development;
-				PRODUCT_NAME = "GrimmApp";
+				PRODUCT_NAME = GrimmApp;
 				SWIFT_OBJC_BRIDGING_HEADER = "GrimmApp/GrimmApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
