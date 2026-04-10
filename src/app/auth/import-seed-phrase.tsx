@@ -1,14 +1,15 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, TextInput } from 'react-native';
+import { ScrollView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
+import { Button, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { isMnemonicValid } from '@/lib/utils';
 
@@ -83,19 +84,18 @@ export default function ImportSeedPhrase() {
             </View>
 
             <View className="mb-6">
-              <TextInput
+              <Input
                 value={seedPhraseInput}
                 onChangeText={handleTextChange}
                 placeholder={t('importSeed.placeholder')}
-                placeholderTextColor="#9CA3AF"
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
-                className={`min-h-[120px] rounded-lg border-2 p-4 text-base ${seedPhraseInput.length > 0 ? 'border-primary-600' : 'border-gray-200 bg-white'} text-gray-900`}
                 autoCapitalize="none"
                 autoCorrect={false}
                 spellCheck={false}
                 returnKeyType="done"
+                style={{ minHeight: 120 }}
               />
 
               <View className="mt-2 flex-row items-center justify-between">

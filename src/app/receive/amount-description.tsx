@@ -4,12 +4,13 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Keyboard, KeyboardAvoidingView, Modal, Platform, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import type { TextInput } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Modal, Platform, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, colors, FocusAwareStatusBar, NumericKeypad, SafeAreaView, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Input, NumericKeypad, SafeAreaView, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
@@ -164,17 +165,7 @@ export default function EnterAmountScreen() {
                       <Ionicons name="close" size={24} color="#6B7280" />
                     </TouchableOpacity>
                   </View>
-                  <TextInput
-                    ref={noteInputRef}
-                    value={draftNote}
-                    onChangeText={setDraftNote}
-                    placeholder={t('enterAmount.notePlaceholder')}
-                    placeholderTextColor="#9CA3AF"
-                    className="mb-4 min-h-[80px] rounded-xl border border-gray-200 bg-gray-50 p-4 text-base text-gray-700"
-                    multiline
-                    autoFocus
-                    onSubmitEditing={saveNote}
-                  />
+                  <Input ref={noteInputRef} value={draftNote} onChangeText={setDraftNote} placeholder={t('enterAmount.notePlaceholder')} multiline autoFocus onSubmitEditing={saveNote} />
                   <Button label={t('enterAmount.continueButton')} onPress={saveNote} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
                 </View>
               </KeyboardAvoidingView>

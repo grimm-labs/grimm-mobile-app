@@ -12,9 +12,9 @@ import { Text } from './text';
 
 const inputTv = tv({
   slots: {
-    container: 'mb-2 flex-row items-center rounded-xl bg-neutral-200 p-1',
+    container: 'mb-2 flex-row items-center rounded-xl bg-neutral-200 p-2',
     label: 'text-grey-100 mb-1 text-lg dark:text-neutral-100',
-    input: 'mt-0 flex-1 rounded-xl px-4 py-3 font-inter text-base font-medium leading-5 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white',
+    input: 'mt-0 flex-1 rounded-xl p-4 font-inter text-base font-medium leading-5 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white',
   },
 
   variants: {
