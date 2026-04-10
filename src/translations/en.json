@@ -189,6 +189,11 @@
       "updated": "Lightning Address updated successfully!"
     }
   },
+  "lnPaymentMethod": {
+    "lightningDescription": "Fast & low fees",
+    "receiveTitle": "Receive via Lightning Network",
+    "sendTitle": "Send via Lightning Network"
+  },
   "lnTransactionDetail": {
     "date": "Date",
     "description": "Description",
@@ -295,6 +300,11 @@
     "termsOfService": "Terms of Service",
     "title": "Welcome to Grimm App"
   },
+  "onchainPaymentMethod": {
+    "onchainDescription": "Standard Bitcoin transaction",
+    "receiveTitle": "Receive via Bitcoin Network",
+    "sendTitle": "Send via Bitcoin Network"
+  },
   "onchainSend": {
     "enterAddress": {
       "continueButton": "Continue",
@@ -381,12 +391,6 @@
     "to": "To",
     "total": "Total",
     "unknown": "Unknown"
-  },
-  "paymentMethod": {
-    "lightningDescription": "Fast & low fees",
-    "onchainDescription": "Standard Bitcoin transaction",
-    "receiveTitle": "Receive via",
-    "sendTitle": "Send via"
   },
   "quickActions": {
     "airtime": "Airtime",
@@ -605,7 +609,6 @@
   },
   "transactions": {
     "empty": {
-      "button": "Receive",
       "description": "You haven't made a transaction yet.",
       "title": "No Transactions"
     },

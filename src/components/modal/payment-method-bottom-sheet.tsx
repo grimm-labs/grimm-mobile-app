@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { Modal, Text, useModal } from '@/components/ui';
-import { capitalize } from '@/lib';
 
 type PaymentMethod = 'onchain' | 'lightning';
 
@@ -49,8 +48,8 @@ export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, Payme
             <Ionicons name="flash" size={22} color="white" />
           </View>
           <View className="flex-1">
-            <Text className="text-base font-bold text-gray-800 dark:text-white">{`${capitalize(mode)}`} via Lightning</Text>
-            <Text className="mt-0.5 text-sm text-gray-500 dark:text-neutral-400">{t('paymentMethod.lightningDescription')}</Text>
+            <Text className="text-base font-bold text-gray-800 dark:text-white">{t(`lnPaymentMethod.${mode}Title`)}</Text>
+            <Text className="mt-0.5 text-sm text-gray-500 dark:text-neutral-400">{t('lnPaymentMethod.lightningDescription')}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
         </Pressable>
@@ -63,8 +62,8 @@ export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, Payme
             <Ionicons name="link" size={22} color="white" />
           </View>
           <View className="flex-1">
-            <Text className="text-base font-bold text-gray-800 dark:text-white">{`${capitalize(mode)}`} via On-chain</Text>
-            <Text className="mt-0.5 text-sm text-gray-500 dark:text-neutral-400">{t('paymentMethod.onchainDescription')}</Text>
+            <Text className="text-base font-bold text-gray-800 dark:text-white">{t(`onchainPaymentMethod.${mode}Title`)}</Text>
+            <Text className="mt-0.5 text-sm text-gray-500 dark:text-neutral-400">{t('onchainPaymentMethod.onchainDescription')}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
         </Pressable>
