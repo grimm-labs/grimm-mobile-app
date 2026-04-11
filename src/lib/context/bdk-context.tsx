@@ -264,13 +264,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           electrumUrl = `ssl://${host}:${port}`;
         }
 
+        const isTestnet = getOnchainNetwork() !== Network.Bitcoin;
         const blockchainConfig = {
           url: electrumUrl,
           sock5: null,
           retry: 5,
           timeout: 10,
           stopGap: 100,
-          validateDomain: true,
+          validateDomain: !isTestnet, // Disable certificate validation only for testnet
         };
 
         let blockchain;
