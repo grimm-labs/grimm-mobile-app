@@ -143,6 +143,13 @@
     "processing": "Traitement...",
     "title": "Paiement Lightning"
   },
+  "lnAddressScreen": {
+    "addDetails": "Détails",
+    "addressLabel": "Adresse Lightning",
+    "copy": "Copier",
+    "getCustomAddress": "obtenir une adresse lightning personnalisée",
+    "title": "Recevoir"
+  },
   "lnAddressSettings": {
     "confirm": {
       "cancelButton": "Annuler",
@@ -188,6 +195,11 @@
       "deleted": "Adresse Lightning supprimée avec succès !",
       "updated": "Adresse Lightning mise à jour avec succès !"
     }
+  },
+  "lnPaymentMethod": {
+    "lightningDescription": "Rapide & frais réduits",
+    "receiveTitle": "Recevoir via le réseau Lightning",
+    "sendTitle": "Envoyer via le réseau Lightning"
   },
   "lnTransactionDetail": {
     "date": "Date",
@@ -295,6 +307,11 @@
     "termsOfService": "Conditions d'utilisation",
     "title": "Bienvenue sur Grimm App"
   },
+  "onchainPaymentMethod": {
+    "onchainDescription": "Transaction Bitcoin standard",
+    "receiveTitle": "Recevoir via le réseau Bitcoin",
+    "sendTitle": "Envoyer via le réseau Bitcoin"
+  },
   "onchainSend": {
     "enterAddress": {
       "continueButton": "Continuer",
@@ -381,12 +398,6 @@
     "to": "À",
     "total": "Total",
     "unknown": "Inconnu"
-  },
-  "paymentMethod": {
-    "lightningDescription": "Rapide & frais réduits",
-    "onchainDescription": "Transaction Bitcoin standard",
-    "receiveTitle": "Recevoir via",
-    "sendTitle": "Envoyer via"
   },
   "quickActions": {
     "airtime": "Crédit téléphonique",
@@ -605,7 +616,6 @@
   },
   "transactions": {
     "empty": {
-      "button": "Recevoir",
       "description": "Vous n'avez pas encore effectué de transaction.",
       "title": "Aucune transaction"
     },

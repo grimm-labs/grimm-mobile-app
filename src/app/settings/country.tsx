@@ -5,13 +5,13 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ListRenderItem } from 'react-native';
-import { FlatList, TextInput } from 'react-native';
+import { FlatList } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import countries from '@/assets/data/countries.json';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Input, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import type { Country } from '@/interfaces';
 import { AppContext } from '@/lib/context';
 
@@ -106,15 +106,22 @@ export default function CountrySelector() {
           />
           <FocusAwareStatusBar style="dark" />
           <View className="pb-4">
-            <View className=" flex flex-row items-center rounded-lg bg-gray-100 px-3 py-2">
-              <Ionicons name="search-outline" size={20} color={colors.neutral[500]} />
-              <TextInput returnKeyType="done" className="ml-2 flex-1 text-sm" placeholder={t('country.search_placeholder')} value={searchQuery} onChangeText={setSearchQuery} autoCapitalize="none" autoCorrect={false} />
-              {searchQuery.length > 0 && (
-                <Pressable onPress={() => setSearchQuery('')}>
-                  <Ionicons name="close-circle" size={20} color={colors.neutral[500]} />
-                </Pressable>
-              )}
-            </View>
+            <Input
+              returnKeyType="done"
+              placeholder={t('country.search_placeholder')}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoCapitalize="none"
+              autoCorrect={false}
+              prefix={<Ionicons name="search-outline" size={20} color={colors.neutral[500]} />}
+              suffix={
+                searchQuery.length > 0 ? (
+                  <Pressable onPress={() => setSearchQuery('')}>
+                    <Ionicons name="close-circle" size={20} color={colors.neutral[500]} />
+                  </Pressable>
+                ) : undefined
+              }
+            />
           </View>
 
           <FlatList

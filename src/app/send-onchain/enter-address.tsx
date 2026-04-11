@@ -72,9 +72,8 @@ export default function EnterAddressScreen() {
             <View className="relative">
               <Input
                 value={addressInput}
-                onChangeText={(text) => setAddressInput(text)}
+                onChangeText={setAddressInput}
                 placeholder="Input address or Scan QR"
-                placeholderTextColor="#9CA3AF"
                 suffix={
                   <View className="flex flex-row">
                     <Ionicons name="scan" size={24} color={colors.primary[600]} className="mr-4" onPress={scanQRCode} />

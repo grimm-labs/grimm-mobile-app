@@ -1,6 +1,5 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable react-native/no-inline-styles */
-import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, TouchableOpacity } from 'react-native';
@@ -19,7 +18,6 @@ export default function Transactions() {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
   const { payments } = useBreez();
   const { transactions: bdkTransactions } = useBdk();
-  const router = useRouter();
   const { t } = useTranslation();
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
   const filters: FilterType[] = ['All', 'Confirmed', 'Pending', 'Lightning', 'OnChain'];
@@ -60,9 +58,6 @@ export default function Transactions() {
     <View className="flex-1 items-center justify-center px-6 py-20">
       <Text className="mb-2 text-2xl text-gray-600">{t('transactions.empty.title')}</Text>
       <Text className="mb-8 text-center text-xs text-gray-600">{t('transactions.empty.description')}</Text>
-      <TouchableOpacity className="rounded-full bg-primary-600 px-8 py-3" activeOpacity={0.8} onPress={() => router.push('/receive/amount-description')}>
-        <Text className="text-xs font-semibold text-white">{t('transactions.empty.button')}</Text>
-      </TouchableOpacity>
     </View>
   );
 
