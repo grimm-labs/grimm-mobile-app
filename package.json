@@ -38,7 +38,8 @@
     "test:ci": "pnpm run test --coverage",
     "test:watch": "pnpm run test --watch",
     "install-maestro": "curl -Ls 'https://get.maestro.mobile.dev' | bash",
-    "e2e-test": "maestro test .maestro/ -e APP_ID=com.grimm.labs.app.development"
+    "e2e-test": "maestro test .maestro/ -e APP_ID=com.grimm.labs.app.development",
+    "test:electrum-servers": "python3 scripts/test_electrum_servers.py"
   },
   "dependencies": {
     "@breeztech/breez-sdk-spark-react-native": "^0.7.10",
@@ -49,7 +50,7 @@
     "@shopify/flash-list": "1.7.6",
     "@tanstack/react-query": "^5.52.1",
     "app-icon-badge": "^0.1.2",
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git#730e160cb56b739ed0d86f32e939aa064d4f718d",
     "bignumber.js": "^9.1.2",
     "expo": "~53.0.27",
@@ -89,7 +90,7 @@
     "react-native-keyboard-controller": "^1.17.3",
     "react-native-otp-entry": "^1.8.4",
     "react-native-qrcode-svg": "^6.3.15",
-    "react-native-reanimated": "~3.19.5",
+    "react-native-reanimated": "~3.17.4",
     "react-native-restart": "0.0.27",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "^4.11.1",

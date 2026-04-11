@@ -71,7 +71,6 @@ const TabLayout = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Data loaded:', isDataLoaded, 'Has seed phrase:', hasSeedPhrase, 'Breez initialized:', isBreezInitialized, 'BDK initialized:', isBdkInitialized);
     if (isDataLoaded && hasSeedPhrase && (!isBreezInitialized || !isBdkInitialized)) {
       initializeBreez();
       initializeBdk();

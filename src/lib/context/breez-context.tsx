@@ -146,7 +146,6 @@ class BreezEventListener implements EventListener {
   async onEvent(event: SdkEvent): Promise<void> {
     switch (event.tag) {
       case SdkEvent_Tags.PaymentSucceeded:
-        console.log('Payment succeeded:', event);
         this.onPaymentSucceeded(event);
         break;
       case SdkEvent_Tags.PaymentFailed:
@@ -512,7 +511,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     }, SYNC_INTERVAL);
 
     return () => {
-      console.log('Stopping automatic synchronization');
+      console.debug('Stopping automatic synchronization');
       clearInterval(syncInterval);
     };
   }, [refreshWalletInfo]);
