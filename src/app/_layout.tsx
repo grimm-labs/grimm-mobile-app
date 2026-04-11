@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // Import  global CSS file
 import '../../global.css';
 
@@ -5,11 +6,13 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { APIProvider } from '@/api';
 import { WalletErrorBoundary } from '@/components/wallet-error-boundary';
@@ -47,6 +50,16 @@ export default function RootLayout() {
 function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
 
+  // Kickstart Reanimated on app boot to avoid ProMotion/freeze bug
+  function ReanimatedKickstart() {
+    const trigger = useSharedValue(0);
+    useEffect(() => {
+      trigger.value = withTiming(1, { duration: 50 });
+      return () => cancelAnimation(trigger);
+    }, []);
+    return null;
+  }
+
   return (
     <AppContextProvider>
       <WalletErrorBoundary name="Lightning (Breez)">
@@ -59,6 +72,7 @@ function Providers({ children }: { children: React.ReactNode }) {
                     <WalletErrorBoundary name="On-chain (BDK)">
                       <BdkProvider>
                         <BottomSheetModalProvider>
+                          <ReanimatedKickstart />
                           {children}
                           <FlashMessage position="top" />
                         </BottomSheetModalProvider>

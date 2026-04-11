@@ -143,6 +143,13 @@
     "processing": "Processing...",
     "title": "Lightning Payment"
   },
+  "lnAddressScreen": {
+    "addDetails": "Add Details",
+    "addressLabel": "Lightning Address",
+    "copy": "Copy",
+    "getCustomAddress": "Get a custom lightning address",
+    "title": "Receive"
+  },
   "lnAddressSettings": {
     "confirm": {
       "cancelButton": "Cancel",
