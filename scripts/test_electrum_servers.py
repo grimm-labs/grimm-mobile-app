@@ -19,18 +19,22 @@ import sys
 from typing import List, Tuple
 
 # Mainnet Electrum servers (name, host, port)
+
+# mainnet Electrum servers
 MAINNET_SERVERS: List[Tuple[str, str, int]] = [
-    ("blockstream.info", "blockstream.info", 700),
     ("electrum.blockstream.info", "electrum.blockstream.info", 50002),
     ("bitcoin.lu.ke", "bitcoin.lu.ke", 50002),
     ("electrum.emzy.de", "electrum.emzy.de", 50002),
-    ("electrum.bitaroo.net", "electrum.bitaroo.net", 50002),
-    ("electrum.diynodes.com", "electrum.diynodes.com", 50022),
     ("fulcrum.sethforprivacy.com", "fulcrum.sethforprivacy.com", 50002),
+    ("electrum.bitaroo.net", "electrum.bitaroo.net", 50002),
+    ("electrum.bitaroo.net", "electrum.bitaroo.net", 50002),
+    ("blockstream.info", "blockstream.info", 700),
+    ("electrum.diynodes.com", "electrum.diynodes.com", 50022),
 ]
 
-# Testnet Electrum servers (name, host, port)
+# testnet Electrum servers
 TESTNET_SERVERS: List[Tuple[str, str, int]] = [
+    ("electrum.blockstream.info", "electrum.blockstream.info", 60002),
     ("testnet.aranguren.org", "testnet.aranguren.org", 51002),
     ("testnet.qtornado.com", "testnet.qtornado.com", 51002),
 ]
@@ -61,9 +65,9 @@ def test_electrum_server(host: str, port: int, timeout: float = 5.0, verify_cert
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Test Electrum servers (mainnet and testnet)")
-    parser.add_argument('--no-verify-cert', action='store_true', help='Disable SSL certificate verification (accept self-signed certs)')
+    parser.add_argument('--verify-cert', action='store_true', help='Enable SSL certificate verification (default: disabled)')
     args = parser.parse_args()
-    verify_cert = not args.no_verify_cert
+    verify_cert = args.verify_cert
 
     print("\nTesting Mainnet Electrum servers:")
     for name, host, port in MAINNET_SERVERS:
