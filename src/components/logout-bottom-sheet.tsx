@@ -41,7 +41,7 @@ export const LogoutBottomSheet = React.forwardRef<BottomSheetModal, LogoutBottom
   };
 
   return (
-    <Modal ref={ref} snapPoints={[hasSeedBackup ? '30%' : '45%']}>
+    <Modal ref={ref} snapPoints={[hasSeedBackup ? '30%' : '45%']} showCloseButton={false}>
       <View className="flex-1 px-6 pb-8">
         <View className="flex-1">
           <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{t('logoutBottomSheet.title')}</Text>

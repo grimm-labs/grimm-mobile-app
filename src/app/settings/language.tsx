@@ -10,22 +10,19 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
 import { useSelectedLanguage } from '@/lib';
-
-import type { Language as TLanguage } from '../../lib/i18n/resources';
+import type { Language as TLanguage } from '@/lib/i18n/resources';
 
 interface LanguageOptionProps {
   language: string;
   nativeName: string;
-  flag: string;
   isSelected: boolean;
   onPress: () => void;
 }
 
-const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, flag, isSelected, onPress }) => (
+const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, isSelected, onPress }) => (
   <Pressable onPress={onPress} style={{ opacity: 1 }}>
     <View className="flex min-h-[64px] flex-row items-center justify-between border-b-[0.5px] border-gray-200 px-2 py-4">
       <View className="flex flex-1 flex-row items-center">
-        <Text className="mr-3 text-2xl">{flag}</Text>
         <View className="flex-1">
           <Text className="mb-1 text-base font-medium text-gray-900">{language}</Text>
           <Text className="text-sm text-gray-500">{nativeName}</Text>
@@ -42,7 +39,6 @@ interface Language {
   code: string;
   name: string;
   nativeName: string;
-  flag: string;
 }
 
 const AVAILABLE_LANGUAGES: readonly Language[] = [
@@ -50,13 +46,11 @@ const AVAILABLE_LANGUAGES: readonly Language[] = [
     code: 'fr',
     name: 'Français',
     nativeName: 'Français',
-    flag: '🇫🇷',
   },
   {
     code: 'en',
     name: 'English',
     nativeName: 'English',
-    flag: '🇺🇸',
   },
 ] as const;
 
@@ -106,13 +100,11 @@ export default function LanguageSelector() {
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
           <FocusAwareStatusBar style="dark" />
-
           <View className="flex-1">
             {languageOptions.map((l) => (
-              <LanguageOption key={l.code} language={l.name} nativeName={l.nativeName} flag={l.flag} isSelected={l.isSelected} onPress={l.onPress} />
+              <LanguageOption key={l.code} language={l.name} nativeName={l.nativeName} isSelected={l.isSelected} onPress={l.onPress} />
             ))}
           </View>
-
           <View className="mb-4 mt-6 px-2">
             <Text className="text-center text-sm leading-4 text-gray-500">{t('language.info_text')}</Text>
           </View>

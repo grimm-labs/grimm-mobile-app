@@ -118,7 +118,7 @@ export default function NetworkSwitcher() {
           <FocusAwareStatusBar style="dark" />
 
           {isChangingNetwork && (
-            <View className="mt-4 flex-row items-center justify-center rounded-lg bg-blue-50 py-3">
+            <View className="mt-4 flex-row items-center justify-center rounded-lg py-3">
               <ActivityIndicator size="small" color={colors.primary[600]} />
               <Text className="ml-2 text-sm text-blue-700">{t('networkSwitcher.switching')}</Text>
             </View>

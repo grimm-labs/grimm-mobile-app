@@ -256,11 +256,12 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       _setIsBreezInitialized(false);
       _setPayments([]);
       _setBreezWalletInfos(null);
+      setLightningAddress(null);
     } catch (error) {
       console.error('Error during Breez disconnection:', error);
       _setBreezError(error?.toString() || 'Disconnection error');
     }
-  }, []);
+  }, [setLightningAddress]);
 
   const refreshWalletInfo = useCallback(async (): Promise<void> => {
     try {
@@ -460,6 +461,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
           const lnInfo = await sdkRef.current.getLightningAddress();
           if (lnInfo?.lightningAddress) {
             await setLightningAddress(lnInfo.lightningAddress);
+          } else {
+            await setLightningAddress(null);
           }
         } catch (e) {
           // Ignore if not set
