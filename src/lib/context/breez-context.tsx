@@ -312,6 +312,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         description,
         amountSats: amountSats !== undefined ? BigInt(amountSats) : undefined,
         expirySecs: expirySecs ?? 3600,
+        paymentHash: undefined,
       }),
     });
   }, []);
