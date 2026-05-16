@@ -33,7 +33,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "type-check": "tsc  --noemit",
     "lint:translations": "eslint ./src/translations/ --fix --ext .json  ",
-    "test": "jest --no-watchman",
+    "test": "jest",
     "check-all": "pnpm run lint && pnpm run type-check && pnpm run lint:translations && pnpm run test",
     "test:ci": "pnpm run test --coverage",
     "test:watch": "pnpm run test --watch",
@@ -51,7 +51,7 @@
     "@tanstack/react-query": "^5.52.1",
     "app-icon-badge": "^0.1.2",
     "axios": "^1.15.0",
-    "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git#a674e56e9f113c7aacef534d87f4abfbc40cfd9a",
+    "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git#730e160cb56b739ed0d86f32e939aa064d4f718d",
     "bignumber.js": "^9.1.2",
     "expo": "~53.0.27",
     "expo-application": "~6.1.5",
@@ -146,7 +146,7 @@
     "prettier": "^3.3.3",
     "tailwindcss": "3.4.4",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.7.3"
   },
   "repository": {
     "type": "git",
@@ -155,6 +155,7 @@
   "packageManager": "pnpm@9.12.3",
   "pnpm": {
     "overrides": {
+      "typescript": "5.7.3",
       "axios>form-data": "4.0.4",
       "request>form-data": "2.5.5",
       "jsdom>form-data": "4.0.4",
