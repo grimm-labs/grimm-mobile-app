@@ -81,6 +81,29 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+// sifir_android.aar ships a legacy jni/arm64/ folder; AGP 8 mergeDebugNativeLibs rejects it ("arm64 is not an ABI").
+// Explode the AAR, drop jni/arm64 (arm64-v8a already has the same .so), then depend on classes.jar + jni/.
+def sifirTorAar = file("${rootDir}/../node_modules/react-native-tor/android/libs/sifir_android.aar")
+
+def prepareSifirTorAar = tasks.register('prepareSifirTorAar') {
+    def exploded = file("${buildDir}/sifir-tor-exploded")
+    inputs.file(sifirTorAar)
+    outputs.dir(exploded)
+    doLast {
+        exploded.deleteDir()
+        copy {
+            from(zipTree(sifirTorAar))
+            into(exploded)
+        }
+        def legacyArm64 = file("${exploded}/jni/arm64")
+        if (legacyArm64.exists()) {
+            legacyArm64.deleteDir()
+        }
+    }
+}
+
+tasks.preBuild.dependsOn(prepareSifirTorAar)
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -90,7 +113,8 @@ android {
     namespace 'com.grimm.labs.app.development'
     defaultConfig {
         applicationId 'com.grimm.labs.app.development'
-        minSdkVersion rootProject.ext.minSdkVersion
+        // sifir_android (react-native-tor) declares minSdk 26 in its AAR manifest
+        minSdkVersion Math.max((rootProject.ext.minSdkVersion as int), 26)
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.1.5"
@@ -125,6 +149,17 @@ android {
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs += "${buildDir}/sifir-tor-exploded/jni"
+        }
+    }
+}
+
+android.applicationVariants.configureEach { variant ->
+    tasks.matching { it.name == "merge${variant.name.capitalize()}NativeLibs" }.configureEach {
+        dependsOn(prepareSifirTorAar)
+    }
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
@@ -148,6 +183,9 @@ android {
 }
 
 dependencies {
+    // sifir: use exploded AAR (prepareSifirTorAar strips invalid jni/arm64/) — see task above
+    implementation(files("${buildDir}/sifir-tor-exploded/classes.jar").builtBy(prepareSifirTorAar))
+
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 

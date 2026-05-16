@@ -68,6 +68,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     [
+      'expo-build-properties',
+      {
+        android: {
+          minSdkVersion: 26,
+        },
+      },
+    ],
+    './plugins/with-react-native-tor',
+    [
       'expo-splash-screen',
       {
         backgroundColor: '#ffffff',

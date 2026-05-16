@@ -33,7 +33,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "type-check": "tsc  --noemit",
     "lint:translations": "eslint ./src/translations/ --fix --ext .json  ",
-    "test": "jest",
+    "test": "jest --no-watchman",
     "check-all": "pnpm run lint && pnpm run type-check && pnpm run lint:translations && pnpm run test",
     "test:ci": "pnpm run test --coverage",
     "test:watch": "pnpm run test --watch",
@@ -94,6 +94,7 @@
     "react-native-restart": "0.0.27",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "^4.11.1",
+    "react-native-tor": "https://github.com/grimm-labs/react-native-tor.git#eb0d9f2e9348b05acb0ec96e0e6826670990ebe8",
     "react-native-svg": "~15.11.2",
     "react-native-web": "~0.20.0",
     "react-query-kit": "^3.3.0",
@@ -134,6 +135,7 @@
     "eslint-plugin-testing-library": "^6.2.2",
     "eslint-plugin-unicorn": "^46.0.1",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "expo-build-properties": "~0.14.8",
     "husky": "^9.1.5",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
@@ -178,7 +180,8 @@
         "listUnknownPackages": false,
         "exclude": [
           "react-native-restart",
-          "i18next"
+          "i18next",
+          "react-native-tor"
         ]
       }
     },
