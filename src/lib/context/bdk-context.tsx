@@ -15,8 +15,34 @@ import { DEFAULT_SERVERS, DEFAULT_SERVERS_ONION, DEFAULT_SERVERS_TESTNET, DEFAUL
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { useBreez } from './breez-context';
 
-const SYNC_INTERVAL = 20000;
+const SYNC_INTERVAL = 60000;
 const ASYNC_STORAGE_BDK_USE_TOR = 'bdkElectrumUseTor';
+
+/**
+ * Expo `documentDirectory` is a `file://…` URI. On Android, bdk-rn's `walletInit` uses
+ * `java.io.File(path).exists()` to choose Wallet.load vs Wallet.create; with the URI prefix
+ * that returns false while SQLite data already exists → CreateWithPersistException.DataAlreadyExists.
+ */
+function sqliteWalletDbPath(network: Network): string {
+  const dir = FileSystem.documentDirectory ?? '';
+  const base = dir.endsWith('/') ? dir : `${dir}/`;
+  const uriOrPath = `${base}bdk-wallet-${network}.db`;
+  if (Platform.OS === 'web') {
+    return uriOrPath;
+  }
+  return uriOrPath.replace(/^file:\/\//, '');
+}
+
+function formatUnknownError(error: unknown): string {
+  if (error instanceof Error) {
+    const msg = error.message?.trim();
+    if (msg) return msg;
+    const stack = typeof error.stack === 'string' ? error.stack.trim() : '';
+    if (stack) return stack;
+  }
+  const asStr = String(error).trim();
+  return asStr || 'Unknown error';
+}
 
 type TorModule = ReturnType<typeof Tor>;
 let torSingleton: TorModule | null = null;
@@ -26,7 +52,7 @@ function getTor(): TorModule | null {
     return null;
   }
   if (!torSingleton) {
-    torSingleton = Tor({ stopDaemonOnBackground: true });
+    torSingleton = Tor({ stopDaemonOnBackground: false });
     console.log('[BDK/Tor] Tor module created (singleton)');
   }
   return torSingleton;
@@ -71,7 +97,7 @@ interface BdkContextType extends BdkState {
   isUseTorPreferenceLoaded: boolean;
   setUseTor: (value: boolean) => Promise<void>;
   initializeBdk: () => Promise<void>;
-  syncWallet: () => Promise<void>;
+  syncWallet: (walletParam?: BdkWallet, opts?: { rethrowOnError?: boolean }) => Promise<void>;
   disconnectBdk: () => Promise<void>;
   sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
   calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
@@ -248,7 +274,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   };
 
   const syncWallet = useCallback(
-    async (walletParam?: BdkWallet): Promise<void> => {
+    async (walletParam?: BdkWallet, opts?: { rethrowOnError?: boolean }): Promise<void> => {
       const walletToUse = walletParam || walletRef.current;
 
       try {
@@ -275,14 +301,19 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           unconfirmedBalance: balance.trustedPending + balance.untrustedPending,
           transactions: transactions.sort((a, b) => (b.confirmationTime?.timestamp || 0) - (a.confirmationTime?.timestamp || 0)),
           isSyncing: false,
+          error: null,
         });
         console.log('Synchronization completed');
       } catch (error) {
         console.error('Error during synchronization:', error);
+        const message = formatUnknownError(error);
         updateState({
-          error: error instanceof Error ? error.message : String(error),
+          error: message,
           isSyncing: false,
         });
+        if (opts?.rethrowOnError) {
+          throw error;
+        }
       }
     },
     [_getSeedPhrase, disconnectBdk, updateState],
@@ -330,7 +361,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         const externalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.External, getOnchainNetwork());
         const internalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.Internal, getOnchainNetwork());
 
-        const dbPath = `${FileSystem.documentDirectory}/bdk-wallet-${getOnchainNetwork()}.db`;
+        const dbPath = sqliteWalletDbPath(getOnchainNetwork());
         const dbConfig = await new DatabaseConfig().sqlite(dbPath);
 
         const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, getOnchainNetwork(), dbConfig);
@@ -367,11 +398,13 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         const { host, port } = servers[random];
         const electrumUrl = wantTorChain ? `tcp://${host}:${port}` : `ssl://${host}:${port}`;
 
+        console.log(`[BDK init] Electrum ${wantTorChain ? 'via Tor SOCKS' : 'clearnet SSL'} → ${electrumUrl} (timeout=${wantTorChain ? 60 : 10}s, retry=${wantTorChain ? 8 : 5})`);
+
         const blockchainConfig = {
           url: electrumUrl,
           sock5: sock5Proxy,
-          retry: 5,
-          timeout: 10,
+          retry: wantTorChain ? 8 : 5,
+          timeout: wantTorChain ? 60 : 10,
           stopGap: 100,
           validateDomain: false,
         };
@@ -380,7 +413,13 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         try {
           blockchain = await new BdkBlockchain().create(blockchainConfig);
         } catch (error) {
-          console.error('Error creating blockchain instance:', error);
+          const message = formatUnknownError(error);
+          console.error('[BDK init] Electrum blockchain create failed — check Tor, .onion reachability, or firewall.', {
+            electrumUrl,
+            useTor: wantTorChain,
+            error: message,
+            ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
+          });
           throw error;
         }
 
@@ -393,16 +432,42 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           wallet,
           isConnected: true,
           isBdkInitialized: true,
-          isSyncing: false,
+          isSyncing: true,
         });
 
-        await syncWallet(wallet);
+        try {
+          await syncWallet(wallet, { rethrowOnError: true });
+        } catch (syncError) {
+          const message = formatUnknownError(syncError);
+          console.error('[BDK init] First sync failed — Tor left running; wallet loaded. Retry sync from UI or wait for automatic sync.', {
+            error: message,
+          });
+          updateState({
+            error: message,
+            isSyncing: false,
+          });
+          return;
+        }
       } catch (error) {
+        const message = formatUnknownError(error);
+        console.error('[BDK init] Fatal error — stopping Tor and clearing on-chain wallet state', {
+          error: message,
+          ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
+        });
+
+        blockchainRef.current = null;
+        walletRef.current = null;
         await stopTorIfRunning();
         updateState({
-          error: error instanceof Error ? error.message : String(error),
+          error: message,
           isSyncing: false,
           isConnected: false,
+          isBdkInitialized: false,
+          wallet: null,
+          transactions: [],
+          balance: 0,
+          confirmedBalance: 0,
+          unconfirmedBalance: 0,
         });
       } finally {
         isInitializingRef.current = false;
@@ -438,6 +503,25 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     handleNetworkChange();
   }, [getOnchainNetwork, state.isBdkInitialized, disconnectBdk, initializeBdk]);
 
+  const bdkIntervalDepsPrevRef = useRef<{ isConnected: boolean; isBdkInitialized: boolean } | null>(null);
+  useEffect(() => {
+    if (!__DEV__) {
+      return;
+    }
+    const prev = bdkIntervalDepsPrevRef.current;
+    const next = { isConnected: state.isConnected, isBdkInitialized: state.isBdkInitialized };
+    bdkIntervalDepsPrevRef.current = next;
+    if (prev === null) {
+      return;
+    }
+    if (prev.isConnected !== next.isConnected || prev.isBdkInitialized !== next.isBdkInitialized) {
+      console.log('[BDK interval deps] isConnected / isBdkInitialized changed (may restart on-chain sync interval)', {
+        from: prev,
+        to: next,
+      });
+    }
+  }, [state.isConnected, state.isBdkInitialized]);
+
   useEffect(() => {
     if (!state.isBdkInitialized || !state.isConnected || !walletRef.current) {
       return;
@@ -445,13 +529,16 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
     const syncInterval = setInterval(() => {
       if (walletRef.current && blockchainRef.current && !isInitializingRef.current) {
-        console.log('Automatic synchronization...');
+        console.log('[BDK interval] Automatic synchronization...');
         syncWallet();
       }
     }, SYNC_INTERVAL);
 
     return () => {
-      console.log('Stopping automatic synchronization');
+      console.log('[BDK interval] Stopping automatic synchronization (interval cleanup: BDK flags/syncWallet changed or provider unmount)');
+      if (__DEV__) {
+        console.trace('[BDK interval cleanup]');
+      }
       clearInterval(syncInterval);
     };
   }, [state.isBdkInitialized, state.isConnected, syncWallet]);

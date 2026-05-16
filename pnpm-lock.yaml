@@ -55,8 +55,8 @@ importers:
         specifier: ^1.15.0
         version: 1.15.0
       bdk-rn:
-        specifier: https://github.com/grimm-labs/bdk-rn.git#730e160cb56b739ed0d86f32e939aa064d4f718d
-        version: https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/730e160cb56b739ed0d86f32e939aa064d4f718d(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+        specifier: https://github.com/grimm-labs/bdk-rn.git#a674e56e9f113c7aacef534d87f4abfbc40cfd9a
+        version: https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/a674e56e9f113c7aacef534d87f4abfbc40cfd9a(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -2239,8 +2239,8 @@ packages:
   bcrypt-pbkdf@1.0.2:
     resolution: {integrity: sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w==}
 
-  bdk-rn@https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/730e160cb56b739ed0d86f32e939aa064d4f718d:
-    resolution: {tarball: https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/730e160cb56b739ed0d86f32e939aa064d4f718d}
+  bdk-rn@https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/a674e56e9f113c7aacef534d87f4abfbc40cfd9a:
+    resolution: {tarball: https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/a674e56e9f113c7aacef534d87f4abfbc40cfd9a}
     version: 0.31.0
     peerDependencies:
       react: '*'
@@ -6859,15 +6859,17 @@ packages:
 
   uuid@3.4.0:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
-    deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@7.0.3:
     resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-to-istanbul@9.3.0:
@@ -9803,7 +9805,7 @@ snapshots:
     dependencies:
       tweetnacl: 0.14.5
 
-  bdk-rn@https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/730e160cb56b739ed0d86f32e939aa064d4f718d(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
+  bdk-rn@https://codeload.github.com/grimm-labs/bdk-rn/tar.gz/a674e56e9f113c7aacef534d87f4abfbc40cfd9a(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
     dependencies:
       '@synonymdev/result': 0.0.2
       adm-zip: 0.5.16

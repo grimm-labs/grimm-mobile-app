@@ -51,7 +51,7 @@
     "@tanstack/react-query": "^5.52.1",
     "app-icon-badge": "^0.1.2",
     "axios": "^1.15.0",
-    "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git#730e160cb56b739ed0d86f32e939aa064d4f718d",
+    "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git#a674e56e9f113c7aacef534d87f4abfbc40cfd9a",
     "bignumber.js": "^9.1.2",
     "expo": "~53.0.27",
     "expo-application": "~6.1.5",

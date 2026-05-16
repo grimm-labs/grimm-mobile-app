@@ -178,6 +178,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getNetwork, setItem: _updateNetwork } = useAsyncStorage('appNetwork');
   const { getItem: _getLnAddress, setItem: _setLnAddressStorage } = useAsyncStorage('lnAddress');
+  const setLnAddressStorageRef = useRef(_setLnAddressStorage);
+  setLnAddressStorageRef.current = _setLnAddressStorage;
 
   const sdkRef = useRef<BreezSdkInterface | null>(null);
   const eventListenerRef = useRef<string | null>(null);
@@ -192,17 +194,15 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     loadLnAddress();
   }, [_getLnAddress]);
 
-  const setLightningAddress = useCallback(
-    async (address: string | null) => {
-      _setLightningAddress(address);
-      if (address) {
-        await _setLnAddressStorage(address);
-      } else {
-        await _setLnAddressStorage('');
-      }
-    },
-    [_setLnAddressStorage],
-  );
+  const setLightningAddress = useCallback(async (address: string | null) => {
+    _setLightningAddress(address);
+    const persist = setLnAddressStorageRef.current;
+    if (address) {
+      await persist(address);
+    } else {
+      await persist('');
+    }
+  }, []);
 
   const checkLightningAddressAvailable = useCallback(async (username: string): Promise<boolean> => {
     if (!sdkRef.current) throw new Error('Breez SDK not initialized');
@@ -508,17 +508,20 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     return network;
   }, [network]);
 
+  const refreshWalletInfoRef = useRef(refreshWalletInfo);
+  refreshWalletInfoRef.current = refreshWalletInfo;
+
   useEffect(() => {
-    // Periodically refresh wallet info
-    const syncInterval = setInterval(async () => {
-      await refreshWalletInfo();
+    const syncInterval = setInterval(() => {
+      refreshWalletInfoRef.current().catch((err) => {
+        console.error('Periodic Breez wallet refresh failed:', err);
+      });
     }, SYNC_INTERVAL);
 
     return () => {
-      console.debug('Stopping automatic synchronization');
       clearInterval(syncInterval);
     };
-  }, [refreshWalletInfo]);
+  }, []);
 
   const contextValue: BreezContextType = {
     isConnected,
