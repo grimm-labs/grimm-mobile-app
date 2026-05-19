@@ -50,7 +50,7 @@
     "@shopify/flash-list": "1.7.6",
     "@tanstack/react-query": "^5.52.1",
     "app-icon-badge": "^0.1.2",
-    "axios": "^1.15.0",
+    "axios": "^1.16.1",
     "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git#730e160cb56b739ed0d86f32e939aa064d4f718d",
     "bignumber.js": "^9.1.2",
     "expo": "~53.0.27",
@@ -94,8 +94,8 @@
     "react-native-restart": "0.0.27",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "^4.11.1",
-    "react-native-tor": "https://github.com/grimm-labs/react-native-tor.git#3a36052d1c0cc9c69282fc73f71eed111a0e147d",
     "react-native-svg": "~15.11.2",
+    "react-native-tor": "https://github.com/grimm-labs/react-native-tor.git#3a36052d1c0cc9c69282fc73f71eed111a0e147d",
     "react-native-web": "~0.20.0",
     "react-query-kit": "^3.3.0",
     "tailwind-variants": "^0.2.1",
@@ -146,7 +146,7 @@
     "prettier": "^3.3.3",
     "tailwindcss": "3.4.4",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   },
   "repository": {
     "type": "git",
