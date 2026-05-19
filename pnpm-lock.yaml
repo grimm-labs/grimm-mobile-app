@@ -188,8 +188,8 @@ importers:
         specifier: ~15.11.2
         version: 15.11.2(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-tor:
-        specifier: https://github.com/grimm-labs/react-native-tor.git#eb0d9f2e9348b05acb0ec96e0e6826670990ebe8
-        version: https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/eb0d9f2e9348b05acb0ec96e0e6826670990ebe8(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+        specifier: https://github.com/grimm-labs/react-native-tor.git#3a36052d1c0cc9c69282fc73f71eed111a0e147d
+        version: https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/3a36052d1c0cc9c69282fc73f71eed111a0e147d(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-web:
         specifier: ~0.20.0
         version: 0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -5882,8 +5882,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  react-native-tor@https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/eb0d9f2e9348b05acb0ec96e0e6826670990ebe8:
-    resolution: {tarball: https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/eb0d9f2e9348b05acb0ec96e0e6826670990ebe8}
+  react-native-tor@https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/3a36052d1c0cc9c69282fc73f71eed111a0e147d:
+    resolution: {tarball: https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/3a36052d1c0cc9c69282fc73f71eed111a0e147d}
     version: 0.1.8
     peerDependencies:
       react: '*'
@@ -14042,7 +14042,7 @@ snapshots:
       react-native: 0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0)
       warn-once: 0.1.1
 
-  react-native-tor@https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/eb0d9f2e9348b05acb0ec96e0e6826670990ebe8(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
+  react-native-tor@https://codeload.github.com/grimm-labs/react-native-tor/tar.gz/3a36052d1c0cc9c69282fc73f71eed111a0e147d(react-native@0.79.6(@babel/core@7.26.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
     dependencies:
       '@types/async': 3.2.25
       async: 3.2.6

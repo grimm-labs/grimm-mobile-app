@@ -94,7 +94,7 @@
     "react-native-restart": "0.0.27",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "^4.11.1",
-    "react-native-tor": "https://github.com/grimm-labs/react-native-tor.git#eb0d9f2e9348b05acb0ec96e0e6826670990ebe8",
+    "react-native-tor": "https://github.com/grimm-labs/react-native-tor.git#3a36052d1c0cc9c69282fc73f71eed111a0e147d",
     "react-native-svg": "~15.11.2",
     "react-native-web": "~0.20.0",
     "react-query-kit": "^3.3.0",
