@@ -81,10 +81,8 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
-// sifir_android.aar ships a legacy jni/arm64/ folder; AGP 8 mergeDebugNativeLibs rejects it ("arm64 is not an ABI").
-// Explode the AAR, drop jni/arm64 (arm64-v8a already has the same .so), then depend on classes.jar + jni/.
+// sifir_android.aar ships jni/arm64 (not a valid ABI for AGP 8). Explode AAR, drop jni/arm64, bundle classes.jar + jni/.
 def sifirTorAar = file("${rootDir}/../node_modules/react-native-tor/android/libs/sifir_android.aar")
-
 def prepareSifirTorAar = tasks.register('prepareSifirTorAar') {
     def exploded = file("${buildDir}/sifir-tor-exploded")
     inputs.file(sifirTorAar)
@@ -101,7 +99,6 @@ def prepareSifirTorAar = tasks.register('prepareSifirTorAar') {
         }
     }
 }
-
 tasks.preBuild.dependsOn(prepareSifirTorAar)
 
 android {
@@ -113,8 +110,7 @@ android {
     namespace 'com.grimm.labs.app.development'
     defaultConfig {
         applicationId 'com.grimm.labs.app.development'
-        // sifir_android (react-native-tor) declares minSdk 26 in its AAR manifest
-        minSdkVersion Math.max((rootProject.ext.minSdkVersion as int), 26)
+                minSdkVersion Math.max((rootProject.ext.minSdkVersion as int), 26) // react-native-tor / sifir_android requires 26+
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.1.5"
@@ -149,16 +145,11 @@ android {
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
+
     sourceSets {
         main {
             jniLibs.srcDirs += "${buildDir}/sifir-tor-exploded/jni"
         }
-    }
-}
-
-android.applicationVariants.configureEach { variant ->
-    tasks.matching { it.name == "merge${variant.name.capitalize()}NativeLibs" }.configureEach {
-        dependsOn(prepareSifirTorAar)
     }
 }
 
@@ -182,8 +173,13 @@ android.applicationVariants.configureEach { variant ->
     }
 }
 
+android.applicationVariants.configureEach { variant ->
+    tasks.matching { it.name == "merge${variant.name.capitalize()}NativeLibs" }.configureEach {
+        dependsOn(prepareSifirTorAar)
+    }
+}
+
 dependencies {
-    // sifir: use exploded AAR (prepareSifirTorAar strips invalid jni/arm64/) — see task above
     implementation(files("${buildDir}/sifir-tor-exploded/classes.jar").builtBy(prepareSifirTorAar))
 
     // The version of react-native is set by the React Native Gradle Plugin
