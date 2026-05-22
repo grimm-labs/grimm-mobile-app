@@ -543,6 +543,10 @@
       "hideBalance": {
         "subtitle": "Activer pour masquer ou afficher votre solde",
         "title": "Masquer le solde"
+      },
+      "useTor": {
+        "subtitle": "Transiter la synchro on-chain Electrum par Tor",
+        "title": "Réseau Tor"
       }
     },
     "signOut": "Déconnexion",

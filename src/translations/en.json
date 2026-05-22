@@ -543,6 +543,10 @@
       "hideBalance": {
         "subtitle": "Toggle to hide or show your wallet balance",
         "title": "Hide Balance"
+      },
+      "useTor": {
+        "subtitle": "Route on-chain Electrum sync through Tor",
+        "title": "Tor Network"
       }
     },
     "signOut": "Log Out",

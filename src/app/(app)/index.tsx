@@ -1,8 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Animated, Easing } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SeedPhraseBackupNotification } from '@/components/seed-phrase-backup-notification';
@@ -12,12 +13,46 @@ import { WalletView } from '@/components/wallet-view';
 import { AppContext, useBdk, useBreez } from '@/lib/context';
 import { AppNetwork } from '@/lib/context/breez-context';
 
+function SyncSpinnerIcon({ syncing, size, color }: { syncing: boolean; size: number; color: string }) {
+  const spin = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!syncing) {
+      spin.stopAnimation(() => spin.setValue(0));
+      return undefined;
+    }
+    const timing = Animated.timing(spin, {
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.linear,
+      useNativeDriver: true,
+      isInteraction: false,
+    });
+    const loop = Animated.loop(timing, { resetBeforeIteration: true });
+    loop.start();
+
+    return () => {
+      loop.stop();
+      spin.stopAnimation(() => spin.setValue(0));
+    };
+  }, [spin, syncing]);
+
+  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+
+  return (
+    <Animated.View style={{ transform: [{ rotate }] }}>
+      <MaterialCommunityIcons name="sync" size={size} color={color} />
+    </Animated.View>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const { isSeedPhraseBackup } = useContext(AppContext);
   const { balance: balanceBreez, isSyncing: isSyncingBreez, network } = useBreez();
   const { balance: balanceBdk, isSyncing: isSyncingBdk, syncWallet } = useBdk();
   const { t } = useTranslation();
+  const syncing = isSyncingBreez || isSyncingBdk;
 
   const handleSyncPress = async () => {
     await syncWallet();
@@ -34,8 +69,8 @@ export default function Home() {
             </View>
             <Pressable onPress={handleSyncPress} className="ml-2 mt-2" hitSlop={10} accessibilityLabel={t('home.syncWallet')}>
               <View className="relative items-center justify-center">
-                <MaterialCommunityIcons name="sync" size={28} color={colors.primary[600]} className={`${isSyncingBreez || isSyncingBdk ? 'animate-spin' : ''}`} />
-                {!isSyncingBreez && !isSyncingBdk && <View className="absolute right-0 top-0 size-3 rounded-full border-2 border-white bg-primary-600" style={{ zIndex: 2 }} />}
+                <SyncSpinnerIcon syncing={syncing} size={28} color={colors.primary[600]} />
+                {!syncing && <View className="absolute right-0 top-0 size-3 rounded-full border-2 border-white bg-primary-600" style={{ zIndex: 2 }} />}
               </View>
             </Pressable>
           </View>

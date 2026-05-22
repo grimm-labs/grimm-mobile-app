@@ -16,7 +16,7 @@ export default function Settings() {
   const { t } = useTranslation();
   const { resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
-  const { disconnectBdk } = useBdk();
+  const { disconnectBdk, useTor, setUseTor } = useBdk();
 
   const router = useRouter();
   const logoutModalRef = useRef<any>(null);
@@ -91,6 +91,20 @@ export default function Settings() {
                   <View>
                     <Switch.Root checked={hideBalance} onChange={setHideBalance} accessibilityLabel="switch" className="pb-2">
                       <Switch.Icon checked={hideBalance} />
+                    </Switch.Root>
+                  </View>
+                </Pressable>
+                <Pressable className="mb-1 flex-row items-center rounded py-2" onPress={() => setUseTor(!useTor).catch(console.error)}>
+                  <View className="mr-1 rounded-full p-2">
+                    <Ionicons name="lock-closed" size={20} color="gray" />
+                  </View>
+                  <View className="ml-2 flex-1">
+                    <Text className="text-base font-semibold text-gray-700">{t('settings.security.useTor.title')}</Text>
+                    <Text className="text-xs text-gray-500">{t('settings.security.useTor.subtitle')}</Text>
+                  </View>
+                  <View>
+                    <Switch.Root checked={useTor} onChange={(checked) => setUseTor(checked).catch(console.error)} accessibilityLabel={t('settings.security.useTor.title')} className="pb-2">
+                      <Switch.Icon checked={useTor} />
                     </Switch.Root>
                   </View>
                 </Pressable>
