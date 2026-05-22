@@ -113,7 +113,7 @@ android {
                 minSdkVersion Math.max((rootProject.ext.minSdkVersion as int), 26) // react-native-tor / sifir_android requires 26+
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.1.6"
+        versionName "1.1.7"
     }
     signingConfigs {
         debug {
