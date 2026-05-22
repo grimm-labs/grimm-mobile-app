@@ -2,13 +2,11 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "lib": ["DOM", "ES2023"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@env": ["./src/lib/env.js"],
-      "react-native-tor": ["./node_modules/react-native-tor/src/index.tsx"],
-      "uniffi-bindgen-react-native": ["./src/types/uniffi-bindgen-react-native.d.ts"]
+      "react-native-tor": ["./node_modules/react-native-tor/src/index.tsx"]
     },
     "esModuleInterop": true,
     "checkJs": true,
@@ -16,5 +14,5 @@
     "skipLibCheck": true
   },
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "docs", "cli", "android", "ios", "lint-staged.config.js"],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/types/**/*.d.ts", "__mocks__/**/*.ts", "jest/**/*.ts", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts", "*.ts", "*.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "__mocks__/**/*.ts", "jest/**/*.ts", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts", "*.ts", "*.tsx"]
 }
