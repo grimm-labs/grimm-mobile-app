@@ -72,6 +72,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         android: {
           minSdkVersion: 26,
+          useLegacyPackaging: true,
         },
       },
     ],
