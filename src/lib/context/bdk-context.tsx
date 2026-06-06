@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection */
 /* eslint-disable max-lines-per-function */
 import type { Blockchain, Wallet as BdkWallet } from 'bdk-rn';
 import { Address, Blockchain as BdkBlockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, TxBuilder, Wallet } from 'bdk-rn';
@@ -6,15 +5,32 @@ import type { Balance, TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { KeychainKind, Network } from 'bdk-rn/lib/lib/enums';
 import * as FileSystem from 'expo-file-system';
 import type { ReactNode } from 'react';
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { DEFAULT_SERVERS, DEFAULT_SERVERS_TESTNET } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
+import { getItem as getStorageItem, setItem as setStorageItem } from '../storage';
 import { useBreez } from './breez-context';
 
 const SYNC_INTERVAL = 60000;
 const INIT_RETRY_INTERVAL = 30000;
+
+const SERVER_KEY_MAINNET = 'selectedElectrumServer_mainnet';
+const SERVER_KEY_TESTNET = 'selectedElectrumServer_testnet';
+
+export interface ElectrumServer {
+  host: string;
+  port: string;
+}
+
+/** Prefer `t` (cleartext Electrum TCP); fall back to `s` if only SSL port is listed. */
+function getElectrumServers(network: Network): ElectrumServer[] {
+  const pool = network === Network.Bitcoin ? DEFAULT_SERVERS : DEFAULT_SERVERS_TESTNET;
+  return Object.entries(pool as Record<string, { t?: string; s?: string }>)
+    .map(([host, ports]) => ({ host, port: ports.t ?? ports.s }))
+    .filter((entry): entry is ElectrumServer => !!entry.port);
+}
 
 /**
  * Expo `documentDirectory` is a `file://…` URI. On Android, bdk-rn's `walletInit` uses
@@ -62,6 +78,9 @@ interface BdkContextType extends BdkState {
   sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
   calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
   getBlockainHeight: () => Promise<number | undefined>;
+  availableServers: ElectrumServer[];
+  selectedServerHost: string | null;
+  setSelectedServer: (host: string) => Promise<void>;
 }
 
 const initialState: BdkState = {
@@ -92,6 +111,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const currentNetworkRef = useRef<string | null>(null);
   const isBdkInitializedRef = useRef<boolean>(false);
   const errorRef = useRef<string | null>(null);
+  const [selectedServerHost, setSelectedServerHost] = useState<string | null>(null);
 
   useEffect(() => {
     isBdkInitializedRef.current = state.isBdkInitialized;
@@ -104,6 +124,34 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const getOnchainNetwork = useCallback((): Network => {
     return network === 'mainnet' ? Network.Bitcoin : Network.Testnet;
   }, [network]);
+
+  const availableServers = useMemo(() => getElectrumServers(getOnchainNetwork()), [getOnchainNetwork]);
+
+  const getStoredServerHost = useCallback(async (net: Network): Promise<string | null> => {
+    const key = net === Network.Bitcoin ? SERVER_KEY_MAINNET : SERVER_KEY_TESTNET;
+    return await getStorageItem<string>(key);
+  }, []);
+
+  const persistServerHost = useCallback(async (net: Network, host: string): Promise<void> => {
+    const key = net === Network.Bitcoin ? SERVER_KEY_MAINNET : SERVER_KEY_TESTNET;
+    await setStorageItem<string>(key, host);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadSelectedServer = async () => {
+      const net = getOnchainNetwork();
+      const host = await getStoredServerHost(net);
+      const isValid = !!host && getElectrumServers(net).some((server) => server.host === host);
+      if (!cancelled && isValid) {
+        setSelectedServerHost(host);
+      }
+    };
+    loadSelectedServer();
+    return () => {
+      cancelled = true;
+    };
+  }, [getOnchainNetwork, getStoredServerHost]);
 
   const updateState = useCallback((updates: Partial<BdkState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -286,22 +334,15 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, getOnchainNetwork(), dbConfig);
 
-        /** Prefer `t` (cleartext Electrum TCP); fall back to `s` if only SSL port is listed. */
-        const electrumServersToEntries = (record: Record<string, { t?: string; s?: string }>) =>
-          Object.entries(record)
-            .map(([host, ports]) => {
-              const typedPorts = ports as { t?: string; s?: string };
-              return { host, port: typedPorts.t ?? typedPorts.s };
-            })
-            .filter(({ port }) => !!port);
-
-        const clearnetPool = getOnchainNetwork() === Network.Bitcoin ? DEFAULT_SERVERS : DEFAULT_SERVERS_TESTNET;
-        const servers = electrumServersToEntries(clearnetPool as Record<string, { t?: string; s?: string }>);
+        const onchainNetwork = getOnchainNetwork();
+        const servers = getElectrumServers(onchainNetwork);
         if (servers.length === 0) {
-          throw new Error(getOnchainNetwork() === Network.Bitcoin ? 'No clearnet Electrum server configured for mainnet.' : 'No clearnet Electrum server configured for testnet.');
+          throw new Error(onchainNetwork === Network.Bitcoin ? 'No clearnet Electrum server configured for mainnet.' : 'No clearnet Electrum server configured for testnet.');
         }
-        const random = Math.floor(Math.random() * servers.length);
-        const { host, port } = servers[random];
+
+        const storedHost = await getStoredServerHost(onchainNetwork);
+        const chosen = servers.find((server) => server.host === storedHost) ?? servers[0];
+        const { host, port } = chosen;
         const electrumUrl = `ssl://${host}:${port}`;
 
         console.log(`[BDK init] Electrum clearnet SSL → ${electrumUrl}`);
@@ -330,6 +371,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         blockchainRef.current = blockchain;
         walletRef.current = wallet;
+        setSelectedServerHost(chosen.host);
 
         currentNetworkRef.current = getOnchainNetwork();
 
@@ -377,7 +419,18 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         isInitializingRef.current = false;
       }
     },
-    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, syncWallet],
+    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, syncWallet, getStoredServerHost],
+  );
+
+  const setSelectedServer = useCallback(
+    async (host: string): Promise<void> => {
+      const net = getOnchainNetwork();
+      await persistServerHost(net, host);
+      // selectedServerHost is updated by initializeBdk only after a successful
+      // connection, so the green "in use" marker always reflects reality.
+      await initializeBdk(true);
+    },
+    [getOnchainNetwork, persistServerHost, initializeBdk],
   );
 
   const retryBdkConnection = useCallback(async (): Promise<void> => {
@@ -475,6 +528,9 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     sendTransaction,
     calculateTransactionFee,
     getBlockainHeight,
+    availableServers,
+    selectedServerHost,
+    setSelectedServer,
   };
 
   return <BdkContext.Provider value={contextValue}>{children}</BdkContext.Provider>;

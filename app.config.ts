@@ -73,6 +73,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         android: {
           minSdkVersion: 26,
           useLegacyPackaging: true,
+          buildArchs: ['armeabi-v7a', 'arm64-v8a'],
         },
       },
     ],
