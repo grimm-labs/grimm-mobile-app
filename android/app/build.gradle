@@ -81,26 +81,6 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
-// sifir_android.aar ships jni/arm64 (not a valid ABI for AGP 8). Explode AAR, drop jni/arm64, bundle classes.jar + jni/.
-def sifirTorAar = file("${rootDir}/../node_modules/react-native-tor/android/libs/sifir_android.aar")
-def prepareSifirTorAar = tasks.register('prepareSifirTorAar') {
-    def exploded = file("${buildDir}/sifir-tor-exploded")
-    inputs.file(sifirTorAar)
-    outputs.dir(exploded)
-    doLast {
-        exploded.deleteDir()
-        copy {
-            from(zipTree(sifirTorAar))
-            into(exploded)
-        }
-        def legacyArm64 = file("${exploded}/jni/arm64")
-        if (legacyArm64.exists()) {
-            legacyArm64.deleteDir()
-        }
-    }
-}
-tasks.preBuild.dependsOn(prepareSifirTorAar)
-
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -110,7 +90,7 @@ android {
     namespace 'com.grimm.labs.app.development'
     defaultConfig {
         applicationId 'com.grimm.labs.app.development'
-                minSdkVersion Math.max((rootProject.ext.minSdkVersion as int), 26) // react-native-tor / sifir_android requires 26+
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.1.7"
@@ -145,12 +125,6 @@ android {
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
-
-    sourceSets {
-        main {
-            jniLibs.srcDirs += "${buildDir}/sifir-tor-exploded/jni"
-        }
-    }
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
@@ -173,15 +147,7 @@ android {
     }
 }
 
-android.applicationVariants.configureEach { variant ->
-    tasks.matching { it.name == "merge${variant.name.capitalize()}NativeLibs" }.configureEach {
-        dependsOn(prepareSifirTorAar)
-    }
-}
-
 dependencies {
-    implementation(files("${buildDir}/sifir-tor-exploded/classes.jar").builtBy(prepareSifirTorAar))
-
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 

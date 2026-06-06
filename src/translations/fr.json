@@ -111,6 +111,7 @@
   },
   "home": {
     "accounts": "Comptes",
+    "electrumConnectionWarning": "Impossible de se connecter au serveur Electrum",
     "l2WalletName": "L2 Bitcoin",
     "networkWarning": "Vous êtes connecté au réseau de test",
     "spending": "Dépenses",
@@ -544,9 +545,9 @@
         "subtitle": "Activer pour masquer ou afficher votre solde",
         "title": "Masquer le solde"
       },
-      "useTor": {
-        "subtitle": "Transiter la synchro on-chain Electrum par Tor",
-        "title": "Réseau Tor"
+      "preventScreenCapture": {
+        "subtitle": "Empêcher les captures d'écran et les enregistrements",
+        "title": "Bloquer les captures d'écran"
       }
     },
     "signOut": "Déconnexion",

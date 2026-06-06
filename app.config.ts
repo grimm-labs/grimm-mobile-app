@@ -76,7 +76,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
-    './plugins/with-react-native-tor',
     [
       'expo-splash-screen',
       {

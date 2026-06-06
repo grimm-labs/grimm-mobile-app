@@ -111,6 +111,7 @@
   },
   "home": {
     "accounts": "Accounts",
+    "electrumConnectionWarning": "Unable to connect to the Electrum server",
     "l2WalletName": "L2 Bitcoin",
     "networkWarning": "You are connected to Test Network",
     "spending": "Spending",
@@ -544,9 +545,9 @@
         "subtitle": "Toggle to hide or show your wallet balance",
         "title": "Hide Balance"
       },
-      "useTor": {
-        "subtitle": "Route on-chain Electrum sync through Tor",
-        "title": "Tor Network"
+      "preventScreenCapture": {
+        "subtitle": "Prevent screenshots and screen recordings",
+        "title": "Block Screenshots"
       }
     },
     "signOut": "Log Out",

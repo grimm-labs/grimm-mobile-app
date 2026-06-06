@@ -14,9 +14,9 @@ import { useBreez } from '@/lib/context/breez-context';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance } = useContext(AppContext);
+  const { resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance, preventScreenCapture, setPreventScreenCapture } = useContext(AppContext);
   const { disconnectBreez } = useBreez();
-  const { disconnectBdk, useTor, setUseTor } = useBdk();
+  const { disconnectBdk } = useBdk();
 
   const router = useRouter();
   const logoutModalRef = useRef<any>(null);
@@ -94,17 +94,17 @@ export default function Settings() {
                     </Switch.Root>
                   </View>
                 </Pressable>
-                <Pressable className="mb-1 flex-row items-center rounded py-2" onPress={() => setUseTor(!useTor).catch(console.error)}>
+                <Pressable className="mb-1 flex-row items-center rounded py-2" onPress={() => setPreventScreenCapture(!preventScreenCapture)}>
                   <View className="mr-1 rounded-full p-2">
-                    <Ionicons name="lock-closed" size={20} color="gray" />
+                    <Ionicons name="eye-off" size={20} color="gray" />
                   </View>
                   <View className="ml-2 flex-1">
-                    <Text className="text-base font-semibold text-gray-700">{t('settings.security.useTor.title')}</Text>
-                    <Text className="text-xs text-gray-500">{t('settings.security.useTor.subtitle')}</Text>
+                    <Text className="text-base font-semibold text-gray-700">{t('settings.security.preventScreenCapture.title')}</Text>
+                    <Text className="text-xs text-gray-500">{t('settings.security.preventScreenCapture.subtitle')}</Text>
                   </View>
                   <View>
-                    <Switch.Root checked={useTor} onChange={(checked) => setUseTor(checked).catch(console.error)} accessibilityLabel={t('settings.security.useTor.title')} className="pb-2">
-                      <Switch.Icon checked={useTor} />
+                    <Switch.Root checked={preventScreenCapture} onChange={setPreventScreenCapture} accessibilityLabel={t('settings.security.preventScreenCapture.title')} className="pb-2">
+                      <Switch.Icon checked={preventScreenCapture} />
                     </Switch.Root>
                   </View>
                 </Pressable>

@@ -15,6 +15,8 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { APIProvider } from '@/api';
+import { PrivacyOverlay } from '@/components/privacy-overlay';
+import { ScreenCaptureGuard } from '@/components/screen-capture-guard';
 import { WalletErrorBoundary } from '@/components/wallet-error-boundary';
 import { loadSelectedTheme } from '@/lib';
 import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider } from '@/lib/context';
@@ -73,6 +75,7 @@ function Providers({ children }: { children: React.ReactNode }) {
                       <BdkProvider>
                         <BottomSheetModalProvider>
                           <ReanimatedKickstart />
+                          <ScreenCaptureGuard />
                           {children}
                           <FlashMessage position="top" />
                         </BottomSheetModalProvider>
@@ -82,6 +85,7 @@ function Providers({ children }: { children: React.ReactNode }) {
                 </APIProvider>
               </ThemeProvider>
             </KeyboardProvider>
+            <PrivacyOverlay />
           </GestureHandlerRootView>
         </BreezProvider>
       </WalletErrorBoundary>
