@@ -5,8 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@env": ["./src/lib/env.js"],
-      "react-native-tor": ["./node_modules/react-native-tor/src/index.tsx"]
+      "@env": ["./src/lib/env.js"]
     },
     "esModuleInterop": true,
     "checkJs": true,

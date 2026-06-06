@@ -1,6 +1,5 @@
 /* eslint-disable security/detect-object-injection */
 /* eslint-disable max-lines-per-function */
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import type { Blockchain, Wallet as BdkWallet } from 'bdk-rn';
 import { Address, Blockchain as BdkBlockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, TxBuilder, Wallet } from 'bdk-rn';
 import type { Balance, TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
@@ -9,14 +8,13 @@ import * as FileSystem from 'expo-file-system';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
-import Tor from 'react-native-tor';
 
-import { DEFAULT_SERVERS, DEFAULT_SERVERS_ONION, DEFAULT_SERVERS_TESTNET, DEFAULT_SERVERS_TESTNET_ONION } from '../constant';
+import { DEFAULT_SERVERS, DEFAULT_SERVERS_TESTNET } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { useBreez } from './breez-context';
 
 const SYNC_INTERVAL = 60000;
-const ASYNC_STORAGE_BDK_USE_TOR = 'bdkElectrumUseTor';
+const INIT_RETRY_INTERVAL = 30000;
 
 /**
  * Expo `documentDirectory` is a `file://…` URI. On Android, bdk-rn's `walletInit` uses
@@ -44,42 +42,6 @@ function formatUnknownError(error: unknown): string {
   return asStr || 'Unknown error';
 }
 
-type TorModule = ReturnType<typeof Tor>;
-let torSingleton: TorModule | null = null;
-
-function getTor(): TorModule | null {
-  if (Platform.OS === 'web') {
-    return null;
-  }
-  if (!torSingleton) {
-    torSingleton = Tor({ stopDaemonOnBackground: false });
-    console.log('[BDK/Tor] Tor module created (singleton)');
-  }
-  return torSingleton;
-}
-
-async function logTorDaemonStatus(tor: TorModule, phase: string): Promise<void> {
-  try {
-    const status = await tor.getDaemonStatus();
-    console.log(`[BDK/Tor] ${phase} getDaemonStatus=${status}`);
-  } catch (error) {
-    console.warn(`[BDK/Tor] ${phase} getDaemonStatus failed`, error);
-  }
-}
-
-async function stopTorIfRunning(): Promise<void> {
-  const tor = getTor();
-  if (!tor) {
-    return;
-  }
-  try {
-    await tor.stopIfRunning();
-    await logTorDaemonStatus(tor, 'after stopIfRunning');
-  } catch (error) {
-    console.warn('Tor stop failed:', error);
-  }
-}
-
 interface BdkState {
   isConnected: boolean;
   isSyncing: boolean;
@@ -93,10 +55,8 @@ interface BdkState {
 }
 
 interface BdkContextType extends BdkState {
-  useTor: boolean;
-  isUseTorPreferenceLoaded: boolean;
-  setUseTor: (value: boolean) => Promise<void>;
-  initializeBdk: () => Promise<void>;
+  initializeBdk: (force?: boolean) => Promise<void>;
+  retryBdkConnection: () => Promise<void>;
   syncWallet: (walletParam?: BdkWallet, opts?: { rethrowOnError?: boolean }) => Promise<void>;
   disconnectBdk: () => Promise<void>;
   sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
@@ -124,46 +84,22 @@ interface BdkProviderProps {
 
 export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const [state, setState] = useState<BdkState>(initialState);
-  const [useTor, setUseTorState] = useState<boolean>(true);
-  const [isUseTorPreferenceLoaded, setIsUseTorPreferenceLoaded] = useState<boolean>(false);
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
-  const { getItem: _getUseTor, setItem: _updateUseTor } = useAsyncStorage(ASYNC_STORAGE_BDK_USE_TOR);
   const isInitializingRef = useRef<boolean>(false);
   const blockchainRef = useRef<Blockchain | null>(null);
   const walletRef = useRef<BdkWallet | null>(null);
-  const useTorRef = useRef<boolean>(true);
   const { network } = useBreez();
   const currentNetworkRef = useRef<string | null>(null);
+  const isBdkInitializedRef = useRef<boolean>(false);
+  const errorRef = useRef<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await _getUseTor();
-        if (cancelled) {
-          return;
-        }
-        if (raw !== null) {
-          const parsed = JSON.parse(raw) as boolean;
-          useTorRef.current = parsed;
-          setUseTorState(parsed);
-        }
-      } catch (error) {
-        console.error('[BDK] Failed to load useTor preference', error);
-      } finally {
-        if (!cancelled) {
-          setIsUseTorPreferenceLoaded(true);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [_getUseTor]);
+    isBdkInitializedRef.current = state.isBdkInitialized;
+  }, [state.isBdkInitialized]);
 
   useEffect(() => {
-    useTorRef.current = useTor;
-  }, [useTor]);
+    errorRef.current = state.error;
+  }, [state.error]);
 
   const getOnchainNetwork = useCallback((): Network => {
     return network === 'mainnet' ? Network.Bitcoin : Network.Testnet;
@@ -193,8 +129,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
       });
 
       isInitializingRef.current = false;
-
-      await stopTorIfRunning();
 
       console.log('BDK disconnection completed');
     } catch (error) {
@@ -332,28 +266,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
       try {
         isInitializingRef.current = true;
-        updateState({ isSyncing: true, error: null });
+        updateState({ isSyncing: true, error: null, isConnected: false, isBdkInitialized: false, wallet: null });
+
+        blockchainRef.current = null;
+        walletRef.current = null;
 
         const seedPhrase = await _getSeedPhrase();
         if (!seedPhrase) {
           throw new Error('No recovery phrase found');
-        }
-
-        const wantTorChain = useTorRef.current && Platform.OS !== 'web';
-
-        let sock5Proxy: string | null = null;
-        if (wantTorChain) {
-          const tor = getTor();
-          if (!tor) {
-            throw new Error('On-chain Tor mode requires Tor (not available on this platform).');
-          }
-          await logTorDaemonStatus(tor, 'before startIfNotStarted');
-          const socksPort = await tor.startIfNotStarted();
-          sock5Proxy = `127.0.0.1:${socksPort}`;
-          await logTorDaemonStatus(tor, 'after startIfNotStarted');
-          console.log(`[BDK/Tor] SOCKS proxy ready sock5=${sock5Proxy} (DONE = circuit ready per react-native-tor)`);
-        } else {
-          console.log('[BDK] Electrum clearnet mode (Tor off or web); no local SOCKS');
         }
 
         const mnemonic = await new Mnemonic().fromString(seedPhrase);
@@ -375,36 +295,22 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
             })
             .filter(({ port }) => !!port);
 
-        const onionOrClearnetPool = wantTorChain
-          ? getOnchainNetwork() === Network.Bitcoin
-            ? DEFAULT_SERVERS_ONION
-            : DEFAULT_SERVERS_TESTNET_ONION
-          : getOnchainNetwork() === Network.Bitcoin
-            ? DEFAULT_SERVERS
-            : DEFAULT_SERVERS_TESTNET;
-        const servers = electrumServersToEntries(onionOrClearnetPool as Record<string, { t?: string; s?: string }>);
+        const clearnetPool = getOnchainNetwork() === Network.Bitcoin ? DEFAULT_SERVERS : DEFAULT_SERVERS_TESTNET;
+        const servers = electrumServersToEntries(clearnetPool as Record<string, { t?: string; s?: string }>);
         if (servers.length === 0) {
-          throw new Error(
-            wantTorChain
-              ? getOnchainNetwork() === Network.Bitcoin
-                ? 'No .onion Electrum server configured for mainnet (DEFAULT_SERVERS_ONION).'
-                : 'No .onion Electrum server configured for testnet. Add at least one entry in DEFAULT_SERVERS_TESTNET_ONION.'
-              : getOnchainNetwork() === Network.Bitcoin
-                ? 'No clearnet Electrum server configured for mainnet.'
-                : 'No clearnet Electrum server configured for testnet.',
-          );
+          throw new Error(getOnchainNetwork() === Network.Bitcoin ? 'No clearnet Electrum server configured for mainnet.' : 'No clearnet Electrum server configured for testnet.');
         }
         const random = Math.floor(Math.random() * servers.length);
         const { host, port } = servers[random];
-        const electrumUrl = wantTorChain ? `tcp://${host}:${port}` : `ssl://${host}:${port}`;
+        const electrumUrl = `ssl://${host}:${port}`;
 
-        console.log(`[BDK init] Electrum ${wantTorChain ? 'via Tor SOCKS' : 'clearnet SSL'} → ${electrumUrl} (timeout=${wantTorChain ? 60 : 10}s, retry=${wantTorChain ? 8 : 5})`);
+        console.log(`[BDK init] Electrum clearnet SSL → ${electrumUrl}`);
 
         const blockchainConfig = {
           url: electrumUrl,
-          sock5: sock5Proxy,
-          retry: wantTorChain ? 8 : 5,
-          timeout: wantTorChain ? 60 : 10,
+          sock5: null,
+          retry: 5,
+          timeout: 60,
           stopGap: 100,
           validateDomain: false,
         };
@@ -414,9 +320,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           blockchain = await new BdkBlockchain().create(blockchainConfig);
         } catch (error) {
           const message = formatUnknownError(error);
-          console.error('[BDK init] Electrum blockchain create failed — check Tor, .onion reachability, or firewall.', {
+          console.error('[BDK init] Electrum blockchain create failed — check server reachability or firewall.', {
             electrumUrl,
-            useTor: wantTorChain,
             error: message,
             ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
           });
@@ -439,7 +344,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           await syncWallet(wallet, { rethrowOnError: true });
         } catch (syncError) {
           const message = formatUnknownError(syncError);
-          console.error('[BDK init] First sync failed — Tor left running; wallet loaded. Retry sync from UI or wait for automatic sync.', {
+          console.error('[BDK init] First sync failed — wallet loaded. Retry sync from UI or wait for automatic sync.', {
             error: message,
           });
           updateState({
@@ -450,14 +355,13 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         }
       } catch (error) {
         const message = formatUnknownError(error);
-        console.error('[BDK init] Fatal error — stopping Tor and clearing on-chain wallet state', {
+        console.error('[BDK init] Fatal error — clearing on-chain wallet state', {
           error: message,
           ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
         });
 
         blockchainRef.current = null;
         walletRef.current = null;
-        await stopTorIfRunning();
         updateState({
           error: message,
           isSyncing: false,
@@ -476,19 +380,20 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, syncWallet],
   );
 
-  const setUseTor = useCallback(
-    async (value: boolean): Promise<void> => {
-      await _updateUseTor(JSON.stringify(value));
-      useTorRef.current = value;
-      setUseTorState(value);
-      const wasInitialized = state.isBdkInitialized || walletRef.current !== null;
-      if (wasInitialized) {
-        await disconnectBdk();
-        await initializeBdk(true);
-      }
-    },
-    [_updateUseTor, state.isBdkInitialized, disconnectBdk, initializeBdk],
-  );
+  const retryBdkConnection = useCallback(async (): Promise<void> => {
+    if (isInitializingRef.current) {
+      console.log('[BDK retry] Connection retry skipped — initialization already in progress');
+      return;
+    }
+
+    if (state.isBdkInitialized && state.error == null) {
+      await syncWallet();
+      return;
+    }
+
+    console.log('[BDK retry] Manual full reconnect (full init from scratch)');
+    await initializeBdk(true);
+  }, [state.isBdkInitialized, state.error, syncWallet, initializeBdk]);
 
   useEffect(() => {
     const handleNetworkChange = async () => {
@@ -543,12 +448,28 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     };
   }, [state.isBdkInitialized, state.isConnected, syncWallet]);
 
+  useEffect(() => {
+    if (state.isBdkInitialized || state.error == null) {
+      return;
+    }
+
+    const retryInterval = setInterval(() => {
+      if (isInitializingRef.current || isBdkInitializedRef.current || errorRef.current == null) {
+        return;
+      }
+      console.log('[BDK retry] Automatic full reconnect (full init from scratch)');
+      initializeBdk(true).catch((err) => console.error('[BDK retry] Automatic reconnect failed', err));
+    }, INIT_RETRY_INTERVAL);
+
+    return () => {
+      clearInterval(retryInterval);
+    };
+  }, [state.isBdkInitialized, state.error, initializeBdk]);
+
   const contextValue: BdkContextType = {
     ...state,
-    useTor,
-    isUseTorPreferenceLoaded,
-    setUseTor,
     initializeBdk,
+    retryBdkConnection,
     syncWallet,
     disconnectBdk,
     sendTransaction,

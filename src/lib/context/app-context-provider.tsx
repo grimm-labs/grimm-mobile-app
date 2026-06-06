@@ -11,6 +11,7 @@ type Props = PropsWithChildren<{}>;
 
 type defaultContextType = {
   hideBalance: boolean;
+  preventScreenCapture: boolean;
   onboarding: boolean;
   isDataLoaded: boolean;
   hasSeedPhrase: boolean;
@@ -18,6 +19,7 @@ type defaultContextType = {
   selectedCountry: Country;
   bitcoinUnit: BitcoinUnit;
   setHideBalance: (hideBalance: boolean) => void;
+  setPreventScreenCapture: (preventScreenCapture: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
   resetAppData: () => void;
   setSeedPhrase: (seedPhrase: string) => void;
@@ -28,6 +30,7 @@ type defaultContextType = {
 
 const defaultContext: defaultContextType = {
   hideBalance: false,
+  preventScreenCapture: false,
   onboarding: false,
   isDataLoaded: false,
   hasSeedPhrase: false,
@@ -43,6 +46,7 @@ const defaultContext: defaultContextType = {
   },
   bitcoinUnit: BitcoinUnit.Sats,
   setHideBalance: () => {},
+  setPreventScreenCapture: () => {},
   setOnboarding: () => {},
   resetAppData: () => {},
   setSeedPhrase: () => {},
@@ -55,6 +59,7 @@ export const AppContext = createContext<defaultContextType>(defaultContext);
 
 export const AppContextProvider = ({ children }: Props) => {
   const [hideBalance, _setHideBalance] = useState(defaultContext.hideBalance);
+  const [preventScreenCapture, _setPreventScreenCapture] = useState(defaultContext.preventScreenCapture);
   const [onboarding, _setOnboarding] = useState(defaultContext.onboarding);
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
   const [hasSeedPhrase, _setHasSeedPhrase] = useState(defaultContext.hasSeedPhrase);
@@ -63,6 +68,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [bitcoinUnit, _setBitcoinUnit] = useState<BitcoinUnit>(defaultContext.bitcoinUnit);
 
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
+  const { getItem: _getPreventScreenCapture, setItem: _updatePreventScreenCapture } = useAsyncStorage('preventScreenCapture');
   const { getItem: _getOnboarding, setItem: _updateOnboarding } = useAsyncStorage('onboarding');
   const { getItem: _getSelectedCountry, setItem: _updateSelectedCountry } = useAsyncStorage('selectedCountry');
   const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase, deleteItem: _deleteSeedPhrase } = useSecureStorage('seedPhrase');
@@ -75,6 +81,13 @@ export const AppContextProvider = ({ children }: Props) => {
       _setHideBalance(JSON.parse(ob));
     }
   }, [_getHideBalance, _setHideBalance]);
+
+  const _loadPreventScreenCapture = useCallback(async () => {
+    const ob = await _getPreventScreenCapture();
+    if (ob !== null) {
+      _setPreventScreenCapture(JSON.parse(ob));
+    }
+  }, [_getPreventScreenCapture, _setPreventScreenCapture]);
 
   const _loadOnboarding = useCallback(async () => {
     const ob = await _getOnboarding();
@@ -112,7 +125,7 @@ export const AppContextProvider = ({ children }: Props) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([_loadHideBalance(), _loadOnboarding(), _loadSelectedCountry(), _loadSeedPhrase(), _loadIsSeedPhraseBackup(), _loadBitcoinUnit()]);
+        await Promise.all([_loadHideBalance(), _loadPreventScreenCapture(), _loadOnboarding(), _loadSelectedCountry(), _loadSeedPhrase(), _loadIsSeedPhraseBackup(), _loadBitcoinUnit()]);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -121,7 +134,7 @@ export const AppContextProvider = ({ children }: Props) => {
     };
 
     loadData();
-  }, [_loadHideBalance, _loadOnboarding, _loadSelectedCountry, _loadSeedPhrase, _loadIsSeedPhraseBackup, _loadBitcoinUnit]);
+  }, [_loadHideBalance, _loadPreventScreenCapture, _loadOnboarding, _loadSelectedCountry, _loadSeedPhrase, _loadIsSeedPhraseBackup, _loadBitcoinUnit]);
 
   const setOnboarding = useCallback(
     async (arg: boolean) => {
@@ -147,6 +160,19 @@ export const AppContextProvider = ({ children }: Props) => {
       }
     },
     [_setHideBalance, _updateHideBalance],
+  );
+
+  const setPreventScreenCapture = useCallback(
+    async (arg: boolean) => {
+      try {
+        await _setPreventScreenCapture(arg);
+        await _updatePreventScreenCapture(JSON.stringify(arg));
+      } catch (e) {
+        console.error(`[AsyncStorage] (preventScreenCapture) Error saving data: ${e} [${arg}]`);
+        throw new Error('Error setting preventScreenCapture');
+      }
+    },
+    [_setPreventScreenCapture, _updatePreventScreenCapture],
   );
 
   const setSeedPhrase = useCallback(
@@ -218,6 +244,7 @@ export const AppContextProvider = ({ children }: Props) => {
     <AppContext.Provider
       value={{
         hideBalance,
+        preventScreenCapture,
         onboarding,
         isDataLoaded,
         hasSeedPhrase,
@@ -225,6 +252,7 @@ export const AppContextProvider = ({ children }: Props) => {
         selectedCountry,
         bitcoinUnit,
         setHideBalance,
+        setPreventScreenCapture,
         setOnboarding,
         resetAppData,
         setSeedPhrase,

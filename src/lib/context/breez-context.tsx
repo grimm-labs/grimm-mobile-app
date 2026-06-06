@@ -321,7 +321,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     if (!sdkRef.current) throw new Error('Breez SDK not initialized');
 
     return sdkRef.current.receivePayment({
-      paymentMethod: new ReceivePaymentMethod.BitcoinAddress(),
+      paymentMethod: new ReceivePaymentMethod.BitcoinAddress({ newAddress: true }),
     });
   }, []);
 
@@ -359,7 +359,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     if (!sdkRef.current) throw new Error('Breez SDK not initialized');
     return sdkRef.current.prepareLnurlPay(
       PrepareLnurlPayRequest.new({
-        amountSats: BigInt(amountSats),
+        amount: BigInt(amountSats),
         payRequest,
       }),
     );

@@ -7,7 +7,6 @@
     "paths": {
       "@/*": ["./src/*"],
       "@env": ["./src/lib/env.js"],
-      "react-native-tor": ["./node_modules/react-native-tor/src/index.tsx"],
       "uniffi-bindgen-react-native": ["./src/types/uniffi-bindgen-react-native.d.ts"]
     },
     "esModuleInterop": true,
