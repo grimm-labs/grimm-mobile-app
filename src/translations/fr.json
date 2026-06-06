@@ -65,6 +65,13 @@
     "no_results": "Aucun pays trouvé pour \"{{searchTerm}}\"",
     "search_placeholder": "Rechercher un pays..."
   },
+  "electrumServer": {
+    "currentNetwork": "Réseau : {{network}}",
+    "headerTitle": "Serveur Electrum",
+    "inUse": "Utilisé",
+    "info": "Choisissez le serveur Electrum utilisé pour synchroniser votre portefeuille on-chain. Le choix est enregistré par réseau et réutilisé à la prochaine ouverture de l'application.",
+    "save": "Enregistrer"
+  },
   "emptyTransactions": {
     "ln": {
       "message": "Vos transactions Lightning apparaîtront ici."
@@ -505,6 +512,10 @@
       "country": {
         "subtitle": "Sélectionnez votre pays pour une expérience personnalisée",
         "title": "Pays"
+      },
+      "electrumServer": {
+        "subtitle": "Choisissez le serveur Electrum pour la synchro on-chain",
+        "title": "Serveur Electrum"
       },
       "language": {
         "subtitle": "Sélectionnez la langue de l'application",

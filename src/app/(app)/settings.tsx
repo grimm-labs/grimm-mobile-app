@@ -53,6 +53,7 @@ export default function Settings() {
               <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-700">{t('settings.sections.general')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
                 <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} />
+                <SettingsItem icon="server" title={t('settings.general.electrumServer.title')} subtitle={t('settings.general.electrumServer.subtitle')} onPress={() => router.push('/settings/electrum-server')} />
                 <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} />
                 <SettingsItem icon="language" title={t('settings.general.language.title')} subtitle={t('settings.general.language.subtitle')} onPress={() => router.push('/settings/language')} />
                 <SettingsItem icon="options-sharp" title={t('settings.general.bitcoinUnit.title')} subtitle={t('settings.general.bitcoinUnit.subtitle')} onPress={() => router.push('/settings/bitcoin-unit')} />
