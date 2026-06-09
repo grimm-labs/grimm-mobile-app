@@ -20,7 +20,8 @@
       "env": {
         "EXPO_NO_DOTENV": "1",
         "APP_ENV": "production",
-        "FLIPPER_DISABLE": "1"
+        "FLIPPER_DISABLE": "1",
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "armeabi-v7a,arm64-v8a"
       }
     },
     "staging": {
