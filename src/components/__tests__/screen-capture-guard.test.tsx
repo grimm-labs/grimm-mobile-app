@@ -86,12 +86,12 @@ describe('ScreenCaptureGuard', () => {
     expect(mockPreventScreenCaptureAsync).not.toHaveBeenCalled();
   });
 
-  it('does not disable native recents protection on android when preference is disabled', async () => {
+  it('allows screen capture on android when preference is disabled', async () => {
     Object.defineProperty(Platform, 'OS', { configurable: true, value: 'android' });
     renderGuard(false);
 
     await waitFor(() => {
-      expect(mockAllowScreenCaptureAsync).not.toHaveBeenCalled();
+      expect(mockAllowScreenCaptureAsync).toHaveBeenCalledTimes(1);
     });
     expect(mockPreventScreenCaptureAsync).not.toHaveBeenCalled();
   });

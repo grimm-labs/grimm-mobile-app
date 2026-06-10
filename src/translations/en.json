@@ -66,6 +66,7 @@
     "search_placeholder": "Search country..."
   },
   "electrumServer": {
+    "connectionFailed": "Connection to this server failed. Please try another server.",
     "currentNetwork": "Network: {{network}}",
     "headerTitle": "Electrum Server",
     "inUse": "In use",

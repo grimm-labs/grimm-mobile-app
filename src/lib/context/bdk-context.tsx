@@ -8,7 +8,7 @@ import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { DEFAULT_SERVERS, DEFAULT_SERVERS_TESTNET } from '../constant';
+import { DEFAULT_SERVER_HOST, DEFAULT_SERVERS, DEFAULT_SERVERS_TESTNET } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { getItem as getStorageItem, setItem as setStorageItem } from '../storage';
 import { useBreez } from './breez-context';
@@ -30,6 +30,12 @@ function getElectrumServers(network: Network): ElectrumServer[] {
   return Object.entries(pool as Record<string, { t?: string; s?: string }>)
     .map(([host, ports]) => ({ host, port: ports.t ?? ports.s }))
     .filter((entry): entry is ElectrumServer => !!entry.port);
+}
+
+/** Host used by default (fresh install / first connection) when no valid value is stored. */
+function getDefaultServerHost(network: Network): string | null {
+  const servers = getElectrumServers(network);
+  return servers.find((server) => server.host === DEFAULT_SERVER_HOST)?.host ?? servers[0]?.host ?? null;
 }
 
 /**
@@ -71,7 +77,7 @@ interface BdkState {
 }
 
 interface BdkContextType extends BdkState {
-  initializeBdk: (force?: boolean) => Promise<void>;
+  initializeBdk: (force?: boolean, serverHostOverride?: string | null) => Promise<boolean>;
   retryBdkConnection: () => Promise<void>;
   syncWallet: (walletParam?: BdkWallet, opts?: { rethrowOnError?: boolean }) => Promise<void>;
   disconnectBdk: () => Promise<void>;
@@ -143,8 +149,10 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
       const net = getOnchainNetwork();
       const host = await getStoredServerHost(net);
       const isValid = !!host && getElectrumServers(net).some((server) => server.host === host);
-      if (!cancelled && isValid) {
-        setSelectedServerHost(host);
+      if (!cancelled) {
+        // Fall back to the default server (electrum.blockstream.info) so the UI
+        // always reflects which server is used, even before the first connection.
+        setSelectedServerHost(isValid ? host : getDefaultServerHost(net));
       }
     };
     loadSelectedServer();
@@ -302,14 +310,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   );
 
   const initializeBdk = useCallback(
-    async (force: boolean = false): Promise<void> => {
+    async (force: boolean = false, serverHostOverride?: string | null): Promise<boolean> => {
       if (isInitializingRef.current) {
         console.log('BDK initialization in progress');
-        return;
+        return false;
       }
       if (state.isBdkInitialized && !force) {
         console.log('BDK already initialized');
-        return;
+        return true;
       }
 
       try {
@@ -341,7 +349,10 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         }
 
         const storedHost = await getStoredServerHost(onchainNetwork);
-        const chosen = servers.find((server) => server.host === storedHost) ?? servers[0];
+        const defaultHost = getDefaultServerHost(onchainNetwork);
+        // An explicit override (server change in progress) takes priority over the stored value.
+        const targetHost = serverHostOverride ?? storedHost;
+        const chosen = servers.find((server) => server.host === targetHost) ?? servers.find((server) => server.host === defaultHost) ?? servers[0];
         const { host, port } = chosen;
         const electrumUrl = `ssl://${host}:${port}`;
 
@@ -371,7 +382,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         blockchainRef.current = blockchain;
         walletRef.current = wallet;
-        setSelectedServerHost(chosen.host);
 
         currentNetworkRef.current = getOnchainNetwork();
 
@@ -389,12 +399,22 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           console.error('[BDK init] First sync failed — wallet loaded. Retry sync from UI or wait for automatic sync.', {
             error: message,
           });
+          // `BdkBlockchain.create` succeeds even for unreachable servers; the real
+          // reachability check is this first sync. On an explicit server change we
+          // therefore treat a sync failure as a connection failure (fatal) so the
+          // UI can stay on the page and surface the error.
+          if (serverHostOverride != null) {
+            throw syncError;
+          }
           updateState({
             error: message,
             isSyncing: false,
           });
-          return;
+          return true;
         }
+        // Only reflect the chosen server once it is fully reachable (sync succeeded).
+        setSelectedServerHost(chosen.host);
+        return true;
       } catch (error) {
         const message = formatUnknownError(error);
         console.error('[BDK init] Fatal error — clearing on-chain wallet state', {
@@ -415,6 +435,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           confirmedBalance: 0,
           unconfirmedBalance: 0,
         });
+        return false;
       } finally {
         isInitializingRef.current = false;
       }
@@ -425,10 +446,13 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const setSelectedServer = useCallback(
     async (host: string): Promise<void> => {
       const net = getOnchainNetwork();
+      // Try to connect to the new server first; only persist it when the
+      // connection succeeds so a failing server never becomes the saved choice.
+      const connected = await initializeBdk(true, host);
+      if (!connected) {
+        throw new Error('ELECTRUM_CONNECTION_FAILED');
+      }
       await persistServerHost(net, host);
-      // selectedServerHost is updated by initializeBdk only after a successful
-      // connection, so the green "in use" marker always reflects reality.
-      await initializeBdk(true);
     },
     [getOnchainNetwork, persistServerHost, initializeBdk],
   );

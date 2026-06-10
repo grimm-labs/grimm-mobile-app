@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-import * as ScreenCapture from 'expo-screen-capture';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { useLayoutEffect, useState } from 'react';
@@ -33,12 +32,6 @@ export function PrivacyOverlay() {
   useLayoutEffect(() => {
     if (Platform.OS === 'web') {
       return;
-    }
-
-    // Android captures the recents snapshot before JS can paint an overlay.
-    // FLAG_SECURE blanks the task switcher preview at the native layer.
-    if (Platform.OS === 'android') {
-      ScreenCapture.preventScreenCaptureAsync().catch(console.error);
     }
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {

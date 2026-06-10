@@ -10,7 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { useBdk } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 
@@ -64,6 +64,10 @@ export default function ElectrumServerScreen() {
     setPendingHost((prev) => prev ?? selectedServerHost);
   }, [selectedServerHost]);
 
+  const handleSelect = useCallback((host: string) => {
+    setPendingHost(host);
+  }, []);
+
   const handleSave = useCallback(async () => {
     if (!pendingHost || pendingHost === selectedServerHost) {
       return;
@@ -73,11 +77,14 @@ export default function ElectrumServerScreen() {
       await setSelectedServer(pendingHost);
       router.back();
     } catch (error) {
+      // Connection to the chosen server failed: stay on the page and let the
+      // user know, keeping their selection so they can retry or pick another.
       console.error('Error saving Electrum server:', error);
+      showErrorMessage(t('electrumServer.connectionFailed'));
     } finally {
       setIsSaving(false);
     }
-  }, [pendingHost, selectedServerHost, setSelectedServer, router]);
+  }, [pendingHost, selectedServerHost, setSelectedServer, router, t]);
 
   const screenOptions = useMemo(
     () => ({
@@ -112,7 +119,7 @@ export default function ElectrumServerScreen() {
                 port={server.port}
                 isSelected={pendingHost === server.host}
                 isActive={isConnected && selectedServerHost === server.host}
-                onPress={() => setPendingHost(server.host)}
+                onPress={() => handleSelect(server.host)}
                 disabled={isDisabled}
               />
             ))}
