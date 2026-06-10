@@ -66,6 +66,7 @@
     "search_placeholder": "Rechercher un pays..."
   },
   "electrumServer": {
+    "connectionFailed": "La connexion à ce serveur a échoué. Veuillez essayer un autre serveur.",
     "currentNetwork": "Réseau : {{network}}",
     "headerTitle": "Serveur Electrum",
     "inUse": "Utilisé",

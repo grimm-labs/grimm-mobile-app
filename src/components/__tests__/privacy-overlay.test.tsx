@@ -88,7 +88,7 @@ describe('PrivacyOverlay', () => {
     Object.defineProperty(Platform, 'OS', { configurable: true, value: 'android' });
     render(<PrivacyOverlay />);
 
-    expect(mockPreventScreenCaptureAsync).toHaveBeenCalledTimes(1);
+    expect(mockPreventScreenCaptureAsync).not.toHaveBeenCalled();
 
     emitAppState('background');
 
