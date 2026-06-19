@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ElectrumConnectionBanner } from '@/components/electrum-connection-banner';
+import { EsploraConnectionBanner } from '@/components/esplora-connection-banner';
 import { cleanup, screen, setup } from '@/lib/test-utils';
 
 jest.mock('react-i18next', () => ({
@@ -21,7 +21,7 @@ jest.mock('@/lib/context', () => ({
   }),
 }));
 
-describe('ElectrumConnectionBanner', () => {
+describe('EsploraConnectionBanner', () => {
   afterEach(() => {
     cleanup();
     mockError = null;
@@ -31,24 +31,24 @@ describe('ElectrumConnectionBanner', () => {
   it('shows banner when error is set and not syncing', () => {
     mockError = 'Connection failed';
     mockIsSyncing = false;
-    setup(<ElectrumConnectionBanner />);
+    setup(<EsploraConnectionBanner />);
 
-    expect(screen.getByText('home.electrumConnectionWarning')).toBeOnTheScreen();
+    expect(screen.getByText('home.esploraConnectionWarning')).toBeOnTheScreen();
   });
 
   it('does not show banner when error is null', () => {
     mockError = null;
     mockIsSyncing = false;
-    setup(<ElectrumConnectionBanner />);
+    setup(<EsploraConnectionBanner />);
 
-    expect(screen.queryByText('home.electrumConnectionWarning')).not.toBeOnTheScreen();
+    expect(screen.queryByText('home.esploraConnectionWarning')).not.toBeOnTheScreen();
   });
 
   it('does not show banner when syncing even if error is set', () => {
     mockError = 'Connection failed';
     mockIsSyncing = true;
-    setup(<ElectrumConnectionBanner />);
+    setup(<EsploraConnectionBanner />);
 
-    expect(screen.queryByText('home.electrumConnectionWarning')).not.toBeOnTheScreen();
+    expect(screen.queryByText('home.esploraConnectionWarning')).not.toBeOnTheScreen();
   });
 });

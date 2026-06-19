@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { RefreshControl } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { ElectrumConnectionBanner } from '@/components/electrum-connection-banner';
+import { EsploraConnectionBanner } from '@/components/esplora-connection-banner';
 import { SeedPhraseBackupNotification } from '@/components/seed-phrase-backup-notification';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { WalletOverview } from '@/components/wallet-overview';
@@ -47,7 +47,7 @@ export default function Home() {
               <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
             </View>
           )}
-          <ElectrumConnectionBanner />
+          <EsploraConnectionBanner />
           <View className="flex-1">
             <ScrollView
               showsVerticalScrollIndicator={false}

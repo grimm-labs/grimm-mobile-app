@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import type { Blockchain, Wallet as BdkWallet } from 'bdk-rn';
-import { Address, Blockchain as BdkBlockchain, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, TxBuilder, Wallet } from 'bdk-rn';
+import { Address, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, TxBuilder, Wallet } from 'bdk-rn';
 import type { Balance, TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { KeychainKind, Network } from 'bdk-rn/lib/lib/enums';
 import * as FileSystem from 'expo-file-system';
@@ -8,34 +8,24 @@ import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { DEFAULT_SERVER_HOST, DEFAULT_SERVERS, DEFAULT_SERVERS_TESTNET } from '../constant';
+import { connectEsploraBackend, type EsploraServerOption, migrateLegacyServerId, orderEsploraServers, toEsploraServerOptions } from '../bdk-blockchain-connect';
+import { DEFAULT_ESPLORA_SERVERS, DEFAULT_SERVER_ID } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { getItem as getStorageItem, setItem as setStorageItem } from '../storage';
 import { useBreez } from './breez-context';
 
+export type { EsploraServerOption };
+
 const SYNC_INTERVAL = 60000;
 const INIT_RETRY_INTERVAL = 30000;
 
-const SERVER_KEY_MAINNET = 'selectedElectrumServer_mainnet';
-const SERVER_KEY_TESTNET = 'selectedElectrumServer_testnet';
+const SERVER_KEY_MAINNET = 'selectedEsploraServer_mainnet';
+const SERVER_KEY_TESTNET = 'selectedEsploraServer_testnet';
+const LEGACY_SERVER_KEY_MAINNET = 'selectedElectrumServer_mainnet';
+const LEGACY_SERVER_KEY_TESTNET = 'selectedElectrumServer_testnet';
 
-export interface ElectrumServer {
-  host: string;
-  port: string;
-}
-
-/** Prefer `t` (cleartext Electrum TCP); fall back to `s` if only SSL port is listed. */
-function getElectrumServers(network: Network): ElectrumServer[] {
-  const pool = network === Network.Bitcoin ? DEFAULT_SERVERS : DEFAULT_SERVERS_TESTNET;
-  return Object.entries(pool as Record<string, { t?: string; s?: string }>)
-    .map(([host, ports]) => ({ host, port: ports.t ?? ports.s }))
-    .filter((entry): entry is ElectrumServer => !!entry.port);
-}
-
-/** Host used by default (fresh install / first connection) when no valid value is stored. */
-function getDefaultServerHost(network: Network): string | null {
-  const servers = getElectrumServers(network);
-  return servers.find((server) => server.host === DEFAULT_SERVER_HOST)?.host ?? servers[0]?.host ?? null;
+function getDefaultServerId(): string {
+  return DEFAULT_ESPLORA_SERVERS.find((server) => server.id === DEFAULT_SERVER_ID)?.id ?? DEFAULT_ESPLORA_SERVERS[0]?.id ?? '';
 }
 
 /**
@@ -77,16 +67,16 @@ interface BdkState {
 }
 
 interface BdkContextType extends BdkState {
-  initializeBdk: (force?: boolean, serverHostOverride?: string | null) => Promise<boolean>;
+  initializeBdk: (force?: boolean, serverIdOverride?: string | null) => Promise<boolean>;
   retryBdkConnection: () => Promise<void>;
   syncWallet: (walletParam?: BdkWallet, opts?: { rethrowOnError?: boolean }) => Promise<void>;
   disconnectBdk: () => Promise<void>;
   sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
   calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
   getBlockainHeight: () => Promise<number | undefined>;
-  availableServers: ElectrumServer[];
-  selectedServerHost: string | null;
-  setSelectedServer: (host: string) => Promise<void>;
+  availableServers: EsploraServerOption[];
+  selectedServerId: string | null;
+  setSelectedServer: (serverId: string) => Promise<void>;
 }
 
 const initialState: BdkState = {
@@ -117,7 +107,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const currentNetworkRef = useRef<string | null>(null);
   const isBdkInitializedRef = useRef<boolean>(false);
   const errorRef = useRef<string | null>(null);
-  const [selectedServerHost, setSelectedServerHost] = useState<string | null>(null);
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     isBdkInitializedRef.current = state.isBdkInitialized;
@@ -131,35 +121,35 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     return network === 'mainnet' ? Network.Bitcoin : Network.Testnet;
   }, [network]);
 
-  const availableServers = useMemo(() => getElectrumServers(getOnchainNetwork()), [getOnchainNetwork]);
+  const availableServers = useMemo(() => toEsploraServerOptions(DEFAULT_ESPLORA_SERVERS, getOnchainNetwork()), [getOnchainNetwork]);
 
-  const getStoredServerHost = useCallback(async (net: Network): Promise<string | null> => {
+  const getStoredServerId = useCallback(async (net: Network): Promise<string | null> => {
     const key = net === Network.Bitcoin ? SERVER_KEY_MAINNET : SERVER_KEY_TESTNET;
-    return await getStorageItem<string>(key);
+    const legacyKey = net === Network.Bitcoin ? LEGACY_SERVER_KEY_MAINNET : LEGACY_SERVER_KEY_TESTNET;
+    const stored = (await getStorageItem<string>(key)) ?? (await getStorageItem<string>(legacyKey));
+    return migrateLegacyServerId(stored);
   }, []);
 
-  const persistServerHost = useCallback(async (net: Network, host: string): Promise<void> => {
+  const persistServerId = useCallback(async (net: Network, serverId: string): Promise<void> => {
     const key = net === Network.Bitcoin ? SERVER_KEY_MAINNET : SERVER_KEY_TESTNET;
-    await setStorageItem<string>(key, host);
+    await setStorageItem<string>(key, serverId);
   }, []);
 
   useEffect(() => {
     let cancelled = false;
     const loadSelectedServer = async () => {
       const net = getOnchainNetwork();
-      const host = await getStoredServerHost(net);
-      const isValid = !!host && getElectrumServers(net).some((server) => server.host === host);
+      const storedId = await getStoredServerId(net);
+      const isValid = !!storedId && DEFAULT_ESPLORA_SERVERS.some((server) => server.id === storedId);
       if (!cancelled) {
-        // Fall back to the default server (electrum.blockstream.info) so the UI
-        // always reflects which server is used, even before the first connection.
-        setSelectedServerHost(isValid ? host : getDefaultServerHost(net));
+        setSelectedServerId(isValid ? storedId : getDefaultServerId());
       }
     };
     loadSelectedServer();
     return () => {
       cancelled = true;
     };
-  }, [getOnchainNetwork, getStoredServerHost]);
+  }, [getOnchainNetwork, getStoredServerId]);
 
   const updateState = useCallback((updates: Partial<BdkState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -310,7 +300,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   );
 
   const initializeBdk = useCallback(
-    async (force: boolean = false, serverHostOverride?: string | null): Promise<boolean> => {
+    async (force: boolean = false, serverIdOverride?: string | null): Promise<boolean> => {
       if (isInitializingRef.current) {
         console.log('BDK initialization in progress');
         return false;
@@ -343,46 +333,25 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         const wallet = await new Wallet().create(externalDescriptor, internalDescriptor, getOnchainNetwork(), dbConfig);
 
         const onchainNetwork = getOnchainNetwork();
-        const servers = getElectrumServers(onchainNetwork);
-        if (servers.length === 0) {
-          throw new Error(onchainNetwork === Network.Bitcoin ? 'No clearnet Electrum server configured for mainnet.' : 'No clearnet Electrum server configured for testnet.');
+        if (DEFAULT_ESPLORA_SERVERS.length === 0) {
+          throw new Error('No Esplora indexer configured.');
         }
 
-        const storedHost = await getStoredServerHost(onchainNetwork);
-        const defaultHost = getDefaultServerHost(onchainNetwork);
-        // An explicit override (server change in progress) takes priority over the stored value.
-        const targetHost = serverHostOverride ?? storedHost;
-        const chosen = servers.find((server) => server.host === targetHost) ?? servers.find((server) => server.host === defaultHost) ?? servers[0];
-        const { host, port } = chosen;
-        const electrumUrl = `ssl://${host}:${port}`;
+        const storedId = await getStoredServerId(onchainNetwork);
+        const isManualSelection = serverIdOverride != null;
+        const preferredId = serverIdOverride ?? storedId ?? getDefaultServerId();
+        const candidates = isManualSelection ? DEFAULT_ESPLORA_SERVERS.filter((server) => server.id === serverIdOverride) : orderEsploraServers(DEFAULT_ESPLORA_SERVERS, preferredId);
 
-        console.log(`[BDK init] Electrum clearnet SSL → ${electrumUrl}`);
-
-        const blockchainConfig = {
-          url: electrumUrl,
-          sock5: null,
-          retry: 5,
-          timeout: 60,
-          stopGap: 100,
-          validateDomain: false,
-        };
-
-        let blockchain;
-        try {
-          blockchain = await new BdkBlockchain().create(blockchainConfig);
-        } catch (error) {
-          const message = formatUnknownError(error);
-          console.error('[BDK init] Electrum blockchain create failed — check server reachability or firewall.', {
-            electrumUrl,
-            error: message,
-            ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
-          });
-          throw error;
+        if (candidates.length === 0) {
+          throw new Error(isManualSelection ? 'ESPLORA_CONNECTION_FAILED' : 'No Esplora indexer configured.');
         }
 
-        blockchainRef.current = blockchain;
+        const connectResult = await connectEsploraBackend(wallet, candidates, onchainNetwork, {
+          manualSelection: isManualSelection,
+        });
+
+        blockchainRef.current = connectResult.blockchain;
         walletRef.current = wallet;
-
         currentNetworkRef.current = getOnchainNetwork();
 
         updateState({
@@ -392,28 +361,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           isSyncing: true,
         });
 
-        try {
-          await syncWallet(wallet, { rethrowOnError: true });
-        } catch (syncError) {
-          const message = formatUnknownError(syncError);
-          console.error('[BDK init] First sync failed — wallet loaded. Retry sync from UI or wait for automatic sync.', {
-            error: message,
-          });
-          // `BdkBlockchain.create` succeeds even for unreachable servers; the real
-          // reachability check is this first sync. On an explicit server change we
-          // therefore treat a sync failure as a connection failure (fatal) so the
-          // UI can stay on the page and surface the error.
-          if (serverHostOverride != null) {
-            throw syncError;
-          }
-          updateState({
-            error: message,
-            isSyncing: false,
-          });
-          return true;
-        }
-        // Only reflect the chosen server once it is fully reachable (sync succeeded).
-        setSelectedServerHost(chosen.host);
+        await syncWallet(wallet, { rethrowOnError: true });
+        setSelectedServerId(connectResult.serverId);
         return true;
       } catch (error) {
         const message = formatUnknownError(error);
@@ -440,21 +389,19 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         isInitializingRef.current = false;
       }
     },
-    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, syncWallet, getStoredServerHost],
+    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, syncWallet, getStoredServerId],
   );
 
   const setSelectedServer = useCallback(
-    async (host: string): Promise<void> => {
+    async (serverId: string): Promise<void> => {
       const net = getOnchainNetwork();
-      // Try to connect to the new server first; only persist it when the
-      // connection succeeds so a failing server never becomes the saved choice.
-      const connected = await initializeBdk(true, host);
+      const connected = await initializeBdk(true, serverId);
       if (!connected) {
-        throw new Error('ELECTRUM_CONNECTION_FAILED');
+        throw new Error('ESPLORA_CONNECTION_FAILED');
       }
-      await persistServerHost(net, host);
+      await persistServerId(net, serverId);
     },
-    [getOnchainNetwork, persistServerHost, initializeBdk],
+    [getOnchainNetwork, persistServerId, initializeBdk],
   );
 
   const retryBdkConnection = useCallback(async (): Promise<void> => {
@@ -553,7 +500,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     calculateTransactionFee,
     getBlockainHeight,
     availableServers,
-    selectedServerHost,
+    selectedServerId,
     setSelectedServer,
   };
 
