@@ -1,28 +1,32 @@
-export const MEMPOOL_SSL_URL_TESTNET = 'ssl://electrum.blockstream.info:60004';
-export const MEMPOOL_SSL_URL = 'ssl://electrum.blockstream.info:60002';
+export interface EsploraServer {
+  id: string;
+  mainnetBaseUrl: string;
+  testnetBaseUrl: string;
+}
 
-export const DEFAULT_PORTS = { t: '50001', s: '50002' } as const;
-export const DEFAULT_PORTS_TESTNET = { t: '51001', s: '51002' } as const;
+// Default Esplora indexer used when nothing is stored yet (fresh install / first connection).
+export const DEFAULT_SERVER_ID = 'blockstream.info';
 
-// Default Electrum server used when nothing is stored yet (fresh install / first connection).
-export const DEFAULT_SERVER_HOST = 'electrum.blockstream.info';
+/** Legacy Electrum host stored before the Esplora migration. */
+export const LEGACY_ELECTRUM_SERVER_ID = 'electrum.blockstream.info';
 
-// Electrum clearnet servers (mainnet) for on-chain sync; see bdk-context
-export const DEFAULT_SERVERS = {
-  'electrum.blockstream.info': { s: '50002' },
-  'blockstream.info': { s: '700' },
-  'electrum.diynodes.com': { s: '50022' },
-  'bitcoin.lu.ke': { s: '50002' },
-  'electrum.emzy.de': { s: '50002' },
-  'fulcrum.sethforprivacy.com': { s: '50002' },
-  'electrum.bitaroo.net': { s: '50002' },
-} as const;
-
-// Electrum clearnet servers (testnet)
-export const DEFAULT_SERVERS_TESTNET = {
-  'electrum.blockstream.info': { s: '60002' },
-  'testnet.aranguren.org': { s: '51002' },
-  'testnet.qtornado.com': { s: '51002' },
-} as const;
+// Esplora indexers (HTTPS/443) for on-chain sync; see bdk-context
+export const DEFAULT_ESPLORA_SERVERS: EsploraServer[] = [
+  {
+    id: 'blockstream.info',
+    mainnetBaseUrl: 'https://blockstream.info/api',
+    testnetBaseUrl: 'https://blockstream.info/testnet/api',
+  },
+  {
+    id: 'mempool.space',
+    mainnetBaseUrl: 'https://mempool.space/api',
+    testnetBaseUrl: 'https://mempool.space/testnet4/api',
+  },
+  {
+    id: 'bitcoin.lu.ke',
+    mainnetBaseUrl: 'https://bitcoin.lu.ke/api',
+    testnetBaseUrl: 'https://bitcoin.lu.ke/testnet/api',
+  },
+];
 
 export const GRIMM_APP_LN_URL_DOMAIN = 'pay.usegrimm.app';
