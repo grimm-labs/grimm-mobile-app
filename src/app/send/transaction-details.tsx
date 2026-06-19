@@ -33,7 +33,7 @@ export default function PaymentDetailsScreen() {
 
   const { selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { parseInput, prepareSend, executeSend, prepareLnurlPay, executeLnurlPay, balance } = useBreez();
+  const { parseInput, prepareSend, executeSend, prepareLnurlPay, executeLnurlPay, balance, isBreezInitialized } = useBreez();
 
   const [isLoading, setIsLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState('');
@@ -57,6 +57,8 @@ export default function PaymentDetailsScreen() {
   const hasInsufficientBalance = totalAmountSat > balance;
 
   useEffect(() => {
+    if (!isBreezInitialized) return;
+
     const prepareLnAddress = async () => {
       if (!paymentInput || !amountSats) return;
       if (isNaN(parsedAmountSats) || parsedAmountSats <= 0) {
@@ -128,7 +130,7 @@ export default function PaymentDetailsScreen() {
       setDecodeError(t('paymentDetails.errors.invalidData'));
       setIsLoading(false);
     }
-  }, [parseInput, prepareSend, prepareLnurlPay, rawInvoice, paymentInput, amountSats, parsedAmountSats, isLnAddress, router, t]);
+  }, [isBreezInitialized, parseInput, prepareSend, prepareLnurlPay, rawInvoice, paymentInput, amountSats, parsedAmountSats, isLnAddress, router, t]);
 
   useEffect(() => {
     if (!decodedInvoiceData?.expiry || !decodedInvoiceData?.timestamp) return;

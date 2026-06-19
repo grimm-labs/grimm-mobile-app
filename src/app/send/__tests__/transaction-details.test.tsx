@@ -71,6 +71,7 @@ jest.mock('@/lib/context/breez-context', () => ({
     prepareLnurlPay: mockPrepareLnurlPay,
     executeLnurlPay: mockExecuteLnurlPay,
     balance: 100000,
+    isBreezInitialized: true,
   }),
   InputType_Tags: {
     Bolt11Invoice: 'Bolt11Invoice',

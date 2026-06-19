@@ -49,6 +49,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     infoPlist: {
       NSCameraUsageDescription: 'This app uses the camera to scan QR codes',
+      CFBundleURLTypes: [{ CFBundleURLSchemes: [Env.SCHEME] }, { CFBundleURLSchemes: ['lightning'] }],
     },
   },
   experiments: {
@@ -61,6 +62,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: '#ffffff',
     },
     package: Env.PACKAGE,
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: false,
+        data: [{ scheme: 'lightning' }],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
   },
   web: {
     favicon: './assets/favicon.png',
