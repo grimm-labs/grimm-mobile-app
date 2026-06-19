@@ -28,7 +28,12 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>GrimmApp</string>
-          <string>com.grimm.labs.app.development</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>lightning</string>
         </array>
       </dict>
       <dict>
