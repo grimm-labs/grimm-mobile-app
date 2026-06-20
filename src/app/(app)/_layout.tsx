@@ -24,7 +24,7 @@ const tabBarIcon =
 
 const TabLayout = () => {
   const { isDataLoaded, hasSeedPhrase } = useContext(AppContext);
-  const { isBreezInitialized, initializeBreez } = useBreez();
+  const { isBreezInitialized, initializeBreez, isDataLoaded: isBreezDataLoaded } = useBreez();
   const { isBdkInitialized, initializeBdk } = useBdk();
 
   const splashHiddenRef = useRef(false);
@@ -71,11 +71,26 @@ const TabLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded && hasSeedPhrase && (!isBreezInitialized || !isBdkInitialized)) {
+    if (isDataLoaded && hasSeedPhrase && isBreezDataLoaded && !isBreezInitialized) {
       initializeBreez();
+    }
+  }, [isDataLoaded, hasSeedPhrase, isBreezDataLoaded, isBreezInitialized, initializeBreez]);
+
+  const bdkAutoInitRequestedRef = useRef(false);
+
+  useEffect(() => {
+    // BDK only needs the stored network (isBreezDataLoaded), not a live Breez connection.
+    if (isDataLoaded && hasSeedPhrase && isBreezDataLoaded && !isBdkInitialized && !bdkAutoInitRequestedRef.current) {
+      bdkAutoInitRequestedRef.current = true;
       initializeBdk();
     }
-  }, [isDataLoaded, hasSeedPhrase, isBreezInitialized, isBdkInitialized, initializeBreez, initializeBdk]);
+  }, [isDataLoaded, hasSeedPhrase, isBreezDataLoaded, isBdkInitialized, initializeBdk]);
+
+  useEffect(() => {
+    if (!hasSeedPhrase) {
+      bdkAutoInitRequestedRef.current = false;
+    }
+  }, [hasSeedPhrase]);
 
   useEffect(() => {
     if (isDataLoaded && isLanguageLoaded) {

@@ -1,7 +1,7 @@
 import { Network } from 'bdk-rn/lib/lib/enums';
 
 import { DEFAULT_ESPLORA_SERVERS } from '@/lib/constant';
-import { getEsploraBaseUrl, migrateLegacyServerId, orderEsploraServers } from '@/lib/bdk-blockchain-connect';
+import { getEsploraBaseUrl, isEsploraRateLimitError, migrateLegacyServerId, orderEsploraServers } from '@/lib/bdk-blockchain-connect';
 
 describe('migrateLegacyServerId', () => {
   it('maps electrum.blockstream.info to blockstream.info', () => {
@@ -18,8 +18,8 @@ describe('migrateLegacyServerId', () => {
 });
 
 describe('orderEsploraServers', () => {
-  it('puts blockstream.info first when preferred', () => {
-    expect(orderEsploraServers(DEFAULT_ESPLORA_SERVERS, 'blockstream.info').map((s) => s.id)).toEqual(['blockstream.info', 'mempool.space', 'bitcoin.lu.ke']);
+  it('puts mempool.bitdevsyde.org first when preferred', () => {
+    expect(orderEsploraServers(DEFAULT_ESPLORA_SERVERS, 'mempool.bitdevsyde.org').map((s) => s.id)).toEqual(['mempool.bitdevsyde.org', 'mempool.space', 'blockstream.info', 'bitcoin.lu.ke']);
   });
 
   it('returns the original list when preferred id is unknown', () => {
@@ -32,13 +32,23 @@ describe('orderEsploraServers', () => {
 });
 
 describe('getEsploraBaseUrl', () => {
-  const blockstream = DEFAULT_ESPLORA_SERVERS[0];
+  const grimmMempool = DEFAULT_ESPLORA_SERVERS[0];
 
   it('builds mainnet API URL', () => {
-    expect(getEsploraBaseUrl(blockstream, Network.Bitcoin)).toBe('https://blockstream.info/api');
+    expect(getEsploraBaseUrl(grimmMempool, Network.Bitcoin)).toBe('https://mempool.bitdevsyde.org/api');
   });
 
   it('builds testnet API URL', () => {
-    expect(getEsploraBaseUrl(blockstream, Network.Testnet)).toBe('https://blockstream.info/testnet/api');
+    expect(getEsploraBaseUrl(grimmMempool, Network.Testnet)).toBe('https://mempool.bitdevsyde.org/testnet4/api');
+  });
+});
+
+describe('isEsploraRateLimitError', () => {
+  it('detects HTTP 429 errors', () => {
+    expect(isEsploraRateLimitError(new Error('status=429, errorMessage=Too Many Requests'))).toBe(true);
+  });
+
+  it('returns false for other errors', () => {
+    expect(isEsploraRateLimitError(new Error('network timeout'))).toBe(false);
   });
 });

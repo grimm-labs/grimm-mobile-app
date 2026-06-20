@@ -194,6 +194,28 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     loadLnAddress();
   }, [_getLnAddress]);
 
+  useEffect(() => {
+    let cancelled = false;
+    const loadNetwork = async () => {
+      try {
+        const stored = await _getNetwork();
+        if (!cancelled && (stored === AppNetwork.MAINNET || stored === AppNetwork.TESTNET)) {
+          _setNetwork(stored);
+        }
+      } catch (error) {
+        console.error('Error loading network from storage:', error);
+      } finally {
+        if (!cancelled) {
+          _setIsDataLoaded(true);
+        }
+      }
+    };
+    loadNetwork();
+    return () => {
+      cancelled = true;
+    };
+  }, [_getNetwork]);
+
   const setLightningAddress = useCallback(async (address: string | null) => {
     _setLightningAddress(address);
     const persist = setLnAddressStorageRef.current;

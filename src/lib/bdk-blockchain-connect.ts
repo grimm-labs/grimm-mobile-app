@@ -1,14 +1,13 @@
-/* eslint-disable max-params */
-import type { Blockchain, Wallet as BdkWallet } from 'bdk-rn';
+import type { Blockchain } from 'bdk-rn';
 import { Blockchain as BdkBlockchain } from 'bdk-rn';
 import { BlockChainNames, Network } from 'bdk-rn/lib/lib/enums';
 
 import { type EsploraServer, LEGACY_ELECTRUM_SERVER_ID } from '@/lib/constant';
 
-const ESPLORA_TIMEOUT_AUTO_SEC = 15;
+const ESPLORA_TIMEOUT_AUTO_SEC = 60;
 const ESPLORA_TIMEOUT_MANUAL_SEC = 60;
-const ESPLORA_CONCURRENCY = 4;
-const STOP_GAP = 100;
+const ESPLORA_CONCURRENCY = 6;
+const STOP_GAP = 30;
 
 export interface EsploraServerOption {
   id: string;
@@ -53,6 +52,11 @@ function formatUnknownError(error: unknown): string {
   return asStr || 'Unknown error';
 }
 
+export function isEsploraRateLimitError(error: unknown): boolean {
+  const message = formatUnknownError(error);
+  return message.includes('429') || message.includes('Too Many Requests');
+}
+
 async function createEsploraBlockchain(baseUrl: string, timeoutSec: number): Promise<Blockchain> {
   return new BdkBlockchain().create(
     {
@@ -66,8 +70,8 @@ async function createEsploraBlockchain(baseUrl: string, timeoutSec: number): Pro
   );
 }
 
-async function probeWalletSync(wallet: BdkWallet, blockchain: Blockchain): Promise<void> {
-  await wallet.sync(blockchain);
+async function probeEsploraConnection(blockchain: Blockchain): Promise<void> {
+  await blockchain.getHeight();
 }
 
 export type EsploraConnectResult = {
@@ -80,7 +84,7 @@ export type EsploraConnectResult = {
 /**
  * Tries Esplora indexers in order. Manual selection tries only the requested server.
  */
-export async function connectEsploraBackend(wallet: BdkWallet, candidates: EsploraServer[], onchainNetwork: Network, opts: { manualSelection: boolean }): Promise<EsploraConnectResult> {
+export async function connectEsploraBackend(candidates: EsploraServer[], onchainNetwork: Network, opts: { manualSelection: boolean }): Promise<EsploraConnectResult> {
   const timeoutSec = opts.manualSelection ? ESPLORA_TIMEOUT_MANUAL_SEC : ESPLORA_TIMEOUT_AUTO_SEC;
   let lastError: unknown = null;
 
@@ -89,7 +93,7 @@ export async function connectEsploraBackend(wallet: BdkWallet, candidates: Esplo
     try {
       console.log(`[BDK init] Trying Esplora → ${baseUrl}`);
       const blockchain = await createEsploraBlockchain(baseUrl, timeoutSec);
-      await probeWalletSync(wallet, blockchain);
+      await probeEsploraConnection(blockchain);
       console.log(`[BDK init] Esplora connected → ${baseUrl}`);
       return { backend: 'esplora', blockchain, serverId: server.id, baseUrl };
     } catch (error) {
