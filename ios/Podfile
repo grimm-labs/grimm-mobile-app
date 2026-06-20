@@ -60,5 +60,14 @@ target 'GrimmApp' do
         end
       end
     end
+
+    # Xcode 26+ rejects fmt 11.x consteval format strings bundled with React Native.
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end
   end
 end
