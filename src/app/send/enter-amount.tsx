@@ -75,8 +75,8 @@ export default function LightningAddressAmountScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('enterAmount.headerTitle')} />,
@@ -87,14 +87,14 @@ export default function LightningAddressAmountScreen() {
         />
         <View className="flex-1 px-4 pt-6">
           <View className="mb-4 items-center">
-            <Text className="text-base text-gray-500">
+            <Text className="text-base text-gray-500 dark:text-charcoal-400">
               {t('enterAmount.sendTo')} {paymentInput}
             </Text>
           </View>
           <View className="mb-6 items-center">
             <View className="flex-row items-center">
-              <Text className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800'}`}>{amount}</Text>
-              <Text className="ml-2 text-2xl font-light text-gray-400">{bitcoinUnit}</Text>
+              <Text className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>{amount}</Text>
+              <Text className="ml-2 text-2xl font-light text-gray-400 dark:text-charcoal-500">{bitcoinUnit}</Text>
             </View>
             {validationError && <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text>}
           </View>
@@ -105,8 +105,8 @@ export default function LightningAddressAmountScreen() {
           </View>
           <View className="mb-8 items-center">
             <View className="flex-row items-center">
-              <Text className="mr-2 text-xl font-medium text-gray-800">{fiatAmount}</Text>
-              <Text className="text-xl font-semibold text-gray-600">{selectedFiatCurrency}</Text>
+              <Text className="mr-2 text-xl font-medium text-gray-800 dark:text-charcoal-100">{fiatAmount}</Text>
+              <Text className="text-xl font-semibold text-gray-600 dark:text-charcoal-300">{selectedFiatCurrency}</Text>
             </View>
           </View>
           {Number(amount) > 0 && satsAmount > balance && (

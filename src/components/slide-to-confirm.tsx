@@ -68,9 +68,9 @@ const SlideToConfirm: React.FC<SlideToConfirmProps> = ({ onConfirm, confirmThres
 
   return (
     <View>
-      <View className={`h-[60px] w-full justify-center overflow-hidden rounded-full ${isInactive ? 'bg-gray-200' : 'bg-gray-100'}`}>
-        <Animated.View className={`absolute left-0 h-full rounded-full ${isInactive ? 'bg-gray-400' : 'bg-primary-600'} opacity-30`} style={progressStyle} />
-        <Text className={`absolute w-full text-center text-sm font-medium ${isInactive ? 'text-gray-400' : 'text-gray-500'}`}>
+      <View className={`h-[60px] w-full justify-center overflow-hidden rounded-full ${isInactive ? 'bg-gray-200 dark:bg-charcoal-800' : 'bg-gray-100 dark:bg-charcoal-850'}`}>
+        <Animated.View className={`absolute left-0 h-full rounded-full ${isInactive ? 'bg-gray-400 dark:bg-charcoal-600' : 'bg-primary-600'} opacity-30`} style={progressStyle} />
+        <Text className={`absolute w-full text-center text-sm font-medium ${isInactive ? 'text-gray-400 dark:text-charcoal-500' : 'text-gray-500 dark:text-charcoal-300'}`}>
           {loading ? 'Processing...' : disabled ? 'Slide disabled' : 'Slide to confirm transaction'}
         </Text>
         <PanGestureHandler onGestureEvent={panGestureHandler} enabled={!isInactive}>

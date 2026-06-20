@@ -11,6 +11,7 @@ import { colors, Image, SafeAreaView } from '@/components/ui';
 import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
@@ -35,6 +36,7 @@ export default function TransactionResultScreen() {
   const { selectedCountry, bitcoinUnit } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
   const animation = useRef<LottieView>(null);
+  const stackScreenOptions = useStackScreenOptions();
 
   const isReceived = transactionType === 'received';
   const headerLeft = () => (
@@ -50,16 +52,14 @@ export default function TransactionResultScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitle: '',
             headerShown: true,
             headerShadowVisible: false,
             headerLeft: headerLeft,
-            headerStyle: {
-              backgroundColor: 'white',
-            },
+            ...stackScreenOptions,
           }}
         />
         <View className="flex-1 items-center justify-center px-6">
@@ -67,7 +67,7 @@ export default function TransactionResultScreen() {
             <LottieView autoPlay ref={animation} style={styles.lottie} loop={true} source={require('@/assets/lotties/1749330404855.json')} />
           </View>
 
-          <Text className="mb-8 text-center text-2xl text-gray-900">{isReceived ? t('transaction.received') : t('transaction.sent')}</Text>
+          <Text className="mb-8 text-center text-2xl text-gray-900 dark:text-charcoal-100">{isReceived ? t('transaction.received') : t('transaction.sent')}</Text>
 
           <View className="mb-4 flex-row items-center">
             <View className="mr-3 size-8 items-center justify-center rounded-full bg-orange-500">
@@ -76,7 +76,7 @@ export default function TransactionResultScreen() {
             <Text className="text-4xl font-semibold text-neutral-700">{formatBalance(Number(satsAmount), bitcoinUnit)}</Text>
           </View>
 
-          <Text className="mb-6 text-center text-base text-gray-500">
+          <Text className="mb-6 text-center text-base text-gray-500 dark:text-charcoal-400">
             {t('transaction.date')}{' '}
             {new Date().toLocaleDateString('en-US', {
               year: 'numeric',
@@ -92,7 +92,7 @@ export default function TransactionResultScreen() {
             })}
           </Text>
 
-          <Text className="mb-12 text-base font-medium text-gray-600">#GrimmAppBTC</Text>
+          <Text className="mb-12 text-base font-medium text-gray-600 dark:text-charcoal-300">#GrimmAppBTC</Text>
         </View>
 
         <View className="mb-4 px-6">

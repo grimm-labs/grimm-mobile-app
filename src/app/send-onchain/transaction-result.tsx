@@ -11,6 +11,7 @@ import { colors, Image, SafeAreaView } from '@/components/ui';
 import { convertBitcoinToFiat, convertSatsToBtc, generateTxUrl, getFiatCurrency } from '@/lib';
 import { AppContext, useBreez } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
@@ -36,6 +37,7 @@ export default function TransactionResultScreen() {
   const { network } = useBreez();
   const { bitcoinPrices } = useBitcoin();
   const animation = useRef<LottieView>(null);
+  const stackScreenOptions = useStackScreenOptions();
 
   const headerLeft = () => (
     <HeaderLeft
@@ -55,23 +57,21 @@ export default function TransactionResultScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitle: '',
             headerShown: true,
             headerShadowVisible: false,
             headerLeft: headerLeft,
-            headerStyle: {
-              backgroundColor: 'white',
-            },
+            ...stackScreenOptions,
           }}
         />
         <View className="flex-1 items-center justify-center px-6">
           <View className="mb-4">
             <LottieView autoPlay ref={animation} style={styles.lottie} loop={true} source={require('@/assets/lotties/1749330404855.json')} />
           </View>
-          <Text className="mb-8 text-center text-2xl text-gray-900">{t('onchainSend.transactionResult.sent')}</Text>
+          <Text className="mb-8 text-center text-2xl text-gray-900 dark:text-charcoal-100">{t('onchainSend.transactionResult.sent')}</Text>
           <View className="mb-4 flex-row items-center">
             <View className="mr-3 size-8 items-center justify-center rounded-full bg-orange-500">
               <Image className="mr-2 size-8 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
@@ -80,7 +80,7 @@ export default function TransactionResultScreen() {
               {bitcoinUnit === BitcoinUnit.Sats ? satsAmount.toLocaleString() : convertSatsToBtc(Number(satsAmount))} {bitcoinUnit}
             </Text>
           </View>
-          <Text className="mb-6 text-center text-base text-gray-500">
+          <Text className="mb-6 text-center text-base text-gray-500 dark:text-charcoal-400">
             {t('onchainSend.transactionResult.date')}{' '}
             {new Date().toLocaleDateString('en-US', {
               year: 'numeric',
@@ -94,7 +94,7 @@ export default function TransactionResultScreen() {
               currency: selectedFiatCurrency,
             })}
           </Text>
-          <Text className="mb-12 text-base font-medium text-gray-600">#GrimmAppBTC</Text>
+          <Text className="mb-12 text-base font-medium text-gray-600 dark:text-charcoal-300">#GrimmAppBTC</Text>
         </View>
         <View className="mb-4 px-6">
           <TouchableOpacity onPress={() => openLink()} className="items-center rounded-full bg-primary-600 px-6 py-4">

@@ -119,8 +119,8 @@ export default function OnchainSendAmountScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('onchainSend.enterAmount.headerTitle')} />,
@@ -132,8 +132,8 @@ export default function OnchainSendAmountScreen() {
         <View className="flex-1 px-4 pt-6">
           <View className="mb-6 items-center">
             <View className="flex-row items-center">
-              <Text className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800'}`}>{amount}</Text>
-              <Text className="ml-2 text-2xl font-light text-gray-400">{bitcoinUnit}</Text>
+              <Text className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>{amount}</Text>
+              <Text className="ml-2 text-2xl font-light text-gray-400 dark:text-charcoal-500">{bitcoinUnit}</Text>
             </View>
             {validationError && <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text>}
           </View>
@@ -144,12 +144,12 @@ export default function OnchainSendAmountScreen() {
           </View>
           <View className="mb-8 items-center">
             <View className="flex-row items-center">
-              <Text className="mr-2 text-xl font-medium text-gray-800">{fiatAmount}</Text>
-              <Text className="text-xl font-semibold text-gray-600">{selectedFiatCurrency}</Text>
+              <Text className="mr-2 text-xl font-medium text-gray-800 dark:text-charcoal-100">{fiatAmount}</Text>
+              <Text className="text-xl font-semibold text-gray-600 dark:text-charcoal-300">{selectedFiatCurrency}</Text>
             </View>
           </View>
           <View className="mb-6">
-            <Text className="mb-3 text-base font-semibold text-gray-700">{t('onchainSend.enterAmount.feeSelection')}</Text>
+            <Text className="mb-3 text-base font-semibold text-gray-700 dark:text-charcoal-200">{t('onchainSend.enterAmount.feeSelection')}</Text>
             {isPending ? (
               <View className="flex items-center justify-center">
                 <ActivityIndicator size="small" color={colors.primary[600]} />
@@ -157,10 +157,10 @@ export default function OnchainSendAmountScreen() {
             ) : (
               <View className="flex-row justify-between">
                 {feeOptions.map((fee) => (
-                  <Pressable key={fee.speed} onPress={() => setSelectedFee(fee.speed)} className={`mx-1 flex-1 rounded-xl p-2 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100'}`}>
-                    <Text className={`text-center text-sm font-semibold ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700'}`}>{fee.label}</Text>
-                    <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700'}`}>{fee.satsPerVbyte} sat/vB</Text>
-                    <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700'}`}>{fee.estimatedTime}</Text>
+                  <Pressable key={fee.speed} onPress={() => setSelectedFee(fee.speed)} className={`mx-1 flex-1 rounded-xl p-2 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100 dark:bg-charcoal-850'}`}>
+                    <Text className={`text-center text-sm font-semibold ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.label}</Text>
+                    <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.satsPerVbyte} sat/vB</Text>
+                    <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.estimatedTime}</Text>
                   </Pressable>
                 ))}
               </View>

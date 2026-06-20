@@ -99,8 +99,8 @@ export default function ReceivePaymentScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('receive_payment.header')} />,
@@ -111,8 +111,8 @@ export default function ReceivePaymentScreen() {
         />
         <View className="flex-1 items-center justify-center px-4">
           <ActivityIndicator size="large" color={colors.primary[600]} />
-          <Text className="mt-4 text-lg text-gray-600">{t('receive_payment.loading_title')}</Text>
-          <Text className="mt-2 text-center text-sm text-gray-400">{t('receive_payment.loading_subtitle')}</Text>
+          <Text className="mt-4 text-lg text-gray-600 dark:text-charcoal-300">{t('receive_payment.loading_title')}</Text>
+          <Text className="mt-2 text-center text-sm text-gray-400 dark:text-charcoal-500">{t('receive_payment.loading_subtitle')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -120,8 +120,8 @@ export default function ReceivePaymentScreen() {
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('receive_payment.header')} />,
@@ -135,8 +135,8 @@ export default function ReceivePaymentScreen() {
             <View className="mb-4 rounded-full bg-red-100 p-4">
               <Ionicons name="alert-circle" size={48} color="#EF4444" />
             </View>
-            <Text className="mb-2 text-xl font-semibold text-gray-800">{t('receive_payment.error_title')}</Text>
-            <Text className="mb-6 text-center text-gray-600">{error}</Text>
+            <Text className="mb-2 text-xl font-semibold text-gray-800 dark:text-charcoal-100">{t('receive_payment.error_title')}</Text>
+            <Text className="mb-6 text-center text-gray-600 dark:text-charcoal-300">{error}</Text>
           </View>
 
           <View className="mb-8">
@@ -149,8 +149,8 @@ export default function ReceivePaymentScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('receive_payment.header')} />,
@@ -169,18 +169,18 @@ export default function ReceivePaymentScreen() {
             {type === 'lightning' && (
               <View className="mb-2 mt-3">
                 <View className="items-center rounded-2xl p-6">
-                  <Text className="mb-2 text-2xl font-light text-gray-800">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
-                  <Text className="text-lg text-gray-500">
+                  <Text className="mb-2 text-2xl font-light text-gray-800 dark:text-charcoal-100">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
+                  <Text className="text-lg text-gray-500 dark:text-charcoal-400">
                     {Number(convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)).toLocaleString()} {selectedFiatCurrency}
                   </Text>
-                  <View className="rounded-lg bg-white p-3">
-                    <Text className="text-sm text-gray-600">{note || defaultNotes}</Text>
+                  <View className="rounded-lg bg-white p-3 dark:bg-charcoal-900">
+                    <Text className="text-sm text-gray-600 dark:text-charcoal-300">{note || defaultNotes}</Text>
                   </View>
                 </View>
               </View>
             )}
             <View className="mb-8 items-center">
-              <View className="bg-white p-6">{paymentRequest && <QRCode value={paymentRequest?.toUpperCase()} size={200} backgroundColor="white" color="black" />}</View>
+              <View className="bg-white p-6 dark:bg-charcoal-900">{paymentRequest && <QRCode value={paymentRequest?.toUpperCase()} size={200} backgroundColor="white" color="black" />}</View>
               {type === 'onchain' && (
                 <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
                   {splitStringIntoChunks(paymentRequest?.toUpperCase(), 6).map((s) => (
@@ -190,7 +190,7 @@ export default function ReceivePaymentScreen() {
                   ))}
                 </Pressable>
               )}
-              <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_payment.scan_text')}</Text>
+              <Text className="mt-4 text-center text-sm text-gray-500 dark:text-charcoal-400">{t('receive_payment.scan_text')}</Text>
             </View>
             <View className="flex flex-row justify-center">
               <View className="mx-4 flex items-center justify-center">

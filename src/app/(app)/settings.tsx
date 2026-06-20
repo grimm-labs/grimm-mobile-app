@@ -40,18 +40,18 @@ export default function Settings() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <View className="flex">
-          <View className="flex border-b border-neutral-100 px-4 py-3">
-            <Text className="text-2xl font-bold text-gray-800">{t('settings.title')}</Text>
+          <View className="flex border-b border-neutral-100 px-4 py-3 dark:border-charcoal-700">
+            <Text className="text-2xl font-bold text-gray-800 dark:text-charcoal-100">{t('settings.title')}</Text>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
             {/* General Section */}
             <View className="mb-6 mt-3">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-700">{t('settings.sections.general')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-700 dark:text-charcoal-200">{t('settings.sections.general')}</Text>
+              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
                 <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} />
                 <SettingsItem icon="server" title={t('settings.general.esploraServer.title')} subtitle={t('settings.general.esploraServer.subtitle')} onPress={() => router.push('/settings/esplora-server')} />
                 <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} />
@@ -63,8 +63,8 @@ export default function Settings() {
 
             {/* Security Section */}
             <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600">{t('settings.sections.security')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.security')}</Text>
+              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
                 {/* <SettingsItem icon="lock-closed" title={t('settings.security.pin.title')} subtitle={t('settings.security.pin.subtitle')} onPress={() => console.log('PIN change pressed')} /> */}
                 <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} />
                 {/* <Pressable className="mb-1 flex-row items-center rounded py-2">
@@ -72,8 +72,8 @@ export default function Settings() {
                     <Ionicons name="scan-sharp" size={20} color="gray" />
                   </View>
                   <View className="ml-2 flex-1">
-                    <Text className="text-base font-medium text-gray-800">{t('settings.security.faceId.title')}</Text>
-                    <Text className="text-sm text-gray-500">{t('settings.security.faceId.subtitle')}</Text>
+                    <Text className="text-base font-medium text-gray-800 dark:text-charcoal-100">{t('settings.security.faceId.title')}</Text>
+                    <Text className="text-sm text-gray-500 dark:text-charcoal-400">{t('settings.security.faceId.subtitle')}</Text>
                   </View>
                   <View>
                     <Switch.Root checked={isFaceIdEnabled} onChange={setIsFaceIdEnabled} accessibilityLabel="switch" className="pb-2">
@@ -86,8 +86,8 @@ export default function Settings() {
                     <Ionicons name="eye" size={20} color="gray" />
                   </View>
                   <View className="ml-2 flex-1">
-                    <Text className="text-base font-semibold text-gray-700">{t('settings.security.hideBalance.title')}</Text>
-                    <Text className="text-xs text-gray-500">{t('settings.security.hideBalance.subtitle')}</Text>
+                    <Text className="text-base font-semibold text-gray-700 dark:text-charcoal-200">{t('settings.security.hideBalance.title')}</Text>
+                    <Text className="text-xs text-gray-500 dark:text-charcoal-400">{t('settings.security.hideBalance.subtitle')}</Text>
                   </View>
                   <View>
                     <Switch.Root checked={hideBalance} onChange={setHideBalance} accessibilityLabel="switch" className="pb-2">
@@ -100,8 +100,8 @@ export default function Settings() {
                     <Ionicons name="eye-off" size={20} color="gray" />
                   </View>
                   <View className="ml-2 flex-1">
-                    <Text className="text-base font-semibold text-gray-700">{t('settings.security.preventScreenCapture.title')}</Text>
-                    <Text className="text-xs text-gray-500">{t('settings.security.preventScreenCapture.subtitle')}</Text>
+                    <Text className="text-base font-semibold text-gray-700 dark:text-charcoal-200">{t('settings.security.preventScreenCapture.title')}</Text>
+                    <Text className="text-xs text-gray-500 dark:text-charcoal-400">{t('settings.security.preventScreenCapture.subtitle')}</Text>
                   </View>
                   <View>
                     <Switch.Root checked={preventScreenCapture} onChange={setPreventScreenCapture} accessibilityLabel={t('settings.security.preventScreenCapture.title')} className="pb-2">
@@ -114,8 +114,8 @@ export default function Settings() {
 
             {/* Preferences Section */}
             <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600">{t('settings.sections.preferences')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.preferences')}</Text>
+              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
                 <SettingsItem
                   icon="notifications"
                   title={t('settings.preferences.notifications.title')}
@@ -128,25 +128,25 @@ export default function Settings() {
 
             {/* Developers Section */}
             <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600">{t('settings.sections.developers')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2">
+              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.developers')}</Text>
+              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
                 <SettingsItem icon="code-slash" title={t('settings.developers.breez.title')} subtitle={t('settings.developers.breez.subtitle')} onPress={() => router.push('/settings/developers/breez-sdk')} />
               </View>
             </View>
 
             {/* Help & Sign Out */}
             <View className="mx-4">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4" onPress={() => router.push('/settings/about')}>
-                <Text className="text-center font-bold text-gray-600">{t('settings.aboutApp')}</Text>
+              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/settings/about')}>
+                <Text className="text-center font-bold text-gray-600 dark:text-charcoal-300">{t('settings.aboutApp')}</Text>
               </Pressable>
             </View>
             <View className="m-4">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4" onPress={() => router.push('/need-help')}>
+              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/need-help')}>
                 <Text className="text-center font-bold text-primary-600">{t('settings.help')}</Text>
               </Pressable>
             </View>
             <View className="mx-4 mb-8">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4" onPress={signOut}>
+              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={signOut}>
                 <Text className="text-center font-bold text-red-600">{t('settings.signOut')}</Text>
               </Pressable>
             </View>

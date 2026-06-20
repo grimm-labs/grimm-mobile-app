@@ -34,7 +34,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
       className={`
       mb-3 flex flex-row items-center 
       justify-between rounded-xl border border-gray-200 p-4
-      ${isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'}
+      ${isSelected ? 'border-blue-200 bg-blue-50 dark:border-primary-700 dark:bg-primary-900/30' : 'border-gray-200 bg-white dark:border-charcoal-700 dark:bg-charcoal-900'}
       min-h-[80px]
     `}
     >
@@ -42,7 +42,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
         <View
           className={`
           mr-4 size-12 items-center justify-center rounded-full
-          ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}
+          ${isSelected ? 'bg-blue-100' : 'bg-gray-100 dark:bg-charcoal-850'}
         `}
         >
           <Ionicons name={theme.icon} size={24} color={isSelected ? colors.primary[600] : theme.iconColor} />
@@ -52,7 +52,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
           <Text
             className={`
             mb-1 text-sm font-medium
-            ${isSelected ? 'text-blue-900' : 'text-gray-900'}
+            ${isSelected ? 'text-blue-900 dark:text-primary-200' : 'text-gray-900 dark:text-charcoal-100'}
           `}
           >
             {theme.name}
@@ -60,7 +60,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
           <Text
             className={`
             text-xs leading-5
-            ${isSelected ? 'text-blue-700' : 'text-gray-600'}
+            ${isSelected ? 'text-blue-700 dark:text-primary-300' : 'text-gray-600 dark:text-charcoal-300'}
           `}
           >
             {theme.description}
@@ -86,7 +86,7 @@ export default function ThemeSelector() {
         name: t('theme.system.name'),
         description: t('theme.system.description'),
         icon: 'phone-portrait-outline',
-        iconColor: '#6B7280',
+        iconColor: colors.neutral[500],
       },
       {
         id: 'light',
@@ -144,10 +144,10 @@ export default function ThemeSelector() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <View className="mt-4 flex-1">
             {themeOptions.map((option) => (
               <ThemeOption key={option.theme.id} theme={option.theme} isSelected={option.isSelected} onPress={option.onPress} />

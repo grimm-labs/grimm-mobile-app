@@ -28,9 +28,9 @@ export default function BreezSdkDetailsScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen options={screenOptions} />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         <ScrollView className="flex-1 px-3" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
             <DetailRow label={t('breezDetails.balance')} value={breezWalletInfos?.balanceSats?.toString() || ''} expandable />

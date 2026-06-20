@@ -12,9 +12,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, SafeAreaView, Switch, Text, View } from '@/components/ui';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation();
+  const stackScreenOptions = useStackScreenOptions();
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
@@ -77,7 +79,7 @@ export default function NotificationSettingsScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -85,7 +87,7 @@ export default function NotificationSettingsScreen() {
             headerShown: true,
             headerShadowVisible: false,
             headerLeft: HeaderLeft,
-            headerStyle: { backgroundColor: '#ffffff' },
+            ...stackScreenOptions,
           }}
         />
         <View className="flex-1 px-4">
@@ -97,8 +99,8 @@ export default function NotificationSettingsScreen() {
                     <Ionicons name="notifications" size={24} color={colors.primary[600]} />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-sm font-semibold text-gray-900">{t('notificationSettings.pushNotifications')}</Text>
-                    <Text className="mt-1 text-sm text-gray-500">{isEnabled ? t('notificationSettings.enabled') : t('notificationSettings.disabled')}</Text>
+                    <Text className="text-sm font-semibold text-gray-900 dark:text-charcoal-100">{t('notificationSettings.pushNotifications')}</Text>
+                    <Text className="mt-1 text-sm text-gray-500 dark:text-charcoal-400">{isEnabled ? t('notificationSettings.enabled') : t('notificationSettings.disabled')}</Text>
                   </View>
                 </View>
                 <View>

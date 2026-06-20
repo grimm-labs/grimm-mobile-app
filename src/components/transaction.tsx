@@ -8,6 +8,7 @@ import { TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/ui';
 import { convertSatsToBtc } from '@/lib';
 import { AppContext } from '@/lib/context';
+import { theme } from '@/lib/theme-classes';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
 import { TransactionSource, UnifiedTransactionStatus, UnifiedTransactionType } from '@/types/transaction';
@@ -107,14 +108,14 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
         <View className="size-12 items-center justify-center rounded-full" style={{ backgroundColor: `${getTransactionColor()}15` }}>
           <Ionicons name={getTransactionIcon() as any} size={20} color={getTransactionColor()} />
         </View>
-        <View className="absolute -right-1 -top-1 size-5 items-center justify-center rounded-full border border-neutral-300 bg-white shadow">
+        <View className={`absolute -right-1 -top-1 size-5 items-center justify-center rounded-full border ${theme.border} bg-white shadow dark:bg-charcoal-900`}>
           <Text className="text-xs">{getSourceIcon()}</Text>
         </View>
       </View>
       <View className="flex-1 flex-row items-center justify-between">
         <View>
-          <Text className="text-left text-base font-semibold text-gray-900">{getTransactionLabel()}</Text>
-          <Text className="text-left text-xs text-gray-600">
+          <Text className={`text-left text-base font-semibold ${theme.textPrimary}`}>{getTransactionLabel()}</Text>
+          <Text className={`text-left text-xs ${theme.textSecondary}`}>
             {formatDate(transaction.timestamp)} • {getStatusLabel()}
           </Text>
         </View>

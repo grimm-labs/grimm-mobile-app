@@ -121,7 +121,7 @@ export default function ScanQrScreen() {
               headerLeft: HeaderLeft,
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
             <Text>{t('scan_qr.permission_required')}</Text>
           </View>
@@ -143,7 +143,7 @@ export default function ScanQrScreen() {
               headerLeft: HeaderLeft,
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
             <ScreenTitle title={t('scan_qr.no_access_title')} className="text-center text-2xl font-normal" />
             <View style={{ marginBottom: 16 }} />
@@ -179,7 +179,7 @@ export default function ScanQrScreen() {
             headerLeft: HeaderLeft,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar style="light" />
 
         <View style={{ flex: 1 }}>
           <CameraView

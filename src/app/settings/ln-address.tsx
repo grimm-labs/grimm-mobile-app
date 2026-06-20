@@ -156,8 +156,8 @@ export default function LnAddressScreen() {
         <View className="mb-6 rounded-full bg-primary-600 p-6">
           <Ionicons name="at" size={48} color={colors.white} />
         </View>
-        <Text className="mb-3 text-center text-xl font-medium text-gray-800">{t('lnAddressSettings.emptyState.title')}</Text>
-        <Text className="text-small text-center text-gray-500">{t('lnAddressSettings.emptyState.subtitle')}</Text>
+        <Text className="mb-3 text-center text-xl font-medium text-gray-800 dark:text-charcoal-100">{t('lnAddressSettings.emptyState.title')}</Text>
+        <Text className="text-small text-center text-gray-500 dark:text-charcoal-400">{t('lnAddressSettings.emptyState.subtitle')}</Text>
       </View>
       <View className="pb-4">
         <Button label={t('lnAddressSettings.emptyState.cta')} variant="secondary" textClassName="text-base text-white" size="lg" fullWidth onPress={handleStartCreate} />
@@ -167,10 +167,10 @@ export default function LnAddressScreen() {
 
   const renderAddressView = () => (
     <View className="flex-1 px-4 pt-6">
-      <View className="mb-6 rounded-xl border border-neutral-200 bg-neutral-100 p-4">
-        <Text className="mb-1 text-sm text-gray-500">{t('lnAddressSettings.currentAddress')}</Text>
+      <View className="mb-6 rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900">
+        <Text className="mb-1 text-sm text-gray-500 dark:text-charcoal-400">{t('lnAddressSettings.currentAddress')}</Text>
         <Pressable onPress={handleCopyAddress} className="flex-row items-center justify-between">
-          <Text className="text-lg font-medium text-gray-800">{lightningAddress}</Text>
+          <Text className="text-lg font-medium text-gray-800 dark:text-charcoal-100">{lightningAddress}</Text>
           <Ionicons name="copy-outline" size={20} color={colors.neutral[500]} />
         </Pressable>
       </View>
@@ -195,7 +195,7 @@ export default function LnAddressScreen() {
           autoCapitalize="none"
           autoCorrect={false}
           error={validationError ?? undefined}
-          suffix={<Text className="text-base font-medium text-gray-500">@{GRIMM_APP_LN_URL_DOMAIN}</Text>}
+          suffix={<Text className="text-base font-medium text-gray-500 dark:text-charcoal-400">@{GRIMM_APP_LN_URL_DOMAIN}</Text>}
         />
       </View>
 
@@ -245,15 +245,15 @@ export default function LnAddressScreen() {
                 ),
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           {renderContent()}
         </View>
 
         {/* Confirmation Modal - Create/Edit */}
         <Modal ref={confirmModal.ref} snapPoints={['35%']} showCloseButton={false}>
           <View className="flex-1 px-6 pb-8">
-            <Text className="mb-2 text-2xl font-bold text-gray-900">{t('lnAddressSettings.confirm.title')}</Text>
-            <Text className="mb-2 text-base text-gray-600">{t('lnAddressSettings.confirm.message')}</Text>
+            <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.confirm.title')}</Text>
+            <Text className="mb-2 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.confirm.message')}</Text>
             <Text className="mb-6 text-lg font-bold text-primary-600">{fullAddress}</Text>
             <View>
               <Button label={t('lnAddressSettings.confirm.confirmButton')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" loading={isSubmitting} onPress={handleConfirmCreate} />
@@ -265,8 +265,8 @@ export default function LnAddressScreen() {
         {/* Delete Confirmation Modal */}
         <Modal ref={deleteModal.ref} snapPoints={['35%']} showCloseButton={false}>
           <View className="flex-1 px-6 pb-8">
-            <Text className="mb-2 text-2xl font-bold text-gray-900">{t('lnAddressSettings.delete.title')}</Text>
-            <Text className="mb-6 text-base text-gray-600">{t('lnAddressSettings.delete.message')}</Text>
+            <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.delete.title')}</Text>
+            <Text className="mb-6 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.delete.message')}</Text>
             <View>
               <Button label={t('lnAddressSettings.delete.confirmButton')} fullWidth size="lg" variant="destructive" loading={isSubmitting} onPress={handleConfirmDelete} />
               <Button label={t('lnAddressSettings.delete.cancelButton')} fullWidth size="lg" variant="outline" onPress={deleteModal.dismiss} />

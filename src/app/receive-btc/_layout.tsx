@@ -95,8 +95,8 @@ export default function ReceivePaymentScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('receive_onchain.header')} />,
@@ -107,8 +107,8 @@ export default function ReceivePaymentScreen() {
         />
         <View className="flex-1 items-center justify-center px-4">
           <ActivityIndicator size="large" color={colors.primary[600]} />
-          <Text className="mt-4 text-lg text-gray-600">{t('receive_onchain.loading_title')}</Text>
-          <Text className="mt-2 text-center text-sm text-gray-400">{t('receive_onchain.loading_subtitle')}</Text>
+          <Text className="mt-4 text-lg text-gray-600 dark:text-charcoal-300">{t('receive_onchain.loading_title')}</Text>
+          <Text className="mt-2 text-center text-sm text-gray-400 dark:text-charcoal-500">{t('receive_onchain.loading_subtitle')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -116,8 +116,8 @@ export default function ReceivePaymentScreen() {
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('receive_onchain.header')} />,
@@ -130,8 +130,8 @@ export default function ReceivePaymentScreen() {
           <View className="mb-4 rounded-full bg-red-100 p-4">
             <Ionicons name="alert-circle" size={48} color="#EF4444" />
           </View>
-          <Text className="mb-2 text-xl font-semibold text-gray-800">{t('receive_onchain.error_title')}</Text>
-          <Text className="mb-6 text-center text-gray-600">{error}</Text>
+          <Text className="mb-2 text-xl font-semibold text-gray-800 dark:text-charcoal-100">{t('receive_onchain.error_title')}</Text>
+          <Text className="mb-6 text-center text-gray-600 dark:text-charcoal-300">{error}</Text>
         </View>
       </SafeAreaView>
     );
@@ -139,8 +139,8 @@ export default function ReceivePaymentScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('receive_onchain.header')} />,
@@ -155,7 +155,7 @@ export default function ReceivePaymentScreen() {
               <View className="p-6">
                 <QRCode value={addAmountAndNoteToAddress(address?.toUpperCase(), amount, note)} size={220} backgroundColor="white" color="black" />
               </View>
-              <Text className="mt-4 text-center text-sm text-gray-500">{t('receive_onchain.scan_text')}</Text>
+              <Text className="mt-4 text-center text-sm text-gray-500 dark:text-charcoal-400">{t('receive_onchain.scan_text')}</Text>
             </View>
             <View className="my-8 flex flex-row justify-center space-x-1">
               <View className="mx-4 flex items-center justify-center">

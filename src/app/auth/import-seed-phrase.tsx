@@ -11,6 +11,8 @@ import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
 import { Button, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
+import { theme } from '@/lib/theme-classes';
 import { isMnemonicValid } from '@/lib/utils';
 
 export default function ImportSeedPhrase() {
@@ -18,6 +20,7 @@ export default function ImportSeedPhrase() {
   const { setSeedPhrase, setIsSeedPhraseBackup } = useContext(AppContext);
   const [seedPhraseInput, setSeedPhraseInput] = useState('');
   const router = useRouter();
+  const stackScreenOptions = useStackScreenOptions();
 
   const handleTextChange = (text: string) => {
     const cleanedText = text
@@ -63,7 +66,7 @@ export default function ImportSeedPhrase() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView>
+      <SafeAreaView className={`flex-1 ${theme.screen}`}>
         <View className="flex h-full justify-between px-2">
           <Stack.Screen
             options={{
@@ -72,9 +75,10 @@ export default function ImportSeedPhrase() {
               headerLeft: HeaderLeft,
               headerRight: () => null,
               headerShadowVisible: false,
+              ...stackScreenOptions,
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
 
           <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
             <View className="mb-3">
@@ -99,15 +103,17 @@ export default function ImportSeedPhrase() {
               />
 
               <View className="mt-2 flex-row items-center justify-between">
-                <Text className="text-sm font-semibold text-gray-500">
+                <Text className={`text-sm font-semibold ${theme.textMuted}`}>
                   {seedPhraseInput.trim() ? seedPhraseInput.trim().split(/\s+/).length : 0} / 12 {t('importSeed.words')}
                 </Text>
-                <Text className="font-semibold text-primary-600">{getValidationMessage(seedPhraseInput)}</Text>
+                <Text className="font-semibold text-primary-600 dark:text-primary-400">{getValidationMessage(seedPhraseInput)}</Text>
               </View>
             </View>
           </ScrollView>
 
-          <Button testID="login-button" disabled={!isFormValid} label={t('common.import')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleContinue} />
+          <View className="px-2 pb-4">
+            <Button testID="login-button" disabled={!isFormValid} label={t('common.import')} fullWidth size="lg" variant="secondary" onPress={handleContinue} />
+          </View>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useColorScheme } from 'nativewind';
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
@@ -8,6 +9,8 @@ import { View } from 'react-native';
 import { Button, colors, Input, Modal, Text, useModal } from '@/components/ui';
 import { convertBtcToSats, convertSatsToBtc } from '@/lib';
 import { AppContext } from '@/lib/context';
+import { theme } from '@/lib/theme-classes';
+import { useModalBottomInset } from '@/lib/use-modal-bottom-inset';
 import { BitcoinUnit } from '@/types/enum';
 
 export interface AddressConfig {
@@ -24,10 +27,13 @@ interface AddressConfigBottomSheetProps {
 export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, AddressConfigBottomSheetProps>(({ defaultAmount, defaultNote = '', onSave }, forwardedRef) => {
   const { ref, present, dismiss } = useModal();
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const iconColor = colorScheme === 'dark' ? colors.charcoal[300] : colors.neutral[500];
 
   const [amount, setAmount] = useState<number | undefined>(defaultAmount);
   const [note, setNote] = useState<string>(defaultNote);
   const { bitcoinUnit } = useContext(AppContext);
+  const bottomInset = useModalBottomInset();
 
   React.useEffect(() => {
     if (defaultAmount && bitcoinUnit === BitcoinUnit.Sats) {
@@ -69,41 +75,41 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
   };
 
   return (
-    <Modal ref={ref} snapPoints={['40%']}>
-      <View className="flex-1 px-6 pb-8">
+    <Modal ref={ref} snapPoints={['44%']} bottomInset={bottomInset} keyboardBehavior="interactive" keyboardBlurBehavior="restore">
+      <View className="flex-1 px-6 pb-4">
         <View className="flex-1">
-          <Text className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{t('addressConfig.title')}</Text>
+          <Text className={`mb-4 text-2xl font-bold ${theme.textPrimary}`}>{t('addressConfig.title')}</Text>
 
           <View className="mb-4">
-            <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{t('addressConfig.amount')}</Text>
+            <Text className={`mb-2 text-sm font-medium ${theme.textSecondary}`}>{t('addressConfig.amount')}</Text>
             <Input
               value={amount?.toString() || ''}
               onChangeText={(text) => setAmount(text ? Number(text) : undefined)}
               placeholder={bitcoinUnit === 'SATS' ? 'e.g., 1000' : 'e.g., 0.0001'}
               keyboardType="decimal-pad"
-              placeholderTextColor="#9CA3AF"
-              prefix={<Text>₿</Text>}
-              suffix={<Text>{bitcoinUnit}</Text>}
+              placeholderTextColor={colors.neutral[400]}
+              prefix={<Text className={theme.textPrimary}>₿</Text>}
+              suffix={<Text className={theme.textSecondary}>{bitcoinUnit}</Text>}
             />
           </View>
 
           <View className="mb-4">
-            <Text className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{t('addressConfig.note')}</Text>
+            <Text className={`mb-2 text-sm font-medium ${theme.textSecondary}`}>{t('addressConfig.note')}</Text>
             <Input
               value={note}
               onChangeText={setNote}
               placeholder={t('addressConfig.notePlaceholder')}
               multiline
               numberOfLines={3}
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.neutral[400]}
               textAlignVertical="top"
-              prefix={<Ionicons name="document-text" size={18} color={colors.neutral[400]} />}
+              prefix={<Ionicons name="document-text" size={18} color={iconColor} />}
             />
           </View>
         </View>
 
         <View>
-          <Button label={t('addressConfig.saveButton')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white font-bold" onPress={handleSave} />
+          <Button label={t('addressConfig.saveButton')} fullWidth size="lg" variant="secondary" onPress={handleSave} />
         </View>
       </View>
     </Modal>

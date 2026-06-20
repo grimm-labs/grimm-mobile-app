@@ -25,8 +25,8 @@ interface AboutItemProps {
 
 const AboutItem = React.memo<AboutItemProps>(({ title, onPress }) => (
   <Pressable onPress={onPress} style={{ opacity: 1 }}>
-    <View className="mb-3 flex min-h-[60px] flex-row items-center justify-between rounded-xl border border-gray-200 bg-white p-4">
-      <Text className="text-base font-medium text-gray-900">{title}</Text>
+    <View className="mb-3 flex min-h-[60px] flex-row items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-charcoal-700 dark:bg-charcoal-900">
+      <Text className="text-base font-medium text-gray-900 dark:text-charcoal-100">{title}</Text>
       <Ionicons name="open-outline" size={20} color={colors.neutral[500]} />
     </View>
   </Pressable>
@@ -88,17 +88,17 @@ export default function AboutScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full">
           <Stack.Screen options={screenOptions} />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <View className="items-center justify-center py-12">
             <View className="mb-6 items-center">
-              <View className="mb-8 size-20 items-center justify-center rounded-full bg-white" style={{ backgroundColor: '#ffffff' }}>
+              <View className="mb-8 size-20 items-center justify-center rounded-full bg-white dark:bg-charcoal-900">
                 <Logo />
               </View>
-              <Text className="my-6 text-2xl font-bold text-gray-600">Grimm App</Text>
-              <Text className="text-base text-gray-400">
+              <Text className="my-6 text-2xl font-bold text-gray-600 dark:text-charcoal-300">Grimm App</Text>
+              <Text className="text-base text-gray-400 dark:text-charcoal-500">
                 {t('about.version', { version: Env.VERSION })} {Application.nativeBuildVersion ? `(${Application.nativeBuildVersion})` : null}
               </Text>
             </View>

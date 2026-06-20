@@ -24,8 +24,8 @@ const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, 
     <View className="flex min-h-[64px] flex-row items-center justify-between border-b-[0.5px] border-gray-200 px-2 py-4">
       <View className="flex flex-1 flex-row items-center">
         <View className="flex-1">
-          <Text className="mb-1 text-base font-medium text-gray-900">{language}</Text>
-          <Text className="text-sm text-gray-500">{nativeName}</Text>
+          <Text className="mb-1 text-base font-medium text-gray-900 dark:text-charcoal-100">{language}</Text>
+          <Text className="text-sm text-gray-500 dark:text-charcoal-400">{nativeName}</Text>
         </View>
       </View>
       <View className="ml-3 size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
@@ -96,17 +96,17 @@ export default function LanguageSelector() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <View className="flex-1">
             {languageOptions.map((l) => (
               <LanguageOption key={l.code} language={l.name} nativeName={l.nativeName} isSelected={l.isSelected} onPress={l.onPress} />
             ))}
           </View>
           <View className="mb-4 mt-6 px-2">
-            <Text className="text-center text-sm leading-4 text-gray-500">{t('language.info_text')}</Text>
+            <Text className="text-center text-sm leading-4 text-gray-500 dark:text-charcoal-400">{t('language.info_text')}</Text>
           </View>
         </View>
       </SafeAreaView>

@@ -14,6 +14,7 @@ import { HeaderTitle } from '@/components/header-title';
 import { Button, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { useSecureStorage } from '@/lib/hooks';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
 
 const CLIPBOARD_CLEAR_DELAY = 60_000;
 
@@ -23,6 +24,7 @@ export default function SeedPhraseScreen() {
   const [seedPhrase, setSeedPhrase] = useState<string | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
+  const stackScreenOptions = useStackScreenOptions();
 
   useEffect(() => {
     const loadSeedPhrase = async () => {
@@ -70,7 +72,7 @@ export default function SeedPhraseScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -78,7 +80,7 @@ export default function SeedPhraseScreen() {
             headerShown: true,
             headerShadowVisible: false,
             headerLeft: HeaderLeft,
-            headerStyle: { backgroundColor: '#ffffff' },
+            ...stackScreenOptions,
           }}
         />
         <View className="flex-1 px-6">
@@ -86,8 +88,8 @@ export default function SeedPhraseScreen() {
             <View className="mb-4 rounded-full bg-amber-100 p-4">
               <Ionicons name="shield-checkmark-outline" size={48} color="#f59e0b" />
             </View>
-            <Text className="text-xl font-bold text-gray-900">{t('seedPhraseScreen.title')}</Text>
-            <Text className="mt-3 text-center text-base leading-6 text-gray-600">{t('seedPhraseScreen.description')}</Text>
+            <Text className="text-xl font-bold text-gray-900 dark:text-charcoal-100">{t('seedPhraseScreen.title')}</Text>
+            <Text className="mt-3 text-center text-base leading-6 text-gray-600 dark:text-charcoal-300">{t('seedPhraseScreen.description')}</Text>
           </View>
           <ScrollView className="mt-8 flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
             <View className="p-3">
@@ -96,8 +98,8 @@ export default function SeedPhraseScreen() {
                   <View key={rowIndex} className="mb-3 flex-row justify-between">
                     {row.map(({ word, index }) => (
                       <View key={index} className="mx-1 flex-1 rounded-xl border border-gray-200 py-2">
-                        <Text className="text-center text-xs font-semibold text-gray-500">{index + 1}</Text>
-                        <Text className="mt-1 text-center text-xs font-semibold text-gray-900">{word}</Text>
+                        <Text className="text-center text-xs font-semibold text-gray-500 dark:text-charcoal-400">{index + 1}</Text>
+                        <Text className="mt-1 text-center text-xs font-semibold text-gray-900 dark:text-charcoal-100">{word}</Text>
                       </View>
                     ))}
                   </View>

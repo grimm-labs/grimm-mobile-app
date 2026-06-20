@@ -24,8 +24,8 @@ const UnitOption = React.memo<UnitOptionProps>(({ title, description, isSelected
   <Pressable onPress={onPress} style={{ opacity: 1 }}>
     <View className="flex min-h-[72px] flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-2 py-4">
       <View className="flex-1 pr-4">
-        <Text className="mb-1 text-sm font-medium text-gray-900">{title}</Text>
-        <Text className="text-xs leading-4 text-gray-500">{description}</Text>
+        <Text className="mb-1 text-sm font-medium text-gray-900 dark:text-charcoal-100">{title}</Text>
+        <Text className="text-xs leading-4 text-gray-500 dark:text-charcoal-400">{description}</Text>
       </View>
       <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
     </View>
@@ -95,10 +95,10 @@ export default function BitcoinUnitScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
 
           <View className="mt-4">
             {unitOptions.map((option) => (
@@ -107,7 +107,7 @@ export default function BitcoinUnitScreen() {
           </View>
 
           <View className="mt-6 px-2">
-            <Text className="text-xs leading-5 text-gray-500">{t('bitcoinUnit.info_text')}</Text>
+            <Text className="text-xs leading-5 text-gray-500 dark:text-charcoal-400">{t('bitcoinUnit.info_text')}</Text>
           </View>
         </View>
       </SafeAreaView>

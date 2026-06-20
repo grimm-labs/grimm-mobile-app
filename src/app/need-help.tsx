@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
@@ -9,6 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, Text, View } from '@/components/ui';
+import { theme } from '@/lib/theme-classes';
 
 interface ItemProps {
   title: string;
@@ -25,49 +27,58 @@ const supportLinks = {
   linkedIn: 'https://www.linkedin.com/company/grimm-technologies',
 };
 
-const Item: React.FC<ItemProps> = ({ title, icon, onPress, testID }) => (
-  <Pressable testID={testID} onPress={onPress}>
-    <View className="flex flex-row justify-between">
-      <View className="flex size-20 items-center justify-center ">
-        <Ionicons name={icon} size={28} color="black" />
-      </View>
-      <View className="h-full flex-1 flex-row items-center justify-between border-b-[0.5px] border-gray-300">
-        <View className="h-full flex-1 flex-row items-center">
-          <Text testID={testID ? `${testID}-title` : undefined} className="text-sm font-medium">
-            {title}
-          </Text>
+const Item: React.FC<ItemProps> = ({ title, icon, onPress, testID }) => {
+  const { colorScheme } = useColorScheme();
+  const iconColor = colorScheme === 'dark' ? colors.charcoal[100] : colors.black;
+
+  return (
+    <Pressable testID={testID} onPress={onPress}>
+      <View className="flex flex-row justify-between">
+        <View className="flex size-20 items-center justify-center ">
+          <Ionicons name={icon} size={28} color={iconColor} />
         </View>
-        <View className="flex size-20 items-center justify-center">
-          <Ionicons name="chevron-forward" size={24} color={colors.primary[600]} />
+        <View className={`h-full flex-1 flex-row items-center justify-between border-b-[0.5px] border-gray-300 dark:border-charcoal-700`}>
+          <View className="h-full flex-1 flex-row items-center">
+            <Text testID={testID ? `${testID}-title` : undefined} className={`text-sm font-medium ${theme.textPrimary}`}>
+              {title}
+            </Text>
+          </View>
+          <View className="flex size-20 items-center justify-center">
+            <Ionicons name="chevron-forward" size={24} color={colors.primary[600]} />
+          </View>
         </View>
       </View>
-    </View>
-  </Pressable>
-);
+    </Pressable>
+  );
+};
 
 const ServiceHours: React.FC = () => {
   const { t } = useTranslation();
   return (
     <View testID="need-help-service-hours" className="mx-2">
-      <View className="mb-4 border-b-[0.5px] border-gray-300">
-        <Text testID="need-help-service-hours-title" className="my-6 text-sm font-medium">
+      <View className="mb-4 border-b-[0.5px] border-gray-300 dark:border-charcoal-700">
+        <Text testID="need-help-service-hours-title" className={`my-6 text-sm font-medium ${theme.textPrimary}`}>
           {t('help.service_hours_title')}
         </Text>
       </View>
       <View className="mb-4 flex flex-row justify-between">
-        <Text testID="need-help-hours-mon-fri-label" className="text-sm font-medium">
+        <Text testID="need-help-hours-mon-fri-label" className={`text-sm font-medium ${theme.textPrimary}`}>
           {t('help.monday_friday')}
         </Text>
-        <Text testID="need-help-hours-mon-fri-value">{t('help.hours_mon_fri')}</Text>
+        <Text testID="need-help-hours-mon-fri-value" className={theme.textSecondary}>
+          {t('help.hours_mon_fri')}
+        </Text>
       </View>
       <View className="mb-4 flex flex-row justify-between">
-        <Text testID="need-help-hours-saturday-label" className="text-sm font-medium">
+        <Text testID="need-help-hours-saturday-label" className={`text-sm font-medium ${theme.textPrimary}`}>
           {t('help.saturday')}
         </Text>
-        <Text testID="need-help-hours-saturday-value">{t('help.hours_saturday')}</Text>
+        <Text testID="need-help-hours-saturday-value" className={theme.textSecondary}>
+          {t('help.hours_saturday')}
+        </Text>
       </View>
       <View className="mb-4 flex flex-row justify-between">
-        <Text testID="need-help-hours-sunday-label" className="text-sm font-medium">
+        <Text testID="need-help-hours-sunday-label" className={`text-sm font-medium ${theme.textPrimary}`}>
           {t('help.sunday_holidays')}
         </Text>
         <Text testID="need-help-hours-sunday-value" className="text-sm font-extrabold text-danger-600">
@@ -100,7 +111,7 @@ export default function NeedHelp() {
   const { t } = useTranslation();
   return (
     <SafeAreaProvider>
-      <SafeAreaView testID="need-help-screen">
+      <SafeAreaView testID="need-help-screen" className={`flex-1 ${theme.screen}`}>
         <View testID="need-help-content" className="flex h-full px-4">
           <Stack.Screen
             options={{
@@ -112,7 +123,7 @@ export default function NeedHelp() {
               headerShadowVisible: false,
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <SupportItems />
           <ServiceHours />
         </View>

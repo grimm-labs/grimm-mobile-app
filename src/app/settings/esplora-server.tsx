@@ -30,14 +30,14 @@ const ServerOption = React.memo<ServerOptionProps>(({ id, baseUrl, isSelected, i
       <View className="flex min-h-[64px] flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-2 py-4">
         <View className="flex-1 pr-4">
           <View className="flex-row items-center">
-            <Text className="text-sm font-medium text-gray-900">{id}</Text>
+            <Text className="text-sm font-medium text-gray-900 dark:text-charcoal-100">{id}</Text>
             {isActive && (
               <View className="ml-2 rounded-full bg-success-100 px-2 py-0.5">
                 <Text className="text-[10px] font-semibold text-success-700">{t('esploraServer.inUse')}</Text>
               </View>
             )}
           </View>
-          <Text className="mt-1 text-xs text-gray-500">{baseUrl}</Text>
+          <Text className="mt-1 text-xs text-gray-500 dark:text-charcoal-400">{baseUrl}</Text>
         </View>
         <View className="size-6 shrink-0 items-center justify-center">
           {isActive ? <Ionicons name="checkmark-circle" size={20} color={colors.success[600]} /> : isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
@@ -98,13 +98,13 @@ export default function EsploraServerScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
 
           <View className="mb-2 mt-4 px-2">
-            <Text className="text-xs text-gray-600">{t('esploraServer.currentNetwork', { network })}</Text>
+            <Text className="text-xs text-gray-600 dark:text-charcoal-300">{t('esploraServer.currentNetwork', { network })}</Text>
           </View>
 
           <View className="mt-2 flex-1">
@@ -121,13 +121,13 @@ export default function EsploraServerScreen() {
             ))}
 
             <View className="mt-6 px-2">
-              <Text className="text-xs leading-5 text-gray-500">{t('esploraServer.info')}</Text>
+              <Text className="text-xs leading-5 text-gray-500 dark:text-charcoal-400">{t('esploraServer.info')}</Text>
             </View>
           </View>
 
           <View className="mb-8 mt-4">
             <Pressable className={`flex-row items-center justify-center rounded-xl p-4 ${canSave ? 'bg-primary-600' : 'bg-neutral-200'}`} onPress={handleSave} disabled={!canSave}>
-              {isSaving ? <ActivityIndicator size="small" color="#fff" /> : <Text className={`text-center font-bold ${canSave ? 'text-white' : 'text-gray-400'}`}>{t('esploraServer.save')}</Text>}
+              {isSaving ? <ActivityIndicator size="small" color="#fff" /> : <Text className={`text-center font-bold ${canSave ? 'text-white' : 'text-gray-400 dark:text-charcoal-500'}`}>{t('esploraServer.save')}</Text>}
             </Pressable>
           </View>
         </View>

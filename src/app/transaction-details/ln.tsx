@@ -12,6 +12,8 @@ import DetailRow from '@/components/detail-row';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/components/ui';
 import { formatBalance } from '@/lib';
 import { AppContext } from '@/lib/context';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
+import { theme } from '@/lib/theme-classes';
 
 type SearchParams = {
   transactionData: string;
@@ -38,10 +40,11 @@ export default function LightningTransactionDetailsScreen() {
   const amountSat = Number(transaction.amount);
   const feesSat = Number(transaction.fees);
   const totalAmount = isSent ? amountSat + feesSat : amountSat;
+  const stackScreenOptions = useStackScreenOptions();
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className={`flex-1 ${theme.screen}`}>
         <Stack.Screen
           options={{
             headerShown: true,
@@ -49,13 +52,16 @@ export default function LightningTransactionDetailsScreen() {
             headerLeft: HeaderLeft,
             headerRight: () => null,
             headerShadowVisible: false,
+            ...stackScreenOptions,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         <ScrollView className="flex-1 px-3" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4 items-center">
-            <View className={`rounded-full px-4 py-2 ${isComplete ? 'bg-green-100' : 'bg-yellow-100'}`}>
-              <Text className={`text-sm font-semibold ${isComplete ? 'text-green-700' : 'text-yellow-700'}`}>{isComplete ? '✓ ' + t('transactionItem.status.confirmed') : t('transactionItem.status.pending')}</Text>
+            <View className={`rounded-full px-4 py-2 ${isComplete ? 'bg-green-100 dark:bg-green-900/40' : 'bg-yellow-100 dark:bg-yellow-900/40'}`}>
+              <Text className={`text-sm font-semibold ${isComplete ? 'text-green-700 dark:text-green-300' : 'text-yellow-700 dark:text-yellow-300'}`}>
+                {isComplete ? '✓ ' + t('transactionItem.status.confirmed') : t('transactionItem.status.pending')}
+              </Text>
             </View>
           </View>
           <View className="mb-6 items-center">
@@ -71,10 +77,10 @@ export default function LightningTransactionDetailsScreen() {
           </View>
           <View className="mb-4 flex-row items-center justify-center">
             <Ionicons name={isSent ? 'arrow-up-circle' : 'arrow-down-circle'} size={24} color={isSent ? colors.danger[600] : colors.primary[600]} />
-            <Text className="ml-2 text-lg font-medium text-gray-700">{isSent ? t('lnTransactionDetail.sent') : t('lnTransactionDetail.received')}</Text>
+            <Text className={`ml-2 text-lg font-medium ${theme.textSecondary}`}>{isSent ? t('lnTransactionDetail.sent') : t('lnTransactionDetail.received')}</Text>
           </View>
           <View className="mb-6 mt-4">
-            <Text className="mb-4 text-xl font-semibold text-gray-900">{t('lnTransactionDetail.details')}</Text>
+            <Text className={`mb-4 text-xl font-semibold ${theme.textPrimary}`}>{t('lnTransactionDetail.details')}</Text>
             <DetailRow label={t('lnTransactionDetail.date')} value={formattedDate} />
             {isSent && (
               <>

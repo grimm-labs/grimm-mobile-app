@@ -1,15 +1,19 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import { colors, Pressable, Text, View } from '@/components/ui';
 
 const Key = ({ value, onPress }: { value: string; onPress: () => void }) => (
-  <Pressable onPress={onPress} className="flex h-16 w-[30%] items-center justify-center rounded-2xl bg-gray-200">
-    <Text className="text-3xl font-medium text-gray-800">{value}</Text>
+  <Pressable onPress={onPress} className="flex h-16 w-[30%] items-center justify-center rounded-2xl bg-gray-200 dark:bg-charcoal-800">
+    <Text className="text-3xl font-medium text-gray-800 dark:text-charcoal-100">{value}</Text>
   </Pressable>
 );
 
 export const NumericKeypad = ({ amount, setAmount, isBtcUnit }: { amount: string; setAmount: (v: string) => void; isBtcUnit: boolean }) => {
+  const { colorScheme } = useColorScheme();
+  const iconColor = colorScheme === 'dark' ? colors.white : colors.black;
+
   const handleNumberPress = (num: string) => {
     if (amount === '0' && num !== '.') setAmount(num);
     else if (num === '.' && isBtcUnit && !amount.includes('.')) setAmount(amount + num);
@@ -32,8 +36,8 @@ export const NumericKeypad = ({ amount, setAmount, isBtcUnit }: { amount: string
         <View key={rowIndex} className="mb-3 flex-row justify-between">
           {row.map((val, idx) =>
             val === 'del' ? (
-              <Pressable key={idx} testID="delete-key" onPress={handleDelete} className="flex h-16 w-[30%] items-center justify-center rounded-2xl bg-gray-200">
-                <Ionicons name="backspace" size={28} color={colors.black} />
+              <Pressable key={idx} testID="delete-key" onPress={handleDelete} className="flex h-16 w-[30%] items-center justify-center rounded-2xl bg-gray-200 dark:bg-charcoal-800">
+                <Ionicons name="backspace" size={28} color={iconColor} />
               </Pressable>
             ) : (
               <Key key={idx} value={val} onPress={() => handleNumberPress(val)} />

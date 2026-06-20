@@ -1,16 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import React, { useCallback, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable } from 'react-native';
 
 import { PaymentMethodBottomSheet } from '@/components/modal/payment-method-bottom-sheet';
-import { Text, View } from '@/components/ui';
+import { colors, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext, useBdk } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
+import { theme } from '@/lib/theme-classes';
 import { BitcoinUnit } from '@/types/enum';
 
 type PaymentMethod = 'onchain' | 'lightning';
@@ -20,12 +22,14 @@ const ActionButton = ({ icon, color, bgClass, label, onPress }: { icon: string; 
     <Pressable className={`mb-2 rounded-full ${bgClass} p-3 text-white`} onPress={onPress}>
       <Ionicons name={icon as any} size={28} color={color} />
     </Pressable>
-    <Text className="text-sm font-medium">{label}</Text>
+    <Text className={`text-sm font-medium ${theme.textSecondary}`}>{label}</Text>
   </View>
 );
 
 export const WalletOverview = () => {
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const iconColor = colorScheme === 'dark' ? colors.charcoal[300] : colors.neutral[500];
   const { hideBalance, setHideBalance, selectedCountry, bitcoinUnit } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
   const { balance: balanceBreez } = useBreez();
@@ -62,16 +66,16 @@ export const WalletOverview = () => {
     <View>
       <View className="flex-row items-center justify-center">
         <Pressable onPress={toggleBalance} className="flex flex-row items-center">
-          <Text className="mr-2 text-center text-base font-semibold text-gray-600">{t('walletOverview.totalBalance')}</Text>
-          <Ionicons name={hideBalance ? 'eye-off' : 'eye'} size={16} color="gray" />
+          <Text className={`mr-2 text-center text-base font-semibold ${theme.textSecondary}`}>{t('walletOverview.totalBalance')}</Text>
+          <Ionicons name={hideBalance ? 'eye-off' : 'eye'} size={16} color={iconColor} />
         </Pressable>
       </View>
       <View className="py-6">
         <Pressable onPress={toggleBalance}>
-          <Text className="mb-4 text-center text-3xl font-bold text-gray-700">{hideBalance ? t('walletOverview.hiddenBalance') : formatBalance(balance, bitcoinUnit)}</Text>
+          <Text className={`mb-4 text-center text-3xl font-bold ${theme.textPrimary}`}>{hideBalance ? t('walletOverview.hiddenBalance') : formatBalance(balance, bitcoinUnit)}</Text>
         </Pressable>
         <View className="mb-4">
-          <Text className="text-center text-lg font-medium text-gray-600">
+          <Text className={`text-center text-lg font-medium ${theme.textSecondary}`}>
             {hideBalance ? t('walletOverview.hiddenBalance') : `${convertedVal.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${selectedFiatCurrency}`}
           </Text>
         </View>
