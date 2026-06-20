@@ -14,12 +14,14 @@ import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency, mergeAndSortTr
 import { AppContext, useBdk, useBreez } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { AppNetwork } from '@/lib/context/breez-context';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
+import { theme } from '@/lib/theme-classes';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
 
 const HeaderTitle = () => (
   <View className="flex-row items-center">
-    <Text className="text-normal">Bitcoin Wallet</Text>
+    <Text className={theme.textPrimary}>Bitcoin Wallet</Text>
   </View>
 );
 
@@ -32,6 +34,7 @@ export default function BitcoinWalletDetails() {
   const { network } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
+  const stackScreenOptions = useStackScreenOptions();
 
   useEffect(() => {
     const unified = mergeAndSortTransactions([], bdkTransactions);
@@ -40,7 +43,7 @@ export default function BitcoinWalletDetails() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -48,12 +51,10 @@ export default function BitcoinWalletDetails() {
             headerShown: true,
             headerShadowVisible: false,
             headerLeft: HeaderLeft,
-            headerStyle: {
-              backgroundColor: 'white',
-            },
+            ...stackScreenOptions,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         {network === AppNetwork.TESTNET && (
           <View className="bg-danger-500 py-2">
             <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
@@ -61,13 +62,13 @@ export default function BitcoinWalletDetails() {
         )}
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
-            <View className="rounded-xl border border-gray-100 bg-gray-50 p-6">
-              <Text className="mb-2 text-sm text-gray-500">{t('btcWallet.available')}</Text>
+            <View className="rounded-xl border border-gray-100 bg-gray-50 p-6 dark:border-charcoal-700 dark:bg-charcoal-900">
+              <Text className="mb-2 text-sm text-gray-500 dark:text-charcoal-400">{t('btcWallet.available')}</Text>
               <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
-                <Text className="mb-2 text-4xl font-bold text-gray-900">
+                <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-charcoal-100">
                   {hideBalance ? '********' : `${convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${selectedFiatCurrency}`}
                 </Text>
-                <Text className="mb-4 text-sm text-gray-400">
+                <Text className="mb-4 text-sm text-gray-400 dark:text-charcoal-500">
                   {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} ${bitcoinUnit}`}
                 </Text>
               </TouchableOpacity>
@@ -75,9 +76,9 @@ export default function BitcoinWalletDetails() {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center">
                     <Image className="mr-2 size-6 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
-                    <Text className="text-sm text-gray-700">{t('btcWallet.currentPrice')}</Text>
+                    <Text className="text-sm text-gray-700 dark:text-charcoal-200">{t('btcWallet.currentPrice')}</Text>
                   </View>
-                  <Text className="text-sm font-semibold text-gray-900">
+                  <Text className="text-sm font-semibold text-gray-900 dark:text-charcoal-100">
                     {convertBitcoinToFiat(1, BitcoinUnit.Btc, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} {selectedFiatCurrency}
                   </Text>
                 </View>
@@ -112,7 +113,7 @@ export default function BitcoinWalletDetails() {
           </View>
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-gray-600">{t('btcWallet.transactions')}</Text>
+              <Text className="text-xl font-bold text-gray-600 dark:text-charcoal-300">{t('btcWallet.transactions')}</Text>
               {transactions.length > 4 && (
                 <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/transactions')}>
                   <Text className="text-base font-medium text-primary-600">{t('btcWallet.seeAll')}</Text>
@@ -127,7 +128,7 @@ export default function BitcoinWalletDetails() {
                   {transactions.slice(0, 6).map((transaction, index) => (
                     <View key={transaction.id}>
                       <TransactionItem transaction={transaction} />
-                      {index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100" />}
+                      {index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100 dark:border-charcoal-700" />}
                     </View>
                   ))}
                 </View>

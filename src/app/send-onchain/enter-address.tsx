@@ -57,7 +57,7 @@ export default function EnterAddressScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitle: () => LightningPaymentScreenHeaderTitle(t('onchainSend.enterAddress.title')),
@@ -66,7 +66,7 @@ export default function EnterAddressScreen() {
             headerShadowVisible: false,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         <ScrollView className="flex-1 px-4 pt-8">
           <View className="mb-2">
             <View className="relative">

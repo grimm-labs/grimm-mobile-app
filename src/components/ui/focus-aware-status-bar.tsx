@@ -4,11 +4,12 @@ import * as React from 'react';
 import { Platform } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 
-type ColorSchemeType = 'light' | 'dark';
+type StatusBarStyle = 'light' | 'dark';
 
 type Props = {
   hidden?: boolean;
-  style?: ColorSchemeType | null;
+  /** Status bar icon/text color. Defaults to dark icons in light mode, light icons in dark mode. */
+  style?: StatusBarStyle | null;
 };
 
 export const FocusAwareStatusBar = ({ hidden = false, style }: Props) => {
@@ -17,7 +18,7 @@ export const FocusAwareStatusBar = ({ hidden = false, style }: Props) => {
 
   if (Platform.OS === 'web') return null;
 
-  const statusBarStyle = style || (colorScheme as ColorSchemeType);
+  const statusBarStyle: StatusBarStyle = style ?? (colorScheme === 'dark' ? 'light' : 'dark');
 
   return isFocused ? <SystemBars style={statusBarStyle} hidden={hidden} /> : null;
 };

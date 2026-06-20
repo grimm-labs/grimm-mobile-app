@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { Image, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, formatBalance, getFiatCurrency } from '@/lib';
 import { AppContext, useBitcoin } from '@/lib/context';
+import { theme } from '@/lib/theme-classes';
 import { BitcoinUnit } from '@/types/enum';
 
 type WalletType = 'On-chain' | 'Lightning' | 'Liquid';
@@ -51,21 +52,21 @@ export const WalletView = ({ name, symbol, type, balanceSats }: Props) => {
       </View>
       <View className="flex-1 flex-row items-center justify-between">
         <View>
-          <Text className="text-xl font-bold text-gray-700">{name}</Text>
+          <Text className={`text-xl font-bold ${theme.textPrimary}`}>{name}</Text>
           <View className="my-1" />
           <View className="flex-row items-center">
-            <Text className="text-sm font-bold text-gray-600">{symbol}</Text>
-            <Text className="mx-1 text-xs text-gray-500">({getNetwork(type)})</Text>
+            <Text className={`text-sm font-bold ${theme.textSecondary}`}>{symbol}</Text>
+            <Text className={`mx-1 text-xs ${theme.textMuted}`}>({getNetwork(type)})</Text>
           </View>
         </View>
         <View>
           {hideBalance ? (
-            <Text className="text-right text-xl font-semibold text-gray-900">********</Text>
+            <Text className={`text-right text-xl font-semibold ${theme.textPrimary}`}>********</Text>
           ) : (
             <View className="text-right">
-              <Text className="text-right text-xl font-bold text-gray-700">{formatBalance(balanceSats, bitcoinUnit)}</Text>
+              <Text className={`text-right text-xl font-bold ${theme.textPrimary}`}>{formatBalance(balanceSats, bitcoinUnit)}</Text>
               <View className="my-1" />
-              <Text className="text-right text-sm font-medium text-gray-600">
+              <Text className={`text-right text-sm font-medium ${theme.textSecondary}`}>
                 {convertBitcoinToFiat(balanceSats, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} {selectedFiatCurrency}{' '}
               </Text>
             </View>

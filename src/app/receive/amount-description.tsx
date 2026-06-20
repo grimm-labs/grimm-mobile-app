@@ -100,8 +100,8 @@ export default function EnterAmountScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('enterAmount.headerTitle')} />,
@@ -112,8 +112,8 @@ export default function EnterAmountScreen() {
         />
         <View className="flex-1 px-4 pt-8">
           <View className="mb-4 items-center">
-            <Text className="mb-2 text-lg font-semibold text-gray-700">{t('enterAmount.satsLabel')}</Text>
-            <Text className={`text-5xl font-light ${validationError ? 'text-red-400' : 'text-gray-800'}`}>{satsAmount}</Text>
+            <Text className="mb-2 text-lg font-semibold text-gray-700 dark:text-charcoal-200">{t('enterAmount.satsLabel')}</Text>
+            <Text className={`text-5xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>{satsAmount}</Text>
             {validationError ? <Text className="mt-1 text-center text-sm text-red-500">{validationError}</Text> : null}
           </View>
           <View className="mb-4 items-center">
@@ -123,16 +123,16 @@ export default function EnterAmountScreen() {
           </View>
           <View className="mb-4 items-center">
             <View className="flex-row items-center">
-              <Text className="mr-2 text-xl font-semibold text-gray-700">{selectedFiatCurrency}</Text>
+              <Text className="mr-2 text-xl font-semibold text-gray-700 dark:text-charcoal-200">{selectedFiatCurrency}</Text>
               <Text className="text-bold text-2xl font-medium">{fiatAmount}</Text>
             </View>
           </View>
           {type === 'lightning' && (
             <View className="mb-4 items-center">
               {note ? (
-                <TouchableOpacity onPress={openNoteModal} className="flex-row items-center rounded-full bg-gray-100 px-4 py-2">
+                <TouchableOpacity onPress={openNoteModal} className="flex-row items-center rounded-full bg-gray-100 px-4 py-2 dark:bg-charcoal-850">
                   <Ionicons name="document-text-outline" size={16} color="#6B7280" />
-                  <Text className="ml-2 text-sm text-gray-600" numberOfLines={1}>
+                  <Text className="ml-2 text-sm text-gray-600 dark:text-charcoal-300" numberOfLines={1}>
                     {note}
                   </Text>
                   <TouchableOpacity onPress={() => setNote('')} className="ml-2" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -142,7 +142,7 @@ export default function EnterAmountScreen() {
               ) : (
                 <TouchableOpacity onPress={openNoteModal} className="flex-row items-center">
                   <Ionicons name="add-circle-outline" size={18} color="#9CA3AF" />
-                  <Text className="ml-1 text-base text-gray-400">{t('enterAmount.addNote')}</Text>
+                  <Text className="ml-1 text-base text-gray-400 dark:text-charcoal-500">{t('enterAmount.addNote')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -158,9 +158,9 @@ export default function EnterAmountScreen() {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View className="flex-1 justify-end bg-black/50">
               <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                <View className="rounded-t-3xl bg-white px-4 pb-8 pt-6">
+                <View className="rounded-t-3xl bg-white px-4 pb-8 pt-6 dark:bg-charcoal-900">
                   <View className="mb-4 flex-row items-center justify-between">
-                    <Text className="text-lg font-semibold text-gray-800">{t('enterAmount.addNote')}</Text>
+                    <Text className="text-lg font-semibold text-gray-800 dark:text-charcoal-100">{t('enterAmount.addNote')}</Text>
                     <TouchableOpacity onPress={cancelNote} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                       <Ionicons name="close" size={24} color="#6B7280" />
                     </TouchableOpacity>

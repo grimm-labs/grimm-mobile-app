@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,6 +30,7 @@ const TabLayout = () => {
 
   const splashHiddenRef = useRef(false);
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
   const [isLanguageLoaded, setIsLanguageLoaded] = useState(false);
 
   const TAB_CONFIG: Array<{ name: string; title: string; iconName: React.ComponentProps<typeof Ionicons>['name'] }> = [
@@ -123,6 +125,11 @@ const TabLayout = () => {
     <Tabs
       screenOptions={() => ({
         tabBarActiveTintColor: colors.primary[600],
+        tabBarInactiveTintColor: colorScheme === 'dark' ? colors.charcoal[400] : colors.neutral[500],
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? colors.charcoal[950] : colors.white,
+          borderTopColor: colorScheme === 'dark' ? colors.charcoal[700] : colors.neutral[200],
+        },
       })}
     >
       {TAB_CONFIG.map(({ name, title, iconName }) => (

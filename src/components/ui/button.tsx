@@ -20,7 +20,7 @@ const button = tv({
       },
       secondary: {
         container: 'bg-primary-600',
-        label: 'text-primary-600',
+        label: 'text-white',
         indicator: 'text-white',
       },
       outline: {
@@ -40,8 +40,8 @@ const button = tv({
       },
       link: {
         container: 'bg-transparent',
-        label: 'text-black',
-        indicator: 'text-black',
+        label: 'text-black dark:text-white',
+        indicator: 'text-black dark:text-white',
       },
     },
     size: {
@@ -62,9 +62,9 @@ const button = tv({
     },
     disabled: {
       true: {
-        container: 'bg-neutral-300 dark:bg-neutral-300',
-        label: 'text-neutral-600 dark:text-neutral-600',
-        indicator: 'text-neutral-400 dark:text-neutral-400',
+        container: 'bg-neutral-300 dark:bg-neutral-700',
+        label: 'text-neutral-600 dark:text-neutral-400',
+        indicator: 'text-neutral-400 dark:text-neutral-500',
       },
     },
     fullWidth: {

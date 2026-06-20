@@ -35,7 +35,7 @@ const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelecte
       <View className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 py-4">
         <View className="flex-1">
           <Text className="text-sm font-medium">{country.name}</Text>
-          <Text className="text-xs text-gray-500">
+          <Text className="text-xs text-gray-500 dark:text-charcoal-400">
             {country.region} • {country.currency} • +{country.callingCode}
           </Text>
         </View>
@@ -104,7 +104,7 @@ export default function CountrySelector() {
               headerLeft: HeaderLeft,
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <View className="pb-4">
             <Input
               returnKeyType="done"

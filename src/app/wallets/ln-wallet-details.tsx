@@ -15,6 +15,8 @@ import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
 import { AppNetwork } from '@/lib/context/breez-context';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
+import { theme } from '@/lib/theme-classes';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
 
@@ -27,13 +29,13 @@ type MenuItemProps = {
 };
 
 const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress, showArrow = true }) => (
-  <TouchableOpacity className="flex-row items-center bg-gray-50 p-4" onPress={onPress} activeOpacity={0.7}>
+  <TouchableOpacity className="flex-row items-center bg-gray-50 p-4 dark:bg-charcoal-900" onPress={onPress} activeOpacity={0.7}>
     <View className="mr-4 size-12 items-center justify-center rounded-full bg-primary-600">
       <Ionicons name={icon as any} size={18} color="white" />
     </View>
     <View className="flex-1">
-      <Text className="text-sm font-medium text-gray-900">{title}</Text>
-      {subtitle && <Text className="mt-1 text-sm text-gray-500">{subtitle}</Text>}
+      <Text className="text-sm font-medium text-gray-900 dark:text-charcoal-100">{title}</Text>
+      {subtitle && <Text className="mt-1 text-sm text-gray-500 dark:text-charcoal-400">{subtitle}</Text>}
     </View>
     {showArrow && <Ionicons name="chevron-forward" size={20} color={colors.primary[600]} />}
   </TouchableOpacity>
@@ -41,7 +43,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress, sho
 
 const HeaderTitle = () => (
   <View className="flex-row items-center">
-    <Text className="text-normal">Lightning Wallet</Text>
+    <Text className={theme.textPrimary}>Lightning Wallet</Text>
   </View>
 );
 
@@ -53,6 +55,7 @@ export default function LnWalletDetails() {
   const { balance, payments, network, lightningAddress } = useBreez();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
+  const stackScreenOptions = useStackScreenOptions();
 
   useEffect(() => {
     const unified = mergeAndSortTransactions(payments, []);
@@ -61,7 +64,7 @@ export default function LnWalletDetails() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -69,12 +72,10 @@ export default function LnWalletDetails() {
             headerShown: true,
             headerShadowVisible: false,
             headerLeft: HeaderLeft,
-            headerStyle: {
-              backgroundColor: 'white',
-            },
+            ...stackScreenOptions,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         {network === AppNetwork.TESTNET && (
           <View className="bg-danger-500 py-2">
             <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
@@ -82,13 +83,13 @@ export default function LnWalletDetails() {
         )}
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
-            <View className="mb-6 rounded-xl border border-gray-100 bg-gray-50 p-6">
-              <Text className="mb-2 text-sm text-gray-500">{t('lnWallet.available')}</Text>
+            <View className="mb-6 rounded-xl border border-gray-100 bg-gray-50 p-6 dark:border-charcoal-700 dark:bg-charcoal-900">
+              <Text className="mb-2 text-sm text-gray-500 dark:text-charcoal-400">{t('lnWallet.available')}</Text>
               <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
-                <Text className="mb-2 text-4xl font-bold text-gray-900">
+                <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-charcoal-100">
                   {hideBalance ? '********' : `${convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)} ${selectedFiatCurrency}`}
                 </Text>
-                <Text className="mb-4 text-sm text-gray-400">
+                <Text className="mb-4 text-sm text-gray-400 dark:text-charcoal-500">
                   {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} ${bitcoinUnit}`}
                 </Text>
               </TouchableOpacity>
@@ -96,36 +97,36 @@ export default function LnWalletDetails() {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center">
                     <Image className="mr-2 size-6 rounded-full" source={require('@/assets/images/bitcoin_logo.png')} />
-                    <Text className="text-sm text-gray-700">{t('lnWallet.currentPrice')}</Text>
+                    <Text className="text-sm text-gray-700 dark:text-charcoal-200">{t('lnWallet.currentPrice')}</Text>
                   </View>
-                  <Text className="text-sm font-semibold text-gray-900">
+                  <Text className="text-sm font-semibold text-gray-900 dark:text-charcoal-100">
                     {convertBitcoinToFiat(1, BitcoinUnit.Btc, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
             </View>
             {lightningAddress ? (
-              <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
-                <TouchableOpacity className="flex-row items-center bg-gray-50 p-4" onPress={() => router.push('/receive/ln-address')} activeOpacity={0.7}>
+              <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 dark:border-charcoal-700 dark:bg-charcoal-900">
+                <TouchableOpacity className="flex-row items-center bg-gray-50 p-4 dark:bg-charcoal-900" onPress={() => router.push('/receive/ln-address')} activeOpacity={0.7}>
                   <View className="mr-4 size-12 items-center justify-center rounded-full bg-primary-600">
                     <Ionicons name="at" size={18} color="white" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-900">{t('lnWallet.lnAddressTitle')}</Text>
-                    <Text className="mt-1 text-sm text-gray-500">{lightningAddress}</Text>
+                    <Text className="text-sm font-medium text-gray-900 dark:text-charcoal-100">{t('lnWallet.lnAddressTitle')}</Text>
+                    <Text className="mt-1 text-sm text-gray-500 dark:text-charcoal-400">{lightningAddress}</Text>
                   </View>
                   <Ionicons name="chevron-forward" size={20} color={colors.primary[600]} />
                 </TouchableOpacity>
               </View>
             ) : (
-              <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+              <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 dark:border-charcoal-700 dark:bg-charcoal-900">
                 <MenuItem icon="person-add" title={t('lnWallet.lnAddressTitle')} subtitle={t('lnWallet.lnAddressCreatePrompt')} onPress={() => router.push('/settings/ln-address')} />
               </View>
             )}
           </View>
           <View className="mb-8">
-            <Text className="mb-3 text-xl font-bold text-gray-600">{t('lnWallet.actions')}</Text>
-            <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+            <Text className="mb-3 text-xl font-bold text-gray-600 dark:text-charcoal-300">{t('lnWallet.actions')}</Text>
+            <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 dark:border-charcoal-700 dark:bg-charcoal-900">
               <MenuItem
                 icon="link"
                 title={t('lnWallet.receiveOnchain')}
@@ -140,7 +141,7 @@ export default function LnWalletDetails() {
           </View>
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-gray-600">{t('lnWallet.transactions')}</Text>
+              <Text className="text-xl font-bold text-gray-600 dark:text-charcoal-300">{t('lnWallet.transactions')}</Text>
               {transactions.length > 4 && (
                 <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/transactions')}>
                   <Text className="text-base font-medium text-primary-600">{t('lnWallet.seeAll')}</Text>
@@ -155,7 +156,7 @@ export default function LnWalletDetails() {
                   {transactions.slice(0, 4).map((transaction, index) => (
                     <View key={transaction.id}>
                       <TransactionItem transaction={transaction} />
-                      {index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100" />}
+                      {index < transactions.length - 1 && <View className="ml-16 border-t border-gray-100 dark:border-charcoal-700" />}
                     </View>
                   ))}
                 </View>

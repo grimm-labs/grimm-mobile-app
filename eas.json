@@ -9,7 +9,7 @@
       "distribution": "store",
       "pnpm": "9.12.3",
       "ios": {
-        "image": "latest",
+        "image": "sdk-53",
         "autoIncrement": "buildNumber"
       },
       "android": {
@@ -29,7 +29,7 @@
       "distribution": "internal",
       "pnpm": "9.12.3",
       "ios": {
-        "image": "latest"
+        "image": "sdk-53"
       },
       "android": {
         "buildType": "apk",
@@ -46,7 +46,7 @@
       "distribution": "internal",
       "pnpm": "9.12.3",
       "ios": {
-        "image": "latest"
+        "image": "sdk-53"
       },
       "android": {
         "image": "latest",
@@ -61,7 +61,7 @@
       "pnpm": "9.12.3",
       "ios": {
         "simulator": true,
-        "image": "latest"
+        "image": "sdk-53"
       },
       "android": {
         "image": "latest"

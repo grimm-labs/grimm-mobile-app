@@ -4,6 +4,10 @@ import mockAsyncStorage from '@react-native-async-storage/async-storage/jest/asy
 
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
+jest.mock('@/lib/use-modal-bottom-inset', () => ({
+  useModalBottomInset: () => 0,
+}));
+
 // react-hook form setup for testing
 // @ts-ignore
 global.window = {};

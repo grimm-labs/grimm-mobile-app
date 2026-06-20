@@ -73,7 +73,7 @@ describe('Button component ', () => {
     render(<Button testID="button" variant="secondary" label="Submit" />);
     const button = screen.getByTestId('button');
 
-    const expectedStyle = 'font-inter font-semibold text-primary-600 text-base';
+    const expectedStyle = 'font-inter font-semibold text-white text-base';
     const receivedStyle = button.props.children[0].props.children.props.className;
     expect(receivedStyle).toContain(expectedStyle);
   });
@@ -81,7 +81,7 @@ describe('Button component ', () => {
     render(<Button testID="button" label="Submit" disabled />);
     const button = screen.getByTestId('button');
 
-    const expectedStyle = 'font-inter font-semibold text-base text-neutral-600 dark:text-neutral-600';
+    const expectedStyle = 'font-inter font-semibold text-base text-neutral-600 dark:text-neutral-400';
     const receivedStyle = button.props.children[0].props.children.props.className;
     expect(receivedStyle).toContain(expectedStyle);
   });

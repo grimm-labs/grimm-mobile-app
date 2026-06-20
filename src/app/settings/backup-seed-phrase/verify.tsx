@@ -80,7 +80,7 @@ export default function SeedPhraseVerificationScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -95,14 +95,14 @@ export default function SeedPhraseVerificationScreen() {
             <View className="mb-4 rounded-full bg-blue-100 p-4">
               <Ionicons name="checkmark-done-outline" size={48} color="#3b82f6" />
             </View>
-            <Text className="text-xl font-bold text-gray-900">{t('seedPhraseVerification.title')}</Text>
-            <Text className="mt-3 text-center text-base leading-6 text-gray-600">{t('seedPhraseVerification.description')}</Text>
+            <Text className="text-xl font-bold text-gray-900 dark:text-charcoal-100">{t('seedPhraseVerification.title')}</Text>
+            <Text className="mt-3 text-center text-base leading-6 text-gray-600 dark:text-charcoal-300">{t('seedPhraseVerification.description')}</Text>
           </View>
           <ScrollView className="mt-8 flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
             <View className="space-y-4">
               {wordsToVerify.map((item, index) => (
                 <View key={item.position} className="mb-4">
-                  <Text className="mb-2 text-sm font-semibold text-gray-700">{t('seedPhraseVerification.wordLabel', { number: item.position })}</Text>
+                  <Text className="mb-2 text-sm font-semibold text-gray-700 dark:text-charcoal-200">{t('seedPhraseVerification.wordLabel', { number: item.position })}</Text>
                   <Input placeholder={t('seedPhraseVerification.placeholder')} value={item.userInput} onChangeText={(value) => handleInputChange(index, value)} autoCapitalize="none" autoCorrect={false} />
                 </View>
               ))}

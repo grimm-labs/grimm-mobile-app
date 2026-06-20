@@ -34,13 +34,13 @@ interface TransactionDetail {
 }
 
 const DetailRow = ({ detail }: { detail: TransactionDetail }) => (
-  <View className="mb-4 flex-row items-start justify-between rounded-xl bg-gray-50 p-4">
+  <View className="mb-4 flex-row items-start justify-between rounded-xl bg-gray-50 p-4 dark:bg-charcoal-900">
     <View className="flex-1">
-      <Text className="mb-1 text-sm font-medium text-gray-500">{detail.label}</Text>
-      <Text className="text-base font-semibold text-gray-800" numberOfLines={detail.copyable ? 2 : 1}>
+      <Text className="mb-1 text-sm font-medium text-gray-500 dark:text-charcoal-400">{detail.label}</Text>
+      <Text className="text-base font-semibold text-gray-800 dark:text-charcoal-100" numberOfLines={detail.copyable ? 2 : 1}>
         {detail.value}
       </Text>
-      {detail.subValue && <Text className="mt-1 text-sm text-gray-500">{detail.subValue}</Text>}
+      {detail.subValue && <Text className="mt-1 text-sm text-gray-500 dark:text-charcoal-400">{detail.subValue}</Text>}
     </View>
     {detail.icon && (
       <View className="ml-3 size-10 items-center justify-center rounded-full bg-primary-600">
@@ -131,8 +131,8 @@ export default function OnchainSummaryTransactionScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
-        <FocusAwareStatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <FocusAwareStatusBar />
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('onchainSend.summary.headerTitle')} />,
@@ -152,14 +152,14 @@ export default function OnchainSummaryTransactionScreen() {
               <DetailRow key={index} detail={detail} />
             ))}
           </View>
-          <View className="mb-6 rounded-xl bg-neutral-100 p-6">
-            <Text className="mb-2 text-center text-sm font-medium text-gray-600">{t('onchainSend.summary.totalAmount')}</Text>
+          <View className="mb-6 rounded-xl bg-neutral-100 p-6 dark:bg-charcoal-900">
+            <Text className="mb-2 text-center text-sm font-medium text-gray-600 dark:text-charcoal-300">{t('onchainSend.summary.totalAmount')}</Text>
             <View className="items-center">
-              <Text className="text-3xl font-bold text-gray-800">
+              <Text className="text-3xl font-bold text-gray-800 dark:text-charcoal-100">
                 {bitcoinUnit === BitcoinUnit.Sats ? totalSats.toLocaleString() : convertSatsToBtc(totalSats)} {bitcoinUnit}
               </Text>
             </View>
-            <Text className="mt-2 text-center text-base text-gray-600">
+            <Text className="mt-2 text-center text-base text-gray-600 dark:text-charcoal-300">
               ≈ {totalFiat} {selectedFiatCurrency}
             </Text>
           </View>

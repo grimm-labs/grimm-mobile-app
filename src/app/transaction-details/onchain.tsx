@@ -5,15 +5,17 @@ import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import DetailRow from '@/components/detail-row';
-import { colors, FocusAwareStatusBar, Image, SafeAreaView, ScrollView } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, Image, SafeAreaView, ScrollView } from '@/components/ui';
 import { formatBalance, generateTxUrl } from '@/lib';
 import { AppContext, useBdk } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
+import { theme } from '@/lib/theme-classes';
 
 type SearchParams = {
   transactionData: string;
@@ -68,9 +70,11 @@ export default function OnchainTransactionDetailsScreen() {
     return '';
   };
 
+  const stackScreenOptions = useStackScreenOptions();
+
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white px-4">
+      <SafeAreaView className={`flex-1 px-4 ${theme.screen}`}>
         <Stack.Screen
           options={{
             headerShown: true,
@@ -78,13 +82,14 @@ export default function OnchainTransactionDetailsScreen() {
             headerLeft: HeaderLeft,
             headerRight: () => null,
             headerShadowVisible: false,
+            ...stackScreenOptions,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }} className="flex-1">
           <View className="mb-6 mt-4 items-center">
-            <View className={`rounded-full px-4 py-2 ${isConfirmed ? 'bg-green-100' : 'bg-yellow-100'}`}>
-              <Text className={`text-sm font-semibold ${isConfirmed ? 'text-green-700' : 'text-yellow-700'}`}>
+            <View className={`rounded-full px-4 py-2 ${isConfirmed ? 'bg-green-100 dark:bg-green-900/40' : 'bg-yellow-100 dark:bg-yellow-900/40'}`}>
+              <Text className={`text-sm font-semibold ${isConfirmed ? 'text-green-700 dark:text-green-300' : 'text-yellow-700 dark:text-yellow-300'}`}>
                 {isConfirmed ? '✓ ' + t('onchainTransactionDetail.status.confirmed') : t('onchainTransactionDetail.status.pending')}
               </Text>
             </View>
@@ -102,10 +107,10 @@ export default function OnchainTransactionDetailsScreen() {
           </View>
           <View className="mb-4 flex-row items-center justify-center">
             <Ionicons name={isSent ? 'arrow-up-circle' : 'arrow-down-circle'} size={24} color={isSent ? colors.danger[600] : colors.primary[600]} />
-            <Text className="ml-2 text-lg font-medium text-gray-700">{isSent ? t('onchainTransactionDetail.sent') : t('onchainTransactionDetail.received')}</Text>
+            <Text className={`ml-2 text-lg font-medium ${theme.textSecondary}`}>{isSent ? t('onchainTransactionDetail.sent') : t('onchainTransactionDetail.received')}</Text>
           </View>
           <View className="mb-6 mt-4">
-            <Text className="mb-4 text-xl font-semibold text-gray-900">{t('onchainTransactionDetail.details')}</Text>
+            <Text className={`mb-4 text-xl font-semibold ${theme.textPrimary}`}>{t('onchainTransactionDetail.details')}</Text>
             {isConfirmed && <DetailRow label={t('onchainTransactionDetail.date')} value={formattedDate} />}
             {isConfirmed && <DetailRow label={t('onchainTransactionDetail.blockHeight')} value={transaction.confirmationTime?.height?.toString() || ''} />}
             {isConfirmed && height && <DetailRow label="Confirmations" value={displayConfirmation()} />}
@@ -115,9 +120,7 @@ export default function OnchainTransactionDetailsScreen() {
           </View>
         </ScrollView>
         <View className="mb-4 flex">
-          <TouchableOpacity onPress={() => openLink(transaction.txid)} className="items-center rounded-full bg-primary-600 px-6 py-4">
-            <Text className="text-base font-normal text-white">Explore transaction</Text>
-          </TouchableOpacity>
+          <Button label="Explore transaction" fullWidth size="lg" variant="secondary" onPress={() => openLink(transaction.txid)} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

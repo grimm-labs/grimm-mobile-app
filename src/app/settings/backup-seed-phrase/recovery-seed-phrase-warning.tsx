@@ -34,12 +34,12 @@ export default function MnemonicWarning() {
               headerLeft: HeaderLeft,
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
           <View>
             <View className="mt-6 items-center">
               <Ionicons name="warning-outline" size={64} color={colors.danger[500]} />
               <Text className="mt-6 text-center text-xl font-medium text-red-500">{t('mnemonicWarning.attention')}</Text>
-              <Text className="mt-4 text-center text-sm text-gray-600">{t('mnemonicWarning.intro')}</Text>
+              <Text className="mt-4 text-center text-sm text-gray-600 dark:text-charcoal-300">{t('mnemonicWarning.intro')}</Text>
             </View>
             <View className="mt-8 border-t-[0.5px] border-gray-300" />
             <View className="mt-6 space-y-6">
@@ -48,7 +48,7 @@ export default function MnemonicWarning() {
                   <View className="m-3">
                     <Ionicons name={index === 0 ? 'alert-circle-outline' : index === 1 ? 'help-circle-outline' : 'lock-closed-outline'} size={32} color="gray" />
                   </View>
-                  <Text className="flex-1 text-sm text-gray-700">{text}</Text>
+                  <Text className="flex-1 text-sm text-gray-700 dark:text-charcoal-200">{text}</Text>
                 </View>
               ))}
             </View>

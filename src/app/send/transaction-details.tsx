@@ -208,8 +208,8 @@ export default function PaymentDetailsScreen() {
   if (isLoading) {
     return (
       <SafeAreaProvider>
-        <SafeAreaView className="flex-1 bg-white">
-          <FocusAwareStatusBar style="dark" />
+        <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+          <FocusAwareStatusBar />
           <Stack.Screen
             options={{
               headerTitle: () => <HeaderTitle title={t('paymentDetails.title')} />,
@@ -220,8 +220,8 @@ export default function PaymentDetailsScreen() {
           />
           <View className="flex-1 items-center justify-center px-4">
             <ActivityIndicator size="large" color={colors.primary[600]} />
-            <Text className="mt-4 text-lg text-gray-600">{t('paymentDetails.loading')}</Text>
-            <Text className="mt-2 text-center text-sm text-gray-400">{t('paymentDetails.loadingSubtitle')}</Text>
+            <Text className="mt-4 text-lg text-gray-600 dark:text-charcoal-300">{t('paymentDetails.loading')}</Text>
+            <Text className="mt-2 text-center text-sm text-gray-400 dark:text-charcoal-500">{t('paymentDetails.loadingSubtitle')}</Text>
           </View>
         </SafeAreaView>
       </SafeAreaProvider>
@@ -231,8 +231,8 @@ export default function PaymentDetailsScreen() {
   if (!isLoading && decodeError) {
     return (
       <SafeAreaProvider>
-        <SafeAreaView className="flex-1 bg-white">
-          <FocusAwareStatusBar style="dark" />
+        <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+          <FocusAwareStatusBar />
           <Stack.Screen
             options={{
               headerTitle: () => <HeaderTitle title={t('paymentDetails.errorTitle')} />,
@@ -245,10 +245,10 @@ export default function PaymentDetailsScreen() {
             <View className="mb-8 size-24 items-center justify-center rounded-full bg-red-100">
               <Ionicons name="alert-circle" size={48} color={colors.danger[500]} />
             </View>
-            <Text className="mb-4 text-center text-2xl font-bold text-gray-900">{t('paymentDetails.errorMessage')}</Text>
-            <Text className="mb-8 text-center text-base leading-6 text-gray-600">{t('paymentDetails.errorDescription')}</Text>
-            <View className="mb-8 w-full rounded-lg bg-gray-50 p-4">
-              <Text className="text-center text-sm text-gray-500">{decodeError}</Text>
+            <Text className="mb-4 text-center text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('paymentDetails.errorMessage')}</Text>
+            <Text className="mb-8 text-center text-base leading-6 text-gray-600 dark:text-charcoal-300">{t('paymentDetails.errorDescription')}</Text>
+            <View className="mb-8 w-full rounded-lg bg-gray-50 p-4 dark:bg-charcoal-900">
+              <Text className="text-center text-sm text-gray-500 dark:text-charcoal-400">{decodeError}</Text>
             </View>
           </View>
           <View className="px-4">
@@ -261,7 +261,7 @@ export default function PaymentDetailsScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-gray-50">
+      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-charcoal-900">
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('paymentDetails.payViaLightning')} />,
@@ -270,53 +270,53 @@ export default function PaymentDetailsScreen() {
             headerShadowVisible: false,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         <View className="flex-1">
           <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
             <View className="flex-1 bg-white px-4 py-6">
               <View className="mb-8">
-                <Text className="mb-2 text-lg font-medium text-gray-900">{t('paymentDetails.to')}</Text>
-                <Text className="text-base text-gray-600">{getDestinationDisplay()}</Text>
+                <Text className="mb-2 text-lg font-medium text-gray-900 dark:text-charcoal-100">{t('paymentDetails.to')}</Text>
+                <Text className="text-base text-gray-600 dark:text-charcoal-300">{getDestinationDisplay()}</Text>
               </View>
-              <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
-                <Text className="text-lg text-gray-600">{t('paymentDetails.amount')}</Text>
+              <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6 dark:border-charcoal-700">
+                <Text className="text-lg text-gray-600 dark:text-charcoal-300">{t('paymentDetails.amount')}</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{amountSat} SAT</Text>
-                  <Text className="text-sm text-gray-500">
+                  <Text className="text-lg font-medium text-gray-900 dark:text-charcoal-100">{amountSat} SAT</Text>
+                  <Text className="text-sm text-gray-500 dark:text-charcoal-400">
                     {convertBitcoinToFiat(amountSat, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
-              <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
-                <Text className="text-lg text-gray-600">{t('paymentDetails.networkFee')}</Text>
+              <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6 dark:border-charcoal-700">
+                <Text className="text-lg text-gray-600 dark:text-charcoal-300">{t('paymentDetails.networkFee')}</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{feesSat} SAT</Text>
-                  <Text className="text-sm text-gray-500">
+                  <Text className="text-lg font-medium text-gray-900 dark:text-charcoal-100">{feesSat} SAT</Text>
+                  <Text className="text-sm text-gray-500 dark:text-charcoal-400">
                     {convertBitcoinToFiat(Number(feesSat || 0), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
-              <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6">
-                <Text className="text-lg text-gray-600">{t('paymentDetails.total')}</Text>
+              <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6 dark:border-charcoal-700">
+                <Text className="text-lg text-gray-600 dark:text-charcoal-300">{t('paymentDetails.total')}</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900">{totalAmountSat} SAT</Text>
-                  <Text className="text-sm text-gray-500">
+                  <Text className="text-lg font-medium text-gray-900 dark:text-charcoal-100">{totalAmountSat} SAT</Text>
+                  <Text className="text-sm text-gray-500 dark:text-charcoal-400">
                     {convertBitcoinToFiat(totalAmountSat, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                 </View>
               </View>
               {decodedInvoiceData?.description && (
                 <View className="mb-8">
-                  <Text className="mb-2 text-lg font-medium text-gray-900">{t('paymentDetails.note')}</Text>
-                  <Text className="text-base text-gray-600">{decodedInvoiceData.description}</Text>
+                  <Text className="mb-2 text-lg font-medium text-gray-900 dark:text-charcoal-100">{t('paymentDetails.note')}</Text>
+                  <Text className="text-base text-gray-600 dark:text-charcoal-300">{decodedInvoiceData.description}</Text>
                 </View>
               )}
             </View>
           </ScrollView>
-          <View className="border-t border-gray-100 bg-white px-4">
+          <View className="border-t border-gray-100 bg-white px-4 dark:border-charcoal-700">
             {!isLnAddress && timeRemaining && (
               <View className="my-4 items-center">
-                <Text className="text-sm text-gray-600">
+                <Text className="text-sm text-gray-600 dark:text-charcoal-300">
                   {timeRemaining === t('paymentDetails.expired') ? (
                     <Text className="text-red-500">{t('paymentDetails.expiredMessage')}</Text>
                   ) : (

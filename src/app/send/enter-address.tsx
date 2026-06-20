@@ -79,7 +79,7 @@ export default function LightningPaymentScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitle: () => LightningPaymentScreenHeaderTitle(t('lightningPayment.title')),
@@ -88,7 +88,7 @@ export default function LightningPaymentScreen() {
             headerShadowVisible: false,
           }}
         />
-        <FocusAwareStatusBar style="dark" />
+        <FocusAwareStatusBar />
         <ScrollView className="flex-1 px-4 pt-8">
           <View className="mb-2">
             <View className="relative">

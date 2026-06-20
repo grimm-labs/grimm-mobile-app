@@ -26,8 +26,8 @@ const NetworkOption = React.memo<NetworkOptionProps>(({ title, description, isSe
   <Pressable onPress={onPress} style={{ opacity: disabled ? 0.5 : 1 }} disabled={disabled}>
     <View className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-2 py-4">
       <View className="flex-1 pr-4">
-        <Text className="text-sm font-medium text-gray-900">{title}</Text>
-        <Text className="mt-1 text-xs text-gray-500">{description}</Text>
+        <Text className="text-sm font-medium text-gray-900 dark:text-charcoal-100">{title}</Text>
+        <Text className="mt-1 text-xs text-gray-500 dark:text-charcoal-400">{description}</Text>
       </View>
       <View className="size-6 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} style={{ transform: [{ scale: 1 }] }} />}</View>
     </View>
@@ -115,7 +115,7 @@ export default function NetworkSwitcher() {
               headerLeft: HeaderLeft,
             }}
           />
-          <FocusAwareStatusBar style="dark" />
+          <FocusAwareStatusBar />
 
           {isChangingNetwork && (
             <View className="mt-4 flex-row items-center justify-center rounded-lg py-3">
@@ -127,7 +127,7 @@ export default function NetworkSwitcher() {
           <View className="mb-2 mt-4 px-2">
             <View className="flex-row items-center">
               <View className={`mr-2 size-2 rounded-full ${isConnected ? 'bg-primary-500' : 'bg-red-500'}`} />
-              <Text className="text-sm text-gray-600">{isConnected ? t('networkSwitcher.status.connected', { network }) : t('networkSwitcher.status.disconnected')}</Text>
+              <Text className="text-sm text-gray-600 dark:text-charcoal-300">{isConnected ? t('networkSwitcher.status.connected', { network }) : t('networkSwitcher.status.disconnected')}</Text>
             </View>
           </View>
 
@@ -138,7 +138,7 @@ export default function NetworkSwitcher() {
           </View>
 
           <View className="mt-6">
-            <Text className="text-xs text-gray-600">{t('networkSwitcher.securityNote.mainnet')}</Text>
+            <Text className="text-xs text-gray-600 dark:text-charcoal-300">{t('networkSwitcher.securityNote.mainnet')}</Text>
           </View>
         </View>
       </SafeAreaView>

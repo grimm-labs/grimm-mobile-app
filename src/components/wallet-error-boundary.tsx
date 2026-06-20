@@ -1,5 +1,8 @@
 import React, { type ErrorInfo, type ReactNode } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+
+import { Text, View } from '@/components/ui';
+import { theme } from '@/lib/theme-classes';
 
 interface Props {
   children: ReactNode;
@@ -29,7 +32,6 @@ export class WalletErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // Log to your error-reporting service (Sentry, Crashlytics, etc.)
     console.error(`[WalletErrorBoundary${this.props.name ? `:${this.props.name}` : ''}]`, error, info.componentStack);
   }
 
@@ -40,11 +42,11 @@ export class WalletErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <View style={styles.container}>
-          <Text style={styles.title}>{this.props.name ? `${this.props.name} encountered an error` : 'Something went wrong'}</Text>
-          <Text style={styles.message}>{this.state.error?.message ?? 'An unexpected error occurred.'}</Text>
-          <TouchableOpacity style={styles.button} onPress={this.handleRetry}>
-            <Text style={styles.buttonText}>Try Again</Text>
+        <View className={`flex-1 items-center justify-center p-6 ${theme.screen}`}>
+          <Text className={`mb-2 text-center text-lg font-semibold ${theme.textPrimary}`}>{this.props.name ? `${this.props.name} encountered an error` : 'Something went wrong'}</Text>
+          <Text className={`mb-6 text-center text-sm leading-5 ${theme.textSecondary}`}>{this.state.error?.message ?? 'An unexpected error occurred.'}</Text>
+          <TouchableOpacity className="rounded-lg bg-primary-600 px-6 py-3" onPress={this.handleRetry}>
+            <Text className="text-base font-semibold text-white">Try Again</Text>
           </TouchableOpacity>
         </View>
       );
@@ -53,38 +55,3 @@ export class WalletErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#0D0D0D',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  message: {
-    fontSize: 14,
-    color: '#999999',
-    marginBottom: 24,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  button: {
-    backgroundColor: '#F7931A',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
