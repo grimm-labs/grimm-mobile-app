@@ -1,0 +1,6 @@
+packages:
+  - '.'
+
+overrides:
+  react-native-screens: "^4.11.1"
+

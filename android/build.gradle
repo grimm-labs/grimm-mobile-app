@@ -15,7 +15,7 @@ buildscript {
 def reactNativeAndroidDir = new File(
   providers.exec {
     workingDir(rootDir)
-    commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    commandLine("node", "--print", "require.resolve('react-native/package.json')", rootDir)
   }.standardOutput.asText.get().trim(),
   "../android"
 )
