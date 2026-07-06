@@ -25,5 +25,5 @@ runs:
         cache: 'pnpm'
 
     - name: 📦 Install Project Dependencies
-      run: pnpm install --frozen-lockfile --ignore scripts
+      run: pnpm install --frozen-lockfile --ignore-scripts
       shell: bash
