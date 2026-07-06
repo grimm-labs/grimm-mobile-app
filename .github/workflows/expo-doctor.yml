@@ -42,6 +42,7 @@ jobs:
           echo "YADIO_API_URL=https://api.yadio.io" >> .env.development
           echo "MEMPOOL_URL=https://mempool.space" >> .env.development
 
+          
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 
@@ -49,4 +50,5 @@ jobs:
         run: pnpm run prebuild ## we only need to run this to generate the badged icon in `.expo` folder
 
       - name: Run Doctor Checks
-        run: rm -rf ios android && pnpm run doctor ## apprently the new update of expo will break if you already have ios and android folders in your project as they will show up a eas warning
+        # Add 'pnpm install --no-frozen-lockfile --ignore-scripts &&' to the beginning:
+        run: pnpm install --no-frozen-lockfile --ignore-scripts && rm -rf ios android && pnpm run doctor
