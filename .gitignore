@@ -11,6 +11,9 @@ npm-debug.*
 web-build/
 yarn-error.log
 /coverage
+
+.idea
+android
 # macOS
 .DS_Store
 

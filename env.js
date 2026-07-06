@@ -82,7 +82,7 @@ const client = z.object({
   YADIO_API_URL: z.string(),
   BREEZ_API_KEY: z.string(),
   MEMPOOL_URL: z.string(),
-  NOTIFICATION_API_URL: z.string().url().optional(),
+  NOTIFICATION_API_URL: z.string().url(),
 });
 
 const buildTime = z.object({
