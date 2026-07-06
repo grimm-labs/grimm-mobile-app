@@ -42,7 +42,7 @@ jobs:
           echo "YADIO_API_URL=https://api.yadio.io" >> .env.development
           echo "MEMPOOL_URL=https://mempool.space" >> .env.development
 
-          
+
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 
@@ -51,4 +51,4 @@ jobs:
 
       - name: Run Doctor Checks
         # Add 'pnpm install --no-frozen-lockfile --ignore-scripts &&' to the beginning:
-        run: pnpm install --no-frozen-lockfile --ignore-scripts && rm -rf ios android && pnpm run doctor
+        run: touch .env.development && pnpm install --no-frozen-lockfile --ignore-scripts && rm -rf ios android && pnpm run doctor
