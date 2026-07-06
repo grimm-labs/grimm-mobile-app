@@ -158,6 +158,12 @@
   },
   "packageManager": "pnpm@9.12.3",
   "pnpm": {
+    "onlyBuiltInDependencies": [
+      "bdk-rn"
+    ],
+    "publicHoistPattern": [
+      "*bdk-rn*"
+    ],
     "overrides": {
       "axios>form-data": "4.0.4",
       "request>form-data": "2.5.5",
