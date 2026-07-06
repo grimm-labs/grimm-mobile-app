@@ -11,6 +11,7 @@
 name: Expo Doctor (expo)
 
 on:
+
   push:
     branches:
       - main
@@ -26,6 +27,7 @@ on:
 jobs:
   doctor:
     name: Expo Doctor (expo)
+
     runs-on: ubuntu-latest
 
     steps:
