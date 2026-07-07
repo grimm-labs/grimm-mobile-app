@@ -1,7 +1,9 @@
+/* eslint-disable max-params */
 /* eslint-disable max-lines-per-function */
 import type {
   Bolt11InvoiceDetails,
   BreezSdkInterface,
+  DepositInfo,
   EventListener,
   GetInfoResponse,
   InputType,
@@ -18,6 +20,7 @@ import {
   connect,
   defaultConfig,
   LnurlPayRequest,
+  MaxFee,
   Network,
   PaymentType,
   PrepareLnurlPayRequest,
@@ -35,6 +38,7 @@ import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
+import { logUnclaimedDeposits } from '../breez/unclaimed-deposits-log';
 import { GRIMM_APP_LN_URL_DOMAIN } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 
@@ -73,6 +77,10 @@ interface BreezContextType {
   executeSend: (prepareResponse: PrepareSendPaymentResponse) => Promise<SendPaymentResponse>;
   prepareLnurlPay: (amountSats: number, payRequest: LnurlPayRequestDetails) => Promise<PrepareLnurlPayResponse>;
   executeLnurlPay: (prepareResponse: PrepareLnurlPayResponse) => Promise<Payment | undefined>;
+  unclaimedDeposits: DepositInfo[];
+  listUnclaimedDeposits: () => Promise<DepositInfo[]>;
+  refreshUnclaimedDeposits: () => Promise<DepositInfo[]>;
+  claimDeposit: (txid: string, vout: number, maxFeeSats: bigint) => Promise<void>;
 }
 
 const defaultContext: BreezContextType = {
@@ -123,6 +131,14 @@ const defaultContext: BreezContextType = {
   executeLnurlPay: async () => {
     throw new Error('Breez not initialized');
   },
+  unclaimedDeposits: [],
+  listUnclaimedDeposits: async () => {
+    throw new Error('Breez not initialized');
+  },
+  refreshUnclaimedDeposits: async () => [],
+  claimDeposit: async () => {
+    throw new Error('Breez not initialized');
+  },
 };
 
 const BreezContext = createContext<BreezContextType>(defaultContext);
@@ -136,11 +152,13 @@ class BreezEventListener implements EventListener {
   private onSynced: () => void;
   private onPaymentSucceeded: (event: SdkEvent) => void;
   private onPaymentFailed: (event: SdkEvent) => void;
+  private onDepositsChanged: (event: SdkEvent) => void;
 
-  constructor(onSynced: () => void, onPaymentSucceeded: (event: SdkEvent) => void, onPaymentFailed: (event: SdkEvent) => void) {
+  constructor(onSynced: () => void, onPaymentSucceeded: (event: SdkEvent) => void, onPaymentFailed: (event: SdkEvent) => void, onDepositsChanged: (event: SdkEvent) => void) {
     this.onSynced = onSynced;
     this.onPaymentSucceeded = onPaymentSucceeded;
     this.onPaymentFailed = onPaymentFailed;
+    this.onDepositsChanged = onDepositsChanged;
   }
 
   async onEvent(event: SdkEvent): Promise<void> {
@@ -154,6 +172,11 @@ class BreezEventListener implements EventListener {
         break;
       case SdkEvent_Tags.Synced:
         this.onSynced();
+        break;
+      case SdkEvent_Tags.UnclaimedDeposits:
+      case SdkEvent_Tags.ClaimedDeposits:
+      case SdkEvent_Tags.NewDeposits:
+        this.onDepositsChanged(event);
         break;
       default:
         break;
@@ -174,6 +197,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const [breezWalletInfos, _setBreezWalletInfos] = useState<GetInfoResponse | null>(defaultContext.breezWalletInfos);
   const [isDataLoaded, _setIsDataLoaded] = useState(defaultContext.isDataLoaded);
   const [lightningAddress, _setLightningAddress] = useState<string | null>(null);
+  const [unclaimedDeposits, _setUnclaimedDeposits] = useState<DepositInfo[]>([]);
 
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getNetwork, setItem: _updateNetwork } = useAsyncStorage('appNetwork');
@@ -278,12 +302,40 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       _setIsBreezInitialized(false);
       _setPayments([]);
       _setBreezWalletInfos(null);
+      _setUnclaimedDeposits([]);
       setLightningAddress(null);
     } catch (error) {
       console.error('Error during Breez disconnection:', error);
       _setBreezError(error?.toString() || 'Disconnection error');
     }
   }, [setLightningAddress]);
+
+  const listUnclaimedDeposits = useCallback(async (): Promise<DepositInfo[]> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    const response = await sdkRef.current.listUnclaimedDeposits({});
+    return response.deposits;
+  }, []);
+
+  const refreshUnclaimedDeposits = useCallback(async (): Promise<DepositInfo[]> => {
+    if (!isConnected || !isBreezInitialized || !sdkRef.current) {
+      _setUnclaimedDeposits([]);
+      return [];
+    }
+
+    try {
+      const deposits = await listUnclaimedDeposits();
+      _setUnclaimedDeposits(deposits);
+
+      if (__DEV__) {
+        logUnclaimedDeposits(deposits, 'refreshUnclaimedDeposits');
+      }
+
+      return deposits;
+    } catch (error) {
+      console.warn('[Breez SDK] Failed to refresh unclaimed deposits:', error);
+      throw error;
+    }
+  }, [isBreezInitialized, isConnected, listUnclaimedDeposits]);
 
   const refreshWalletInfo = useCallback(async (): Promise<void> => {
     try {
@@ -318,13 +370,31 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       _setBreezWalletInfos(info);
       _setPayments(paymentsList.payments || []);
       _setBalance(newBalance);
+
+      await refreshUnclaimedDeposits().catch(() => {});
     } catch (error) {
       console.error('Error refreshing wallet info:', error);
       _setBreezError(error?.toString() || 'Refresh error');
     } finally {
       _setIsSyncing(false);
     }
-  }, [_getSeedPhrase, disconnectBreez, isBreezInitialized, isConnected]);
+  }, [_getSeedPhrase, disconnectBreez, isBreezInitialized, isConnected, refreshUnclaimedDeposits]);
+
+  const claimDeposit = useCallback(
+    async (txid: string, vout: number, maxFeeSats: bigint): Promise<void> => {
+      if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+
+      await sdkRef.current.claimDeposit({
+        txid,
+        vout,
+        maxFee: new MaxFee.Fixed({ amount: maxFeeSats }),
+      });
+
+      await refreshUnclaimedDeposits();
+      await refreshWalletInfo();
+    },
+    [refreshUnclaimedDeposits, refreshWalletInfo],
+  );
 
   const receiveBolt11 = useCallback(async (description: string, amountSats?: number, expirySecs?: number): Promise<ReceivePaymentResponse> => {
     if (!sdkRef.current) throw new Error('Breez SDK not initialized');
@@ -444,10 +514,10 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         const eventListener = new BreezEventListener(
           () => {
             _setIsSyncing(false);
-            setTimeout(() => refreshWalletInfo(), 0);
+            setTimeout(() => refreshWalletInfoRef.current(), 0);
           },
           (event) => {
-            refreshWalletInfo();
+            refreshWalletInfoRef.current();
             if (event.tag === SdkEvent_Tags.PaymentSucceeded) {
               const payment = (event as any).inner?.payment;
               if (payment && payment.paymentType === PaymentType.Receive) {
@@ -461,6 +531,12 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
           },
           (event) => {
             console.error('Payment failed:', event);
+          },
+          (event) => {
+            refreshUnclaimedDepositsRef.current().catch(console.error);
+            if (event.tag === SdkEvent_Tags.ClaimedDeposits) {
+              refreshWalletInfoRef.current().catch(console.error);
+            }
           },
         );
 
@@ -490,6 +566,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         } catch (e) {
           // Ignore if not set
         }
+
+        await refreshUnclaimedDeposits();
       }
     } catch (error) {
       console.error('Error during Breez initialization:', error);
@@ -499,7 +577,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     } finally {
       isInitializingRef.current = false;
     }
-  }, [_getSeedPhrase, refreshWalletInfo, isBreezInitialized, network, router, setLightningAddress]);
+  }, [_getSeedPhrase, isBreezInitialized, network, router, setLightningAddress, refreshUnclaimedDeposits]);
 
   useEffect(() => {
     // Cleanup: remove event listener on unmount
@@ -532,6 +610,9 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
   const refreshWalletInfoRef = useRef(refreshWalletInfo);
   refreshWalletInfoRef.current = refreshWalletInfo;
+
+  const refreshUnclaimedDepositsRef = useRef(refreshUnclaimedDeposits);
+  refreshUnclaimedDepositsRef.current = refreshUnclaimedDeposits;
 
   useEffect(() => {
     const syncInterval = setInterval(() => {
@@ -573,6 +654,10 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     executeSend,
     prepareLnurlPay,
     executeLnurlPay,
+    unclaimedDeposits,
+    listUnclaimedDeposits,
+    refreshUnclaimedDeposits,
+    claimDeposit,
   };
 
   return <BreezContext.Provider value={contextValue}>{children}</BreezContext.Provider>;
@@ -587,5 +672,5 @@ export const useBreez = (): BreezContextType => {
 };
 
 // Re-export types and enums that consumers need
-export type { Bolt11InvoiceDetails, GetInfoResponse, InputType, LnurlPayRequestDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
+export type { Bolt11InvoiceDetails, DepositInfo, GetInfoResponse, InputType, LnurlPayRequestDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
 export { InputType_Tags, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';

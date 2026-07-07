@@ -7,6 +7,11 @@ import { cleanup, fireEvent, screen, setup, waitFor } from '@/lib/test-utils';
 jest.mock('@breeztech/breez-sdk-spark-react-native', () => ({
   PaymentStatus: { Completed: 'completed' },
   PaymentType: { Receive: 'receive' },
+  DepositClaimError_Tags: {
+    MaxDepositClaimFeeExceeded: 'MaxDepositClaimFeeExceeded',
+    MissingUtxo: 'MissingUtxo',
+    Generic: 'Generic',
+  },
 }));
 
 jest.mock('bdk-rn', () => ({
@@ -159,6 +164,19 @@ jest.mock('@/components/back-button', () => ({
   HeaderLeft: () => null,
 }));
 
+let mockActionableDeposits: any[] = [];
+const mockClaimDeposit = jest.fn();
+
+jest.mock('@/lib/hooks/use-unclaimed-deposits', () => ({
+  useUnclaimedDeposits: () => ({
+    actionableDeposits: mockActionableDeposits,
+    isLoading: false,
+    claimDeposit: mockClaimDeposit,
+    claimingKey: null,
+    getDepositKey: (deposit: any) => `${deposit.txid}:${deposit.vout}`,
+  }),
+}));
+
 import LnWalletDetails from '../ln-wallet-details';
 
 // Wrapper to provide AppContext
@@ -186,6 +204,7 @@ afterEach(() => {
   mockNetwork = 'mainnet';
   mockLightningAddress = null;
   mockHideBalance = false;
+  mockActionableDeposits = [];
 });
 
 describe('LnWalletDetails', () => {
@@ -364,6 +383,43 @@ describe('LnWalletDetails', () => {
       renderWithContext();
 
       expect(screen.getByText(/SATS/)).toBeOnTheScreen();
+    });
+  });
+
+  describe('Manual claim banner', () => {
+    it('shows manual claim banner when actionable deposits exist', () => {
+      mockActionableDeposits = [
+        {
+          txid: 'abc123',
+          vout: 0,
+          amountSats: BigInt(169782),
+          isMature: true,
+          claimError: {
+            tag: 'MaxDepositClaimFeeExceeded',
+            inner: { requiredFeeSats: BigInt(693) },
+          },
+        },
+      ];
+      renderWithContext();
+
+      expect(screen.getByTestId('manual-claim-banner')).toBeOnTheScreen();
+      expect(screen.getByText('lnWallet.manualClaimBanner.one')).toBeOnTheScreen();
+    });
+
+    it('does not show manual claim banner when no actionable deposits', () => {
+      mockActionableDeposits = [];
+      renderWithContext();
+
+      expect(screen.queryByTestId('manual-claim-banner')).not.toBeOnTheScreen();
+    });
+
+    it('navigates to unclaimed deposits page when banner is pressed', async () => {
+      mockActionableDeposits = [{ txid: 'abc123', vout: 0 }];
+      const { user } = renderWithContext();
+
+      await user.press(screen.getByTestId('manual-claim-banner'));
+
+      expect(mockPush).toHaveBeenCalledWith('/wallets/unclaimed-deposits');
     });
   });
 });

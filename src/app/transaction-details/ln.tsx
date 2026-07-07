@@ -9,6 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import DetailRow from '@/components/detail-row';
+import { TransactionNoteSection } from '@/components/transaction-note-section';
 import { colors, FocusAwareStatusBar, Image, SafeAreaView } from '@/components/ui';
 import { formatBalance } from '@/lib';
 import { AppContext } from '@/lib/context';
@@ -81,6 +82,7 @@ export default function LightningTransactionDetailsScreen() {
           </View>
           <View className="mb-6 mt-4">
             <Text className={`mb-4 text-xl font-semibold ${theme.textPrimary}`}>{t('lnTransactionDetail.details')}</Text>
+            <TransactionNoteSection type="ln" transactionId={transaction.id ?? ''} />
             <DetailRow label={t('lnTransactionDetail.date')} value={formattedDate} />
             {isSent && (
               <>

@@ -39,7 +39,15 @@
     "fingerprint": "Empreinte",
     "header_title": "Détails du SDK Breez",
     "liquid_tip": "Liquid Tip",
-    "public_key": "Clé publique"
+    "public_key": "Clé publique",
+    "sdkNotReady": "SDK Breez non connecté",
+    "unclaimedDeposits": "Dépôts on-chain non réclamés",
+    "unclaimedDepositsEmpty": "Aucun dépôt non réclamé",
+    "unclaimedDepositsError": "Échec du chargement des dépôts non réclamés",
+    "unclaimedDepositsLastRefresh": "Dernière actualisation à {{time}} — {{count}} dépôt(s)",
+    "unclaimedDepositsLoading": "Chargement...",
+    "unclaimedDepositsRefresh": "Actualiser les dépôts non réclamés",
+    "unclaimedDepositsStatus": "Statut des dépôts non réclamés"
   },
   "btcWallet": {
     "available": "Bitcoin disponible",
@@ -235,6 +243,33 @@
       "lnAddressQrTitle": "Adresse LN"
     },
     "lnAddressTitle": "Adresse LN",
+    "manualClaimBanner": {
+      "one": "1 dépôt on-chain nécessite une confirmation manuelle",
+      "other": "{{count}} dépôts on-chain nécessitent une confirmation manuelle"
+    },
+    "manualClaimConfirm": {
+      "cancel": "Annuler",
+      "message": "Montant : {{amount}} sats\nFrais de claim : {{fee}} sats\nMontant net : {{net}} sats\n\nConfirmer pour créditer votre solde ?",
+      "ok": "OK",
+      "title": "Confirmer le claim du dépôt"
+    },
+    "manualClaimModal": {
+      "amount": "Montant",
+      "cancelButton": "Annuler",
+      "claimFee": "Frais de claim",
+      "confirmButton": "Confirmer",
+      "description": "Les frais réseau sont plus élevés que prévu. Confirmez pour créditer votre solde.",
+      "error": "Échec du claim. Réessayez.",
+      "netAmount": "Montant net",
+      "success": "Dépôt crédité avec succès",
+      "title": "Confirmer le dépôt"
+    },
+    "manualClaimPage": {
+      "claimButton": "Claim le dépôt",
+      "description": "Ces dépôts on-chain n'ont pas pu être claimés automatiquement car les frais réseau dépassent la limite. Confirmez chaque dépôt individuellement.",
+      "empty": "Aucun dépôt ne nécessite de confirmation manuelle.",
+      "title": "Dépôts en attente"
+    },
     "payInvoice": "Payer une facture Lightning",
     "receiveOnchain": "Recevoir via BTC on-chain",
     "seeAll": "Voir tout",
@@ -630,6 +665,14 @@
       "confirmed": "Confirmée",
       "pending": "En attente"
     }
+  },
+  "transactionNote": {
+    "addButton": "Ajouter une note",
+    "addNoteButton": "Ajouter",
+    "placeholder": "Ajouter une note...",
+    "saveButton": "Enregistrer",
+    "saveError": "Impossible d'enregistrer la note. Veuillez réessayer.",
+    "title": "Note"
   },
   "transactions": {
     "empty": {
