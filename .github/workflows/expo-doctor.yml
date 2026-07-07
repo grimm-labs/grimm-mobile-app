@@ -52,6 +52,6 @@ jobs:
       - name: Run Doctor Checks
         # Add 'pnpm install --no-frozen-lockfile --ignore-scripts &&' to the beginning:
         run: |
-              echo "NOTIFICATION_API_URL=https://notification-service-dev.usegrimm.app" > .env.development
-              pnpm install --no-frozen-lockfile --ignore-scripts && rm -rf ios android && pnpm run doctor
+            echo "NOTIFICATION_API_URL=https://notification-service-dev.usegrimm.app" > .env.development
+            pnpm install --no-frozen-lockfile --ignore-scripts && rm -rf ios android && pnpm run doctor
 
