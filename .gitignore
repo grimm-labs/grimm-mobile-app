@@ -12,8 +12,8 @@ web-build/
 yarn-error.log
 /coverage
 
-.idea
-android
+.idea/
+pnpm-workspace.yaml
 # macOS
 .DS_Store
 
@@ -28,6 +28,3 @@ expo-env.d.ts
 .env.staging
 .env.production
 
-
-android/
-ios/
