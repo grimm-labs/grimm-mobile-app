@@ -39,7 +39,15 @@
     "fingerprint": "Fingerprint",
     "header_title": "Breez SDK Details",
     "liquid_tip": "Liquid Tip",
-    "public_key": "Public Key"
+    "public_key": "Public Key",
+    "sdkNotReady": "Breez SDK not connected yet",
+    "unclaimedDeposits": "Unclaimed on-chain deposits",
+    "unclaimedDepositsEmpty": "No unclaimed deposits",
+    "unclaimedDepositsError": "Failed to load unclaimed deposits",
+    "unclaimedDepositsLastRefresh": "Last refresh at {{time}} — {{count}} deposit(s)",
+    "unclaimedDepositsLoading": "Loading...",
+    "unclaimedDepositsRefresh": "Refresh unclaimed deposits",
+    "unclaimedDepositsStatus": "Unclaimed deposits status"
   },
   "btcWallet": {
     "available": "Available Bitcoin",
@@ -235,6 +243,33 @@
       "lnAddressQrTitle": "LN Address"
     },
     "lnAddressTitle": "LN Address",
+    "manualClaimBanner": {
+      "one": "1 on-chain deposit requires manual confirmation",
+      "other": "{{count}} on-chain deposits require manual confirmation"
+    },
+    "manualClaimConfirm": {
+      "cancel": "Cancel",
+      "message": "Amount: {{amount}} sats\nClaim fee: {{fee}} sats\nNet amount: {{net}} sats\n\nConfirm to credit your balance?",
+      "ok": "OK",
+      "title": "Confirm deposit claim"
+    },
+    "manualClaimModal": {
+      "amount": "Amount",
+      "cancelButton": "Cancel",
+      "claimFee": "Claim fee",
+      "confirmButton": "Confirm",
+      "description": "Network fees are higher than expected. Confirm to credit your balance.",
+      "error": "Claim failed. Please try again.",
+      "netAmount": "Net amount",
+      "success": "Deposit credited successfully",
+      "title": "Confirm deposit"
+    },
+    "manualClaimPage": {
+      "claimButton": "Claim deposit",
+      "description": "These on-chain deposits could not be claimed automatically because network fees exceeded the limit. Confirm each deposit individually.",
+      "empty": "No deposits require manual confirmation.",
+      "title": "Pending deposits"
+    },
     "payInvoice": "Pay a lightning invoice",
     "receiveOnchain": "Receive via BTC on-chain",
     "seeAll": "See all",
@@ -630,6 +665,14 @@
       "confirmed": "Confirmed",
       "pending": "Pending"
     }
+  },
+  "transactionNote": {
+    "addButton": "Add note",
+    "addNoteButton": "Add",
+    "placeholder": "Add a note...",
+    "saveButton": "Save",
+    "saveError": "Failed to save note. Please try again.",
+    "title": "Note"
   },
   "transactions": {
     "empty": {

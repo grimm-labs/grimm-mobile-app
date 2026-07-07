@@ -10,6 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import DetailRow from '@/components/detail-row';
+import { TransactionNoteSection } from '@/components/transaction-note-section';
 import { Button, colors, FocusAwareStatusBar, Image, SafeAreaView, ScrollView } from '@/components/ui';
 import { formatBalance, generateTxUrl } from '@/lib';
 import { AppContext, useBdk } from '@/lib/context';
@@ -111,6 +112,7 @@ export default function OnchainTransactionDetailsScreen() {
           </View>
           <View className="mb-6 mt-4">
             <Text className={`mb-4 text-xl font-semibold ${theme.textPrimary}`}>{t('onchainTransactionDetail.details')}</Text>
+            <TransactionNoteSection type="onchain" transactionId={transaction.txid} />
             {isConfirmed && <DetailRow label={t('onchainTransactionDetail.date')} value={formattedDate} />}
             {isConfirmed && <DetailRow label={t('onchainTransactionDetail.blockHeight')} value={transaction.confirmationTime?.height?.toString() || ''} />}
             {isConfirmed && height && <DetailRow label="Confirmations" value={displayConfirmation()} />}
