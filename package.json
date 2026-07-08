@@ -163,7 +163,6 @@
     "neverBuiltDependencies": [
       "bdk-rn"
     ],
-    "onlyBuiltDependencies": [],
     "publicHoistPattern": [
       "*bdk-rn*"
     ],
