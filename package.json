@@ -160,9 +160,10 @@
   },
   "packageManager": "pnpm@8.15.0",
   "pnpm": {
-    "onlyBuiltInDependencies": [
+    "neverBuiltDependencies": [
       "bdk-rn"
     ],
+    "onlyBuiltDependencies": [],
     "publicHoistPattern": [
       "*bdk-rn*"
     ],
