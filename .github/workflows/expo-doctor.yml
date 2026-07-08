@@ -43,10 +43,9 @@ jobs:
           echo "MEMPOOL_URL=https://mempool.space" >> .env.development
           echo "NOTIFICATION_API_URL=https://notification-service-dev.usegrimm.app" >> .env.development
 
+  
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
-        env:
-         NODE_OPTIONS: "--allow-importing-unexported-paths"
 
       - name: Run prebuild
         run: pnpm run prebuild ## we only need to run this to generate the badged icon in `.expo` folder
