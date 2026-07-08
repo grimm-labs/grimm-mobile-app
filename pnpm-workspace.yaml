@@ -1,8 +1,0 @@
-packages:
-  - '.'
-
-overrides:
-  react-native-screens: '^4.11.1'
-  metro: '~0.82.0'
-  metro-resolver: '~0.82.0'
-  metro-config: '~0.82.0'

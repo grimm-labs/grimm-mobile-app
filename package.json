@@ -158,7 +158,7 @@
     "type": "git",
     "url": "git+https://github.com/user/repo-name.git"
   },
-  "packageManager": "pnpm@8.15.0",
+  "packageManager": "pnpm@9.12.3",
   "pnpm": {
     "neverBuiltDependencies": [
       "bdk-rn"
