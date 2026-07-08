@@ -1,5 +1,3 @@
-// src/api/notifications/types.ts
-
 export type DevicePlatform = 'ios' | 'android';
 
 export type RegisterDevicePayload = {

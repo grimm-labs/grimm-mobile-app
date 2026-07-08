@@ -1,4 +1,3 @@
-// src/api/notifications/register-device.ts
 import { assertNotificationServiceConfigured, notificationClient } from './client';
 import type { DeviceResponse, RegisterDevicePayload } from './types';
 
