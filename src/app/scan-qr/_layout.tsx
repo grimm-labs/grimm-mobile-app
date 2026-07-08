@@ -13,7 +13,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { ScreenTitle } from '@/components/screen-title';
-import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, TouchableOpacity, View } from '@/components/ui';
+import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, TouchableOpacity, View } from '@/components/ui';
+import { InputType_Tags, useBreez } from '@/lib/context/breez-context';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const SCAN_FRAME_SIZE = screenWidth * 0.6;
@@ -25,6 +26,7 @@ export default function ScanQrScreen() {
   const [flashEnabled, setFlashEnabled] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const router = useRouter();
+  const { parseInput, isBreezInitialized } = useBreez();
 
   const scanTimeoutRef = useRef<number | null>(null);
 
@@ -37,19 +39,58 @@ export default function ScanQrScreen() {
   }, [checkCameraPermission]);
 
   const handleQrCodeDetected = useCallback(
-    (qrData: string) => {
+    async (qrData: string) => {
+      const trimmed = qrData.trim();
+      if (!trimmed) return;
+
+      if (!isBreezInitialized) {
+        showErrorMessage(t('lightningPayment.errors.preparePaymentFailed'));
+        return;
+      }
+
+      try {
+        const parsed = await parseInput(trimmed);
+
+        if (parsed.tag === InputType_Tags.Bolt11Invoice) {
+          if (parsed.inner[0].amountMsat === undefined) {
+            showErrorMessage(t('lightningPayment.errors.zeroAmountNotSupported'));
+            return;
+          }
+
+          router.push({
+            pathname: '/send/transaction-details',
+            params: {
+              rawInvoice: parsed.inner[0].invoice.bolt11,
+            },
+          });
+          return;
+        }
+
+        if (parsed.tag === InputType_Tags.LightningAddress || parsed.tag === InputType_Tags.LnurlPay) {
+          router.push({
+            pathname: '/send/enter-amount',
+            params: {
+              paymentInput: trimmed,
+            },
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('QR code parsing error:', error);
+      }
+
       router.push({
         pathname: '/send/enter-address',
         params: {
-          input: qrData,
+          input: trimmed,
         },
       });
     },
-    [router],
+    [isBreezInitialized, parseInput, router, t],
   );
 
   const handleQrCodeScanned = useCallback(
-    ({ data }: { data: string }) => {
+    async ({ data }: { data: string }) => {
       if (!isScanning) return;
 
       setIsScanning(false);
@@ -58,7 +99,7 @@ export default function ScanQrScreen() {
         clearTimeout(scanTimeoutRef.current);
       }
 
-      handleQrCodeDetected(data);
+      await handleQrCodeDetected(data);
 
       scanTimeoutRef.current = setTimeout(() => {
         setIsScanning(true);

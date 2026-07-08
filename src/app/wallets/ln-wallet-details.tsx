@@ -15,6 +15,7 @@ import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
 import { AppNetwork } from '@/lib/context/breez-context';
+import { useUnclaimedDeposits } from '@/lib/hooks/use-unclaimed-deposits';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
 import { theme } from '@/lib/theme-classes';
 import { BitcoinUnit } from '@/types/enum';
@@ -53,6 +54,7 @@ export default function LnWalletDetails() {
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
   const { balance, payments, network, lightningAddress } = useBreez();
+  const { actionableDeposits } = useUnclaimedDeposits();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
   const stackScreenOptions = useStackScreenOptions();
@@ -105,6 +107,15 @@ export default function LnWalletDetails() {
                 </View>
               </View>
             </View>
+            {actionableDeposits.length > 0 && (
+              <TouchableOpacity className="mb-4 flex-row items-center rounded-xl bg-warning-500 px-4 py-3" onPress={() => router.push('/wallets/unclaimed-deposits')} activeOpacity={0.7} testID="manual-claim-banner">
+                <Ionicons name="warning" size={20} color="white" />
+                <Text className="ml-3 flex-1 text-sm font-semibold text-white">
+                  {actionableDeposits.length === 1 ? t('lnWallet.manualClaimBanner.one') : t('lnWallet.manualClaimBanner.other', { count: actionableDeposits.length })}
+                </Text>
+                <Ionicons name="chevron-forward" size={20} color="white" />
+              </TouchableOpacity>
+            )}
             {lightningAddress ? (
               <View className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 dark:border-charcoal-700 dark:bg-charcoal-900">
                 <TouchableOpacity className="flex-row items-center bg-gray-50 p-4 dark:bg-charcoal-900" onPress={() => router.push('/receive/ln-address')} activeOpacity={0.7}>

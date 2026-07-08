@@ -5,6 +5,7 @@ import React, { createContext, useCallback, useEffect, useState } from 'react';
 
 import type { Country } from '@/interfaces';
 import { useSecureStorage } from '@/lib/hooks';
+import { resetAppDatabase } from '@/lib/sqlite/database';
 import { BitcoinUnit } from '@/types/enum';
 
 type Props = PropsWithChildren<{}>;
@@ -229,6 +230,7 @@ export const AppContextProvider = ({ children }: Props) => {
 
   const resetAppData = useCallback(async () => {
     try {
+      await resetAppDatabase();
       await setOnboarding(true);
       await _deleteSeedPhrase();
       _setHasSeedPhrase(false);
