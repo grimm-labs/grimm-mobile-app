@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+neverBuiltDependencies:
+  - bdk-rn
+
 overrides:
   uuid: 8.3.2
   undici: 6.27.0
@@ -13862,8 +13865,6 @@ packages:
     id: github.com/grimm-labs/bdk-rn/780c65d5968f39695d8644b902b8c0f2acd44854
     name: bdk-rn
     version: 2.3.1
-    prepare: true
-    requiresBuild: true
     peerDependencies:
       react: '*'
       react-native: '*'
