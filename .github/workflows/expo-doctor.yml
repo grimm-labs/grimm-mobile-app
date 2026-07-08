@@ -45,6 +45,8 @@ jobs:
 
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
+        env:
+         NODE_OPTIONS: "--allow-importing-unexported-paths"
 
       - name: Run prebuild
         run: pnpm run prebuild ## we only need to run this to generate the badged icon in `.expo` folder
