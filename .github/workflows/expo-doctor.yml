@@ -43,8 +43,6 @@ jobs:
           echo "MEMPOOL_URL=https://mempool.space" >> .env.development
           echo "NOTIFICATION_API_URL=https://notification-service-dev.usegrimm.app" >> .env.development
 
-
-
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 
@@ -52,7 +50,6 @@ jobs:
         run: pnpm run prebuild ## we only need to run this to generate the badged icon in `.expo` folder
 
       - name: Run Doctor Checks
-        # Add 'pnpm install --no-frozen-lockfile --ignore-scripts &&' to the beginning:
         run: |
-            pnpm install --no-frozen-lockfile --ignore-scripts && rm -rf ios android && pnpm run doctor
-
+            rm -rf ios android
+            pnpm exec expo-doctor
