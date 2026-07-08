@@ -10,6 +10,7 @@ neverBuiltDependencies:
 overrides:
   uuid: 8.3.2
   xcode>uuid: 8.3.2
+  jest-junit>uuid: 8.3.2
   undici: 6.27.0
   form-data: ^4.0.6
   form-data@<2.5.6: 2.5.6
@@ -8961,7 +8962,7 @@ packages:
     dependencies:
       mkdirp: 1.0.4
       strip-ansi: 6.0.1
-      uuid: 14.0.1
+      uuid: 8.3.2
       xml: 1.0.1
     dev: true
 
@@ -13387,6 +13388,7 @@ packages:
   /uuid@14.0.1:
     resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
     hasBin: true
+    dev: false
 
   /uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
