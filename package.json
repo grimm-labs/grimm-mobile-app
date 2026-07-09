@@ -153,8 +153,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/user/repo-name.git"
+    "url": "https://github.com/grimm-labs/grimm-mobile-app.git"
   },
+  "homepage": "https://github.com/grimm-labs/grimm-mobile-app#readme",
+  "bugs": {
+    "url": "https://github.com/grimm-labs/grimm-mobile-app/issues"
+  },
+  "description": "Grimm App - Bitcoin Wallet",
   "packageManager": "pnpm@9.12.3",
   "pnpm": {
     "overrides": {
