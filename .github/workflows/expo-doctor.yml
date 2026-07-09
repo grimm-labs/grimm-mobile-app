@@ -11,7 +11,6 @@
 name: Expo Doctor (expo)
 
 on:
-
   push:
     branches:
       - main
@@ -27,7 +26,6 @@ on:
 jobs:
   doctor:
     name: Expo Doctor (expo)
-
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +40,6 @@ jobs:
           echo "YADIO_API_URL=https://api.yadio.io" >> .env.development
           echo "MEMPOOL_URL=https://mempool.space" >> .env.development
           echo "NOTIFICATION_API_URL=https://notification-service-dev.usegrimm.app" >> .env.development
-
   
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
@@ -51,6 +48,4 @@ jobs:
         run: pnpm run prebuild ## we only need to run this to generate the badged icon in `.expo` folder
 
       - name: Run Doctor Checks
-        run: |
-            rm -rf ios android
-            pnpm run doctor
+        run: rm -rf ios android && pnpm run doctor ## apprently the new update of expo will break if you already have ios and android folders in your project as they will show up a eas warning

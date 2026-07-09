@@ -21,9 +21,9 @@ runs:
         run_install: false
     - uses: actions/setup-node@v4
       with:
-        node-version: 20 # Changed from 20 to 18 to fix ERR_PACKAGE_PATH_NOT_EXPORTED
+        node-version: 20
         cache: 'pnpm'
 
     - name: 📦 Install Project Dependencies
-      run: pnpm install --frozen-lockfile 
+      run: pnpm install --frozen-lockfile
       shell: bash
