@@ -34,9 +34,6 @@ jobs:
 
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
-        with:
-          node-version: 18
-          cache: 'pnpm'
 
       - name: Install Reviewdog
         if: github.event_name == 'pull_request'
