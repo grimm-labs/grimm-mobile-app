@@ -39,6 +39,7 @@ jobs:
           echo "BREEZ_API_KEY=${{ secrets.BREEZ_API_KEY }}" >> .env.staging
           echo "YADIO_API_URL=https://api.yadio.io" >> .env.staging
           echo "MEMPOOL_URL=https://mempool.space" >> .env.staging
+          echo "NOTIFICATION_API_URL=${{ vars.NOTIFICATION_API_URL_STAGING }}" >> .env.staging
 
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
