@@ -19,12 +19,7 @@ describe('migrateLegacyServerId', () => {
 
 describe('orderEsploraServers', () => {
   it('puts mempool.bitdevsyde.org first when preferred', () => {
-    expect(orderEsploraServers(DEFAULT_ESPLORA_SERVERS, 'mempool.bitdevsyde.org').map((s) => s.id)).toEqual([
-      'mempool.bitdevsyde.org',
-      'mempool.space',
-      'blockstream.info',
-      'bitcoin.lu.ke',
-    ]);
+    expect(orderEsploraServers(DEFAULT_ESPLORA_SERVERS, 'mempool.bitdevsyde.org').map((s) => s.id)).toEqual(['mempool.bitdevsyde.org', 'mempool.space', 'blockstream.info', 'bitcoin.lu.ke']);
   });
 
   it('returns the original list when preferred id is unknown', () => {
