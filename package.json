@@ -51,7 +51,7 @@
     "@tanstack/react-query": "^5.52.1",
     "app-icon-badge": "^0.1.2",
     "axios": "^1.16.1",
-    "bdk-rn": "https://github.com/grimm-labs/bdk-rn.git#780c65d5968f39695d8644b902b8c0f2acd44854",
+    "bdk-rn": "https://github.com/bitcoindevkit/bdk-rn/releases/download/v1.0.0/bdk-rn-1.0.0.tgz",
     "bignumber.js": "^9.1.2",
     "expo": "~53.0.27",
     "expo-application": "~6.1.5",
@@ -180,7 +180,11 @@
       "shell-quote": "1.8.4",
       "ws@^6.0.0": "6.2.4",
       "ws@^7.0.0": "7.5.11",
-      "ws@^8.0.0": "8.21.0"
+      "ws@^8.0.0": "8.21.0",
+      "uniffi-bindgen-react-native": "0.30.0-1"
+    },
+    "patchedDependencies": {
+      "@breeztech/breez-sdk-spark-react-native@0.15.0": "patches/@breeztech__breez-sdk-spark-react-native@0.15.0.patch"
     }
   },
   "expo": {

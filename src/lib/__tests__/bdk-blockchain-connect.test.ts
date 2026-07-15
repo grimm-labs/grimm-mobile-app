@@ -1,4 +1,6 @@
-import { Network } from 'bdk-rn/lib/lib/enums';
+jest.mock('bdk-rn', () => require('@/lib/bdk/__tests__/helpers/mock-bdk-rn'));
+
+import { Network } from 'bdk-rn';
 
 import { DEFAULT_ESPLORA_SERVERS } from '@/lib/constant';
 import { getEsploraBaseUrl, isEsploraRateLimitError, migrateLegacyServerId, orderEsploraServers } from '@/lib/bdk-blockchain-connect';

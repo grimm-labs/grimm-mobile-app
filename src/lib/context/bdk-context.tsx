@@ -1,22 +1,33 @@
 /* eslint-disable no-void */
 /* eslint-disable security/detect-object-injection */
 /* eslint-disable max-lines-per-function */
-import type { Blockchain, Wallet as BdkWallet } from 'bdk-rn';
-import { Address, DatabaseConfig, Descriptor, DescriptorSecretKey, Mnemonic, TxBuilder, Wallet } from 'bdk-rn';
-import type { Balance, TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
-import { KeychainKind, Network } from 'bdk-rn/lib/lib/enums';
+import type { EsploraClient, PersisterInterface, WalletInterface } from 'bdk-rn';
+import { Network } from 'bdk-rn';
 import * as FileSystem from 'expo-file-system';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
+import {
+  broadcastTransaction,
+  buildAndSignTransaction,
+  createOrLoadWallet,
+  estimateTransactionFee,
+  formatUnknownError,
+  getEsploraHeight,
+  type OnchainTransaction,
+  readWalletSnapshot,
+  revealReceiveAddress,
+  syncWalletWithEsplora,
+  toBdkNetwork,
+} from '../bdk';
 import { connectEsploraBackend, type EsploraConnectResult, type EsploraServerOption, isEsploraRateLimitError, migrateLegacyServerId, orderEsploraServers, toEsploraServerOptions } from '../bdk-blockchain-connect';
 import { DEFAULT_ESPLORA_SERVERS, DEFAULT_SERVER_ID } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { getItem as getStorageItem, removeItem as removeStorageItem, setItem as setStorageItem } from '../storage';
 import { useBreez } from './breez-context';
 
-export type { EsploraServerOption };
+export type { EsploraServerOption, OnchainTransaction };
 
 const SYNC_INTERVAL = 60000;
 const INIT_RETRY_INTERVAL = 30000;
@@ -28,19 +39,13 @@ const LEGACY_SERVER_KEY_TESTNET = 'selectedElectrumServer_testnet';
 const SNAPSHOT_KEY_MAINNET = 'bdkWalletSnapshot_mainnet';
 const SNAPSHOT_KEY_TESTNET = 'bdkWalletSnapshot_testnet';
 
-type StoredTransactionDetails = {
-  txid: string;
-  received: number;
-  sent: number;
-  fee?: number;
-  confirmationTime?: { height?: number; timestamp?: number };
-};
+type StoredOnchainTransaction = OnchainTransaction;
 
 type PersistedBdkSnapshot = {
   balance: number;
   confirmedBalance: number;
   unconfirmedBalance: number;
-  transactions: StoredTransactionDetails[];
+  transactions: StoredOnchainTransaction[];
   updatedAt: number;
 };
 
@@ -48,7 +53,7 @@ function snapshotStorageKey(network: Network): string {
   return network === Network.Bitcoin ? SNAPSHOT_KEY_MAINNET : SNAPSHOT_KEY_TESTNET;
 }
 
-function toStoredTransactions(transactions: TransactionDetails[]): StoredTransactionDetails[] {
+function toStoredTransactions(transactions: OnchainTransaction[]): StoredOnchainTransaction[] {
   return transactions.map((tx) => ({
     txid: tx.txid,
     received: tx.received,
@@ -58,25 +63,20 @@ function toStoredTransactions(transactions: TransactionDetails[]): StoredTransac
   }));
 }
 
-function fromStoredTransactions(transactions: StoredTransactionDetails[]): TransactionDetails[] {
-  return transactions.map(
-    (tx) =>
-      ({
-        txid: tx.txid,
-        received: tx.received,
-        sent: tx.sent,
-        fee: tx.fee,
-        confirmationTime: tx.confirmationTime,
-        transaction: null,
-      }) as TransactionDetails,
-  );
+function fromStoredTransactions(transactions: StoredOnchainTransaction[]): OnchainTransaction[] {
+  return transactions.map((tx) => ({
+    txid: tx.txid,
+    received: tx.received,
+    sent: tx.sent,
+    fee: tx.fee,
+    confirmationTime: tx.confirmationTime,
+  }));
 }
 
 function hasWalletData(snapshot: Pick<BdkState, 'balance' | 'transactions'>): boolean {
   return snapshot.balance > 0 || snapshot.transactions.length > 0;
 }
 
-/** Only overwrite displayed balance/txs when the snapshot actually has data. */
 function walletDisplayFields(
   snapshot: Pick<BdkState, 'balance' | 'confirmedBalance' | 'unconfirmedBalance' | 'transactions'>,
 ): Partial<Pick<BdkState, 'balance' | 'confirmedBalance' | 'unconfirmedBalance' | 'transactions'>> {
@@ -118,10 +118,6 @@ function getDefaultServerId(): string {
   return DEFAULT_ESPLORA_SERVERS.find((server) => server.id === DEFAULT_SERVER_ID)?.id ?? DEFAULT_ESPLORA_SERVERS[0]?.id ?? '';
 }
 
-/**
- * Expo `documentDirectory` is a `file://…` URI. Strip the prefix on native so bdk-rn receives
- * an absolute path for Persister.newSqlite (see BdkRnModule.walletInit).
- */
 function sqliteWalletDbUri(network: Network): string {
   const dir = FileSystem.documentDirectory ?? '';
   const base = dir.endsWith('/') ? dir : `${dir}/`;
@@ -134,11 +130,6 @@ function sqliteWalletDbPath(network: Network): string {
     return uriOrPath;
   }
   return uriOrPath.replace(/^file:\/\//, '');
-}
-
-function isWalletPersistenceError(error: unknown): boolean {
-  const message = formatUnknownError(error);
-  return message.includes('CouldNotLoad') || message.includes('DataAlreadyExists') || message.includes('LoadWithPersistException') || message.includes('CreateWithPersistException');
 }
 
 async function deleteWalletDbFiles(network: Network): Promise<void> {
@@ -154,7 +145,6 @@ async function deleteWalletDbFiles(network: Network): Promise<void> {
   }
 }
 
-/** Empty SQLite files left by Persister.newSqlite break Wallet.load on the next launch. */
 async function removeStaleEmptyWalletDb(network: Network): Promise<void> {
   if (Platform.OS === 'web') {
     return;
@@ -166,59 +156,21 @@ async function removeStaleEmptyWalletDb(network: Network): Promise<void> {
       await deleteWalletDbFiles(network);
     }
   } catch {
-    // non-fatal — native walletInit performs its own recovery
+    // non-fatal
   }
 }
 
-async function createBdkWallet(externalDescriptor: Awaited<ReturnType<Descriptor['newBip84']>>, internalDescriptor: Awaited<ReturnType<Descriptor['newBip84']>>, onchainNetwork: Network): Promise<BdkWallet> {
-  const dbPath = sqliteWalletDbPath(onchainNetwork);
-  await removeStaleEmptyWalletDb(onchainNetwork);
-
+async function hasExistingWalletDb(network: Network): Promise<boolean> {
+  if (Platform.OS === 'web') {
+    return false;
+  }
+  const dbUri = sqliteWalletDbUri(network);
   try {
-    const dbConfig = await new DatabaseConfig().sqlite(dbPath);
-    return await new Wallet().create(externalDescriptor, internalDescriptor, onchainNetwork, dbConfig);
-  } catch (error) {
-    if (!isWalletPersistenceError(error)) {
-      throw error;
-    }
-    console.warn('[BDK init] SQLite wallet failed — deleting local cache and retrying once', formatUnknownError(error));
-    await deleteWalletDbFiles(onchainNetwork);
-    await clearPersistedBdkSnapshot(onchainNetwork);
-    const dbConfig = await new DatabaseConfig().sqlite(dbPath);
-    return await new Wallet().create(externalDescriptor, internalDescriptor, onchainNetwork, dbConfig);
+    const info = await FileSystem.getInfoAsync(dbUri);
+    return info.exists && 'size' in info && info.size > 0;
+  } catch {
+    return false;
   }
-}
-
-function walletBalanceSats(balance: Balance): number {
-  return balance.confirmed + balance.trustedPending + balance.untrustedPending;
-}
-
-function sortTransactions(transactions: TransactionDetails[]): TransactionDetails[] {
-  return transactions.sort((a, b) => (b.confirmationTime?.timestamp || 0) - (a.confirmationTime?.timestamp || 0));
-}
-
-/** Reads balance and transactions from the local SQLite wallet (no network). */
-async function readWalletSnapshot(wallet: BdkWallet): Promise<Pick<BdkState, 'balance' | 'confirmedBalance' | 'unconfirmedBalance' | 'transactions'>> {
-  const balance: Balance = await wallet.getBalance();
-  const transactions: TransactionDetails[] = await wallet.listTransactions(true);
-  const balanceSats = walletBalanceSats(balance);
-  return {
-    balance: balanceSats,
-    confirmedBalance: balance.confirmed,
-    unconfirmedBalance: balance.trustedPending + balance.untrustedPending,
-    transactions: sortTransactions(transactions),
-  };
-}
-
-function formatUnknownError(error: unknown): string {
-  if (error instanceof Error) {
-    const msg = error.message?.trim();
-    if (msg) return msg;
-    const stack = typeof error.stack === 'string' ? error.stack.trim() : '';
-    if (stack) return stack;
-  }
-  const asStr = String(error).trim();
-  return asStr || 'Unknown error';
 }
 
 interface BdkState {
@@ -229,17 +181,18 @@ interface BdkState {
   unconfirmedBalance: number;
   error: string | null;
   isBdkInitialized: boolean;
-  transactions: TransactionDetails[];
-  wallet: BdkWallet | null;
+  transactions: OnchainTransaction[];
+  wallet: WalletInterface | null;
 }
 
 interface BdkContextType extends BdkState {
   initializeBdk: (force?: boolean, serverIdOverride?: string | null) => Promise<boolean>;
   retryBdkConnection: () => Promise<void>;
-  syncWallet: (walletParam?: BdkWallet, opts?: { rethrowOnError?: boolean }) => Promise<void>;
+  syncWallet: (walletParam?: WalletInterface, opts?: { rethrowOnError?: boolean; skipServerFallback?: boolean }) => Promise<void>;
   disconnectBdk: () => Promise<void>;
   sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
   calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
+  getReceiveAddress: () => Promise<string>;
   getBlockainHeight: () => Promise<number | undefined>;
   availableServers: EsploraServerOption[];
   selectedServerId: string | null;
@@ -268,8 +221,9 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const [state, setState] = useState<BdkState>(initialState);
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const isInitializingRef = useRef<boolean>(false);
-  const blockchainRef = useRef<Blockchain | null>(null);
-  const walletRef = useRef<BdkWallet | null>(null);
+  const esploraClientRef = useRef<EsploraClient | null>(null);
+  const walletRef = useRef<WalletInterface | null>(null);
+  const persisterRef = useRef<PersisterInterface | null>(null);
   const { network } = useBreez();
   const currentNetworkRef = useRef<string | null>(null);
   const isBdkInitializedRef = useRef<boolean>(false);
@@ -285,7 +239,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   }, [state.error]);
 
   const getOnchainNetwork = useCallback((): Network => {
-    return network === 'mainnet' ? Network.Bitcoin : Network.Testnet;
+    return toBdkNetwork(network);
   }, [network]);
 
   const availableServers = useMemo(() => toEsploraServerOptions(DEFAULT_ESPLORA_SERVERS, getOnchainNetwork()), [getOnchainNetwork]);
@@ -345,8 +299,9 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     try {
       console.log('Disconnecting BDK...');
 
-      blockchainRef.current = null;
+      esploraClientRef.current = null;
       walletRef.current = null;
+      persisterRef.current = null;
 
       await clearPersistedBdkSnapshot(getOnchainNetwork());
 
@@ -373,46 +328,31 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     }
   }, [updateState, getOnchainNetwork]);
 
-  const buildTransaction = async (address: string, amount: number, feeRate: number) => {
-    const txBuilder = await new TxBuilder().create();
-    const addressInstance = await new Address().create(address, getOnchainNetwork());
-    const script = await addressInstance.scriptPubKey();
-
-    await txBuilder.addRecipient(script, amount);
-    await txBuilder.enableRbf();
-    await txBuilder.feeRate(feeRate);
-
-    if (state.wallet) {
-      const txBuilderResult = await txBuilder.finish(state.wallet);
-      const psbt = await state.wallet.sign(txBuilderResult.psbt);
-      const tx = await psbt.extractTx();
-      return tx;
-    }
-  };
-
-  const validateWalletAndBlockchain = (wallet: Wallet | null, blockchain: Blockchain | null) => {
-    if (!wallet || !blockchain) {
+  const validateWalletAndClient = () => {
+    if (!state.wallet || !esploraClientRef.current || !persisterRef.current) {
       throw new Error('Wallet ou blockchain not initialized');
     }
+    return {
+      wallet: state.wallet,
+      client: esploraClientRef.current,
+      persister: persisterRef.current,
+    };
   };
 
   const sendTransaction = async (address: string, amount: number, feeRate: number = 1.0): Promise<string> => {
     try {
-      validateWalletAndBlockchain(state.wallet, blockchainRef.current);
+      const { wallet, client, persister } = validateWalletAndClient();
       updateState({ isSyncing: true });
 
-      const tx = await buildTransaction(address, amount, feeRate);
-      if (tx && blockchainRef.current) {
-        await blockchainRef.current.broadcast(tx);
-        const id = await tx.txid();
-        updateState({ isSyncing: false });
-        return id;
-      }
-      throw new Error('Failed to build send transaction');
+      const tx = buildAndSignTransaction(wallet, persister, address, amount, feeRate, getOnchainNetwork());
+      await broadcastTransaction(client, tx);
+      const id = tx.computeTxid().toString();
+      updateState({ isSyncing: false });
+      return id;
     } catch (error) {
       console.error('Failed to send transaction:', error);
       updateState({
-        error: error?.toString(),
+        error: error?.toString() ?? null,
         isSyncing: false,
       });
       throw error;
@@ -421,33 +361,34 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
   const calculateTransactionFee = async (address: string, amount: number, feeRate: number = 1.0): Promise<number> => {
     try {
-      validateWalletAndBlockchain(state.wallet, blockchainRef.current);
-      const tx = await buildTransaction(address, amount, feeRate);
-      if (tx) {
-        const vsize = await tx.vsize();
-        return vsize * feeRate;
-      }
-      throw new Error('Failed to calculate transaction fee');
+      const { wallet, persister } = validateWalletAndClient();
+      return estimateTransactionFee(wallet, persister, address, amount, feeRate, getOnchainNetwork());
     } catch (error) {
       console.error('Error calculating transaction fees:', error);
       throw error;
     }
   };
 
+  const getReceiveAddress = async (): Promise<string> => {
+    const { wallet, persister } = validateWalletAndClient();
+    return revealReceiveAddress(wallet, persister);
+  };
+
   const getBlockainHeight = async (): Promise<number | undefined> => {
-    if (blockchainRef) {
-      return await blockchainRef.current?.getHeight();
+    if (esploraClientRef.current) {
+      return getEsploraHeight(esploraClientRef.current);
     }
     return undefined;
   };
 
   const syncWallet = useCallback(
-    async (walletParam?: BdkWallet, opts?: { rethrowOnError?: boolean; skipServerFallback?: boolean }): Promise<void> => {
+    async (walletParam?: WalletInterface, opts?: { rethrowOnError?: boolean; skipServerFallback?: boolean }): Promise<void> => {
       const walletToUse = walletParam || walletRef.current;
+      const persisterToUse = persisterRef.current;
 
       const applySyncResult = async (): Promise<void> => {
-        if (!walletToUse || !blockchainRef.current) {
-          console.log('Wallet or blockchain not initialized');
+        if (!walletToUse || !esploraClientRef.current || !persisterToUse) {
+          console.log('Wallet or Esplora client not initialized');
           return;
         }
 
@@ -460,24 +401,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         updateState({ isSyncing: true });
 
-        await walletToUse.sync(blockchainRef.current);
-        const balance: Balance = await walletToUse.getBalance();
-        const transactions: TransactionDetails[] = await walletToUse.listTransactions(true);
-        const balanceSats = walletBalanceSats(balance);
+        await syncWalletWithEsplora(walletToUse, persisterToUse, esploraClientRef.current);
+        const snapshot = readWalletSnapshot(walletToUse);
         console.log('[BDK sync] Completed', {
-          spendable: balance.spendable,
-          confirmed: balance.confirmed,
-          trustedPending: balance.trustedPending,
-          untrustedPending: balance.untrustedPending,
-          total: balanceSats,
-          txCount: transactions.length,
+          confirmed: snapshot.confirmedBalance,
+          unconfirmed: snapshot.unconfirmedBalance,
+          total: snapshot.balance,
+          txCount: snapshot.transactions.length,
         });
-        const snapshot = {
-          balance: balanceSats,
-          confirmedBalance: balance.confirmed,
-          unconfirmedBalance: balance.trustedPending + balance.untrustedPending,
-          transactions: sortTransactions(transactions),
-        };
         updateState({
           ...snapshot,
           isSyncing: false,
@@ -500,7 +431,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
             try {
               console.warn(`[BDK sync] Rate limited on ${currentId} — switching to ${server.id}`);
               const connectResult = await connectEsploraBackend([server], onchainNetwork, { manualSelection: true });
-              blockchainRef.current = connectResult.blockchain;
+              esploraClientRef.current = connectResult.client;
               setSelectedServerId(connectResult.serverId);
               await persistServerId(onchainNetwork, connectResult.serverId);
               await applySyncResult();
@@ -546,25 +477,32 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
       try {
         isInitializingRef.current = true;
-        // Keep balance/transactions visible while reconnecting — stale-while-revalidate.
         updateState({ isSyncing: true, error: null, isConnected: false, isBdkInitialized: false, wallet: null });
 
-        blockchainRef.current = null;
+        esploraClientRef.current = null;
         walletRef.current = null;
+        persisterRef.current = null;
 
         const seedPhrase = await _getSeedPhrase();
         if (!seedPhrase) {
           throw new Error('No recovery phrase found');
         }
 
-        const mnemonic = await new Mnemonic().fromString(seedPhrase);
-        const descriptorSecretKey = await new DescriptorSecretKey().create(getOnchainNetwork(), mnemonic);
-        const externalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.External, getOnchainNetwork());
-        const internalDescriptor = await new Descriptor().newBip84(descriptorSecretKey, KeychainKind.Internal, getOnchainNetwork());
-
-        const wallet = await createBdkWallet(externalDescriptor, internalDescriptor, getOnchainNetwork());
         const onchainNetwork = getOnchainNetwork();
-        const cachedSnapshot = await readWalletSnapshot(wallet);
+        await removeStaleEmptyWalletDb(onchainNetwork);
+        const dbPath = sqliteWalletDbPath(onchainNetwork);
+
+        const session = await createOrLoadWallet(seedPhrase, network, dbPath, {
+          hasExistingDb: async () => hasExistingWalletDb(onchainNetwork),
+          deleteDb: async () => {
+            console.warn('[BDK init] SQLite wallet failed — deleting local cache and retrying once');
+            await deleteWalletDbFiles(onchainNetwork);
+            await clearPersistedBdkSnapshot(onchainNetwork);
+          },
+        });
+
+        const { wallet, persister } = session;
+        const cachedSnapshot = readWalletSnapshot(wallet);
         if (hasWalletData(cachedSnapshot)) {
           console.log('[BDK init] Showing cached wallet snapshot from SQLite', {
             balance: cachedSnapshot.balance,
@@ -587,16 +525,16 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           throw new Error(isManualSelection ? 'ESPLORA_CONNECTION_FAILED' : 'No Esplora indexer configured.');
         }
 
-        let connectResult: EsploraConnectResult | null = null;
         let lastInitError: unknown = null;
 
         for (let i = 0; i < candidates.length; i++) {
           const server = candidates[i];
           try {
-            connectResult = await connectEsploraBackend([server], onchainNetwork, { manualSelection: true });
-            blockchainRef.current = connectResult.blockchain;
+            const connectResult: EsploraConnectResult = await connectEsploraBackend([server], onchainNetwork, { manualSelection: true });
+            esploraClientRef.current = connectResult.client;
             walletRef.current = wallet;
-            currentNetworkRef.current = getOnchainNetwork();
+            persisterRef.current = persister;
+            currentNetworkRef.current = network;
 
             updateState({
               wallet,
@@ -609,7 +547,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
             setSelectedServerId(connectResult.serverId);
             await persistServerId(onchainNetwork, connectResult.serverId);
 
-            // Sync in background — cached SQLite snapshot is already on screen.
             void syncWallet(wallet).catch((syncError) => {
               console.error('[BDK init] Background sync failed', formatUnknownError(syncError));
             });
@@ -620,7 +557,6 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
             const hasNextServer = !isManualSelection && i < candidates.length - 1;
             if (hasNextServer) {
               console.warn(`[BDK init] Failed on ${server.id} — trying next Esplora indexer`, formatUnknownError(error));
-              connectResult = null;
               continue;
             }
             throw error;
@@ -635,8 +571,9 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
         });
 
-        blockchainRef.current = null;
+        esploraClientRef.current = null;
         walletRef.current = null;
+        persisterRef.current = null;
         updateState({
           error: message,
           isSyncing: false,
@@ -649,7 +586,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         isInitializingRef.current = false;
       }
     },
-    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, syncWallet, getStoredServerId, persistServerId],
+    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, network, syncWallet, getStoredServerId, persistServerId],
   );
 
   const setSelectedServer = useCallback(
@@ -681,7 +618,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const handleNetworkChange = async () => {
-      if (currentNetworkRef.current !== null && currentNetworkRef.current !== getOnchainNetwork() && state.isBdkInitialized) {
+      if (currentNetworkRef.current !== null && currentNetworkRef.current !== network && state.isBdkInitialized) {
         await disconnectBdk();
         setTimeout(async () => {
           await initializeBdk(true);
@@ -690,7 +627,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     };
 
     handleNetworkChange();
-  }, [getOnchainNetwork, state.isBdkInitialized, disconnectBdk, initializeBdk]);
+  }, [network, state.isBdkInitialized, disconnectBdk, initializeBdk]);
 
   const bdkIntervalDepsPrevRef = useRef<{ isConnected: boolean; isBdkInitialized: boolean } | null>(null);
   useEffect(() => {
@@ -717,7 +654,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     }
 
     const syncInterval = setInterval(() => {
-      if (walletRef.current && blockchainRef.current && !isInitializingRef.current) {
+      if (walletRef.current && esploraClientRef.current && !isInitializingRef.current) {
         console.log('[BDK interval] Automatic synchronization...');
         syncWallet();
       }
@@ -758,6 +695,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     disconnectBdk,
     sendTransaction,
     calculateTransactionFee,
+    getReceiveAddress,
     getBlockainHeight,
     availableServers,
     selectedServerId,
