@@ -71,10 +71,10 @@ export type EsploraConnectResult = {
  * Tries Esplora indexers in order. Manual selection tries only the requested server.
  */
 export async function connectEsploraBackend(candidates: EsploraServer[], onchainNetwork: Network, opts: { manualSelection: boolean }): Promise<EsploraConnectResult> {
-  void opts.manualSelection;
+  const serversToTry = opts.manualSelection ? candidates.slice(0, 1) : candidates;
   let lastError: unknown = null;
 
-  for (const server of candidates) {
+  for (const server of serversToTry) {
     const baseUrl = getEsploraBaseUrl(server, onchainNetwork);
     try {
       console.log(`[BDK init] Trying Esplora → ${baseUrl}`);
