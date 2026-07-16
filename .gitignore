@@ -11,6 +11,8 @@ npm-debug.*
 web-build/
 yarn-error.log
 /coverage
+.idea/
+pnpm-workspace.yaml
 # macOS
 .DS_Store
 
