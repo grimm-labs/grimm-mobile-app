@@ -1,6 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Mnemonic } from 'bdk-rn';
-import { WordCount } from 'bdk-rn/lib/lib/enums';
 import { Stack, useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import React, { useContext } from 'react';
@@ -12,6 +10,7 @@ import { HeaderLeft } from '@/components/back-button';
 import { ScreenSubtitle } from '@/components/screen-subtitle';
 import { ScreenTitle } from '@/components/screen-title';
 import { colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { generateMnemonic12 } from '@/lib/bdk';
 import { AppContext } from '@/lib/context';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
 import { theme } from '@/lib/theme-classes';
@@ -50,7 +49,7 @@ export default function CreateOrImportSeed() {
 
   const handleCreateSeed = async () => {
     try {
-      const newMnemonic = (await new Mnemonic().create(WordCount.WORDS12)).asString();
+      const newMnemonic = generateMnemonic12();
       if (!newMnemonic) {
         throw new Error('Failed to generate seed phrase');
       }

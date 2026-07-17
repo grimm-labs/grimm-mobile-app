@@ -1,0 +1,13 @@
+diff --git a/BreezSdkSparkReactNative.podspec b/BreezSdkSparkReactNative.podspec
+index 5cfe1ef859a3b8b537ec7da621cac81199162d64..134321f031e8248f7751f91dd98c6747289bf405 100644
+--- a/BreezSdkSparkReactNative.podspec
++++ b/BreezSdkSparkReactNative.podspec
+@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
+ 
+   s.source_files = "ios/*.{h,m,mm,swift}", "ios/generated/**/*.{h}", "cpp/**/*.{hpp,cpp,c,h}", "cpp/generated/**/*.{hpp,cpp,c,h}"
+   s.vendored_frameworks = "build/RnBreezSdkSpark.xcframework"
+-  s.dependency    "uniffi-bindgen-react-native", "0.29.3-1"
++  s.dependency    "uniffi-bindgen-react-native", "0.30.0-1"
+ 
+   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.
+   # See https://github.com/facebook/react-native/blob/febf6b7f33fdb4904669f99d795eba4c0f95d7bf/scripts/cocoapods/new_architecture.rb#L79.

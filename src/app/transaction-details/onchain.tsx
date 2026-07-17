@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
-import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +12,7 @@ import DetailRow from '@/components/detail-row';
 import { TransactionNoteSection } from '@/components/transaction-note-section';
 import { Button, colors, FocusAwareStatusBar, Image, SafeAreaView, ScrollView } from '@/components/ui';
 import { formatBalance, generateTxUrl } from '@/lib';
+import type { OnchainTransaction } from '@/lib/bdk';
 import { AppContext, useBdk } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
@@ -30,7 +30,7 @@ export default function OnchainTransactionDetailsScreen() {
   const { getBlockainHeight } = useBdk();
   const [height, setHeight] = useState<number | undefined>(undefined);
 
-  const transaction = JSON.parse(transactionData) as TransactionDetails;
+  const transaction = JSON.parse(transactionData) as OnchainTransaction;
   const isSent = transaction.sent > transaction.received;
   const isConfirmed = (transaction.confirmationTime?.timestamp || 0) > 0;
   const netAmount = isSent ? transaction.sent - transaction.received + (transaction.fee || 0) : transaction.received - transaction.sent;
