@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
-import { AddressIndex } from 'bdk-rn/lib/lib/enums';
 import { Stack } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +19,7 @@ import { useBdk } from '@/lib/context';
 
 export default function ReceivePaymentScreen() {
   const { t } = useTranslation();
-  const { wallet } = useBdk();
+  const { getReceiveAddress } = useBdk();
 
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState<string>('');
@@ -54,8 +53,7 @@ export default function ReceivePaymentScreen() {
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const addressInfo = await wallet?.getAddress(AddressIndex.New);
-      const bitcoinAddress = await addressInfo?.address.asString();
+      const bitcoinAddress = await getReceiveAddress();
 
       if (bitcoinAddress) {
         setAddress(bitcoinAddress);
@@ -69,7 +67,7 @@ export default function ReceivePaymentScreen() {
     } finally {
       setLoading(false);
     }
-  }, [t, wallet]);
+  }, [t, getReceiveAddress]);
 
   useEffect(() => {
     generateAddress();

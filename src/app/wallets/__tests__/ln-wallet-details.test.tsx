@@ -14,9 +14,7 @@ jest.mock('@breeztech/breez-sdk-spark-react-native', () => ({
   },
 }));
 
-jest.mock('bdk-rn', () => ({
-  Mnemonic: jest.fn(),
-}));
+jest.mock('bdk-rn', () => require('@/lib/bdk/__tests__/helpers/mock-bdk-rn'));
 
 jest.mock('@/api', () => ({
   supportedBitcoinCurrencies: [],
