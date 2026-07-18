@@ -14,7 +14,7 @@
       },
       "android": {
         "buildType": "app-bundle",
-        "image": "latest",
+        "image": "sdk-53",
         "autoIncrement": "versionCode"
       },
       "env": {
@@ -33,7 +33,7 @@
       },
       "android": {
         "buildType": "apk",
-        "image": "latest"
+        "image": "sdk-53"
       },
       "env": {
         "APP_ENV": "staging",
@@ -49,7 +49,7 @@
         "image": "macos-sequoia-15.6-xcode-26.2"
       },
       "android": {
-        "image": "latest",
+        "image": "sdk-53",
         "buildType": "apk"
       },
       "env": {
@@ -64,7 +64,7 @@
         "image": "macos-sequoia-15.6-xcode-26.2"
       },
       "android": {
-        "image": "latest"
+        "image": "sdk-53"
       },
       "env": {
         "APP_ENV": "development",
