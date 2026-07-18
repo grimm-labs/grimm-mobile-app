@@ -2,7 +2,7 @@
 import type { ConfigContext, ExpoConfig } from '@expo/config';
 import type { AppIconBadgeConfig } from 'app-icon-badge/types';
 
-import { ClientEnv, Env } from './env';
+import { ClientEnv, Env } from './env.js';
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
   enabled: Env.APP_ENV !== 'production' && !process.env.CI,
