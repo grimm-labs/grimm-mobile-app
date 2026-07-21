@@ -79,9 +79,6 @@
     "libphonenumber-js": "^1.13.8",
     "lodash.memoize": "^4.1.2",
     "lottie-react-native": "7.2.2",
-    "metro": "~0.82.0",
-    "metro-config": "~0.82.0",
-    "metro-resolver": "~0.82.0",
     "moti": "^0.29.0",
     "nativewind": "^4.2.6",
     "react": "19.0.0",
@@ -99,13 +96,14 @@
     "react-native-reanimated": "~3.17.5",
     "react-native-restart": "0.0.27",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "~4.11.1",
+    "react-native-screens": "^4.11.1",
     "react-native-svg": "~15.11.2",
     "react-native-web": "~0.20.0",
-    "react-query-kit": "^3.3.0",
+    "react-query-kit": "^3.3.4",
+    "react-test-renderer": "19.0.0",
     "tailwind-variants": "^0.2.1",
-    "zod": "^3.23.8",
-    "zustand": "^4.5.5"
+    "zod": "^3.25.76",
+    "zustand": "^4.5.7"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -160,48 +158,17 @@
     "type": "git",
     "url": "https://github.com/grimm-labs/grimm-mobile-app.git"
   },
+  "homepage": "https://github.com/grimm-labs/grimm-mobile-app#readme",
+  "bugs": {
+    "url": "https://github.com/grimm-labs/grimm-mobile-app/issues"
+  },
+  "description": "Grimm App - Bitcoin Wallet",
   "packageManager": "pnpm@9.12.3",
   "pnpm": {
-    "neverBuiltDependencies": [
-      "bdk-rn"
-    ],
-    "publicHoistPattern": [
-      "*bdk-rn*"
-    ],
     "overrides": {
-      "uuid": "8.3.2",
-      "xcode>uuid": "8.3.2",
-      "jest-junit>uuid": "8.3.2",
-      "undici": "^6.30.0",
-      "form-data": "^4.0.6",
-      "form-data@<2.5.6": "2.5.6",
-      "metro": "0.82.0",
-      "metro-resolver": "0.82.0",
-      "metro-config": "0.82.0",
-      "request.form-data": "2.5.6",
-      "bdk-rn.request.form-data": "2.5.6",
-      "@expo/cli.glob": "10.5.0",
-      "@expo/cli.tar": "7.5.11",
-      "@expo/cli.node-forge": "1.4.0",
-      "glob@10.minimatch": "9.0.7",
-      "glob@7.minimatch": "3.1.4",
-      "metro.image-size": "1.2.1",
-      "@expo/devcert.lodash": "4.18.0",
-      "eslint.ajv": "6.12.6",
-      "@eslint/eslintrc.ajv": "6.12.6",
       "axios>form-data": "4.0.6",
       "form-data": "4.0.6",
       "request>form-data": "2.5.6",
-      "form-data@^2": "2.5.6",
-      "jsdom>form-data": "4.0.6",
-      "@expo/cli>glob": "10.5.0",
-      "glob@10": "10.5.0",
-      "glob@10>minimatch": "9.0.7",
-      "glob@7>minimatch": "3.1.4",
-      "minimatch@3": "3.1.4",
-      "@expo/cli>tar": "7.5.11",
-      "@expo/cli>undici": "6.27.0",
-      "@expo/server>undici": "6.27.0",
       "undici": "6.27.0",
       "@expo/cli>node-forge": "1.4.0",
       "metro>image-size": "1.2.1",
@@ -232,31 +199,17 @@
         "listUnknownPackages": false,
         "exclude": [
           "react-native-restart",
-          "i18next",
-          "metro",
-          "metro-resolver",
-          "metro-config"
+          "i18next"
         ]
       }
     },
     "install": {
       "exclude": [
-        "eslint-config-expo",
-        "metro",
-        "metro-resolver",
-        "metro-config"
+        "eslint-config-expo"
       ]
     }
   },
   "osMetadata": {
     "initVersion": "7.0.5"
-  },
-  "description": "Grimm App - Bitcoin Wallet",
-  "bugs": {
-    "url": "https://github.com/grimm-labs/grimm-mobile-app/issues"
-  },
-  "homepage": "https://github.com/grimm-labs/grimm-mobile-app#readme",
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  }
 }
