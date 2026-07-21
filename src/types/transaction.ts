@@ -1,5 +1,6 @@
 import type { Payment } from '@breeztech/breez-sdk-spark-react-native';
-import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
+
+import type { OnchainTransaction } from '@/lib/bdk';
 
 export enum TransactionSource {
   LIGHTNING = 'lightning',
@@ -25,5 +26,5 @@ export interface UnifiedTransaction {
   status: UnifiedTransactionStatus;
   source: TransactionSource;
   lightningData?: Payment;
-  onchainData?: TransactionDetails;
+  onchainData?: OnchainTransaction;
 }

@@ -1,13 +1,8 @@
-import type { Blockchain } from 'bdk-rn';
-import { Blockchain as BdkBlockchain } from 'bdk-rn';
-import { BlockChainNames, Network } from 'bdk-rn/lib/lib/enums';
+import { EsploraClient, Network } from 'bdk-rn';
 
 import { type EsploraServer, LEGACY_ELECTRUM_SERVER_ID } from '@/lib/constant';
 
-const ESPLORA_TIMEOUT_AUTO_SEC = 60;
-const ESPLORA_TIMEOUT_MANUAL_SEC = 60;
-const ESPLORA_CONCURRENCY = 6;
-const STOP_GAP = 30;
+export { Network };
 
 export interface EsploraServerOption {
   id: string;
@@ -57,26 +52,17 @@ export function isEsploraRateLimitError(error: unknown): boolean {
   return message.includes('429') || message.includes('Too Many Requests');
 }
 
-async function createEsploraBlockchain(baseUrl: string, timeoutSec: number): Promise<Blockchain> {
-  return new BdkBlockchain().create(
-    {
-      baseUrl,
-      proxy: null,
-      concurrency: ESPLORA_CONCURRENCY,
-      stopGap: STOP_GAP,
-      timeout: timeoutSec,
-    },
-    BlockChainNames.Esplora,
-  );
+function createEsploraClient(baseUrl: string): EsploraClient {
+  return new EsploraClient(baseUrl, undefined);
 }
 
-async function probeEsploraConnection(blockchain: Blockchain): Promise<void> {
-  await blockchain.getHeight();
+function probeEsploraConnection(client: EsploraClient): void {
+  client.getHeight();
 }
 
 export type EsploraConnectResult = {
   backend: 'esplora';
-  blockchain: Blockchain;
+  client: EsploraClient;
   serverId: string;
   baseUrl: string;
 };
@@ -85,17 +71,17 @@ export type EsploraConnectResult = {
  * Tries Esplora indexers in order. Manual selection tries only the requested server.
  */
 export async function connectEsploraBackend(candidates: EsploraServer[], onchainNetwork: Network, opts: { manualSelection: boolean }): Promise<EsploraConnectResult> {
-  const timeoutSec = opts.manualSelection ? ESPLORA_TIMEOUT_MANUAL_SEC : ESPLORA_TIMEOUT_AUTO_SEC;
+  const serversToTry = opts.manualSelection ? candidates.slice(0, 1) : candidates;
   let lastError: unknown = null;
 
-  for (const server of candidates) {
+  for (const server of serversToTry) {
     const baseUrl = getEsploraBaseUrl(server, onchainNetwork);
     try {
       console.log(`[BDK init] Trying Esplora → ${baseUrl}`);
-      const blockchain = await createEsploraBlockchain(baseUrl, timeoutSec);
-      await probeEsploraConnection(blockchain);
+      const client = createEsploraClient(baseUrl);
+      probeEsploraConnection(client);
       console.log(`[BDK init] Esplora connected → ${baseUrl}`);
-      return { backend: 'esplora', blockchain, serverId: server.id, baseUrl };
+      return { backend: 'esplora', client, serverId: server.id, baseUrl };
     } catch (error) {
       lastError = error;
       console.warn(`[BDK init] Esplora failed → ${baseUrl}:`, formatUnknownError(error));

@@ -2,14 +2,14 @@
 /* eslint-disable max-params */
 import type { Payment } from '@breeztech/breez-sdk-spark-react-native';
 import { PaymentStatus, PaymentType } from '@breeztech/breez-sdk-spark-react-native';
-import { Mnemonic } from 'bdk-rn';
-import type { TransactionDetails } from 'bdk-rn/lib/classes/Bindings';
 import * as Crypto from 'expo-crypto';
 import { Linking } from 'react-native';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { type BitcoinCurrencyCode, type RatesResponse, supportedBitcoinCurrencies } from '@/api';
 import type { Country } from '@/interfaces';
+import type { OnchainTransaction } from '@/lib/bdk';
+import { isValidMnemonic } from '@/lib/bdk';
 import { BitcoinUnit } from '@/types/enum';
 import type { UnifiedTransaction } from '@/types/transaction';
 import { TransactionSource, UnifiedTransactionStatus, UnifiedTransactionType } from '@/types/transaction';
@@ -61,36 +61,7 @@ export const formatBalance = (total: number, unit: BitcoinUnit): string => {
  * @returns Promise<boolean> - true if the mnemonic is valid, false otherwise
  */
 export const isMnemonicValid = async (mnemonic: string, allowedWordCounts: number[] = [12, 24]): Promise<boolean> => {
-  if (!mnemonic || typeof mnemonic !== 'string') {
-    return false;
-  }
-
-  const normalizedMnemonic = mnemonic.trim().toLowerCase().replace(/\s+/g, ' ');
-
-  if (!normalizedMnemonic) {
-    return false;
-  }
-
-  const words = normalizedMnemonic.split(' ');
-  const wordCount = words.length;
-
-  if (!allowedWordCounts.includes(wordCount)) {
-    return false;
-  }
-
-  if (words.some((word) => !word || word.length === 0)) {
-    return false;
-  }
-
-  try {
-    await new Mnemonic().fromString(normalizedMnemonic);
-    return true;
-  } catch (error) {
-    if (__DEV__) {
-      console.warn('Mnemonic validation failed:', error);
-    }
-    return false;
-  }
+  return isValidMnemonic(mnemonic, allowedWordCounts);
 };
 
 export const getFiatCurrency = (country: Country): string => {
@@ -142,7 +113,7 @@ export const mapLightningToUnified = (payment: Payment): UnifiedTransaction => {
   };
 };
 
-export const mapOnchainToUnified = (tx: TransactionDetails): UnifiedTransaction => {
+export const mapOnchainToUnified = (tx: OnchainTransaction): UnifiedTransaction => {
   const isReceive = tx.received > tx.sent;
   const amount = isReceive ? tx.received - tx.sent : tx.sent - tx.received + (tx.fee || 0);
 
@@ -158,7 +129,7 @@ export const mapOnchainToUnified = (tx: TransactionDetails): UnifiedTransaction 
   };
 };
 
-export const mergeAndSortTransactions = (lightningPayments: Payment[], onchainTransactions: TransactionDetails[]): UnifiedTransaction[] => {
+export const mergeAndSortTransactions = (lightningPayments: Payment[], onchainTransactions: OnchainTransaction[]): UnifiedTransaction[] => {
   const unified = [...lightningPayments.map(mapLightningToUnified), ...onchainTransactions.map(mapOnchainToUnified)];
   return unified.sort((a, b) => b.timestamp - a.timestamp);
 };
