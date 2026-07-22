@@ -30,8 +30,6 @@ async function deleteSecureItem(key: string): Promise<void> {
   }
 }
 
-// --- Device ID ---
-
 export async function getStoredDeviceId(): Promise<string | null> {
   return getSecureItem(NOTIFICATION_DEVICE_ID_KEY);
 }
@@ -44,8 +42,6 @@ export async function clearStoredDeviceId(): Promise<void> {
   await deleteSecureItem(NOTIFICATION_DEVICE_ID_KEY);
 }
 
-// --- Push Token ---
-
 export async function getStoredPushToken(): Promise<string | null> {
   return getSecureItem(NOTIFICATION_PUSH_TOKEN_KEY);
 }
@@ -57,8 +53,6 @@ export async function setStoredPushToken(token: string): Promise<void> {
 export async function clearStoredPushToken(): Promise<void> {
   await deleteSecureItem(NOTIFICATION_PUSH_TOKEN_KEY);
 }
-
-// --- Bulk operations ---
 
 export async function clearAllNotificationDeviceData(): Promise<void> {
   await Promise.all([clearStoredDeviceId().catch(() => {}), clearStoredPushToken().catch(() => {})]);
