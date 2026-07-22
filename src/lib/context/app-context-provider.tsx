@@ -3,6 +3,7 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 
+import { clearAllNotificationDeviceData } from '@/api/notifications/device-storage';
 import type { Country } from '@/interfaces';
 import { useSecureStorage } from '@/lib/hooks';
 import { resetAppDatabase } from '@/lib/sqlite/database';
@@ -236,6 +237,7 @@ export const AppContextProvider = ({ children }: Props) => {
       _setHasSeedPhrase(false);
       await setIsSeedPhraseBackup(false);
       await setBitcoinUnit(BitcoinUnit.Sats);
+      await clearAllNotificationDeviceData();
     } catch (e) {
       console.error('[AsyncStorage] (Reset app data) Error resetting:', e);
       throw new Error('Unable to reset app data');
