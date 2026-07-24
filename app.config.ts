@@ -1,8 +1,29 @@
 /* eslint-disable max-lines-per-function */
+import fs from 'node:fs';
+import path from 'node:path';
+
 import type { ConfigContext, ExpoConfig } from '@expo/config';
 import type { AppIconBadgeConfig } from 'app-icon-badge/types';
 
 import { ClientEnv, Env } from './env.js';
+
+function resolveGoogleServicesFile(appEnv: string): string | undefined {
+  const envSpecificPath = path.resolve(__dirname, `credentials/firebase/google-services.${appEnv}.json`);
+  const legacyPath = path.resolve(__dirname, 'google-services.json');
+
+  if (fs.existsSync(envSpecificPath)) {
+    return `./credentials/firebase/google-services.${appEnv}.json`;
+  }
+
+  if (fs.existsSync(legacyPath)) {
+    console.warn(`[app.config] Using legacy google-services.json at project root. Prefer credentials/firebase/google-services.${appEnv}.json`);
+    return './google-services.json';
+  }
+
+  return undefined;
+}
+
+const googleServicesFile = resolveGoogleServicesFile(Env.APP_ENV);
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
   enabled: Env.APP_ENV !== 'production' && !process.env.CI,
@@ -62,6 +83,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: '#ffffff',
     },
     package: Env.PACKAGE,
+    ...(googleServicesFile ? { googleServicesFile } : {}),
     intentFilters: [
       {
         action: 'VIEW',

@@ -339,8 +339,7 @@
     "openSettings": "Open Settings",
     "permissionDeniedMessage": "To enable notifications, please allow access in your device settings",
     "permissionDeniedTitle": "Permission Denied",
-    "pushNotifications": "Push Notifications",
-    "title": "Push Notifications"
+    "pushNotifications": "Push Notifications"
   },
   "onboarding": {
     "agreementText": "By Continuing, You agree to the",
