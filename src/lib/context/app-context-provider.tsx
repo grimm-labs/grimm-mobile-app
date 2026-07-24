@@ -3,11 +3,13 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 
-import { clearAllNotificationDeviceData } from '@/api/notifications/device-storage';
 import type { Country } from '@/interfaces';
 import { useSecureStorage } from '@/lib/hooks';
+import { clearAllNotificationDeviceData } from '@/lib/notifications/device-storage';
 import { resetAppDatabase } from '@/lib/sqlite/database';
 import { BitcoinUnit } from '@/types/enum';
+
+import { useRegisterDevice } from '../hooks/use-register-device';
 
 type Props = PropsWithChildren<{}>;
 
@@ -123,6 +125,11 @@ export const AppContextProvider = ({ children }: Props) => {
       _setBitcoinUnit(JSON.parse(ob) as BitcoinUnit);
     }
   }, [_getBitcoinUnit, _setBitcoinUnit]);
+
+  useRegisterDevice({
+    autoRegister: true,
+    enabled: isDataLoaded,
+  });
 
   useEffect(() => {
     const loadData = async () => {

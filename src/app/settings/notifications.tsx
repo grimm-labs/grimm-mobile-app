@@ -12,17 +12,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { colors, SafeAreaView, Switch, Text, View } from '@/components/ui';
+import { useRegisterDevice } from '@/lib/hooks/use-register-device';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation();
   const stackScreenOptions = useStackScreenOptions();
   const [isEnabled, setIsEnabled] = useState(false);
+  const { register } = useRegisterDevice();
 
   useEffect(() => {
     checkNotificationPermission();
   }, []);
-
   const checkNotificationPermission = async () => {
     try {
       const { status } = await Notifications.getPermissionsAsync();
@@ -38,6 +39,7 @@ export default function NotificationSettingsScreen() {
 
       if (status === 'granted') {
         setIsEnabled(true);
+        await register();
       } else if (status === 'denied') {
         Alert.alert(t('notificationSettings.permissionDeniedTitle'), t('notificationSettings.permissionDeniedMessage'), [
           {
