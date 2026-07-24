@@ -9,7 +9,7 @@
 
 # GITHUB SECRETS REQUIRED:
 #         - EXPO_TOKEN: Expo token to authenticate with EAS
-#         - GOOGLE_SERVICES_JSON_DEVELOPMENT: base64 encoded google-services.json for com.grimm.labs.app.development
+#         - GOOGLE_SERVICES_JSON: base64 encoded google-services.json (single Firebase project, all Android apps)
 #         - You can get it from https://expo.dev/settings/access-tokens
 
 name: EAS Development Build (Android & IOS) (EAS)
@@ -50,6 +50,6 @@ jobs:
         with:
           APP_ENV: development
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_DEVELOPMENT }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON }}
           VERSION: ${{ github.run_id }}
           IOS: false # TODO: set as true when IOS account is ready
