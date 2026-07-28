@@ -9,6 +9,8 @@
 
 # GITHUB SECRETS REQUIRED:
 #         - EXPO_TOKEN: Expo token to authenticate with EAS
+#         - GOOGLE_SERVICES_KEY_BASE64: base64 encoded Play Store service account key (Android submission)
+#         - GOOGLE_SERVICES_JSON: base64 encoded google-services.json (single Firebase project, all Android apps)
 #         - You can get it from https://expo.dev/settings/access-tokens
 
 name: EAS Production Build (Android & IOS) (EAS)
@@ -49,6 +51,7 @@ jobs:
           APP_ENV: production
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           GOOGLE_SERVICES_KEY_BASE64: ${{ secrets.GOOGLE_SERVICES_KEY_BASE64 }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON }}
           ANDROID: true
           AUTO_SUBMIT_ANDROID: true
           IOS: true

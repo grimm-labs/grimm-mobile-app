@@ -339,8 +339,7 @@
     "openSettings": "Ouvrir paramètres",
     "permissionDeniedMessage": "Pour activer les notifications, veuillez autoriser l'accès dans les paramètres de votre appareil",
     "permissionDeniedTitle": "Permission refusée",
-    "pushNotifications": "Notifications Push",
-    "title": "Notifications Push"
+    "pushNotifications": "Notifications Push"
   },
   "onboarding": {
     "agreementText": "En continuant, vous acceptez les",

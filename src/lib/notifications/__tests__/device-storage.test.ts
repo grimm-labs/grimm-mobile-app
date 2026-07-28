@@ -1,6 +1,6 @@
-import { getStoredDeviceId } from "@/api/notifications/device-storage"; 
+import { getStoredDeviceId } from "@/lib/notifications/device-storage"; 
 import * as SecureStore from 'expo-secure-store';
-import { clearAllNotificationDeviceData, hasStoredDevice, setStoredDeviceId } from '@/api/notifications/device-storage';
+import { clearAllNotificationDeviceData, hasStoredDevice, setStoredDeviceId } from '@/lib/notifications/device-storage';
 
 jest.mock('expo-secure-store');
 

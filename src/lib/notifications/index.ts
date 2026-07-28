@@ -1,1 +1,1 @@
-export * from '@/api/notifications/device-storage';
+export * from './device-storage';

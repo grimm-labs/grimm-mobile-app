@@ -1,81 +1,71 @@
-/* eslint-disable max-lines-per-function */
-
 /* eslint-disable react/no-unstable-nested-components */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Notifications from 'expo-notifications';
-import { Stack } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { Stack, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Linking, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { colors, SafeAreaView, Switch, Text, View } from '@/components/ui';
+import { colors, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
+import { registerDeviceWithNotificationService } from '@/lib/notifications/register-device';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
+
+function openDeviceNotificationSettings(): void {
+  if (Platform.OS === 'ios') {
+    Linking.openURL('app-settings:');
+  } else {
+    Linking.openSettings();
+  }
+}
+
+function showOpenSettingsAlert(t: (key: string) => string, titleKey: string, messageKey: string): void {
+  Alert.alert(t(titleKey), t(messageKey), [
+    { text: t('notificationSettings.cancel'), style: 'cancel' },
+    { text: t('notificationSettings.openSettings'), onPress: openDeviceNotificationSettings },
+  ]);
+}
+
+async function handleNotificationToggle(value: boolean, t: (key: string) => string, setIsEnabled: (enabled: boolean) => void): Promise<void> {
+  if (value) {
+    const { status } = await Notifications.requestPermissionsAsync();
+
+    if (status === 'granted') {
+      setIsEnabled(true);
+      await registerDeviceWithNotificationService({ requestPermission: true });
+      return;
+    }
+
+    if (status === 'denied') {
+      showOpenSettingsAlert(t, 'notificationSettings.permissionDeniedTitle', 'notificationSettings.permissionDeniedMessage');
+      setIsEnabled(false);
+    }
+
+    return;
+  }
+
+  showOpenSettingsAlert(t, 'notificationSettings.disableTitle', 'notificationSettings.disableMessage');
+}
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation();
   const stackScreenOptions = useStackScreenOptions();
   const [isEnabled, setIsEnabled] = useState(false);
 
-  useEffect(() => {
-    checkNotificationPermission();
+  const refreshPermissionStatus = useCallback(async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    setIsEnabled(status === 'granted');
   }, []);
 
-  const checkNotificationPermission = async () => {
-    try {
-      const { status } = await Notifications.getPermissionsAsync();
-      setIsEnabled(status === 'granted');
-    } catch (error) {
-      console.error('Error checking notification permission:', error);
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      refreshPermissionStatus();
+    }, [refreshPermissionStatus]),
+  );
 
-  const handleToggle = async (value: boolean) => {
-    if (value) {
-      const { status } = await Notifications.requestPermissionsAsync();
-
-      if (status === 'granted') {
-        setIsEnabled(true);
-      } else if (status === 'denied') {
-        Alert.alert(t('notificationSettings.permissionDeniedTitle'), t('notificationSettings.permissionDeniedMessage'), [
-          {
-            text: t('notificationSettings.cancel'),
-            style: 'cancel',
-          },
-          {
-            text: t('notificationSettings.openSettings'),
-            onPress: () => {
-              if (Platform.OS === 'ios') {
-                Linking.openURL('app-settings:');
-              } else {
-                Linking.openSettings();
-              }
-            },
-          },
-        ]);
-        setIsEnabled(false);
-      }
-    } else {
-      Alert.alert(t('notificationSettings.disableTitle'), t('notificationSettings.disableMessage'), [
-        {
-          text: t('notificationSettings.cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('notificationSettings.openSettings'),
-          onPress: () => {
-            if (Platform.OS === 'ios') {
-              Linking.openURL('app-settings:');
-            } else {
-              Linking.openSettings();
-            }
-          },
-        },
-      ]);
-    }
-  };
+  const onToggle = useCallback((value: boolean) => handleNotificationToggle(value, t, setIsEnabled), [t]);
 
   return (
     <SafeAreaProvider>
@@ -90,8 +80,8 @@ export default function NotificationSettingsScreen() {
             ...stackScreenOptions,
           }}
         />
-        <View className="flex-1 px-4">
-          <View className="mt-4">
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View className="px-4 pb-10 pt-4">
             <View className="rounded-2xl border border-gray-200 p-4">
               <View className="flex-row items-center justify-between">
                 <View className="flex-1 flex-row items-center">
@@ -103,20 +93,17 @@ export default function NotificationSettingsScreen() {
                     <Text className="mt-1 text-sm text-gray-500 dark:text-charcoal-400">{isEnabled ? t('notificationSettings.enabled') : t('notificationSettings.disabled')}</Text>
                   </View>
                 </View>
-                <View>
-                  <Switch.Root checked={isEnabled} onChange={handleToggle} accessibilityLabel="switch" className="pb-2">
-                    <Switch.Icon checked={isEnabled} />
-                  </Switch.Root>
-                </View>
+                <Switch.Root checked={isEnabled} onChange={onToggle} accessibilityLabel="switch" className="pb-2">
+                  <Switch.Icon checked={isEnabled} />
+                </Switch.Root>
               </View>
             </View>
-            <View className="mt-4 rounded-xl bg-blue-50 p-4">
-              <View className="flex-row">
-                <Text className="ml-2 flex-1 text-sm text-blue-800">{t('notificationSettings.info')}</Text>
-              </View>
+
+            <View className="mt-4 rounded-xl bg-blue-50 p-4 dark:bg-charcoal-900">
+              <Text className="text-sm text-blue-800 dark:text-charcoal-200">{t('notificationSettings.info')}</Text>
             </View>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   );
