@@ -27,10 +27,10 @@ expo-env.d.ts
 .env.staging
 .env.production
 
-# Firebase Android config (one file per APP_ENV, injected in CI from secrets)
+# Firebase Android config (single file, all Android apps — Gradle picks client by package name)
 google-services.json
 android/app/google-services.json
-credentials/firebase/google-services.*.json
+credentials/firebase/google-services.json
 !credentials/firebase/google-services.example.json
 !credentials/firebase/.gitkeep
 credentials/android/service-account.json

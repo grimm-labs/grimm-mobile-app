@@ -7,23 +7,23 @@ import type { AppIconBadgeConfig } from 'app-icon-badge/types';
 
 import { ClientEnv, Env } from './env.js';
 
-function resolveGoogleServicesFile(appEnv: string): string | undefined {
-  const envSpecificPath = path.resolve(__dirname, `credentials/firebase/google-services.${appEnv}.json`);
-  const legacyPath = path.resolve(__dirname, 'google-services.json');
+const GOOGLE_SERVICES_CANDIDATE_PATHS = ['./credentials/firebase/google-services.json', './google-services.json'] as const;
 
-  if (fs.existsSync(envSpecificPath)) {
-    return `./credentials/firebase/google-services.${appEnv}.json`;
-  }
+function resolveGoogleServicesFile(): string | undefined {
+  for (const relativePath of GOOGLE_SERVICES_CANDIDATE_PATHS) {
+    if (fs.existsSync(path.resolve(__dirname, relativePath))) {
+      if (relativePath === './google-services.json') {
+        console.warn('[app.config] Using legacy google-services.json at project root. Prefer credentials/firebase/google-services.json');
+      }
 
-  if (fs.existsSync(legacyPath)) {
-    console.warn(`[app.config] Using legacy google-services.json at project root. Prefer credentials/firebase/google-services.${appEnv}.json`);
-    return './google-services.json';
+      return relativePath;
+    }
   }
 
   return undefined;
 }
 
-const googleServicesFile = resolveGoogleServicesFile(Env.APP_ENV);
+const googleServicesFile = resolveGoogleServicesFile();
 
 const appIconBadgeConfig: AppIconBadgeConfig = {
   enabled: Env.APP_ENV !== 'production' && !process.env.CI,

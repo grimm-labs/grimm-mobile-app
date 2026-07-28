@@ -11,7 +11,7 @@
 #        `AUTO_SUBMIT_IOS`, false by default, set to true if you want to automatically submit your iOS build to store.
 #        `EXPO_TOKEN`, required, access token for your Expo account. https://expo.dev/settings/access-tokens
 #        `GOOGLE_SERVICES_KEY_BASE64`, optional, base64 encoded Play Store service account key for Android submission.
-#        `GOOGLE_SERVICES_JSON_BASE64`, optional, base64 encoded google-services.json for Firebase Android push (APP_ENV specific).
+#        `GOOGLE_SERVICES_JSON_BASE64`, optional, base64 encoded google-services.json (single Firebase project, all Android apps).
 #        `VERSION`, required, version of the app to build. used as the build message.
 #        `ANDROID`, true by default, set to true if you don't want to trigger build for Android.
 #        `IOS`, false by default, set to true if you  want to trigger build for IOS.
@@ -98,8 +98,8 @@ runs:
       if: ${{ inputs.ANDROID == 'true' && inputs.GOOGLE_SERVICES_JSON_BASE64 != '' }}
       run: |
         mkdir -p ./credentials/firebase
-        echo "${{ inputs.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > ./credentials/firebase/google-services.${{ inputs.APP_ENV }}.json
-        echo "✅ Firebase google-services.json created for ${{ inputs.APP_ENV }}"
+        echo "${{ inputs.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > ./credentials/firebase/google-services.json
+        echo "✅ Firebase google-services.json created"
       shell: bash
 
     - name: ⚙️ Run Prebuild
@@ -120,6 +120,6 @@ runs:
       if: always() && inputs.ANDROID == 'true'
       run: |
         rm -f ./credentials/android/service-account.json
-        rm -f ./credentials/firebase/google-services.${{ inputs.APP_ENV }}.json
+        rm -f ./credentials/firebase/google-services.json
         echo "✅ Credentials cleaned up"
       shell: bash
