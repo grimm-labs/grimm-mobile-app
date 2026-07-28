@@ -1,23 +1,23 @@
 /* eslint-disable max-lines-per-function */
 import fs from 'node:fs';
-import path from 'node:path';
 
 import type { ConfigContext, ExpoConfig } from '@expo/config';
 import type { AppIconBadgeConfig } from 'app-icon-badge/types';
 
 import { ClientEnv, Env } from './env.js';
 
-const GOOGLE_SERVICES_CANDIDATE_PATHS = ['./credentials/firebase/google-services.json', './google-services.json'] as const;
+const GOOGLE_SERVICES_CREDENTIALS_PATH = './credentials/firebase/google-services.json';
+const GOOGLE_SERVICES_LEGACY_PATH = './google-services.json';
 
 function resolveGoogleServicesFile(): string | undefined {
-  for (const relativePath of GOOGLE_SERVICES_CANDIDATE_PATHS) {
-    if (fs.existsSync(path.resolve(__dirname, relativePath))) {
-      if (relativePath === './google-services.json') {
-        console.warn('[app.config] Using legacy google-services.json at project root. Prefer credentials/firebase/google-services.json');
-      }
+  if (fs.existsSync('./credentials/firebase/google-services.json')) {
+    return GOOGLE_SERVICES_CREDENTIALS_PATH;
+  }
 
-      return relativePath;
-    }
+  if (fs.existsSync('./google-services.json')) {
+    console.warn('[app.config] Using legacy google-services.json at project root. Prefer credentials/firebase/google-services.json');
+
+    return GOOGLE_SERVICES_LEGACY_PATH;
   }
 
   return undefined;
