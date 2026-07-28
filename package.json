@@ -187,13 +187,13 @@
       "qs": "6.14.1",
       "file-type": "16.5.4",
       "postcss": "8.5.24",
-      "minimatch@3": "9.0.8",
       "brace-expansion": "5.0.8",
       "tar": "^7.5.18",
       "tough-cookie": "4.1.3"
     },
     "patchedDependencies": {
-      "@breeztech/breez-sdk-spark-react-native@0.15.1": "patches/@breeztech__breez-sdk-spark-react-native@0.15.1.patch"
+      "@breeztech/breez-sdk-spark-react-native@0.15.1": "patches/@breeztech__breez-sdk-spark-react-native@0.15.1.patch",
+      "brace-expansion@5.0.8": "patches/brace-expansion@5.0.8.patch"
     }
   },
   "expo": {
