@@ -19,7 +19,7 @@ import { PrivacyOverlay } from '@/components/privacy-overlay';
 import { ScreenCaptureGuard } from '@/components/screen-capture-guard';
 import { WalletErrorBoundary } from '@/components/wallet-error-boundary';
 import { loadSelectedTheme } from '@/lib';
-import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider } from '@/lib/context';
+import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider, NotificationProvider } from '@/lib/context';
 import { useThemeConfig } from '@/lib/use-theme-config';
 
 export { ErrorBoundary } from 'expo-router';
@@ -64,31 +64,33 @@ function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContextProvider>
-      <WalletErrorBoundary name="Lightning (Breez)">
-        <BreezProvider>
-          <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
-            <KeyboardProvider>
-              <ThemeProvider value={theme}>
-                <APIProvider>
-                  <BitcoinPriceProvider>
-                    <WalletErrorBoundary name="On-chain (BDK)">
-                      <BdkProvider>
-                        <BottomSheetModalProvider>
-                          <ReanimatedKickstart />
-                          <ScreenCaptureGuard />
-                          {children}
-                          <FlashMessage position="top" />
-                        </BottomSheetModalProvider>
-                      </BdkProvider>
-                    </WalletErrorBoundary>
-                  </BitcoinPriceProvider>
-                </APIProvider>
-              </ThemeProvider>
-            </KeyboardProvider>
-            <PrivacyOverlay />
-          </GestureHandlerRootView>
-        </BreezProvider>
-      </WalletErrorBoundary>
+      <NotificationProvider>
+        <WalletErrorBoundary name="Lightning (Breez)">
+          <BreezProvider>
+            <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
+              <KeyboardProvider>
+                <ThemeProvider value={theme}>
+                  <APIProvider>
+                    <BitcoinPriceProvider>
+                      <WalletErrorBoundary name="On-chain (BDK)">
+                        <BdkProvider>
+                          <BottomSheetModalProvider>
+                            <ReanimatedKickstart />
+                            <ScreenCaptureGuard />
+                            {children}
+                            <FlashMessage position="top" />
+                          </BottomSheetModalProvider>
+                        </BdkProvider>
+                      </WalletErrorBoundary>
+                    </BitcoinPriceProvider>
+                  </APIProvider>
+                </ThemeProvider>
+              </KeyboardProvider>
+              <PrivacyOverlay />
+            </GestureHandlerRootView>
+          </BreezProvider>
+        </WalletErrorBoundary>
+      </NotificationProvider>
     </AppContextProvider>
   );
 }
