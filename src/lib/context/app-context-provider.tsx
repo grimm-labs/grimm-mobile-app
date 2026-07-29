@@ -1,15 +1,12 @@
-/* eslint-disable max-lines-per-function */
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import type { PropsWithChildren } from 'react';
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import type { Country } from '@/interfaces';
 import { useSecureStorage } from '@/lib/hooks';
 import { clearAllNotificationDeviceData } from '@/lib/notifications/device-storage';
 import { resetAppDatabase } from '@/lib/sqlite/database';
 import { BitcoinUnit } from '@/types/enum';
-
-import { useRegisterDevice } from '../hooks/use-register-device';
 
 type Props = PropsWithChildren<{}>;
 
@@ -61,6 +58,9 @@ const defaultContext: defaultContextType = {
 
 export const AppContext = createContext<defaultContextType>(defaultContext);
 
+export const useAppContext = () => useContext(AppContext);
+
+// eslint-disable-next-line max-lines-per-function
 export const AppContextProvider = ({ children }: Props) => {
   const [hideBalance, _setHideBalance] = useState(defaultContext.hideBalance);
   const [preventScreenCapture, _setPreventScreenCapture] = useState(defaultContext.preventScreenCapture);
@@ -125,11 +125,6 @@ export const AppContextProvider = ({ children }: Props) => {
       _setBitcoinUnit(JSON.parse(ob) as BitcoinUnit);
     }
   }, [_getBitcoinUnit, _setBitcoinUnit]);
-
-  useRegisterDevice({
-    autoRegister: true,
-    enabled: isDataLoaded,
-  });
 
   useEffect(() => {
     const loadData = async () => {
