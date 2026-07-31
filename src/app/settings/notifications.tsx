@@ -54,8 +54,8 @@ export default function NotificationSettingsScreen() {
       if (status === 'granted') {
         try {
           await registerDevice();
-        } catch {
-          // registrationError géré par le contexte
+        } catch (error) {
+          console.error('Failed to register device for notifications:', error);
         }
       } else if (status === 'denied') {
         showOpenSettingsAlert(t, 'notificationSettings.permissionDeniedTitle', 'notificationSettings.permissionDeniedMessage');
