@@ -336,10 +336,15 @@
     "enabled": "Enabled",
     "header": "Notifications",
     "info": "You will receive notifications for important transactions and security updates",
+    "notRegistered": "Permission granted — registration pending",
     "openSettings": "Open Settings",
+    "partiallyEnabled": "Notifications enabled on device, but server registration failed",
     "permissionDeniedMessage": "To enable notifications, please allow access in your device settings",
     "permissionDeniedTitle": "Permission Denied",
-    "pushNotifications": "Push Notifications"
+    "pushNotifications": "Push Notifications",
+    "registering": "Registering device…",
+    "registrationError": "Could not register for push notifications. Check your connection and try again.",
+    "registrationRetry": "Try again"
   },
   "onboarding": {
     "agreementText": "By Continuing, You agree to the",
