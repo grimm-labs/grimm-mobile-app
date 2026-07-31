@@ -36,10 +36,8 @@ export default function NotificationSettingsScreen() {
   const isPermissionGranted = permissionStatus === 'granted';
   const isFullyEnabled = isPermissionGranted && isRegistered;
 
-  // Le switch reflète l'état « pleinement opérationnel »
   const switchValue = isFullyEnabled;
 
-  // Sous-titre dynamique
   const statusLabel = isRegistering
     ? t('notificationSettings.registering')
     : isFullyEnabled
