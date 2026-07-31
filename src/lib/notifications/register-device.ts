@@ -254,3 +254,5 @@ export async function registerDeviceWithNotificationService(options: RegisterDev
     throw error;
   }
 }
+
+export { getStoredDeviceId };

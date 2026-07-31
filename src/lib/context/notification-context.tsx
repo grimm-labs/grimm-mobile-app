@@ -2,10 +2,13 @@ import { Env } from '@env';
 import * as Notifications from 'expo-notifications';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { getStoredDeviceId } from '@/lib/notifications/device-storage';
 import { registerDeviceWithNotificationService } from '@/lib/notifications/register-device';
 
+import { syncDeviceOnForeground } from '../notifications/device-sync';
+import { logSyncFailed } from '../notifications/logger';
 import { useAppContext } from './app-context-provider';
 
 export type NotificationContextType = {
@@ -80,6 +83,26 @@ export const NotificationProvider = ({ children }: PropsWithChildren<{}>) => {
       isMounted = false;
     };
   }, [hasSeedPhrase, isDataLoaded, refreshPermissionStatus, registerDevice]);
+
+  // Dans notification-context.tsx (M005)
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState !== 'active') return;
+      if (!hasSeedPhrase || !isDataLoaded || !Env.NOTIFICATION_API_URL) return;
+
+      syncDeviceOnForeground()
+        .then(async () => {
+          const id = await getStoredDeviceId();
+          setDeviceId(id);
+          setIsRegistered(Boolean(id));
+        })
+        .catch((err) => {
+          logSyncFailed(err.message);
+        });
+    });
+
+    return () => subscription.remove();
+  }, [hasSeedPhrase, isDataLoaded]);
 
   return (
     <NotificationContext.Provider
