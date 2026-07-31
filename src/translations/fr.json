@@ -336,10 +336,15 @@
     "enabled": "Activées",
     "header": "Notifications",
     "info": "Vous recevrez des notifications pour les transactions importantes et les mises à jour de sécurité",
+    "notRegistered": "Permission accordée — inscription en attente",
     "openSettings": "Ouvrir paramètres",
+    "partiallyEnabled": "Notifications activées sur l’appareil, mais l’inscription au serveur a échoué",
     "permissionDeniedMessage": "Pour activer les notifications, veuillez autoriser l'accès dans les paramètres de votre appareil",
     "permissionDeniedTitle": "Permission refusée",
-    "pushNotifications": "Notifications Push"
+    "pushNotifications": "Notifications Push",
+    "registering": "Enregistrement de l'appareil…",
+    "registrationError": "Impossible de s’inscrire aux notifications push. Vérifiez votre connexion et réessayez.",
+    "registrationRetry": "Réessayer"
   },
   "onboarding": {
     "agreementText": "En continuant, vous acceptez les",
