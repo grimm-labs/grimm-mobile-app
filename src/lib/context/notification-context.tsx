@@ -84,7 +84,6 @@ export const NotificationProvider = ({ children }: PropsWithChildren<{}>) => {
     };
   }, [hasSeedPhrase, isDataLoaded, refreshPermissionStatus, registerDevice]);
 
-  // Dans notification-context.tsx (M005)
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
       if (nextState !== 'active') return;
