@@ -9,6 +9,7 @@ import { registerDeviceWithNotificationService } from '@/lib/notifications/regis
 
 import { syncDeviceOnForeground } from '../notifications/device-sync';
 import { logSyncFailed } from '../notifications/logger';
+import { configureNotificationChannels, configureNotificationHandler, handleNotificationTap, registerPushListeners } from '../notifications/push-handlers';
 import { useAppContext } from './app-context-provider';
 
 export type NotificationContextType = {
@@ -105,6 +106,31 @@ export const NotificationProvider = ({ children }: PropsWithChildren<{}>) => {
 
     return () => subscription.remove();
   }, [hasSeedPhrase, isDataLoaded]);
+
+  useEffect(() => {
+    configureNotificationHandler();
+    configureNotificationChannels().catch((err) => {
+      console.warn('[notifications] Channel setup failed', err.message);
+    });
+
+    const cleanup = registerPushListeners(
+      (notification) => {
+        if (__DEV__) {
+          console.log('[notifications] Received:', notification.request.identifier);
+        }
+      },
+      (response) => {
+        handleNotificationTap(response); // stub → M009
+      },
+      { manageBadge: true },
+    );
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (response) handleNotificationTap(response);
+    });
+
+    return cleanup;
+  }, []);
 
   return (
     <NotificationContext.Provider
