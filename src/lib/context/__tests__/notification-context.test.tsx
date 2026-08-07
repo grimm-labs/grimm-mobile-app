@@ -22,6 +22,15 @@ jest.mock('expo-notifications');
 jest.mock('@/lib/notifications/device-storage');
 jest.mock('@/lib/notifications/register-device');
 jest.mock('@/lib/context/app-context-provider');
+jest.mock('@/lib/notifications/device-sync', () => ({
+  syncDeviceOnForeground: jest.fn().mockResolvedValue(undefined),
+}));
+jest.mock('@/lib/notifications/push-handlers', () => ({
+  configureNotificationHandler: jest.fn(),
+  configureNotificationChannels: jest.fn().mockResolvedValue(undefined),
+  registerPushListeners: jest.fn().mockReturnValue(jest.fn()),
+  handleNotificationTap: jest.fn(),
+}));
 
 function wrapper({ children }: { children: React.ReactNode }) {
   return <NotificationProvider>{children}</NotificationProvider>;
@@ -37,6 +46,11 @@ describe('NotificationProvider & useNotifications', () => {
 
     mockGetStoredDeviceId.mockResolvedValue(null);
     (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
+    (Notifications.getLastNotificationResponseAsync as jest.Mock).mockResolvedValue(null);
+    (Notifications.addNotificationReceivedListener as jest.Mock).mockReturnValue({ remove: jest.fn() });
+    (Notifications.addNotificationResponseReceivedListener as jest.Mock).mockReturnValue({ remove: jest.fn() });
+    (Notifications.setNotificationHandler as jest.Mock).mockImplementation(() => {});
+    (Notifications.setNotificationChannelAsync as jest.Mock).mockResolvedValue(undefined);
     mockRegisterDeviceService.mockResolvedValue({
       status: 'success',
       result: {
