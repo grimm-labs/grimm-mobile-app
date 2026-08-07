@@ -47,6 +47,9 @@ export const NotificationProvider = ({ children }: PropsWithChildren<{}>) => {
       if (outcome.status === 'success') {
         setDeviceId(outcome.result.deviceId);
         setIsRegistered(true);
+        if (__DEV__) {
+          console.log('[notifications] Expo push token:', outcome.result.expoPushToken);
+        }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
