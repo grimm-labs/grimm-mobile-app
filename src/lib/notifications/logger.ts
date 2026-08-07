@@ -71,3 +71,22 @@ export function logRegistrationSuccess(result: { action: 'created' | 'updated' |
 export function logRegistrationFailed(message: string): void {
   log('Device registration failed', { error: message });
 }
+export function logSyncDebounced(): void {
+  log('Foreground sync skipped (debounce)');
+}
+
+export function logSyncTokenChanged(): void {
+  log('Token changed, PATCH with new expoPushToken');
+}
+
+export function logSyncMetadataOnly(): void {
+  log('Foreground sync completed (metadata only)');
+}
+
+export function logSyncDevice404(): void {
+  log('Device 404, clearing local state and re-registering');
+}
+
+export function logSyncFailed(message: string): void {
+  log('Foreground sync failed', { error: message });
+}
