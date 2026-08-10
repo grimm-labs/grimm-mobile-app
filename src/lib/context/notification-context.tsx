@@ -8,8 +8,9 @@ import { getStoredDeviceId } from '@/lib/notifications/device-storage';
 import { registerDeviceWithNotificationService } from '@/lib/notifications/register-device';
 
 import { syncDeviceOnForeground } from '../notifications/device-sync';
+import { handleNotificationNavigation } from '../notifications/handle-notification-navigation';
 import { logSyncFailed } from '../notifications/logger';
-import { configureNotificationChannels, configureNotificationHandler, handleNotificationTap, registerPushListeners } from '../notifications/push-handlers';
+import { configureNotificationChannels, configureNotificationHandler, registerPushListeners } from '../notifications/push-handlers';
 import { useAppContext } from './app-context-provider';
 
 export type NotificationContextType = {
@@ -120,13 +121,13 @@ export const NotificationProvider = ({ children }: PropsWithChildren<{}>) => {
         }
       },
       (response) => {
-        handleNotificationTap(response); // stub → M009
+        handleNotificationNavigation(response);
       },
       { manageBadge: true },
     );
 
     Notifications.getLastNotificationResponseAsync().then((response) => {
-      if (response) handleNotificationTap(response);
+      if (response) handleNotificationNavigation(response);
     });
 
     return cleanup;
