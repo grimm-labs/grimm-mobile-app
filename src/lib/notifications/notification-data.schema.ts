@@ -22,9 +22,6 @@ export function parseNotificationData(raw: unknown): NotificationData | null {
 
 function sanitizeParams(params: unknown): Record<string, string> | undefined {
   if (!params || typeof params !== 'object') return undefined;
-  const result: Record<string, string> = {};
-  for (const [key, value] of Object.entries(params as Record<string, unknown>)) {
-    if (typeof value === 'string') result[key] = value;
-  }
-  return Object.keys(result).length > 0 ? result : undefined;
+  const validEntries = Object.entries(params as Record<string, unknown>).filter((entry): entry is [string, string] => typeof entry[1] === 'string' && entry[0] !== '__proto__' && entry[0] !== 'constructor');
+  return validEntries.length > 0 ? Object.fromEntries(validEntries) : undefined;
 }
