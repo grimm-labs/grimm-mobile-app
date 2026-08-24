@@ -71,6 +71,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       NSCameraUsageDescription: 'This app uses the camera to scan QR codes',
       CFBundleURLTypes: [{ CFBundleURLSchemes: [Env.SCHEME] }, { CFBundleURLSchemes: ['lightning'] }],
+      UIBackgroundModes: ['remote-notification'],
     },
   },
   experiments: {
@@ -155,8 +156,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-notifications',
       {
-        icon: './assets/icon.png',
-        color: '#FF6B00',
+        icon: './assets/icons/notification_icon.png',
+        color: '#F7931A',
         sounds: [],
         mode: 'production',
       },
