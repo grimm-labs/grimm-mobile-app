@@ -6,7 +6,7 @@ import axios from 'axios';
 import { registerDevice, updateDevice } from '@/api/notifications';
 import { isNotificationServiceConfigured } from '@/lib/notifications/config';
 import { clearStoredDeviceId, getStoredDeviceId, getStoredPushToken, setStoredDeviceId, setStoredPushToken } from '@/lib/notifications/device-storage';
-import { registerDeviceWithNotificationService } from '@/lib/notifications/register-device';
+import { registerDeviceWithNotificationService, requestNotificationPermissions } from '@/lib/notifications/register-device';
 
 jest.mock('@/api/notifications');
 jest.mock('@/lib/notifications/config');
@@ -45,8 +45,8 @@ describe('registerDeviceWithNotificationService', () => {
     jest.clearAllMocks();
 
     mockIsConfigured.mockReturnValue(true);
-    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
-    (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
+    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted', canAskAgain: true });
+    (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted', canAskAgain: true });
     (Notifications.getExpoPushTokenAsync as jest.Mock).mockResolvedValue({ data: 'ExponentPushToken[test]' });
     (Notifications.setNotificationChannelAsync as jest.Mock).mockResolvedValue(undefined);
     (Localization.getLocales as jest.Mock).mockReturnValue([{ languageCode: 'en' }]);
@@ -68,7 +68,7 @@ describe('registerDeviceWithNotificationService', () => {
   });
 
   it('skips when permission is not granted without requesting it', async () => {
-    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'denied' });
+    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'denied', canAskAgain: false });
 
     await expect(registerDeviceWithNotificationService()).resolves.toEqual({
       status: 'skipped',
@@ -191,8 +191,8 @@ describe('registerDeviceWithNotificationService', () => {
     expect(mockRegisterDevice).toHaveBeenCalled();
   });
 
-  it('requests permission when requestPermission option is true', async () => {
-    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'denied' });
+  it('requests permission when requestPermission option is true and OS can ask again', async () => {
+    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'undetermined', canAskAgain: true });
     (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
     mockGetStoredDeviceId.mockResolvedValue(null);
     mockGetStoredPushToken.mockResolvedValue(null);
@@ -211,6 +211,58 @@ describe('registerDeviceWithNotificationService', () => {
       result: expect.objectContaining({ deviceId: 'new-device-id' }),
     });
 
-    expect(Notifications.requestPermissionsAsync).toHaveBeenCalled();
+    expect(Notifications.requestPermissionsAsync).toHaveBeenCalledWith({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+      },
+    });
+  });
+
+  it('does not re-prompt when permission was already denied and cannot ask again', async () => {
+    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'denied', canAskAgain: false });
+
+    await expect(registerDeviceWithNotificationService({ requestPermission: true })).resolves.toEqual({
+      status: 'skipped',
+      reason: 'permission_denied',
+    });
+
+    expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe('requestNotificationPermissions', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (Notifications.setNotificationChannelAsync as jest.Mock).mockResolvedValue(undefined);
+  });
+
+  it('returns true without prompting when already granted', async () => {
+    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted', canAskAgain: true });
+
+    await expect(requestNotificationPermissions()).resolves.toBe(true);
+    expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+  });
+
+  it('returns false without prompting when already denied', async () => {
+    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'denied', canAskAgain: false });
+
+    await expect(requestNotificationPermissions()).resolves.toBe(false);
+    expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+  });
+
+  it('prompts when permission is undetermined', async () => {
+    (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'undetermined', canAskAgain: true });
+    (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted', canAskAgain: true });
+
+    await expect(requestNotificationPermissions()).resolves.toBe(true);
+    expect(Notifications.requestPermissionsAsync).toHaveBeenCalledWith({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+      },
+    });
   });
 });

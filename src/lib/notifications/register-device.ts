@@ -54,31 +54,46 @@ export async function hasNotificationPermission(): Promise<boolean> {
   return status === 'granted';
 }
 
+/**
+ * Requests notification permission when the OS can still show the system prompt.
+ * If the user already refused (canAskAgain === false), returns false without prompting —
+ * they can re-enable later from app/settings.
+ * Works on both iOS and Android (POST_NOTIFICATIONS on Android 13+).
+ */
 export async function requestNotificationPermissions(): Promise<boolean> {
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  const { status: existingStatus, canAskAgain } = await Notifications.getPermissionsAsync();
+  logPermissionStatus(existingStatus);
 
   if (existingStatus === 'granted') return true;
 
-  const { status } = await Notifications.requestPermissionsAsync();
-  return status === 'granted';
-}
-
-async function ensureNotificationPermission(requestPermission: boolean): Promise<boolean> {
-  const { status } = await Notifications.getPermissionsAsync();
-  logPermissionStatus(status);
-
-  if (status === 'granted') {
-    return true;
-  }
-
-  if (!requestPermission) {
+  // Already refused — do not re-prompt; continue silently
+  if (!canAskAgain) {
+    logPermissionRequest(false);
     return false;
   }
 
-  const { status: requestedStatus } = await Notifications.requestPermissionsAsync();
-  const granted = requestedStatus === 'granted';
+  await ensureAndroidNotificationChannel();
+
+  const { status } = await Notifications.requestPermissionsAsync({
+    ios: {
+      allowAlert: true,
+      allowBadge: true,
+      allowSound: true,
+    },
+  });
+  const granted = status === 'granted';
   logPermissionRequest(granted);
   return granted;
+}
+
+async function ensureNotificationPermission(requestPermission: boolean): Promise<boolean> {
+  if (requestPermission) {
+    return requestNotificationPermissions();
+  }
+
+  const { status } = await Notifications.getPermissionsAsync();
+  logPermissionStatus(status);
+  return status === 'granted';
 }
 
 export async function getExpoPushToken(): Promise<string> {

@@ -60,9 +60,17 @@ jest.mock('expo-router', () => {
   };
 });
 
+const mockRequestNotificationPermissions = jest.fn().mockResolvedValue(true);
+
+jest.mock('@/lib/notifications/register-device', () => ({
+  requestNotificationPermissions: (...args: unknown[]) => mockRequestNotificationPermissions(...args),
+}));
+
 afterEach(() => {
   cleanup();
   mockPush.mockClear();
+  mockRequestNotificationPermissions.mockClear();
+  mockRequestNotificationPermissions.mockResolvedValue(true);
 });
 
 describe('Onboarding screen', () => {
@@ -81,7 +89,27 @@ describe('Onboarding screen', () => {
     expect(screen.getByTestId('onboarding-privacy-text')).toBeOnTheScreen();
   });
 
-  it('navigates to create-or-import-seed when tapping get started', async () => {
+  it('requests notification permission then navigates when tapping get started', async () => {
+    const { user } = setup(<Onboarding />);
+
+    await user.press(screen.getByTestId('onboarding-get-started'));
+
+    expect(mockRequestNotificationPermissions).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/auth/create-or-import-seed');
+  });
+
+  it('continues navigation when notification permission is denied', async () => {
+    mockRequestNotificationPermissions.mockResolvedValue(false);
+    const { user } = setup(<Onboarding />);
+
+    await user.press(screen.getByTestId('onboarding-get-started'));
+
+    expect(mockRequestNotificationPermissions).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/auth/create-or-import-seed');
+  });
+
+  it('continues navigation when notification permission request fails', async () => {
+    mockRequestNotificationPermissions.mockRejectedValue(new Error('permission error'));
     const { user } = setup(<Onboarding />);
 
     await user.press(screen.getByTestId('onboarding-get-started'));

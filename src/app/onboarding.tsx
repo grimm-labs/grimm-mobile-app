@@ -1,12 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Button, colors, FocusAwareStatusBar, Image, SafeAreaView, Text } from '@/components/ui';
+import { requestNotificationPermissions } from '@/lib/notifications/register-device';
 import { theme } from '@/lib/theme-classes';
 
 const Logo = memo(() => <Image className="size-32" source={require('@/assets/images/logo.png')} />);
@@ -27,13 +28,14 @@ const WelcomeText = memo(() => {
 
 interface FooterProps {
   onGetStarted: () => void;
+  loading?: boolean;
 }
 
-const Footer = memo(({ onGetStarted }: FooterProps) => {
+const Footer = memo(({ onGetStarted, loading }: FooterProps) => {
   const { t } = useTranslation();
   return (
     <>
-      <Button testID="onboarding-get-started" label={t('onboarding.getStarted')} onPress={onGetStarted} fullWidth variant="secondary" textClassName="text-base text-white" size="lg" />
+      <Button testID="onboarding-get-started" label={t('onboarding.getStarted')} onPress={onGetStarted} loading={loading} fullWidth variant="secondary" textClassName="text-base text-white" size="lg" />
       <Text testID="onboarding-agreement-text" className={`my-4 text-center ${theme.textSecondary}`}>
         {t('onboarding.agreementText')}{' '}
         <Text testID="onboarding-terms-text" className="font-semibold text-primary-600 underline dark:text-primary-400">
@@ -53,10 +55,22 @@ function Onboarding() {
   const { t } = useTranslation();
   const { colorScheme } = useColorScheme();
   const helpIconColor = colorScheme === 'dark' ? colors.charcoal[300] : colors.neutral[500];
+  const [isContinuing, setIsContinuing] = useState(false);
 
-  const handleGetStarted = React.useCallback(() => {
-    router.push('/auth/create-or-import-seed');
-  }, [router]);
+  const handleGetStarted = React.useCallback(async () => {
+    if (isContinuing) return;
+
+    setIsContinuing(true);
+    try {
+      // Prompt only if the OS can still ask; if already refused, continue without blocking
+      await requestNotificationPermissions();
+    } catch (error) {
+      console.warn('[onboarding] Notification permission request failed', error);
+    } finally {
+      router.push('/auth/create-or-import-seed');
+      setIsContinuing(false);
+    }
+  }, [isContinuing, router]);
 
   return (
     <SafeAreaProvider>
@@ -88,7 +102,7 @@ function Onboarding() {
             </View>
           </View>
           <View>
-            <Footer onGetStarted={handleGetStarted} />
+            <Footer onGetStarted={handleGetStarted} loading={isContinuing} />
           </View>
         </View>
       </SafeAreaView>

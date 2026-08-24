@@ -65,12 +65,10 @@ export function formatDepositsSummary(deposits: DepositInfo[]): string {
 }
 
 export function logUnclaimedDeposits(deposits: DepositInfo[], source: string): void {
-  console.warn(`${UNCLAIMED_DEPOSITS_LOG_PREFIX} [${source}] count: ${deposits.length}`);
+  // Skip empty refreshes — they run on a timer and spam the console.
+  if (deposits.length === 0) return;
 
-  if (deposits.length === 0) {
-    console.warn(`${UNCLAIMED_DEPOSITS_LOG_PREFIX} [${source}] none pending or unclaimed`);
-    return;
-  }
+  console.warn(`${UNCLAIMED_DEPOSITS_LOG_PREFIX} [${source}] count: ${deposits.length}`);
 
   deposits.forEach((deposit, index) => {
     console.warn(`${UNCLAIMED_DEPOSITS_LOG_PREFIX} [${source}] ${formatDepositForLog(deposit, index)}`);
