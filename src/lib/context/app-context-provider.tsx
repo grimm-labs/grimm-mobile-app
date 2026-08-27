@@ -3,6 +3,7 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import type { Country } from '@/interfaces';
+import { DEFAULT_LN_INVOICE_EXPIRY_SECS, isValidLnInvoiceExpirySecs } from '@/lib/constant';
 import { useSecureStorage } from '@/lib/hooks';
 import { clearAllNotificationDeviceData } from '@/lib/notifications/device-storage';
 import { resetAppDatabase } from '@/lib/sqlite/database';
@@ -19,6 +20,7 @@ type defaultContextType = {
   isSeedPhraseBackup: boolean;
   selectedCountry: Country;
   bitcoinUnit: BitcoinUnit;
+  lnInvoiceExpirySecs: number;
   setHideBalance: (hideBalance: boolean) => void;
   setPreventScreenCapture: (preventScreenCapture: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
@@ -27,6 +29,7 @@ type defaultContextType = {
   setIsSeedPhraseBackup: (isSeedPhraseBackup: boolean) => void;
   setSelectedCountry: (country: Country) => void;
   setBitcoinUnit: (unit: BitcoinUnit) => void;
+  setLnInvoiceExpirySecs: (secs: number) => void;
 };
 
 const defaultContext: defaultContextType = {
@@ -46,6 +49,7 @@ const defaultContext: defaultContextType = {
     isoCode: 'CM',
   },
   bitcoinUnit: BitcoinUnit.Sats,
+  lnInvoiceExpirySecs: DEFAULT_LN_INVOICE_EXPIRY_SECS,
   setHideBalance: () => {},
   setPreventScreenCapture: () => {},
   setOnboarding: () => {},
@@ -54,6 +58,7 @@ const defaultContext: defaultContextType = {
   setIsSeedPhraseBackup: () => {},
   setSelectedCountry: () => {},
   setBitcoinUnit: () => {},
+  setLnInvoiceExpirySecs: () => {},
 };
 
 export const AppContext = createContext<defaultContextType>(defaultContext);
@@ -70,6 +75,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [isSeedPhraseBackup, _setIsSeedPhraseBackup] = useState(defaultContext.isSeedPhraseBackup);
   const [selectedCountry, _setSelectedCountry] = useState<Country>(defaultContext.selectedCountry);
   const [bitcoinUnit, _setBitcoinUnit] = useState<BitcoinUnit>(defaultContext.bitcoinUnit);
+  const [lnInvoiceExpirySecs, _setLnInvoiceExpirySecs] = useState<number>(defaultContext.lnInvoiceExpirySecs);
 
   const { getItem: _getHideBalance, setItem: _updateHideBalance } = useAsyncStorage('hideBalance');
   const { getItem: _getPreventScreenCapture, setItem: _updatePreventScreenCapture } = useAsyncStorage('preventScreenCapture');
@@ -78,6 +84,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const { getItem: _getSeedPhrase, setItem: _updateSeedPhrase, deleteItem: _deleteSeedPhrase } = useSecureStorage('seedPhrase');
   const { getItem: _getIsSeedPhraseBackup, setItem: _updateIsSeedPhraseBackup } = useAsyncStorage('isSeedPhraseBackup');
   const { getItem: _getBitcoinUnit, setItem: _updateBitcoinUnit } = useAsyncStorage('bitcoinUnit');
+  const { getItem: _getLnInvoiceExpirySecs, setItem: _updateLnInvoiceExpirySecs } = useAsyncStorage('lnInvoiceExpirySecs');
 
   const _loadHideBalance = useCallback(async () => {
     const ob = await _getHideBalance();
@@ -126,10 +133,18 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   }, [_getBitcoinUnit, _setBitcoinUnit]);
 
+  const _loadLnInvoiceExpirySecs = useCallback(async () => {
+    const ob = await _getLnInvoiceExpirySecs();
+    if (ob !== null) {
+      const parsed: unknown = JSON.parse(ob);
+      _setLnInvoiceExpirySecs(isValidLnInvoiceExpirySecs(parsed) ? parsed : DEFAULT_LN_INVOICE_EXPIRY_SECS);
+    }
+  }, [_getLnInvoiceExpirySecs, _setLnInvoiceExpirySecs]);
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([_loadHideBalance(), _loadPreventScreenCapture(), _loadOnboarding(), _loadSelectedCountry(), _loadSeedPhrase(), _loadIsSeedPhraseBackup(), _loadBitcoinUnit()]);
+        await Promise.all([_loadHideBalance(), _loadPreventScreenCapture(), _loadOnboarding(), _loadSelectedCountry(), _loadSeedPhrase(), _loadIsSeedPhraseBackup(), _loadBitcoinUnit(), _loadLnInvoiceExpirySecs()]);
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -138,7 +153,7 @@ export const AppContextProvider = ({ children }: Props) => {
     };
 
     loadData();
-  }, [_loadHideBalance, _loadPreventScreenCapture, _loadOnboarding, _loadSelectedCountry, _loadSeedPhrase, _loadIsSeedPhraseBackup, _loadBitcoinUnit]);
+  }, [_loadHideBalance, _loadPreventScreenCapture, _loadOnboarding, _loadSelectedCountry, _loadSeedPhrase, _loadIsSeedPhraseBackup, _loadBitcoinUnit, _loadLnInvoiceExpirySecs]);
 
   const setOnboarding = useCallback(
     async (arg: boolean) => {
@@ -231,6 +246,19 @@ export const AppContextProvider = ({ children }: Props) => {
     [_setBitcoinUnit, _updateBitcoinUnit],
   );
 
+  const setLnInvoiceExpirySecs = useCallback(
+    async (arg: number) => {
+      try {
+        await _setLnInvoiceExpirySecs(arg);
+        await _updateLnInvoiceExpirySecs(JSON.stringify(arg));
+      } catch (e) {
+        console.error(`[AsyncStorage] (lnInvoiceExpirySecs) Error saving data: ${e} [${arg}]`);
+        throw new Error('Error setting lnInvoiceExpirySecs');
+      }
+    },
+    [_setLnInvoiceExpirySecs, _updateLnInvoiceExpirySecs],
+  );
+
   const resetAppData = useCallback(async () => {
     try {
       await resetAppDatabase();
@@ -239,12 +267,13 @@ export const AppContextProvider = ({ children }: Props) => {
       _setHasSeedPhrase(false);
       await setIsSeedPhraseBackup(false);
       await setBitcoinUnit(BitcoinUnit.Sats);
+      await setLnInvoiceExpirySecs(DEFAULT_LN_INVOICE_EXPIRY_SECS);
       await clearAllNotificationDeviceData();
     } catch (e) {
       console.error('[AsyncStorage] (Reset app data) Error resetting:', e);
       throw new Error('Unable to reset app data');
     }
-  }, [setOnboarding, _deleteSeedPhrase, setIsSeedPhraseBackup, setBitcoinUnit]);
+  }, [setOnboarding, _deleteSeedPhrase, setIsSeedPhraseBackup, setBitcoinUnit, setLnInvoiceExpirySecs]);
 
   return (
     <AppContext.Provider
@@ -257,6 +286,7 @@ export const AppContextProvider = ({ children }: Props) => {
         isSeedPhraseBackup,
         selectedCountry,
         bitcoinUnit,
+        lnInvoiceExpirySecs,
         setHideBalance,
         setPreventScreenCapture,
         setOnboarding,
@@ -265,6 +295,7 @@ export const AppContextProvider = ({ children }: Props) => {
         setIsSeedPhraseBackup,
         setSelectedCountry,
         setBitcoinUnit,
+        setLnInvoiceExpirySecs,
       }}
     >
       {children}

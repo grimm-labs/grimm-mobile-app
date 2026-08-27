@@ -213,6 +213,19 @@
       "updated": "Lightning Address updated successfully!"
     }
   },
+  "lnInvoiceExpiry": {
+    "default_hint": "Default",
+    "header_title": "Invoice Expiry",
+    "info_text": "New Lightning invoices you generate will expire after this duration. An expired invoice can no longer be paid; generate a new one instead.",
+    "options": {
+      "oneDay": "24 hours",
+      "oneHour": "1 hour",
+      "sevenDays": "7 days",
+      "sixHours": "6 hours",
+      "tenMinutes": "10 minutes",
+      "thirtyMinutes": "30 minutes"
+    }
+  },
   "lnPaymentMethod": {
     "lightningDescription": "Fast & low fees",
     "receiveTitle": "Receive via Lightning Network",
@@ -564,6 +577,10 @@
       "lnAddress": {
         "subtitle": "Manage and configure your Lightning Network address",
         "title": "LN Address"
+      },
+      "lnInvoiceExpiry": {
+        "subtitle": "Choose how long Lightning invoices stay valid",
+        "title": "Invoice Expiry"
       },
       "networks": {
         "subtitle": "Manage and configure your networks",

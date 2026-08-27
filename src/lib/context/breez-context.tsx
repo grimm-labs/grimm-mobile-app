@@ -39,7 +39,7 @@ import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { logUnclaimedDeposits } from '../breez/unclaimed-deposits-log';
-import { GRIMM_APP_LN_URL_DOMAIN } from '../constant';
+import { DEFAULT_LN_INVOICE_EXPIRY_SECS, GRIMM_APP_LN_URL_DOMAIN } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 
 export enum AppNetwork {
@@ -403,7 +403,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       paymentMethod: ReceivePaymentMethod.Bolt11Invoice.new({
         description,
         amountSats: amountSats !== undefined ? BigInt(amountSats) : undefined,
-        expirySecs: expirySecs ?? 3600,
+        expirySecs: expirySecs ?? DEFAULT_LN_INVOICE_EXPIRY_SECS,
         paymentHash: undefined,
       }),
     });
