@@ -4,6 +4,7 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
+    "eas-build-pre-install": "if [ -n \"$GOOGLE_SERVICES_JSON_FILE\" ]; then cp \"$GOOGLE_SERVICES_JSON_FILE\" android/app/google-services.json; fi",
     "start": "cross-env EXPO_NO_DOTENV=1 expo start",
     "prebuild": "cross-env EXPO_NO_DOTENV=1 pnpm expo prebuild",
     "android": "cross-env EXPO_NO_DOTENV=1 expo run:android",

@@ -5,6 +5,7 @@
   },
   "build": {
     "production": {
+      "environment": "production",
       "channel": "production",
       "distribution": "store",
       "pnpm": "9.12.3",
@@ -25,6 +26,7 @@
       }
     },
     "staging": {
+      "environment": "preview",
       "channel": "staging",
       "distribution": "internal",
       "pnpm": "9.12.3",
@@ -42,6 +44,7 @@
       }
     },
     "development": {
+      "environment": "development",
       "developmentClient": false,
       "distribution": "internal",
       "pnpm": "9.12.3",
@@ -58,6 +61,7 @@
       }
     },
     "simulator": {
+      "environment": "development",
       "pnpm": "9.12.3",
       "ios": {
         "simulator": true,
