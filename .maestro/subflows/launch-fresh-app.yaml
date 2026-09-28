@@ -1,0 +1,10 @@
+# Starts the app from a clean state (no wallet) and waits for the onboarding screen.
+# The first launch of a release build can be slow on CI emulators (ARM translation), hence the long timeout.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: 'onboarding-screen'
+    timeout: 60000

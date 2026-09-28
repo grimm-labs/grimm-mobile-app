@@ -1,14 +1,22 @@
 # Links:
 # Source file: https://github.com/obytes/react-native-template-obytes/blob/master/.github/workflows/e2e-android.yml
 # End-to-end testing: https://starter.obytes.com/testing/end-to-end-testing/
+# Maestro Cloud GitHub action: https://github.com/mobile-dev-inc/action-maestro-cloud
 
 # Description:
 # This workflow is used to run end-to-end tests on Android using Maestro Cloud.
-# As a first step, it will generate a test APK using the Gradle build and  then trigger  Maestro Cloud to run the tests on the generated APK.
-# This workflow will be triggered on pull requests (PRs) with the label "android-test-maestro-cloud" or can be manually triggered from the Actions tab.
+# As a first step, it generates a staging test APK (arm64-v8a, see .github/actions/setup-jdk-generate-apk) and then triggers Maestro Cloud to run the flows of .maestro/ on it.
+# This workflow will be triggered on pull requests (PRs) with the label "android-test-maestro-cloud" (also when the label is added to an open PR) or can be manually triggered from the Actions tab.
+# For a free alternative that runs the same flows on a GitHub hosted emulator, see e2e-android.yml.
 
 # GITHUB SECRETS REQUIRED:
-# MAESTRO_CLOUD_API_KEY: API key for Maestro Cloud. You can get it from https://cloud.mobile.dev/ci-integration/github-actions#add-your-api-key-secret
+# MAESTRO_API_KEY: API key for Maestro Cloud. https://docs.maestro.dev/maestro-cloud/ci-cd-integration/github-actions
+# MAESTRO_PROJECT_ID: Maestro Cloud project ID (required since action-maestro-cloud v2).
+# GITHUB SECRETS OPTIONAL:
+# BREEZ_API_KEY: Breez SDK API key (not needed by the current flows).
+# GOOGLE_SERVICES_JSON: base64 encoded google-services.json (falls back to the example file when missing).
+# GITHUB VARIABLES:
+# NOTIFICATION_API_URL_STAGING: notification service URL (a default staging URL is used when missing).
 
 name: E2E Tests Android (Maestro Cloud)
 
@@ -16,37 +24,77 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main, master]
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: read
 
 jobs:
   generate-and-test-apk:
-    if: github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'android-test-maestro-cloud'))
+    # On `labeled` events, only react to our label so adding another label does not start (or cancel) a run
+    if: >-
+      github.event_name == 'workflow_dispatch' || (contains(github.event.pull_request.labels.*.name, 'android-test-maestro-cloud') && (github.event.action != 'labeled' || github.event.label.name == 'android-test-maestro-cloud'))
     name: Generate and Test Test APK (Maestro Cloud)
     runs-on: ubuntu-latest
+    timeout-minutes: 90
+    concurrency:
+      group: e2e-android-maestro-cloud-${{ github.ref }}
+      cancel-in-progress: true
+    env:
+      APP_ENV: staging
+      APP_ID: com.grimm.labs.app.staging
 
     steps:
+      - name: Check Maestro Cloud secrets
+        env:
+          MAESTRO_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
+          MAESTRO_PROJECT_ID: ${{ secrets.MAESTRO_PROJECT_ID }}
+        run: |
+          if [ -z "$MAESTRO_API_KEY" ] || [ -z "$MAESTRO_PROJECT_ID" ]; then
+            echo "::error::MAESTRO_API_KEY and MAESTRO_PROJECT_ID secrets are required (they are not available on PRs from forks). Use e2e-android.yml to run the flows on a GitHub hosted emulator instead."
+            exit 1
+          fi
+
       - name: Checkout project repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v7
+
+      - name: Create .env.staging
+        env:
+          BREEZ_API_KEY: ${{ secrets.BREEZ_API_KEY }}
+          NOTIFICATION_API_URL: ${{ vars.NOTIFICATION_API_URL_STAGING || 'https://notification-service-staging.usegrimm.app' }}
+        run: |
+          {
+            echo "BREEZ_API_KEY=${BREEZ_API_KEY}"
+            echo "YADIO_API_URL=https://api.yadio.io"
+            echo "MEMPOOL_URL=https://mempool.space"
+            echo "NOTIFICATION_API_URL=${NOTIFICATION_API_URL}"
+          } > .env.staging
 
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 
       - name: Set Up JDK + Generate Test APK
+        id: build-apk
         uses: ./.github/actions/setup-jdk-generate-apk
         with:
-          APP_ENV: staging
+          APP_ENV: ${{ env.APP_ENV }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
       - name: Upload Test APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: test-apk
-          path: ./android/app/build/outputs/apk/release/app-release.apk
+          path: ${{ steps.build-apk.outputs.apk-path }}
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Run E2E Tests with Maestro Cloud
-        uses: mobile-dev-inc/action-maestro-cloud@v1.4.1
+        uses: mobile-dev-inc/action-maestro-cloud@v3.0.1
         with:
-          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
-          app-file: ./android/app/build/outputs/apk/release/app-release.apk
+          api-key: ${{ secrets.MAESTRO_API_KEY }}
+          project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
+          app-file: ${{ steps.build-apk.outputs.apk-path }}
+          workspace: .maestro
+          timeout: 45
           env: |
-            APP_ID=com.obytes.staging
+            APP_ID=${{ env.APP_ID }}
