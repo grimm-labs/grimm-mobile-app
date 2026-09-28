@@ -5,8 +5,10 @@ tags:
 ---
 - runFlow: subflows/create-wallet.yaml
 # Hide / show the balance from the "Total Balance" toggle
+# (the first sync of the wallet runs in the background: retry the tap if it was not applied)
 - tapOn:
     id: 'home-balance-toggle'
+    retryTapIfNoChange: true
 - assertVisible:
     id: 'home-total-balance'
     text: '\*\*\*\*\*\*\*\*'

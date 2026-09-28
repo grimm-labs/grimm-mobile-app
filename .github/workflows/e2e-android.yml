@@ -64,6 +64,8 @@ env:
   EMULATOR_ARCH: x86_64
   # The runner has 4 vCPUs; 2 cores were not enough and system apps hit ANRs (the dialog hides the app from Maestro)
   EMULATOR_CORES: 3
+  # expo-camera crashes the app on a device without camera (CameraX init error): emulate a back camera
+  EMULATOR_CAMERA: emulated
 
 jobs:
   generate-test-apk:
@@ -150,7 +152,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_TARGET }}-${{ env.EMULATOR_ARCH }}-cores${{ env.EMULATOR_CORES }}
+          key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_TARGET }}-${{ env.EMULATOR_ARCH }}-cores${{ env.EMULATOR_CORES }}-camera-${{ env.EMULATOR_CAMERA }}
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -160,7 +162,7 @@ jobs:
           target: ${{ env.EMULATOR_TARGET }}
           arch: ${{ env.EMULATOR_ARCH }}
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back ${{ env.EMULATOR_CAMERA }}
           disable-animations: false
           cores: ${{ env.EMULATOR_CORES }}
           ram-size: 4096M
@@ -178,7 +180,7 @@ jobs:
           target: ${{ env.EMULATOR_TARGET }}
           arch: ${{ env.EMULATOR_ARCH }}
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back ${{ env.EMULATOR_CAMERA }}
           disable-animations: true
           cores: ${{ env.EMULATOR_CORES }}
           ram-size: 4096M

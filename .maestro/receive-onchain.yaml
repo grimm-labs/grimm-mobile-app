@@ -33,11 +33,14 @@ tags:
 - assertVisible:
     id: 'receive-btc-address'
 - assertVisible: 'BC1Q.*'
+# Flash messages last 2 s: don't wait for the screen to settle after these taps
 - tapOn:
     id: 'receive-btc-copy'
+    waitToSettleTimeoutMs: 500
 - assertVisible: 'Address copied to clipboard'
 - tapOn:
     id: 'receive-btc-address'
+    waitToSettleTimeoutMs: 500
 - assertVisible: 'Address copied to clipboard'
 # Address settings sheet (amount + note)
 - tapOn:

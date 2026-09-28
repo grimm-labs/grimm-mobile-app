@@ -31,8 +31,10 @@ tags:
       id: 'recovery-phrase-screen'
     timeout: 10000
 - runFlow: subflows/read-recovery-phrase.yaml
+# Flash messages last 1.5-2 s: don't wait for the screen to settle after these taps
 - tapOn:
     id: 'copy-button'
+    waitToSettleTimeoutMs: 500
 - assertVisible: 'Recovery phrase copied to clipboard'
 # Wrong words are rejected
 - tapOn:
@@ -52,6 +54,7 @@ tags:
 - hideKeyboard
 - tapOn:
     id: 'verify-button'
+    waitToSettleTimeoutMs: 500
 - assertVisible: 'One or more words are incorrect. Please try again.'
 - back
 # The right words complete the backup: the banner disappears

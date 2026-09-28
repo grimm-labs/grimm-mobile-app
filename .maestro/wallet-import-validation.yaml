@@ -30,9 +30,13 @@ tags:
 - assertVisible:
     id: 'import-seed-word-count'
     text: '3 / 12 words'
+# The keyboard covers the button
+- hideKeyboard
 - assertVisible:
     id: 'login-button'
     enabled: true
+- tapOn:
+    id: 'import-seed-input'
 # 12 dictionary words with a wrong checksum: the count is accepted but the phrase is rejected
 - eraseText: 40
 - inputText: 'apple apple apple apple apple apple apple apple apple apple apple apple'
@@ -43,6 +47,7 @@ tags:
 - hideKeyboard
 - tapOn:
     id: 'login-button'
+    waitToSettleTimeoutMs: 500
 - assertVisible: 'Please enter a valid 12-words seed phrase.'
 - assertVisible:
     id: 'import-seed-screen'

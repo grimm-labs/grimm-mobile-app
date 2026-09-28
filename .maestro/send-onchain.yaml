@@ -39,11 +39,11 @@ tags:
     visible:
       id: 'send-onchain-amount-screen'
     timeout: 20000
-# Fee options come from the mempool API
+# Fee options come from the mempool API, or from the connected indexer when it is unreachable
 - extendedWaitUntil:
     visible:
       id: 'send-onchain-fee-medium'
-    timeout: 30000
+    timeout: 60000
 - assertVisible:
     id: 'send-onchain-fee-low'
 - assertVisible:

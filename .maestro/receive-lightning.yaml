@@ -89,6 +89,7 @@ tags:
     text: 'This invoice expires in (1:00:00|59:\d{2})'
 - tapOn:
     id: 'copy-payment-request'
+    waitToSettleTimeoutMs: 500
 - assertVisible: 'Payment address has been copied to clipboard'
 - tapOn:
     id: 'receive-invoice-close'

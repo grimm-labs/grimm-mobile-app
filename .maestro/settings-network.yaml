@@ -31,8 +31,10 @@ tags:
 - back
 - tapOn:
     id: 'tab-index'
-- assertVisible:
-    id: 'home-network-warning'
+- extendedWaitUntil:
+    visible:
+      id: 'home-network-warning'
+    timeout: 30000
 - assertVisible: 'You are connected to Test Network'
 # Back to mainnet: a confirmation is required, Cancel keeps testnet
 - runFlow:
@@ -65,5 +67,7 @@ tags:
 - back
 - tapOn:
     id: 'tab-index'
-- assertNotVisible:
-    id: 'home-network-warning'
+- extendedWaitUntil:
+    notVisible:
+      id: 'home-network-warning'
+    timeout: 30000
