@@ -5,7 +5,8 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TextInput } from 'react-native';
-import { Alert, Keyboard, KeyboardAvoidingView, Modal, Platform, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Alert, Keyboard, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -170,7 +171,9 @@ export default function EnterAmountScreen() {
         <Modal visible={noteModalVisible} animationType="slide" transparent={true} onRequestClose={cancelNote}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View className="flex-1 justify-end bg-black/50">
-              <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+              {/* React Native's KeyboardAvoidingView gets no keyboard events inside a Modal on Android (edge-to-edge):
+                  the note sheet stayed hidden behind the keyboard. keyboard-controller tracks the Modal window. */}
+              <KeyboardAvoidingView behavior="padding">
                 <View className="rounded-t-3xl bg-white px-4 pb-8 pt-6 dark:bg-charcoal-900">
                   <View className="mb-4 flex-row items-center justify-between">
                     <Text className="text-lg font-semibold text-gray-800 dark:text-charcoal-100">{t('enterAmount.addNote')}</Text>
