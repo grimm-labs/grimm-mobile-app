@@ -27,6 +27,10 @@ End-to-end tests for the Android app, written with [Maestro](https://docs.maestr
 - Anything that needs Breez (Lightning invoices, address parsing, LN address availability) must run after `subflows/wait-for-lightning.yaml`.
 - Use `extendedWaitUntil` after navigation and network calls; plain `assertVisible` only right after a local UI change.
 - Never register anything for real: the LN address flow cancels the confirmation sheet.
+- On Android `hideKeyboard` presses back: never use it while a bottom sheet is open (back closes the sheet, or the screen if the keyboard is already hidden). Close a numeric keyboard with `pressKey: Enter` instead.
+- Flash messages last 1.5–4 s and a tap can take longer than that on the CI emulator. Only assert the long error messages (with `waitToSettleTimeoutMs: 500` on the tap). Check a copy by pasting it (`longPressOn` the field, then `tapOn: 'Paste'`).
+- Wait for the closing animation (`waitForAnimationToEnd`) before opening another bottom sheet.
+- Inputs below the fold need `scrollUntilVisible` (with `centerElement: true` when the label above must stay visible).
 
 ## Running
 

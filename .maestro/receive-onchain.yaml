@@ -43,15 +43,22 @@ tags:
     id: 'receive-btc-address-settings'
 - assertVisible:
     id: 'address-config-title'
-# No hideKeyboard here: on Android it presses back, which closes the sheet when the keyboard is already hidden.
+# Let the sheet finish opening, or the tap can land on the backdrop and close it
+- waitForAnimationToEnd:
+    timeout: 5000
+# No hideKeyboard in a sheet: on Android it presses back and closes the sheet.
 # The amount keypad's done key (Enter) closes the keyboard instead.
-- tapOn:
-    id: 'address-config-note-input'
-- inputText: 'Maestro'
 - tapOn:
     id: 'address-config-amount-input'
 - inputText: '1000'
 - pressKey: Enter
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    id: 'address-config-note-input'
+- inputText: 'Maestro'
+- waitForAnimationToEnd:
+    timeout: 5000
 - tapOn:
     id: 'address-config-save'
 - assertNotVisible:
