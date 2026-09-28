@@ -33,7 +33,7 @@ import type { BottomSheetBackdropProps, BottomSheetModalProps } from '@gorhom/bo
 import { BottomSheetModal, useBottomSheet } from '@gorhom/bottom-sheet';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { Pressable, View } from 'react-native';
+import { BackHandler, Pressable, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 
@@ -66,6 +66,39 @@ export const useModal = () => {
   return { ref, present, dismiss };
 };
 
+type OnChange = BottomSheetModalProps['onChange'];
+
+/** Android back button: close the open sheet instead of navigating back (on a tab screen it closed the app) */
+const useDismissOnBackPress = (dismiss: () => void, onChange?: OnChange, onDismiss?: () => void) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleChange = React.useCallback(
+    (...args: Parameters<NonNullable<OnChange>>) => {
+      setIsOpen(args[0] >= 0);
+      onChange?.(...args);
+    },
+    [onChange],
+  );
+
+  const handleDismiss = React.useCallback(() => {
+    setIsOpen(false);
+    onDismiss?.();
+  }, [onDismiss]);
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      dismiss();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [isOpen, dismiss]);
+
+  return { handleChange, handleDismiss };
+};
+
 export const Modal = React.forwardRef(
   ({ snapPoints: _snapPoints = ['60%'], title, detached = false, showCloseButton = true, backgroundStyle, bottomInset, enableDynamicSizing = false, ...props }: ModalProps, ref: ModalRef) => {
     const detachedProps = React.useMemo(() => getDetachedProps(detached), [detached]);
@@ -89,6 +122,8 @@ export const Modal = React.forwardRef(
     }, [backgroundStyle, colorScheme]);
 
     React.useImperativeHandle(ref, () => (modal.ref.current as BottomSheetModal) || null);
+
+    const { handleChange, handleDismiss } = useDismissOnBackPress(modal.dismiss, props.onChange, props.onDismiss);
 
     const handleBottomMargin = title || showCloseButton ? 'mb-8' : 'mb-2';
 
@@ -114,6 +149,8 @@ export const Modal = React.forwardRef(
         handleComponent={renderHandleComponent}
         backgroundStyle={themedBackgroundStyle}
         bottomInset={resolvedBottomInset}
+        onChange={handleChange}
+        onDismiss={handleDismiss}
       />
     );
   },
