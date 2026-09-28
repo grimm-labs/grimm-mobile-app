@@ -61,7 +61,7 @@ Features that need a funded wallet (sending, transaction lists and details, tran
 | Transactions | Empty history and every filter                                                                                                     | `home`                     |
 | Receive      | Lightning: keypad, delete, note add/clear, invoice (amount, note, QR, countdown), copy, close                                      | `receive-lightning`        |
 | Send         | Lightning: paste an invoice → payment details, insufficient balance                                                                | `receive-lightning`        |
-| Receive      | On-chain: address, copy (pasted in the send screen), address settings (amount + note), new address                                 | `receive-onchain`          |
+| Receive      | On-chain: address, copy (pasted in the send screen), new address (address settings sheet disabled for now)                         | `receive-onchain`          |
 | Receive      | Lightning account on-chain deposit address                                                                                         | `receive-onchain`          |
 | Send         | Lightning: empty input, invalid input, Bitcoin address refused                                                                     | `send-lightning`           |
 | Send         | On-chain: empty and invalid address, valid address, fee options, insufficient balance                                              | `send-onchain`             |
