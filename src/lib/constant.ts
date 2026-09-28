@@ -35,3 +35,25 @@ export const DEFAULT_ESPLORA_SERVERS: EsploraServer[] = [
 ];
 
 export const GRIMM_APP_LN_URL_DOMAIN = 'pay.usegrimm.app';
+
+/** Default expiry (in seconds) applied to Lightning invoices generated via the Breez SDK. */
+export const DEFAULT_LN_INVOICE_EXPIRY_SECS = 3600;
+
+export type LnInvoiceExpiryOptionKey = 'tenMinutes' | 'thirtyMinutes' | 'oneHour' | 'sixHours' | 'oneDay' | 'sevenDays';
+
+export interface LnInvoiceExpiryOption {
+  key: LnInvoiceExpiryOptionKey;
+  seconds: number;
+}
+
+/** Presets offered in Settings for the Lightning invoice expiry duration. */
+export const LN_INVOICE_EXPIRY_OPTIONS: ReadonlyArray<LnInvoiceExpiryOption> = [
+  { key: 'tenMinutes', seconds: 10 * 60 },
+  { key: 'thirtyMinutes', seconds: 30 * 60 },
+  { key: 'oneHour', seconds: 60 * 60 },
+  { key: 'sixHours', seconds: 6 * 60 * 60 },
+  { key: 'oneDay', seconds: 24 * 60 * 60 },
+  { key: 'sevenDays', seconds: 7 * 24 * 60 * 60 },
+];
+
+export const isValidLnInvoiceExpirySecs = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value) && value > 0;

@@ -12,7 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
-import { convertBitcoinToFiat, getFiatCurrency, splitStringIntoChunks } from '@/lib';
+import { convertBitcoinToFiat, formatRemainingTime, getFiatCurrency, splitStringIntoChunks, useCountdown } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { useBreez } from '@/lib/context/breez-context';
@@ -26,7 +26,7 @@ type SearchParams = {
 
 export default function ReceivePaymentScreen() {
   const { t } = useTranslation();
-  const { selectedCountry } = useContext(AppContext);
+  const { selectedCountry, lnInvoiceExpirySecs } = useContext(AppContext);
   const router = useRouter();
   const { bitcoinPrices } = useBitcoin();
   const { receiveBolt11, receiveBitcoinAddress } = useBreez();
@@ -35,6 +35,8 @@ export default function ReceivePaymentScreen() {
   const [paymentRequest, setPaymentRequest] = useState<string>('');
   const [fees, setFees] = useState<bigint>(BigInt(0));
   const [error, setError] = useState<string>('');
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const { remainingSecs, isExpired } = useCountdown(type === 'lightning' ? expiresAt : null);
 
   const defaultNotes = t('receive_payment.default_note', { amount: Number(satsAmount).toLocaleString() });
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
@@ -43,6 +45,7 @@ export default function ReceivePaymentScreen() {
     try {
       setLoading(true);
       setError('');
+      setExpiresAt(null);
 
       if (type === 'onchain') {
         const receiveResponse = await receiveBitcoinAddress();
@@ -52,9 +55,10 @@ export default function ReceivePaymentScreen() {
         if (!satsAmount || parseInt(satsAmount, 10) <= 0) {
           throw new Error(t('receive_payment.invalid_amount'));
         }
-        const receiveResponse = await receiveBolt11(note || defaultNotes, parseInt(satsAmount, 10), 3600);
+        const receiveResponse = await receiveBolt11(note || defaultNotes, parseInt(satsAmount, 10), lnInvoiceExpirySecs);
         setPaymentRequest(receiveResponse.paymentRequest);
         setFees(receiveResponse.fee);
+        setExpiresAt(Date.now() + lnInvoiceExpirySecs * 1000);
       }
     } catch (err) {
       console.error('Error generating invoice:', err);
@@ -62,7 +66,7 @@ export default function ReceivePaymentScreen() {
     } finally {
       setLoading(false);
     }
-  }, [satsAmount, type, note, defaultNotes, t, receiveBolt11, receiveBitcoinAddress]);
+  }, [satsAmount, type, note, defaultNotes, t, receiveBolt11, receiveBitcoinAddress, lnInvoiceExpirySecs]);
 
   useEffect(() => {
     generatePaymentRequest();
@@ -176,11 +180,29 @@ export default function ReceivePaymentScreen() {
                   <View className="rounded-lg bg-white p-3 dark:bg-charcoal-900">
                     <Text className="text-sm text-gray-600 dark:text-charcoal-300">{note || defaultNotes}</Text>
                   </View>
+                  {remainingSecs !== null && (
+                    <View className="mt-3 flex-row items-center justify-center">
+                      <Ionicons name="time-outline" size={16} color={isExpired ? '#EF4444' : '#6B7280'} />
+                      <Text testID="invoice-countdown" className={`ml-1 text-sm ${isExpired ? 'text-red-500' : 'text-gray-500 dark:text-charcoal-400'}`}>
+                        {isExpired ? t('paymentDetails.expired') : `${t('paymentDetails.expiresIn')} ${formatRemainingTime(remainingSecs)}`}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               </View>
             )}
             <View className="mb-8 items-center">
-              <View className="bg-white p-6 dark:bg-charcoal-900">{paymentRequest && <QRCode value={paymentRequest?.toUpperCase()} size={200} backgroundColor="white" color="black" />}</View>
+              {isExpired ? (
+                <View className="w-full items-center p-6">
+                  <Ionicons name="time-outline" size={48} color="#EF4444" />
+                  <Text className="mt-2 text-base font-semibold text-red-500">{t('paymentDetails.expired')}</Text>
+                  <View className="mt-4 w-full">
+                    <Button label={t('receive_payment.retry')} onPress={handleRetry} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" testID="regenerate-invoice" />
+                  </View>
+                </View>
+              ) : (
+                <View className="bg-white p-6 dark:bg-charcoal-900">{paymentRequest && <QRCode value={paymentRequest?.toUpperCase()} size={200} backgroundColor="white" color="black" />}</View>
+              )}
               {type === 'onchain' && (
                 <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
                   {splitStringIntoChunks(paymentRequest?.toUpperCase(), 6).map((s) => (
@@ -190,16 +212,16 @@ export default function ReceivePaymentScreen() {
                   ))}
                 </Pressable>
               )}
-              <Text className="mt-4 text-center text-sm text-gray-500 dark:text-charcoal-400">{t('receive_payment.scan_text')}</Text>
+              {!isExpired && <Text className="mt-4 text-center text-sm text-gray-500 dark:text-charcoal-400">{t('receive_payment.scan_text')}</Text>}
             </View>
             <View className="flex flex-row justify-center">
               <View className="mx-4 flex items-center justify-center">
-                <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
+                <Pressable className={`mb-2 rounded-full p-3 text-white ${isExpired ? 'bg-gray-400' : 'bg-primary-600'}`} onPress={copyToClipboard} disabled={isExpired} testID="copy-payment-request">
                   <Ionicons name="copy" size={20} color="white" />
                 </Pressable>
               </View>
               <View className="mx-4 flex items-center justify-center">
-                <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={sharePaymentRequest}>
+                <Pressable className={`mb-2 rounded-full p-3 text-white ${isExpired ? 'bg-gray-400' : 'bg-primary-600'}`} onPress={sharePaymentRequest} disabled={isExpired} testID="share-payment-request">
                   <Ionicons name="share" size={20} color="white" />
                 </Pressable>
               </View>

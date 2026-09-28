@@ -38,6 +38,8 @@ function renderGuard(preventScreenCapture: boolean, isDataLoaded = true) {
           isoCode: 'CM',
         },
         bitcoinUnit: BitcoinUnit.Sats,
+        lnInvoiceExpirySecs: 3600,
+        setLnInvoiceExpirySecs: jest.fn(),
         setHideBalance: jest.fn(),
         setPreventScreenCapture: jest.fn(),
         setOnboarding: jest.fn(),

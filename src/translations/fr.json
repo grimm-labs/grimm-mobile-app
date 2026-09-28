@@ -213,6 +213,19 @@
       "updated": "Adresse Lightning mise à jour avec succès !"
     }
   },
+  "lnInvoiceExpiry": {
+    "default_hint": "Par défaut",
+    "header_title": "Expiration des factures",
+    "info_text": "Les nouvelles factures Lightning que vous générez expireront après cette durée. Une facture expirée ne peut plus être payée ; générez-en une nouvelle.",
+    "options": {
+      "oneDay": "24 heures",
+      "oneHour": "1 heure",
+      "sevenDays": "7 jours",
+      "sixHours": "6 heures",
+      "tenMinutes": "10 minutes",
+      "thirtyMinutes": "30 minutes"
+    }
+  },
   "lnPaymentMethod": {
     "lightningDescription": "Rapide & frais réduits",
     "receiveTitle": "Recevoir via le réseau Lightning",
@@ -564,6 +577,10 @@
       "lnAddress": {
         "subtitle": "Gérez et configurez votre adresse Lightning Network",
         "title": "Adresse LN"
+      },
+      "lnInvoiceExpiry": {
+        "subtitle": "Choisissez la durée de validité des factures Lightning",
+        "title": "Expiration des factures"
       },
       "networks": {
         "subtitle": "Gérez et configurez vos réseaux",
