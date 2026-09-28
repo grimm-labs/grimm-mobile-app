@@ -188,6 +188,7 @@ jobs:
           script: |
             mkdir -p e2e-report
             adb shell settings put global hide_error_dialogs 1
+            adb shell device_config put systemui clipboard_overlay_enabled false
             adb install -r "$APK_PATH"
             adb logcat -c
             maestro test .maestro/ --env APP_ID="$APP_ID" ${INCLUDE_TAGS:+--include-tags "$INCLUDE_TAGS"} --format junit --output e2e-report/report.xml --debug-output e2e-report/debug --flatten-debug-output || { adb logcat -d > e2e-report/logcat.txt; exit 1; }

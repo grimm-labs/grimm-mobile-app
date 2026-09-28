@@ -33,15 +33,11 @@ tags:
 - assertVisible:
     id: 'receive-btc-address'
 - assertVisible: 'BC1Q.*'
-# Flash messages last 2 s: don't wait for the screen to settle after these taps
-- tapOn:
-    id: 'receive-btc-copy'
-    waitToSettleTimeoutMs: 500
-- assertVisible: 'Address copied to clipboard'
+# Copy the address (checked below by pasting it; the 2 s confirmation is too short to assert on CI)
 - tapOn:
     id: 'receive-btc-address'
-    waitToSettleTimeoutMs: 500
-- assertVisible: 'Address copied to clipboard'
+- tapOn:
+    id: 'receive-btc-copy'
 # Address settings sheet (amount + note)
 - tapOn:
     id: 'receive-btc-address-settings'
@@ -66,8 +62,32 @@ tags:
       id: 'receive-btc-address'
     timeout: 60000
 - back
-# Lightning account: on-chain deposit address (Breez)
+# The copied address is in the clipboard: paste it in the on-chain send screen (address parsing needs Breez)
 - runFlow: subflows/wait-for-lightning.yaml
+- tapOn:
+    id: 'home-send-button'
+- tapOn:
+    id: 'send-method-onchain'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-address-screen'
+    timeout: 10000
+- longPressOn:
+    id: 'send-onchain-address-input'
+- tapOn: 'Paste'
+- assertVisible:
+    id: 'send-onchain-address-input'
+    text: 'bc1q[a-z0-9]+'
+- hideKeyboard
+- tapOn:
+    id: 'send-onchain-address-continue'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-amount-screen'
+    timeout: 20000
+- back
+- back
+# Lightning account: on-chain deposit address (Breez)
 - tapOn:
     id: 'home-lightning-wallet-card'
 - tapOn:

@@ -87,13 +87,35 @@ tags:
 - assertVisible:
     id: 'invoice-countdown'
     text: 'This invoice expires in (1:00:00|59:\d{2})'
+# Copy the invoice (checked below by pasting it; the 2 s confirmation is too short to assert on CI)
 - tapOn:
     id: 'copy-payment-request'
-    waitToSettleTimeoutMs: 500
-- assertVisible: 'Payment address has been copied to clipboard'
 - tapOn:
     id: 'receive-invoice-close'
 - extendedWaitUntil:
     visible:
       id: 'home-screen'
     timeout: 10000
+# Paste the invoice in the Lightning send screen: it is decoded, and the empty wallet can't pay it
+- tapOn:
+    id: 'home-send-button'
+- tapOn:
+    id: 'send-method-lightning'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-address-screen'
+    timeout: 10000
+- longPressOn:
+    id: 'send-ln-address-input'
+- tapOn: 'Paste'
+- assertVisible:
+    id: 'send-ln-address-input'
+    text: 'ln[a-z0-9]+'
+- hideKeyboard
+- tapOn:
+    id: 'send-ln-address-continue'
+- extendedWaitUntil:
+    notVisible:
+      id: 'send-ln-details-loading'
+    timeout: 60000
+- assertVisible: 'Your balance is insufficient'
