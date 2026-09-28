@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Clipboard, Pressable, ScrollView, Share } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Share } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -74,7 +75,7 @@ export default function ReceivePaymentScreen() {
 
   const copyToClipboard = async () => {
     if (paymentRequest) {
-      await Clipboard.setString(paymentRequest);
+      await Clipboard.setStringAsync(paymentRequest);
       showMessage({ message: t('receive_payment.copied'), type: 'success', duration: 2000 });
     }
   };
