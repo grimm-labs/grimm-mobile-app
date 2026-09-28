@@ -5,11 +5,13 @@
 
 # Description:
 # This workflow is used to run end-to-end tests on Android using Maestro on a GitHub hosted emulator (free, no Maestro Cloud account needed).
+# It is the only E2E pipeline of the project: we don't use Maestro Cloud.
 # As a first step, it generates a staging test APK (arm64-v8a, see .github/actions/setup-jdk-generate-apk) and uploads it as an artifact.
 # A second job starts an Android emulator with `reactivecircus/android-emulator-runner` on ubuntu (KVM) and runs the flows of .maestro/ on it.
 # The APK only contains arm64-v8a native libraries (bdk-rn has no x86_64 build), so we use an API 35 google_apis x86_64 image:
 # it translates ARM code, which is what lets an arm64-only APK run on the x86_64 runner.
-# This workflow will be triggered on pull requests (PRs) with the label "android-test-github" (also when the label is added to an open PR) or can be manually triggered from the Actions tab.
+# This workflow runs on every pull request and every push to main/master (changes that only touch markdown files are skipped), and can be manually triggered from the Actions tab.
+# On pull requests, a new push cancels the run in progress for the same PR; runs on main/master are never cancelled.
 # Reports: the JUnit report, Maestro debug output (screenshots, logs) and a logcat dump on failure are uploaded as the `e2e-android-report` artifact.
 
 # GITHUB SECRETS REQUIRED: None
@@ -23,12 +25,21 @@ name: E2E Tests Android (Maestro + Github Action)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - '**.md'
   pull_request:
     branches: [main, master]
-    types: [opened, synchronize, reopened, labeled]
+    paths-ignore:
+      - '**.md'
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   APP_ENV: staging
@@ -42,15 +53,9 @@ env:
 
 jobs:
   generate-test-apk:
-    # On `labeled` events, only react to our label so adding another label does not start (or cancel) a run
-    if: >-
-      github.event_name == 'workflow_dispatch' || (contains(github.event.pull_request.labels.*.name, 'android-test-github') && (github.event.action != 'labeled' || github.event.label.name == 'android-test-github'))
     name: Generate Test APK (Gradle)
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    concurrency:
-      group: e2e-android-github-${{ github.ref }}
-      cancel-in-progress: true
 
     steps:
       - name: Checkout project repo
@@ -91,9 +96,6 @@ jobs:
     needs: generate-test-apk
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    concurrency:
-      group: e2e-android-github-tests-${{ github.ref }}
-      cancel-in-progress: true
 
     steps:
       - name: Checkout project repo

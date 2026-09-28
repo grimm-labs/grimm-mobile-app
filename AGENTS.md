@@ -210,10 +210,12 @@ Use a **release** build. A debug build contains `expo-dev-client`: after `clearS
 
 Use an **arm64 device or emulator** (Apple Silicon emulators are fine). CI pins Maestro `2.10.0` (`MAESTRO_VERSION` in `e2e-android.yml`); use the same version locally (`curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.10.0 bash`).
 
-In CI, both workflows build a **staging release APK for `arm64-v8a` only** with `.github/actions/setup-jdk-generate-apk`, then:
+In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). It runs on every pull request and every push to `master` (markdown-only changes are skipped), and can be started manually:
 
-- `e2e-android.yml` (free): runs the flows on a GitHub-hosted emulator, API 35 `google_apis` x86_64 with KVM, which translates ARM code. Triggered by the PR label `android-test-github` or manually. Reports go in the `e2e-android-report` artifact: JUnit, Maestro debug output, and logcat on failure.
-- `e2e-android-maestro.yml`: runs the flows on Maestro Cloud. Triggered by the PR label `android-test-maestro-cloud` or manually. Needs the secrets `MAESTRO_API_KEY` and `MAESTRO_PROJECT_ID`.
+- Job 1 builds a **staging release APK for `arm64-v8a` only** with `.github/actions/setup-jdk-generate-apk`.
+- Job 2 runs the flows on a GitHub-hosted emulator: API 35 `google_apis` x86_64 with KVM, which translates ARM code.
+- Reports go in the `e2e-android-report` artifact: JUnit, Maestro debug output, and logcat on failure.
+- A full run takes about 25 minutes (about 16 of them for the Gradle build).
 
 ## Builds, environments and CI
 
@@ -231,7 +233,7 @@ In CI, both workflows build a **staging release APK for `arm64-v8a` only** with 
   2. `new-github-release` creates a draft release.
   3. Publishing the release triggers the EAS QA (staging) and development builds.
   4. `eas-build-prod` is manual.
-- CI checks on PRs to master: `lint-ts`, `type-check`, `test` (with a coverage comment), `codeql`, `security-audit`/`expo-doctor` when `package.json`/lockfile change, and the E2E workflows when labelled.
+- CI checks on PRs to master: `lint-ts`, `type-check`, `test` (with a coverage comment), `codeql`, `e2e-android`, and `security-audit`/`expo-doctor` when `package.json`/lockfile change.
 - Workflows create `.env.<env>` from the secret `BREEZ_API_KEY` and the variables `NOTIFICATION_API_URL_{DEV,STAGING,PROD}`.
 
 ## Gotchas
@@ -241,4 +243,3 @@ In CI, both workflows build a **staging release APK for `arm64-v8a` only** with 
 - The same Breez `storageDir` is shared between networks, and the testnet/regtest mapping is inconsistent (see "Wallets and networks").
 - Background pollers (Breez 10 s, BDK 60 s + 30 s retry, prices 20 s) run from providers. Avoid adding more intervals; reuse the existing refresh functions.
 - `.husky/post-merge` looks for `pnpm-lock.yml` (typo), so it never auto-installs after a merge.
-- `e2e-android-eas-build.yml` is still the unmodified template: it uses `upload-artifact@v3`, a wrong APP_ID and a macOS runner. It cannot pass as is.
