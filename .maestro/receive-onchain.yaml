@@ -43,14 +43,13 @@ tags:
     id: 'receive-btc-address-settings'
 - assertVisible:
     id: 'address-config-title'
+# No hideKeyboard here: on Android it presses back, which closes the sheet when the keyboard is already hidden
 - tapOn:
     id: 'address-config-amount-input'
 - inputText: '1000'
-- hideKeyboard
 - tapOn:
     id: 'address-config-note-input'
 - inputText: 'Maestro'
-- hideKeyboard
 - tapOn:
     id: 'address-config-save'
 - assertNotVisible:

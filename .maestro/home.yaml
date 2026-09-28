@@ -29,9 +29,12 @@ tags:
     id: 'send-method-onchain'
 - assertVisible: 'Send via Lightning Network'
 - assertVisible: 'Send via Bitcoin Network'
+# Android back closes the sheet (not the app)
 - back
 - assertNotVisible:
     id: 'send-method-lightning'
+- waitForAnimationToEnd:
+    timeout: 5000
 # Receive sheet
 - tapOn:
     id: 'home-receive-button'
