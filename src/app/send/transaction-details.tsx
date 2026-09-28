@@ -111,10 +111,12 @@ export default function PaymentDetailsScreen() {
           setDecodeError(t('paymentDetails.errors.decode'));
         }
       } catch (error) {
+        // Show the error screen for any failure: with only a flash message, the payment screen stayed
+        // on screen with the "slide to confirm" control although nothing could be paid
         if ((error as Error).message?.includes('not enough funds')) {
           setDecodeError(t('paymentDetails.errors.notEnoughFunds'));
         } else {
-          showErrorMessage(t('paymentDetails.errors.invalidData'));
+          setDecodeError(t('paymentDetails.errors.invalidData'));
         }
         console.error('Error parsing invoice data:', (error as Error)?.message);
       } finally {
@@ -208,7 +210,7 @@ export default function PaymentDetailsScreen() {
   if (isLoading) {
     return (
       <SafeAreaProvider>
-        <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <SafeAreaView testID="send-ln-details-loading" className="flex-1 bg-white dark:bg-charcoal-950">
           <FocusAwareStatusBar />
           <Stack.Screen
             options={{
@@ -231,7 +233,7 @@ export default function PaymentDetailsScreen() {
   if (!isLoading && decodeError) {
     return (
       <SafeAreaProvider>
-        <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+        <SafeAreaView testID="send-ln-details-error" className="flex-1 bg-white dark:bg-charcoal-950">
           <FocusAwareStatusBar />
           <Stack.Screen
             options={{
@@ -248,7 +250,9 @@ export default function PaymentDetailsScreen() {
             <Text className="mb-4 text-center text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('paymentDetails.errorMessage')}</Text>
             <Text className="mb-8 text-center text-base leading-6 text-gray-600 dark:text-charcoal-300">{t('paymentDetails.errorDescription')}</Text>
             <View className="mb-8 w-full rounded-lg bg-gray-50 p-4 dark:bg-charcoal-900">
-              <Text className="text-center text-sm text-gray-500 dark:text-charcoal-400">{decodeError}</Text>
+              <Text testID="send-ln-details-error-message" className="text-center text-sm text-gray-500 dark:text-charcoal-400">
+                {decodeError}
+              </Text>
             </View>
           </View>
           <View className="px-4">
@@ -261,7 +265,7 @@ export default function PaymentDetailsScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-charcoal-900">
+      <SafeAreaView testID="send-ln-details-screen" className="flex-1 bg-gray-50 dark:bg-charcoal-900">
         <Stack.Screen
           options={{
             headerTitle: () => <HeaderTitle title={t('paymentDetails.payViaLightning')} />,
@@ -281,7 +285,9 @@ export default function PaymentDetailsScreen() {
               <View className="mb-6 flex-row items-center justify-between border-b border-gray-100 pb-6 dark:border-charcoal-700">
                 <Text className="text-lg text-gray-600 dark:text-charcoal-300">{t('paymentDetails.amount')}</Text>
                 <View className="items-end">
-                  <Text className="text-lg font-medium text-gray-900 dark:text-charcoal-100">{amountSat} SAT</Text>
+                  <Text testID="send-ln-details-amount" className="text-lg font-medium text-gray-900 dark:text-charcoal-100">
+                    {amountSat} SAT
+                  </Text>
                   <Text className="text-sm text-gray-500 dark:text-charcoal-400">
                     {convertBitcoinToFiat(amountSat, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString()} {selectedFiatCurrency}
                   </Text>
@@ -329,7 +335,9 @@ export default function PaymentDetailsScreen() {
             )}
             {hasInsufficientBalance ? (
               <View className="mb-4 p-3">
-                <Text className="text-center text-sm font-medium text-red-500">{t('paymentDetails.errors.notEnoughFunds')}</Text>
+                <Text testID="send-ln-details-insufficient" className="text-center text-sm font-medium text-red-500">
+                  {t('paymentDetails.errors.notEnoughFunds')}
+                </Text>
               </View>
             ) : (
               <SlideToConfirm onConfirm={handleSendPayment} loading={paymentIsProcessing} />
