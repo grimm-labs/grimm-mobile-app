@@ -4,7 +4,7 @@ import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useColorScheme } from 'nativewind';
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { Button, colors, Input, Modal, Text, useModal } from '@/components/ui';
 import { convertBtcToSats, convertSatsToBtc } from '@/lib';
@@ -75,7 +75,13 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
   };
 
   return (
-    <Modal ref={ref} snapPoints={['44%']} bottomInset={bottomInset} keyboardBehavior="interactive" keyboardBlurBehavior="restore">
+    <Modal
+      ref={ref}
+      snapPoints={['44%']}
+      bottomInset={bottomInset}
+      // Same keyboard handling as the transaction note sheet: on Android the fields and the button stayed behind the keyboard
+      {...(Platform.OS === 'ios' ? { keyboardBehavior: 'interactive' as const, keyboardBlurBehavior: 'restore' as const } : { keyboardBlurBehavior: 'none' as const, android_keyboardInputMode: 'adjustResize' as const })}
+    >
       <View className="flex-1 px-6 pb-4">
         <View className="flex-1">
           <Text testID="address-config-title" className={`mb-4 text-2xl font-bold ${theme.textPrimary}`}>
