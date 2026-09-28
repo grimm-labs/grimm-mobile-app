@@ -46,6 +46,7 @@ tags:
 - tapOn:
     id: 'address-config-amount-input'
 - inputText: '1000'
+- hideKeyboard
 - tapOn:
     id: 'address-config-note-input'
 - inputText: 'Maestro'

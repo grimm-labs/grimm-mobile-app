@@ -39,17 +39,22 @@ tags:
     id: 'saved-button'
 - extendedWaitUntil:
     visible:
-      id: 'verify-word-input-3'
+      id: 'verify-word-input-0'
     timeout: 10000
 - evalScript: ${output.verifyIndex = 0}
 - repeat:
     times: 4
     commands:
+      - scrollUntilVisible:
+          element:
+            id: ${'verify-word-input-' + output.verifyIndex}
+          direction: DOWN
+          centerElement: true
       - tapOn:
           id: ${'verify-word-input-' + output.verifyIndex}
       - inputText: 'wrong'
+      - hideKeyboard
       - evalScript: ${output.verifyIndex = output.verifyIndex + 1}
-- hideKeyboard
 # This error only lasts 1.5 s: don't wait for the screen to settle after the tap
 - tapOn:
     id: 'verify-button'
