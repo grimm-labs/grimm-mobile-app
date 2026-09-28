@@ -1,0 +1,57 @@
+appId: ${APP_ID}
+name: Settings - Lightning address form (validation and availability check, no registration)
+tags:
+  - settings
+  - lightning
+---
+- runFlow: subflows/create-wallet.yaml
+# The availability check goes through the Breez SDK
+- runFlow: subflows/wait-for-lightning.yaml
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-ln-address
+- extendedWaitUntil:
+    visible:
+      id: 'ln-address-empty'
+    timeout: 10000
+- assertVisible: 'Create your Lightning Address'
+- tapOn:
+    id: 'ln-address-get-started'
+- assertVisible:
+    id: 'ln-address-submit'
+    enabled: false
+# Client-side validation
+- tapOn:
+    id: 'ln-address-username-input'
+- inputText: 'a'
+- assertVisible: 'Username must be at least 2 characters'
+- inputText: 'b_c'
+- assertVisible: 'Only lowercase letters, numbers, and hyphens are allowed'
+- eraseText: 10
+- inputText: 'abcdefghijklmnopqrstuvwxyz'
+- assertVisible: 'Username must be at most 25 characters'
+- eraseText: 30
+# Random name, then the availability check opens the confirmation (cancelled: nothing is registered)
+- hideKeyboard
+- tapOn:
+    id: 'ln-address-generate-random'
+- assertVisible:
+    id: 'ln-address-username-input'
+    text: '[a-z]+-[a-z]+-\d+'
+- tapOn:
+    id: 'ln-address-submit'
+- extendedWaitUntil:
+    visible:
+      id: 'ln-address-confirm-address'
+      text: '[a-z]+-[a-z]+-\d+@pay\.usegrimm\.app'
+    timeout: 30000
+- assertVisible: 'Confirm Lightning Address'
+- tapOn:
+    id: 'ln-address-confirm-cancel'
+- assertNotVisible:
+    id: 'ln-address-confirm-address'
+- tapOn:
+    id: 'ln-address-form-back'
+- assertVisible:
+    id: 'ln-address-empty'

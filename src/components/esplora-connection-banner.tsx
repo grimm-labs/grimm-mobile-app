@@ -13,7 +13,7 @@ export const EsploraConnectionBanner: React.FC = () => {
   }
 
   return (
-    <View className="bg-danger-500 py-2">
+    <View testID="esplora-connection-banner" className="bg-danger-500 py-2">
       <Text className="text-center text-sm font-semibold text-white">{t('home.esploraConnectionWarning')}</Text>
     </View>
   );

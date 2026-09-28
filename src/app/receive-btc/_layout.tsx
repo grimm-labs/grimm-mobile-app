@@ -93,7 +93,7 @@ export default function ReceivePaymentScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="receive-btc-loading" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -114,7 +114,7 @@ export default function ReceivePaymentScreen() {
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="receive-btc-error" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -131,13 +131,17 @@ export default function ReceivePaymentScreen() {
           <Text className="mb-2 text-xl font-semibold text-gray-800 dark:text-charcoal-100">{t('receive_onchain.error_title')}</Text>
           <Text className="mb-6 text-center text-gray-600 dark:text-charcoal-300">{error}</Text>
         </View>
+        {/* Without a retry the error state was a dead end: the user had to leave the screen */}
+        <View className="mb-8 px-4">
+          <Button testID="receive-btc-retry" label={t('receive_payment.retry')} onPress={generateAddress} fullWidth variant="secondary" textClassName="text-base text-white" size="lg" />
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="receive-btc-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -156,20 +160,21 @@ export default function ReceivePaymentScreen() {
               <Text className="mt-4 text-center text-sm text-gray-500 dark:text-charcoal-400">{t('receive_onchain.scan_text')}</Text>
             </View>
             <View className="my-8 flex flex-row justify-center space-x-1">
-              <View className="mx-4 flex items-center justify-center">
-                <Pressable className="mb-2 rounded-full bg-primary-600 p-3 text-white" onPress={copyToClipboard}>
+              {/* The whole column (icon + label) is pressable so tapping the label works too */}
+              <Pressable testID="receive-btc-copy" className="mx-4 flex items-center justify-center" onPress={copyToClipboard} accessibilityRole="button">
+                <View className="mb-2 rounded-full bg-primary-600 p-3 text-white">
                   <Ionicons name="copy" size={20} color="white" />
-                </Pressable>
-                <Text className="text-sm font-medium">Copy</Text>
-              </View>
-              <View className="mx-4 flex items-center justify-center">
-                <Pressable className="mb-2 rounded-full bg-neutral-700 p-3 text-white" onPress={shareAddress}>
+                </View>
+                <Text className="text-sm font-medium">{t('receive_onchain.copy')}</Text>
+              </Pressable>
+              <Pressable testID="receive-btc-share" className="mx-4 flex items-center justify-center" onPress={shareAddress} accessibilityRole="button">
+                <View className="mb-2 rounded-full bg-neutral-700 p-3 text-white">
                   <Ionicons name="share" size={20} color="white" />
-                </Pressable>
-                <Text className="text-sm font-medium">Share</Text>
-              </View>
+                </View>
+                <Text className="text-sm font-medium">{t('receive_onchain.share')}</Text>
+              </Pressable>
             </View>
-            <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
+            <Pressable testID="receive-btc-address" onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
               {splitStringIntoChunks(address?.toUpperCase(), 6).map((s) => (
                 <View className="m-2" key={s}>
                   <Text className="text-base font-bold text-primary-600">{s}</Text>
@@ -178,10 +183,10 @@ export default function ReceivePaymentScreen() {
             </Pressable>
           </ScrollView>
           <View>
-            <Pressable className="my-4" onPress={openAddressConfig}>
+            <Pressable testID="receive-btc-address-settings" className="my-4" onPress={openAddressConfig}>
               <Text className="text-center text-base font-medium text-primary-700">{t('receive_onchain.address_settings')}</Text>
             </Pressable>
-            <Button label={t('receive_onchain.new_address')} onPress={generateAddress} fullWidth variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button testID="receive-btc-new-address" label={t('receive_onchain.new_address')} onPress={generateAddress} fullWidth variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
         <AddressConfigBottomSheet ref={addressConfigRef} onSave={handleSaveConfig} defaultAmount={amount} defaultNote={note} />

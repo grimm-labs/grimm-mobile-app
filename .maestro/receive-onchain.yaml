@@ -1,0 +1,79 @@
+appId: ${APP_ID}
+name: Receive on-chain - Bitcoin address and Lightning deposit address
+tags:
+  - receive
+  - onchain
+---
+- runFlow: subflows/create-wallet.yaml
+- tapOn:
+    id: 'home-receive-button'
+- tapOn:
+    id: 'receive-method-onchain'
+# The address needs the Esplora indexer; retry if the wallet was not connected yet
+- extendedWaitUntil:
+    notVisible:
+      id: 'receive-btc-loading'
+    timeout: 60000
+- repeat:
+    while:
+      visible:
+        id: 'receive-btc-error'
+    times: 5
+    commands:
+      - tapOn:
+          id: 'receive-btc-retry'
+      - extendedWaitUntil:
+          notVisible:
+            id: 'receive-btc-loading'
+          timeout: 60000
+- assertVisible:
+    id: 'receive-btc-screen'
+- assertVisible: 'Scan this QR code to send funds to this address'
+# Native SegWit mainnet address, shown in chunks
+- assertVisible:
+    id: 'receive-btc-address'
+- assertVisible: 'BC1Q.*'
+- tapOn:
+    id: 'receive-btc-copy'
+- assertVisible: 'Address copied to clipboard'
+- tapOn:
+    id: 'receive-btc-address'
+- assertVisible: 'Address copied to clipboard'
+# Address settings sheet (amount + note)
+- tapOn:
+    id: 'receive-btc-address-settings'
+- assertVisible:
+    id: 'address-config-title'
+- tapOn:
+    id: 'address-config-amount-input'
+- inputText: '1000'
+- tapOn:
+    id: 'address-config-note-input'
+- inputText: 'Maestro'
+- hideKeyboard
+- tapOn:
+    id: 'address-config-save'
+- assertNotVisible:
+    id: 'address-config-title'
+# New address
+- tapOn:
+    id: 'receive-btc-new-address'
+- extendedWaitUntil:
+    visible:
+      id: 'receive-btc-address'
+    timeout: 60000
+- back
+# Lightning account: on-chain deposit address (Breez)
+- runFlow: subflows/wait-for-lightning.yaml
+- tapOn:
+    id: 'home-lightning-wallet-card'
+- tapOn:
+    id: 'ln-wallet-receive-onchain'
+- extendedWaitUntil:
+    visible:
+      id: 'receive-invoice-onchain-info'
+    timeout: 60000
+- assertVisible:
+    id: 'receive-invoice-address'
+- assertVisible:
+    id: 'receive-invoice-qr'

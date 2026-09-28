@@ -46,7 +46,14 @@ export default function Transactions() {
   const renderFilterButton = (filter: FilterType) => {
     const isSelected = selectedFilter === filter;
     return (
-      <TouchableOpacity key={filter} onPress={() => setSelectedFilter(filter)} className={`mx-3 rounded-full px-4 py-2 ${isSelected ? 'bg-primary-600' : 'bg-gray-100 dark:bg-charcoal-850'}`} activeOpacity={0.7}>
+      <TouchableOpacity
+        key={filter}
+        testID={`transactions-filter-${filter.toLowerCase()}`}
+        accessibilityState={{ selected: isSelected }}
+        onPress={() => setSelectedFilter(filter)}
+        className={`mx-3 rounded-full px-4 py-2 ${isSelected ? 'bg-primary-600' : 'bg-gray-100 dark:bg-charcoal-850'}`}
+        activeOpacity={0.7}
+      >
         <Text className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-gray-600 dark:text-charcoal-300'}`}>{t(`transactions.filters.${filter.toLowerCase()}`)}</Text>
       </TouchableOpacity>
     );
@@ -55,7 +62,7 @@ export default function Transactions() {
   const renderTransaction = ({ item }: { item: UnifiedTransaction }) => <TransactionItem transaction={item} />;
 
   const renderEmptyState = () => (
-    <View className="flex-1 items-center justify-center px-6 py-20">
+    <View testID="transactions-empty" className="flex-1 items-center justify-center px-6 py-20">
       <Text className="mb-2 text-2xl text-gray-600 dark:text-charcoal-300">{t('transactions.empty.title')}</Text>
       <Text className="mb-8 text-center text-xs text-gray-600 dark:text-charcoal-300">{t('transactions.empty.description')}</Text>
     </View>
@@ -69,7 +76,7 @@ export default function Transactions() {
   return (
     <SafeAreaProvider>
       <FocusAwareStatusBar />
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="transactions-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex border-b border-neutral-100 px-4 py-3 dark:border-charcoal-700">
           <Text className="text-2xl font-bold text-gray-800 dark:text-charcoal-100">{t('transactions.title')}</Text>
         </View>

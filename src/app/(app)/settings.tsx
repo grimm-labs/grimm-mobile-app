@@ -40,30 +40,56 @@ export default function Settings() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="settings-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
-        <View className="flex">
+        {/* flex-1 bounds the ScrollView to the screen height, otherwise it grows with its content and cannot scroll */}
+        <View className="flex-1">
           <View className="flex border-b border-neutral-100 px-4 py-3 dark:border-charcoal-700">
             <Text className="text-2xl font-bold text-gray-800 dark:text-charcoal-100">{t('settings.title')}</Text>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+          <ScrollView testID="settings-scroll" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
             {/* General Section */}
             <View className="mb-6 mt-3">
               <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-700 dark:text-charcoal-200">{t('settings.sections.general')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} />
-                <SettingsItem icon="server" title={t('settings.general.esploraServer.title')} subtitle={t('settings.general.esploraServer.subtitle')} onPress={() => router.push('/settings/esplora-server')} />
-                <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} />
-                <SettingsItem icon="language" title={t('settings.general.language.title')} subtitle={t('settings.general.language.subtitle')} onPress={() => router.push('/settings/language')} />
-                <SettingsItem icon="options-sharp" title={t('settings.general.bitcoinUnit.title')} subtitle={t('settings.general.bitcoinUnit.subtitle')} onPress={() => router.push('/settings/bitcoin-unit')} />
+                <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} testID="settings-networks" />
+                <SettingsItem
+                  icon="server"
+                  title={t('settings.general.esploraServer.title')}
+                  subtitle={t('settings.general.esploraServer.subtitle')}
+                  onPress={() => router.push('/settings/esplora-server')}
+                  testID="settings-esplora-server"
+                />
+                <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} testID="settings-country" />
+                <SettingsItem
+                  icon="language"
+                  title={t('settings.general.language.title')}
+                  subtitle={t('settings.general.language.subtitle')}
+                  onPress={() => router.push('/settings/language')}
+                  testID="settings-language"
+                />
+                <SettingsItem
+                  icon="options-sharp"
+                  title={t('settings.general.bitcoinUnit.title')}
+                  subtitle={t('settings.general.bitcoinUnit.subtitle')}
+                  onPress={() => router.push('/settings/bitcoin-unit')}
+                  testID="settings-bitcoin-unit"
+                />
                 <SettingsItem
                   icon="time-outline"
                   title={t('settings.general.lnInvoiceExpiry.title')}
                   subtitle={t('settings.general.lnInvoiceExpiry.subtitle')}
                   onPress={() => router.push('/settings/ln-invoice-expiry')}
+                  testID="settings-ln-invoice-expiry"
                 />
-                <SettingsItem icon="at" title={t('settings.general.lnAddress.title')} subtitle={t('settings.general.lnAddress.subtitle')} onPress={() => router.push('/settings/ln-address')} />
+                <SettingsItem
+                  icon="at"
+                  title={t('settings.general.lnAddress.title')}
+                  subtitle={t('settings.general.lnAddress.subtitle')}
+                  onPress={() => router.push('/settings/ln-address')}
+                  testID="settings-ln-address"
+                />
               </View>
             </View>
 
@@ -72,7 +98,7 @@ export default function Settings() {
               <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.security')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
                 {/* <SettingsItem icon="lock-closed" title={t('settings.security.pin.title')} subtitle={t('settings.security.pin.subtitle')} onPress={() => console.log('PIN change pressed')} /> */}
-                <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} />
+                <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} testID="settings-backup" />
                 {/* <Pressable className="mb-1 flex-row items-center rounded py-2">
                   <View className="mr-1 rounded-full p-2">
                     <Ionicons name="scan-sharp" size={20} color="gray" />
@@ -87,7 +113,7 @@ export default function Settings() {
                     </Switch.Root>
                   </View>
                 </Pressable> */}
-                <Pressable className="mb-1 flex-row items-center rounded py-2" onPress={() => setHideBalance(!hideBalance)}>
+                <Pressable testID="settings-hide-balance" className="mb-1 flex-row items-center rounded py-2" onPress={() => setHideBalance(!hideBalance)}>
                   <View className="mr-1 rounded-full p-2">
                     <Ionicons name="eye" size={20} color="gray" />
                   </View>
@@ -96,12 +122,12 @@ export default function Settings() {
                     <Text className="text-xs text-gray-500 dark:text-charcoal-400">{t('settings.security.hideBalance.subtitle')}</Text>
                   </View>
                   <View>
-                    <Switch.Root checked={hideBalance} onChange={setHideBalance} accessibilityLabel="switch" className="pb-2">
+                    <Switch.Root testID="settings-hide-balance-switch" checked={hideBalance} onChange={setHideBalance} accessibilityLabel="switch" className="pb-2">
                       <Switch.Icon checked={hideBalance} />
                     </Switch.Root>
                   </View>
                 </Pressable>
-                <Pressable className="mb-1 flex-row items-center rounded py-2" onPress={() => setPreventScreenCapture(!preventScreenCapture)}>
+                <Pressable testID="settings-block-screenshots" className="mb-1 flex-row items-center rounded py-2" onPress={() => setPreventScreenCapture(!preventScreenCapture)}>
                   <View className="mr-1 rounded-full p-2">
                     <Ionicons name="eye-off" size={20} color="gray" />
                   </View>
@@ -110,7 +136,13 @@ export default function Settings() {
                     <Text className="text-xs text-gray-500 dark:text-charcoal-400">{t('settings.security.preventScreenCapture.subtitle')}</Text>
                   </View>
                   <View>
-                    <Switch.Root checked={preventScreenCapture} onChange={setPreventScreenCapture} accessibilityLabel={t('settings.security.preventScreenCapture.title')} className="pb-2">
+                    <Switch.Root
+                      testID="settings-block-screenshots-switch"
+                      checked={preventScreenCapture}
+                      onChange={setPreventScreenCapture}
+                      accessibilityLabel={t('settings.security.preventScreenCapture.title')}
+                      className="pb-2"
+                    >
                       <Switch.Icon checked={preventScreenCapture} />
                     </Switch.Root>
                   </View>
@@ -127,8 +159,15 @@ export default function Settings() {
                   title={t('settings.preferences.notifications.title')}
                   subtitle={t('settings.preferences.notifications.subtitle')}
                   onPress={() => router.push('/settings/notifications')}
+                  testID="settings-notifications"
                 />
-                <SettingsItem icon="color-palette" title={t('settings.preferences.appearance.title')} subtitle={t('settings.preferences.appearance.subtitle')} onPress={() => router.push('/settings/appearance')} />
+                <SettingsItem
+                  icon="color-palette"
+                  title={t('settings.preferences.appearance.title')}
+                  subtitle={t('settings.preferences.appearance.subtitle')}
+                  onPress={() => router.push('/settings/appearance')}
+                  testID="settings-appearance"
+                />
               </View>
             </View>
 
@@ -136,23 +175,29 @@ export default function Settings() {
             <View className="mb-6">
               <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.developers')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                <SettingsItem icon="code-slash" title={t('settings.developers.breez.title')} subtitle={t('settings.developers.breez.subtitle')} onPress={() => router.push('/settings/developers/breez-sdk')} />
+                <SettingsItem
+                  icon="code-slash"
+                  title={t('settings.developers.breez.title')}
+                  subtitle={t('settings.developers.breez.subtitle')}
+                  onPress={() => router.push('/settings/developers/breez-sdk')}
+                  testID="settings-breez-sdk"
+                />
               </View>
             </View>
 
             {/* Help & Sign Out */}
             <View className="mx-4">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/settings/about')}>
+              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/settings/about')} testID="settings-about">
                 <Text className="text-center font-bold text-gray-600 dark:text-charcoal-300">{t('settings.aboutApp')}</Text>
               </Pressable>
             </View>
             <View className="m-4">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/need-help')}>
+              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/need-help')} testID="settings-help">
                 <Text className="text-center font-bold text-primary-600">{t('settings.help')}</Text>
               </Pressable>
             </View>
             <View className="mx-4 mb-8">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={signOut}>
+              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={signOut} testID="settings-logout">
                 <Text className="text-center font-bold text-red-600">{t('settings.signOut')}</Text>
               </Pressable>
             </View>

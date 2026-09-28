@@ -23,14 +23,15 @@ interface PaymentMethodOptionProps {
   description: string;
   onPress: () => void;
   className?: string;
+  testID?: string;
 }
 
-const PaymentMethodOption = ({ icon, iconBgClass, title, description, onPress, className = 'mb-3' }: PaymentMethodOptionProps) => {
+const PaymentMethodOption = ({ icon, iconBgClass, title, description, onPress, className = 'mb-3', testID }: PaymentMethodOptionProps) => {
   const { colorScheme } = useColorScheme();
   const chevronColor = colorScheme === 'dark' ? colors.charcoal[400] : colors.neutral[400];
 
   return (
-    <Pressable className={`${className} flex-row items-center rounded-2xl p-4 active:opacity-80 ${theme.card}`} onPress={onPress}>
+    <Pressable testID={testID} className={`${className} flex-row items-center rounded-2xl p-4 active:opacity-80 ${theme.card}`} onPress={onPress}>
       <View className={`mr-4 items-center justify-center rounded-full p-3 ${iconBgClass}`}>
         <Ionicons name={icon} size={22} color={colors.white} />
       </View>
@@ -71,7 +72,14 @@ export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, Payme
   return (
     <Modal ref={ref} snapPoints={['34%']} title="" showCloseButton={false} bottomInset={bottomInset}>
       <View className="flex-1 px-6 pb-4 pt-2">
-        <PaymentMethodOption icon="flash" iconBgClass="bg-warning-400" title={t(`lnPaymentMethod.${mode}Title`)} description={t('lnPaymentMethod.lightningDescription')} onPress={() => handleSelect('lightning')} />
+        <PaymentMethodOption
+          icon="flash"
+          iconBgClass="bg-warning-400"
+          title={t(`lnPaymentMethod.${mode}Title`)}
+          description={t('lnPaymentMethod.lightningDescription')}
+          onPress={() => handleSelect('lightning')}
+          testID={`${mode}-method-lightning`}
+        />
         <PaymentMethodOption
           icon="link"
           iconBgClass="bg-primary-600"
@@ -79,6 +87,7 @@ export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, Payme
           description={t('onchainPaymentMethod.onchainDescription')}
           onPress={() => handleSelect('onchain')}
           className=""
+          testID={`${mode}-method-onchain`}
         />
       </View>
     </Modal>

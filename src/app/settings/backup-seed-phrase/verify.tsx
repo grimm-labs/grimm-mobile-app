@@ -80,7 +80,7 @@ export default function SeedPhraseVerificationScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="verify-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -102,8 +102,17 @@ export default function SeedPhraseVerificationScreen() {
             <View className="space-y-4">
               {wordsToVerify.map((item, index) => (
                 <View key={item.position} className="mb-4">
-                  <Text className="mb-2 text-sm font-semibold text-gray-700 dark:text-charcoal-200">{t('seedPhraseVerification.wordLabel', { number: item.position })}</Text>
-                  <Input placeholder={t('seedPhraseVerification.placeholder')} value={item.userInput} onChangeText={(value) => handleInputChange(index, value)} autoCapitalize="none" autoCorrect={false} />
+                  <Text testID={`verify-word-label-${index}`} className="mb-2 text-sm font-semibold text-gray-700 dark:text-charcoal-200">
+                    {t('seedPhraseVerification.wordLabel', { number: item.position })}
+                  </Text>
+                  <Input
+                    testID={`verify-word-input-${index}`}
+                    placeholder={t('seedPhraseVerification.placeholder')}
+                    value={item.userInput}
+                    onChangeText={(value) => handleInputChange(index, value)}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
                 </View>
               ))}
             </View>

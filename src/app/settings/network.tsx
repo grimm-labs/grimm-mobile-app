@@ -18,18 +18,21 @@ interface NetworkOptionProps {
   title: string;
   description: string;
   isSelected: boolean;
+  testID?: string;
   onPress: () => void;
   disabled?: boolean;
 }
 
-const NetworkOption = React.memo<NetworkOptionProps>(({ title, description, isSelected, onPress, disabled = false }) => (
-  <Pressable onPress={onPress} style={{ opacity: disabled ? 0.5 : 1 }} disabled={disabled}>
+const NetworkOption = React.memo<NetworkOptionProps>(({ title, description, isSelected, onPress, disabled = false, testID }) => (
+  <Pressable testID={testID} accessibilityState={{ selected: isSelected, disabled }} onPress={onPress} style={{ opacity: disabled ? 0.5 : 1 }} disabled={disabled}>
     <View className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-2 py-4">
       <View className="flex-1 pr-4">
         <Text className="text-sm font-medium text-gray-900 dark:text-charcoal-100">{title}</Text>
         <Text className="mt-1 text-xs text-gray-500 dark:text-charcoal-400">{description}</Text>
       </View>
-      <View className="size-6 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} style={{ transform: [{ scale: 1 }] }} />}</View>
+      <View className="size-6 items-center justify-center">
+        {isSelected && <Ionicons testID={`${testID}-selected`} name="checkmark-circle" size={20} color={colors.primary[600]} style={{ transform: [{ scale: 1 }] }} />}
+      </View>
     </View>
   </Pressable>
 ));
@@ -127,13 +130,15 @@ export default function NetworkSwitcher() {
           <View className="mb-2 mt-4 px-2">
             <View className="flex-row items-center">
               <View className={`mr-2 size-2 rounded-full ${isConnected ? 'bg-primary-500' : 'bg-red-500'}`} />
-              <Text className="text-sm text-gray-600 dark:text-charcoal-300">{isConnected ? t('networkSwitcher.status.connected', { network }) : t('networkSwitcher.status.disconnected')}</Text>
+              <Text testID="network-status" className="text-sm text-gray-600 dark:text-charcoal-300">
+                {isConnected ? t('networkSwitcher.status.connected', { network }) : t('networkSwitcher.status.disconnected')}
+              </Text>
             </View>
           </View>
 
           <View className="mt-2">
             {networkOptions.map((option) => (
-              <NetworkOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} disabled={isDisabled} />
+              <NetworkOption key={option.key} testID={`network-option-${option.key}`} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} disabled={isDisabled} />
             ))}
           </View>
 

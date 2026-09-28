@@ -73,7 +73,7 @@ export default function NotificationSettingsScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="notifications-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -94,17 +94,19 @@ export default function NotificationSettingsScreen() {
                   </View>
                   <View className="flex-1">
                     <Text className="text-sm font-semibold text-gray-900 dark:text-charcoal-100">{t('notificationSettings.pushNotifications')}</Text>
-                    <Text className="mt-1 text-sm text-gray-500 dark:text-charcoal-400">{statusLabel}</Text>
+                    <Text testID="notifications-status" className="mt-1 text-sm text-gray-500 dark:text-charcoal-400">
+                      {statusLabel}
+                    </Text>
                   </View>
                 </View>
-                <Switch.Root disabled={isRegistering} checked={switchValue} onChange={handleToggle} accessibilityLabel="switch" className="pb-2">
+                <Switch.Root testID="notifications-switch" disabled={isRegistering} checked={switchValue} onChange={handleToggle} accessibilityLabel="switch" className="pb-2">
                   <Switch.Icon checked={switchValue} />
                 </Switch.Root>
               </View>
               {registrationError && isPermissionGranted && (
-                <View className="mt-3 rounded-xl bg-red-50 p-4 dark:bg-red-950">
+                <View testID="notifications-error" className="mt-3 rounded-xl bg-red-50 p-4 dark:bg-red-950">
                   <Text className="text-sm text-red-800 dark:text-red-200">{t('notificationSettings.registrationError')}</Text>
-                  <Pressable onPress={() => registerDevice()} className="mt-2">
+                  <Pressable testID="notifications-retry" onPress={() => registerDevice()} className="mt-2">
                     <Text className="text-sm font-semibold text-red-700">{t('notificationSettings.registrationRetry')}</Text>
                   </Pressable>
                 </View>

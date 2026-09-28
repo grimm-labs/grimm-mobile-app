@@ -119,7 +119,7 @@ export default function OnchainSendAmountScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="send-onchain-amount-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -132,7 +132,9 @@ export default function OnchainSendAmountScreen() {
         <View className="flex-1 px-4 pt-6">
           <View className="mb-6 items-center">
             <View className="flex-row items-center">
-              <Text className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>{amount}</Text>
+              <Text testID="send-onchain-amount-value" className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>
+                {amount}
+              </Text>
               <Text className="ml-2 text-2xl font-light text-gray-400 dark:text-charcoal-500">{bitcoinUnit}</Text>
             </View>
             {validationError && <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text>}
@@ -151,13 +153,19 @@ export default function OnchainSendAmountScreen() {
           <View className="mb-6">
             <Text className="mb-3 text-base font-semibold text-gray-700 dark:text-charcoal-200">{t('onchainSend.enterAmount.feeSelection')}</Text>
             {isPending ? (
-              <View className="flex items-center justify-center">
+              <View testID="send-onchain-fees-loading" className="flex items-center justify-center">
                 <ActivityIndicator size="small" color={colors.primary[600]} />
               </View>
             ) : (
               <View className="flex-row justify-between">
                 {feeOptions.map((fee) => (
-                  <Pressable key={fee.speed} onPress={() => setSelectedFee(fee.speed)} className={`mx-1 flex-1 rounded-xl p-2 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100 dark:bg-charcoal-850'}`}>
+                  <Pressable
+                    key={fee.speed}
+                    testID={`send-onchain-fee-${fee.speed}`}
+                    accessibilityState={{ selected: selectedFee === fee.speed }}
+                    onPress={() => setSelectedFee(fee.speed)}
+                    className={`mx-1 flex-1 rounded-xl p-2 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100 dark:bg-charcoal-850'}`}
+                  >
                     <Text className={`text-center text-sm font-semibold ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.label}</Text>
                     <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.satsPerVbyte} sat/vB</Text>
                     <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.estimatedTime}</Text>
@@ -168,13 +176,24 @@ export default function OnchainSendAmountScreen() {
           </View>
           {Number(amount) > 0 && satsAmount >= bdkBalance && (
             <View>
-              <Text className="text-center text-base font-semibold text-danger-600">{t('onchainSend.enterAmount.invalidAmount')}</Text>
+              <Text testID="send-onchain-amount-invalid" className="text-center text-base font-semibold text-danger-600">
+                {t('onchainSend.enterAmount.invalidAmount')}
+              </Text>
             </View>
           )}
           <View className="flex-1" />
           <NumericKeypad amount={amount} setAmount={setAmount} isBtcUnit={isBtcUnit} />
           <View className="mb-4">
-            <Button label={t('onchainSend.enterAmount.continueButton')} onPress={handleSubmit} fullWidth variant="secondary" size="lg" disabled={isAmountInvalid} textClassName="text-base text-white" />
+            <Button
+              testID="send-onchain-amount-continue"
+              label={t('onchainSend.enterAmount.continueButton')}
+              onPress={handleSubmit}
+              fullWidth
+              variant="secondary"
+              size="lg"
+              disabled={isAmountInvalid}
+              textClassName="text-base text-white"
+            />
           </View>
         </View>
       </SafeAreaView>

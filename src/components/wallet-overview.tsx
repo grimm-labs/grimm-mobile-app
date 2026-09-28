@@ -17,13 +17,16 @@ import { BitcoinUnit } from '@/types/enum';
 
 type PaymentMethod = 'onchain' | 'lightning';
 
-const ActionButton = ({ icon, color, bgClass, label, onPress }: { icon: string; color: string; bgClass: string; label: string; onPress: () => void }) => (
-  <View className="flex items-center justify-center">
-    <Pressable className={`mb-2 rounded-full ${bgClass} p-3 text-white`} onPress={onPress}>
+type ActionButtonProps = { icon: string; color: string; bgClass: string; label: string; onPress: () => void; testID: string };
+
+// The whole column (icon + label) is pressable so tapping the label works too
+const ActionButton = ({ icon, color, bgClass, label, onPress, testID }: ActionButtonProps) => (
+  <Pressable className="flex items-center justify-center" onPress={onPress} testID={testID} accessibilityRole="button" accessibilityLabel={label}>
+    <View className={`mb-2 rounded-full ${bgClass} p-3 text-white`}>
       <Ionicons name={icon as any} size={28} color={color} />
-    </Pressable>
+    </View>
     <Text className={`text-sm font-medium ${theme.textSecondary}`}>{label}</Text>
-  </View>
+  </Pressable>
 );
 
 export const WalletOverview = () => {
@@ -65,25 +68,27 @@ export const WalletOverview = () => {
   return (
     <View>
       <View className="flex-row items-center justify-center">
-        <Pressable onPress={toggleBalance} className="flex flex-row items-center">
+        <Pressable onPress={toggleBalance} className="flex flex-row items-center" testID="home-balance-toggle">
           <Text className={`mr-2 text-center text-base font-semibold ${theme.textSecondary}`}>{t('walletOverview.totalBalance')}</Text>
           <Ionicons name={hideBalance ? 'eye-off' : 'eye'} size={16} color={iconColor} />
         </Pressable>
       </View>
       <View className="py-6">
         <Pressable onPress={toggleBalance}>
-          <Text className={`mb-4 text-center text-3xl font-bold ${theme.textPrimary}`}>{hideBalance ? t('walletOverview.hiddenBalance') : formatBalance(balance, bitcoinUnit)}</Text>
+          <Text testID="home-total-balance" className={`mb-4 text-center text-3xl font-bold ${theme.textPrimary}`}>
+            {hideBalance ? t('walletOverview.hiddenBalance') : formatBalance(balance, bitcoinUnit)}
+          </Text>
         </Pressable>
         <View className="mb-4">
-          <Text className={`text-center text-lg font-medium ${theme.textSecondary}`}>
+          <Text testID="home-total-balance-fiat" className={`text-center text-lg font-medium ${theme.textSecondary}`}>
             {hideBalance ? t('walletOverview.hiddenBalance') : `${convertedVal.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${selectedFiatCurrency}`}
           </Text>
         </View>
       </View>
       <View className="flex flex-row justify-around space-x-1">
-        <ActionButton icon="arrow-up-outline" color="white" bgClass="bg-primary-600" label={t('walletOverview.send')} onPress={() => sendModalRef.current?.present()} />
-        <ActionButton icon="add" color="white" bgClass="bg-primary-600" label={t('walletOverview.receive')} onPress={() => receiveModalRef.current?.present()} />
-        <ActionButton icon="scan" color="white" bgClass="bg-neutral-700" label={t('walletOverview.scanQr')} onPress={() => router.push('/scan-qr')} />
+        <ActionButton icon="arrow-up-outline" color="white" bgClass="bg-primary-600" label={t('walletOverview.send')} onPress={() => sendModalRef.current?.present()} testID="home-send-button" />
+        <ActionButton icon="add" color="white" bgClass="bg-primary-600" label={t('walletOverview.receive')} onPress={() => receiveModalRef.current?.present()} testID="home-receive-button" />
+        <ActionButton icon="scan" color="white" bgClass="bg-neutral-700" label={t('walletOverview.scanQr')} onPress={() => router.push('/scan-qr')} testID="home-scan-button" />
       </View>
       <PaymentMethodBottomSheet ref={sendModalRef} mode="send" onSelect={handleSendSelect} />
       <PaymentMethodBottomSheet ref={receiveModalRef} mode="receive" onSelect={handleReceiveSelect} />

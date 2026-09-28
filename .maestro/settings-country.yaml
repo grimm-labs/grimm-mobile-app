@@ -1,0 +1,46 @@
+appId: ${APP_ID}
+name: Settings - search and select a country (fiat currency)
+tags:
+  - settings
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-country
+- extendedWaitUntil:
+    visible:
+      id: 'country-screen'
+    timeout: 10000
+# Default country is Cameroon
+- scrollUntilVisible:
+    element:
+      id: 'country-option-CM-selected'
+    direction: DOWN
+    timeout: 30000
+- tapOn:
+    id: 'country-search-input'
+- inputText: 'zzzz'
+- assertVisible: 'No countries found for "zzzz"'
+- tapOn:
+    id: 'country-search-clear'
+- tapOn:
+    id: 'country-search-input'
+- inputText: 'France'
+- hideKeyboard
+- tapOn:
+    id: 'country-option-FR'
+- assertVisible:
+    id: 'country-option-FR-selected'
+- tapOn:
+    id: 'country-save'
+- extendedWaitUntil:
+    visible:
+      id: 'settings-screen'
+    timeout: 10000
+# Balances are now shown in euros
+- tapOn:
+    id: 'tab-index'
+- assertVisible:
+    id: 'home-total-balance-fiat'
+    text: '.* EUR'

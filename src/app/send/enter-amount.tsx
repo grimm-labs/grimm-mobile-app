@@ -75,7 +75,7 @@ export default function LightningAddressAmountScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="send-ln-amount-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -111,13 +111,24 @@ export default function LightningAddressAmountScreen() {
           </View>
           {Number(amount) > 0 && satsAmount > balance && (
             <View>
-              <Text className="text-center text-base font-semibold text-danger-600">{t('enterAmount.insufficientBalance')}</Text>
+              <Text testID="send-ln-amount-insufficient" className="text-center text-base font-semibold text-danger-600">
+                {t('enterAmount.insufficientBalance')}
+              </Text>
             </View>
           )}
           <View className="flex-1" />
           <NumericKeypad amount={amount} setAmount={setAmount} isBtcUnit={isBtcUnit} />
           <View className="mb-4">
-            <Button label={t('enterAmount.continueButton')} onPress={handleContinue} fullWidth variant="secondary" size="lg" disabled={isAmountInvalid} textClassName="text-base text-white" />
+            <Button
+              testID="send-ln-amount-continue"
+              label={t('enterAmount.continueButton')}
+              onPress={handleContinue}
+              fullWidth
+              variant="secondary"
+              size="lg"
+              disabled={isAmountInvalid}
+              textClassName="text-base text-white"
+            />
           </View>
         </View>
       </SafeAreaView>

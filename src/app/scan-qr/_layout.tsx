@@ -163,7 +163,7 @@ export default function ScanQrScreen() {
             }}
           />
           <FocusAwareStatusBar />
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
+          <View testID="scan-qr-permission-required" style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
             <Text>{t('scan_qr.permission_required')}</Text>
           </View>
         </SafeAreaView>
@@ -185,7 +185,7 @@ export default function ScanQrScreen() {
             }}
           />
           <FocusAwareStatusBar />
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
+          <View testID="scan-qr-no-access" style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
             <ScreenTitle title={t('scan_qr.no_access_title')} className="text-center text-2xl font-normal" />
             <View style={{ marginBottom: 16 }} />
             <Text testID="form-subtitle" className="mb-3 text-center text-sm font-normal">
@@ -199,7 +199,8 @@ export default function ScanQrScreen() {
               className="mb-4"
               textClassName="text-base"
               onPress={async () => {
-                await Linking.openURL('app-settings://GrimmApp');
+                // `app-settings://` only exists on iOS; openSettings opens the app settings on both platforms
+                await Linking.openSettings().catch((err) => console.error('Error opening settings:', err));
               }}
             />
           </View>
@@ -264,7 +265,9 @@ export default function ScanQrScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text className="text-center text-xl font-normal text-gray-300">{t('scan_qr.instruction')}</Text>
+                <Text testID="scan-qr-instruction" className="text-center text-xl font-normal text-gray-300">
+                  {t('scan_qr.instruction')}
+                </Text>
                 <Text className="my-6 text-center text-sm font-normal text-gray-300">{isScanning ? t('scan_qr.scanning') : t('scan_qr.processing')}</Text>
               </View>
               <View
@@ -280,6 +283,7 @@ export default function ScanQrScreen() {
                 }}
               >
                 <TouchableOpacity
+                  testID="scan-qr-flip-camera"
                   onPress={toggleCameraFacing}
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -293,6 +297,7 @@ export default function ScanQrScreen() {
                 </TouchableOpacity>
                 {facing === 'back' && (
                   <TouchableOpacity
+                    testID="scan-qr-toggle-flash"
                     onPress={toggleFlash}
                     style={{
                       backgroundColor: flashEnabled ? colors.primary[600] : 'rgba(255,255,255,0.2)',
@@ -306,6 +311,7 @@ export default function ScanQrScreen() {
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
+                  testID="scan-qr-close"
                   onPress={toggleClose}
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.2)',

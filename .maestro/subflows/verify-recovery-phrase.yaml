@@ -1,0 +1,20 @@
+# Fills the 4 random words asked on the verification screen from `output.words`
+# (see read-recovery-phrase.yaml). Each label reads "Word #N": the number is the position in the phrase.
+appId: ${APP_ID}
+---
+- extendedWaitUntil:
+    visible:
+      id: 'verify-word-input-3'
+    timeout: 10000
+- evalScript: ${output.verifyIndex = 0}
+- repeat:
+    times: 4
+    commands:
+      - copyTextFrom:
+          id: ${'verify-word-label-' + output.verifyIndex}
+      - evalScript: ${output.position = parseInt(maestro.copiedText.replace(/[^0-9]/g, ''), 10)}
+      - tapOn:
+          id: ${'verify-word-input-' + output.verifyIndex}
+      - inputText: ${output.words[output.position - 1]}
+      - evalScript: ${output.verifyIndex = output.verifyIndex + 1}
+- hideKeyboard

@@ -11,9 +11,10 @@ interface DetailRowProps {
   value: string;
   copyable?: boolean;
   expandable?: boolean;
+  testID?: string;
 }
 
-const DetailRow: React.FC<DetailRowProps> = ({ label, value, copyable = false, expandable = false }) => {
+const DetailRow: React.FC<DetailRowProps> = ({ label, value, copyable = false, expandable = false, testID }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { colorScheme } = useColorScheme();
   const chevronColor = colorScheme === 'dark' ? colors.charcoal[300] : colors.neutral[500];
@@ -28,7 +29,7 @@ const DetailRow: React.FC<DetailRowProps> = ({ label, value, copyable = false, e
   const containerProps = expandable ? { onPress: toggleExpand, activeOpacity: 0.7 } : {};
 
   return (
-    <View className={`mb-4 rounded-lg p-4 ${theme.card}`}>
+    <View testID={testID} className={`mb-4 rounded-lg p-4 ${theme.card}`}>
       {React.createElement(
         containerComponent,
         {
@@ -38,7 +39,13 @@ const DetailRow: React.FC<DetailRowProps> = ({ label, value, copyable = false, e
         <>
           <View className={expandable ? 'flex-1' : ''}>
             <Text className={`mb-1 text-sm font-medium ${theme.textMuted}`}>{label}</Text>
-            <Text className={`text-base ${theme.textPrimary}`} selectable={copyable} numberOfLines={expandable && !isExpanded ? 1 : undefined} ellipsizeMode={expandable && !isExpanded ? 'tail' : undefined}>
+            <Text
+              testID={testID ? `${testID}-value` : undefined}
+              className={`text-base ${theme.textPrimary}`}
+              selectable={copyable}
+              numberOfLines={expandable && !isExpanded ? 1 : undefined}
+              ellipsizeMode={expandable && !isExpanded ? 'tail' : undefined}
+            >
               {value}
             </Text>
           </View>

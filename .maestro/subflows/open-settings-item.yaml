@@ -1,0 +1,20 @@
+# Opens a row of the Settings tab by testID (scrolls if needed). Usage:
+#   - runFlow:
+#       file: subflows/open-settings-item.yaml
+#       env:
+#         ITEM_ID: settings-country
+appId: ${APP_ID}
+---
+- tapOn:
+    id: 'tab-settings'
+- extendedWaitUntil:
+    visible:
+      id: 'settings-screen'
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      id: ${ITEM_ID}
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: ${ITEM_ID}

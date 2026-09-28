@@ -10,14 +10,15 @@ type Props = {
   title: string;
   subtitle: string;
   onPress: () => void;
+  testID?: string;
 };
 
-export const SettingsItem = ({ icon, title, subtitle, onPress }: Props) => {
+export const SettingsItem = ({ icon, title, subtitle, onPress, testID }: Props) => {
   const { colorScheme } = useColorScheme();
   const iconColor = colorScheme === 'dark' ? colors.charcoal[300] : colors.neutral[500];
 
   return (
-    <Pressable onPress={onPress} className="flex-row items-center rounded py-2">
+    <Pressable testID={testID} onPress={onPress} className="flex-row items-center rounded py-2">
       <View className="mr-1 rounded-full p-2">
         <Ionicons name={icon} size={20} color={iconColor} />
       </View>

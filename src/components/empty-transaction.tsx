@@ -13,7 +13,7 @@ export const EmptyTransactions: React.FC<EmptyTransactionsProps> = ({ type }) =>
   const { t } = useTranslation();
 
   return (
-    <View className="items-center justify-center px-8 py-16">
+    <View testID={`empty-transactions-${type}`} className="items-center justify-center px-8 py-16">
       <View className="mb-6 size-20 items-center justify-center rounded-full bg-gray-100 dark:bg-charcoal-800">
         <Ionicons name={type === 'ln' ? 'flash-outline' : 'wallet-outline'} size={32} color={colors.neutral[400]} />
       </View>

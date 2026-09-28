@@ -20,15 +20,16 @@ interface SeedOptionItemProps {
   subtitle: string;
   icon: React.ComponentProps<typeof Ionicons>['name'];
   onPress: () => void;
+  testID?: string;
 }
 
-const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, onPress, icon }) => {
+const SeedOptionItem: React.FC<SeedOptionItemProps> = ({ title, subtitle, onPress, icon, testID }) => {
   const { colorScheme } = useColorScheme();
   const iconColor = colorScheme === 'dark' ? colors.charcoal[200] : colors.neutral[800];
   const chevronColor = colorScheme === 'dark' ? colors.charcoal[400] : colors.neutral[400];
 
   return (
-    <TouchableOpacity onPress={onPress} className={`mb-3 flex-row items-center justify-between rounded-xl p-4 ${theme.card}`} activeOpacity={0.7}>
+    <TouchableOpacity testID={testID} onPress={onPress} className={`mb-3 flex-row items-center justify-between rounded-xl p-4 ${theme.card}`} activeOpacity={0.7}>
       <View className="mr-4">
         <Ionicons name={icon} size={24} color={iconColor} />
       </View>
@@ -67,7 +68,7 @@ export default function CreateOrImportSeed() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className={`flex-1 ${theme.screen}`}>
+      <SafeAreaView testID="seed-setup-screen" className={`flex-1 ${theme.screen}`}>
         <View className="flex h-full justify-between px-4">
           <Stack.Screen
             options={{
@@ -86,8 +87,8 @@ export default function CreateOrImportSeed() {
             <ScreenSubtitle subtitle={t('seedSetup.subtitle')} />
             <View className="mb-3" />
             <View className="flex-1">
-              <SeedOptionItem icon="add-circle-outline" title={t('seedSetup.create.title')} subtitle={t('seedSetup.create.subtitle')} onPress={handleCreateSeed} />
-              <SeedOptionItem icon="folder-open-outline" title={t('seedSetup.import.title')} subtitle={t('seedSetup.import.subtitle')} onPress={handleImportSeed} />
+              <SeedOptionItem icon="add-circle-outline" title={t('seedSetup.create.title')} subtitle={t('seedSetup.create.subtitle')} onPress={handleCreateSeed} testID="seed-setup-create" />
+              <SeedOptionItem icon="folder-open-outline" title={t('seedSetup.import.title')} subtitle={t('seedSetup.import.subtitle')} onPress={handleImportSeed} testID="seed-setup-import" />
             </View>
           </View>
         </View>

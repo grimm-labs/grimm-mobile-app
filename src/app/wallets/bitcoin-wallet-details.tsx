@@ -43,7 +43,7 @@ export default function BitcoinWalletDetails() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="btc-wallet-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -56,7 +56,7 @@ export default function BitcoinWalletDetails() {
         />
         <FocusAwareStatusBar />
         {network === AppNetwork.TESTNET && (
-          <View className="bg-danger-500 py-2">
+          <View testID="btc-wallet-network-warning" className="bg-danger-500 py-2">
             <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
           </View>
         )}
@@ -64,11 +64,11 @@ export default function BitcoinWalletDetails() {
           <View className="mb-6 mt-4">
             <View className="rounded-xl border border-gray-100 bg-gray-50 p-6 dark:border-charcoal-700 dark:bg-charcoal-900">
               <Text className="mb-2 text-sm text-gray-500 dark:text-charcoal-400">{t('btcWallet.available')}</Text>
-              <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
-                <Text className="mb-2 text-4xl font-bold text-gray-900 dark:text-charcoal-100">
+              <TouchableOpacity testID="btc-wallet-balance-toggle" onPress={() => setHideBalance(!hideBalance)}>
+                <Text testID="btc-wallet-balance-fiat" className="mb-2 text-4xl font-bold text-gray-900 dark:text-charcoal-100">
                   {hideBalance ? '********' : `${convertBitcoinToFiat(balance, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${selectedFiatCurrency}`}
                 </Text>
-                <Text className="mb-4 text-sm text-gray-400 dark:text-charcoal-500">
+                <Text testID="btc-wallet-balance" className="mb-4 text-sm text-gray-400 dark:text-charcoal-500">
                   {hideBalance ? '********' : `${bitcoinUnit === BitcoinUnit.Sats ? Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) : convertSatsToBtc(balance)} ${bitcoinUnit}`}
                 </Text>
               </TouchableOpacity>
@@ -87,28 +87,19 @@ export default function BitcoinWalletDetails() {
           </View>
           <View className="mb-8">
             <View className="flex flex-row justify-center space-x-1">
-              <View className="mx-4 flex items-center justify-center">
-                <Pressable
-                  className="mb-2 rounded-full bg-primary-600 p-3 text-white"
-                  onPress={() => {
-                    router.push('/receive-btc');
-                  }}
-                >
+              {/* The whole column (icon + label) is pressable so tapping the label works too */}
+              <Pressable testID="btc-wallet-receive" className="mx-4 flex items-center justify-center" onPress={() => router.push('/receive-btc')} accessibilityRole="button">
+                <View className="mb-2 rounded-full bg-primary-600 p-3 text-white">
                   <MaterialIcons name="arrow-downward" size={20} color="white" />
-                </Pressable>
+                </View>
                 <Text className="text-sm font-medium">{t('btcWallet.receiveBitcoin')}</Text>
-              </View>
-              <View className="mx-4 flex items-center justify-center">
-                <Pressable
-                  className="mb-2 rounded-full bg-neutral-700 p-3 text-white"
-                  onPress={() => {
-                    router.push('/send-onchain/enter-address');
-                  }}
-                >
+              </Pressable>
+              <Pressable testID="btc-wallet-send" className="mx-4 flex items-center justify-center" onPress={() => router.push('/send-onchain/enter-address')} accessibilityRole="button">
+                <View className="mb-2 rounded-full bg-neutral-700 p-3 text-white">
                   <MaterialIcons name="arrow-outward" size={20} color="white" />
-                </Pressable>
+                </View>
                 <Text className="text-sm font-medium">{t('btcWallet.sendBitcoin')}</Text>
-              </View>
+              </Pressable>
             </View>
           </View>
           <View className="mb-8">

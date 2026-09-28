@@ -57,7 +57,7 @@ export default function EnterAddressScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="send-onchain-address-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitle: () => LightningPaymentScreenHeaderTitle(t('onchainSend.enterAddress.title')),
@@ -71,12 +71,13 @@ export default function EnterAddressScreen() {
           <View className="mb-2">
             <View className="relative">
               <Input
+                testID="send-onchain-address-input"
                 value={addressInput}
                 onChangeText={setAddressInput}
-                placeholder="Input address or Scan QR"
+                placeholder={t('onchainSend.enterAddress.placeholder')}
                 suffix={
                   <View className="flex flex-row">
-                    <Ionicons name="scan" size={24} color={colors.primary[600]} className="mr-4" onPress={scanQRCode} />
+                    <Ionicons testID="send-onchain-address-scan" name="scan" size={24} color={colors.primary[600]} className="mr-4" onPress={scanQRCode} />
                   </View>
                 }
               />
@@ -84,7 +85,16 @@ export default function EnterAddressScreen() {
           </View>
           {isLoading && <ActivityIndicator size="small" color={colors.primary[600]} />}
           <View>
-            <Button label="Continue" disabled={isLoading} onPress={handlePayment} fullWidth={true} variant="secondary" textClassName="text-base font-bold text-white" size="lg" />
+            <Button
+              testID="send-onchain-address-continue"
+              label={t('onchainSend.enterAddress.continueButton')}
+              disabled={isLoading}
+              onPress={handlePayment}
+              fullWidth={true}
+              variant="secondary"
+              textClassName="text-base font-bold text-white"
+              size="lg"
+            />
           </View>
         </ScrollView>
       </SafeAreaView>

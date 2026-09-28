@@ -1,0 +1,75 @@
+appId: ${APP_ID}
+name: Wallet details - Bitcoin and Lightning accounts
+tags:
+  - wallet
+---
+- runFlow: subflows/create-wallet.yaml
+# Bitcoin (on-chain) account
+- tapOn:
+    id: 'home-bitcoin-wallet-card'
+- extendedWaitUntil:
+    visible:
+      id: 'btc-wallet-screen'
+    timeout: 10000
+- assertVisible: 'Available Bitcoin'
+- assertVisible:
+    id: 'btc-wallet-balance'
+    text: '0.00 SATS'
+- assertVisible:
+    id: 'empty-transactions-onchain'
+- tapOn:
+    id: 'btc-wallet-balance-toggle'
+- assertVisible:
+    id: 'btc-wallet-balance'
+    text: '\*\*\*\*\*\*\*\*'
+- tapOn:
+    id: 'btc-wallet-balance-toggle'
+- assertVisible:
+    id: 'btc-wallet-balance'
+    text: '0.00 SATS'
+- tapOn:
+    id: 'btc-wallet-send'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-address-screen'
+    timeout: 10000
+- back
+- tapOn:
+    id: 'btc-wallet-receive'
+# The receive screen opens (loading, address or error depending on the indexer)
+- extendedWaitUntil:
+    notVisible:
+      id: 'btc-wallet-screen'
+    timeout: 10000
+- back
+- back
+# Lightning account
+- tapOn:
+    id: 'home-lightning-wallet-card'
+- extendedWaitUntil:
+    visible:
+      id: 'ln-wallet-screen'
+    timeout: 10000
+- assertVisible: 'Available Bitcoin Lightning'
+- assertVisible:
+    id: 'ln-wallet-balance'
+    text: '0.00 SATS'
+- assertVisible:
+    id: 'empty-transactions-ln'
+- tapOn:
+    id: 'ln-wallet-balance-toggle'
+- assertVisible:
+    id: 'ln-wallet-balance'
+    text: '\*\*\*\*\*\*\*\*'
+- tapOn:
+    id: 'ln-wallet-balance-toggle'
+# No Lightning address yet: the row leads to the address settings
+- tapOn:
+    id: 'ln-wallet-create-ln-address'
+- extendedWaitUntil:
+    visible:
+      id: 'ln-address-empty'
+    timeout: 10000
+- back
+- assertVisible:
+    id: 'ln-wallet-receive-onchain'

@@ -1,0 +1,41 @@
+appId: ${APP_ID}
+name: Settings - display balances in BTC or SATS
+tags:
+  - settings
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-bitcoin-unit
+- extendedWaitUntil:
+    visible:
+      id: 'bitcoin-unit-option-sats-selected'
+    timeout: 10000
+- tapOn:
+    id: 'bitcoin-unit-option-btc'
+- assertVisible:
+    id: 'bitcoin-unit-option-btc-selected'
+- back
+- tapOn:
+    id: 'tab-index'
+- assertVisible:
+    id: 'home-total-balance'
+    text: '0.00000000 BTC'
+- assertVisible:
+    id: 'home-bitcoin-wallet-balance'
+    text: '0.00000000 BTC'
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-bitcoin-unit
+- tapOn:
+    id: 'bitcoin-unit-option-sats'
+- assertVisible:
+    id: 'bitcoin-unit-option-sats-selected'
+- back
+- tapOn:
+    id: 'tab-index'
+- assertVisible:
+    id: 'home-total-balance'
+    text: '0 SATS'

@@ -67,15 +67,15 @@ export default function BreezSdkDetailsScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="breez-sdk-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen options={screenOptions} />
         <FocusAwareStatusBar />
         <ScrollView className="flex-1 px-3" showsVerticalScrollIndicator={false}>
           <View className="mb-6 mt-4">
-            <DetailRow label={t('breezDetails.balance')} value={breezWalletInfos?.balanceSats?.toString() || ''} expandable />
-            <DetailRow label={t('breezDetails.unclaimedDepositsStatus')} value={debugStatus || t('breezDetails.unclaimedDepositsLoading')} expandable />
-            <DetailRow label={t('breezDetails.unclaimedDeposits')} value={unclaimedDepositsSummary || t('breezDetails.unclaimedDepositsEmpty')} expandable />
-            <Button label={t('breezDetails.unclaimedDepositsRefresh')} fullWidth size="lg" variant="secondary" onPress={fetchUnclaimedDeposits} />
+            <DetailRow testID="breez-sdk-balance" label={t('breezDetails.balance')} value={breezWalletInfos?.balanceSats?.toString() || ''} expandable />
+            <DetailRow testID="breez-sdk-deposits-status" label={t('breezDetails.unclaimedDepositsStatus')} value={debugStatus || t('breezDetails.unclaimedDepositsLoading')} expandable />
+            <DetailRow testID="breez-sdk-deposits" label={t('breezDetails.unclaimedDeposits')} value={unclaimedDepositsSummary || t('breezDetails.unclaimedDepositsEmpty')} expandable />
+            <Button testID="breez-sdk-refresh" label={t('breezDetails.unclaimedDepositsRefresh')} fullWidth size="lg" variant="secondary" onPress={fetchUnclaimedDeposits} />
           </View>
         </ScrollView>
       </SafeAreaView>

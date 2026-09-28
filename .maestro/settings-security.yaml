@@ -1,0 +1,55 @@
+appId: ${APP_ID}
+name: Settings - hide balance and block screenshots switches
+tags:
+  - settings
+---
+- runFlow: subflows/create-wallet.yaml
+- tapOn:
+    id: 'tab-settings'
+- scrollUntilVisible:
+    element:
+      id: 'settings-block-screenshots-switch'
+    direction: DOWN
+    timeout: 20000
+# Hide balance
+- assertVisible:
+    id: 'settings-hide-balance-switch'
+    checked: false
+- tapOn:
+    id: 'settings-hide-balance-switch'
+- assertVisible:
+    id: 'settings-hide-balance-switch'
+    checked: true
+- tapOn:
+    id: 'tab-index'
+- assertVisible:
+    id: 'home-total-balance'
+    text: '\*\*\*\*\*\*\*\*'
+- tapOn:
+    id: 'tab-settings'
+- tapOn:
+    id: 'settings-hide-balance'
+- assertVisible:
+    id: 'settings-hide-balance-switch'
+    checked: false
+- tapOn:
+    id: 'tab-index'
+- assertVisible:
+    id: 'home-total-balance'
+    text: '0 SATS'
+# Block screenshots (FLAG_SECURE: Maestro screenshots turn black but the view hierarchy still works)
+- tapOn:
+    id: 'tab-settings'
+- assertVisible:
+    id: 'settings-block-screenshots-switch'
+    checked: false
+- tapOn:
+    id: 'settings-block-screenshots-switch'
+- assertVisible:
+    id: 'settings-block-screenshots-switch'
+    checked: true
+- tapOn:
+    id: 'settings-block-screenshots-switch'
+- assertVisible:
+    id: 'settings-block-screenshots-switch'
+    checked: false

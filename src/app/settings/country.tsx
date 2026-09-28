@@ -26,12 +26,13 @@ interface CountryItemProps {
 }
 
 const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelected, onPress }) => {
+  const testID = `country-option-${country.isoCode}`;
   const handlePress = useCallback(() => {
     onPress(country);
   }, [country, onPress]);
 
   return (
-    <Pressable onPress={handlePress}>
+    <Pressable testID={testID} accessibilityState={{ selected: isSelected }} onPress={handlePress}>
       <View className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 py-4">
         <View className="flex-1">
           <Text className="text-sm font-medium">{country.name}</Text>
@@ -39,7 +40,7 @@ const CountryItem: React.FC<CountryItemProps> = React.memo(({ country, isSelecte
             {country.region} • {country.currency} • +{country.callingCode}
           </Text>
         </View>
-        {isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
+        {isSelected && <Ionicons testID={`${testID}-selected`} name="checkmark-circle" size={20} color={colors.primary[600]} />}
       </View>
     </Pressable>
   );
@@ -93,8 +94,9 @@ export default function CountrySelector() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView>
-        <View className="flex h-full px-4">
+      {/* flex-1 keeps the list bounded so the Save button stays on screen */}
+      <SafeAreaView testID="country-screen" className="flex-1 bg-white dark:bg-charcoal-950">
+        <View className="flex-1 px-4">
           <Stack.Screen
             options={{
               headerTitleAlign: 'center',
@@ -107,6 +109,7 @@ export default function CountrySelector() {
           <FocusAwareStatusBar />
           <View className="pb-4">
             <Input
+              testID="country-search-input"
               returnKeyType="done"
               placeholder={t('country.search_placeholder')}
               value={searchQuery}
@@ -116,7 +119,7 @@ export default function CountrySelector() {
               prefix={<Ionicons name="search-outline" size={20} color={colors.neutral[500]} />}
               suffix={
                 searchQuery.length > 0 ? (
-                  <Pressable onPress={() => setSearchQuery('')}>
+                  <Pressable testID="country-search-clear" onPress={() => setSearchQuery('')}>
                     <Ionicons name="close-circle" size={20} color={colors.neutral[500]} />
                   </Pressable>
                 ) : undefined
@@ -143,7 +146,7 @@ export default function CountrySelector() {
           />
 
           <View>
-            <Button label={t('common.save')} onPress={handleSave} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button testID="country-save" label={t('common.save')} onPress={handleSave} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
       </SafeAreaView>

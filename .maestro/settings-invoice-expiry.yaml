@@ -1,0 +1,51 @@
+appId: ${APP_ID}
+name: Settings - Lightning invoice expiry applied to new invoices
+tags:
+  - settings
+  - lightning
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-ln-invoice-expiry
+- extendedWaitUntil:
+    visible:
+      id: 'ln-invoice-expiry-option-3600-selected'
+    timeout: 10000
+- assertVisible: 'Default'
+- assertVisible:
+    id: 'ln-invoice-expiry-option-600'
+- assertVisible:
+    id: 'ln-invoice-expiry-option-604800'
+- tapOn:
+    id: 'ln-invoice-expiry-option-600'
+- assertVisible:
+    id: 'ln-invoice-expiry-option-600-selected'
+- assertNotVisible:
+    id: 'ln-invoice-expiry-option-3600-selected'
+- back
+- tapOn:
+    id: 'tab-index'
+# A new invoice now expires after 10 minutes
+- runFlow: subflows/wait-for-lightning.yaml
+- tapOn:
+    id: 'home-receive-button'
+- tapOn:
+    id: 'receive-method-lightning'
+- tapOn:
+    id: 'numeric-pad-key-2'
+- tapOn:
+    id: 'numeric-pad-key-1'
+- tapOn:
+    id: 'receive-amount-continue'
+- extendedWaitUntil:
+    visible:
+      id: 'receive-invoice-screen'
+    timeout: 60000
+- assertVisible:
+    id: 'receive-invoice-amount'
+    text: '21 SATS'
+- assertVisible:
+    id: 'invoice-countdown'
+    text: 'This invoice expires in (10:00|9:\d{2})'

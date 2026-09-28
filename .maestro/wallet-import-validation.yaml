@@ -1,0 +1,48 @@
+appId: ${APP_ID}
+name: Import wallet - seed phrase validation
+tags:
+  - wallet
+---
+- runFlow: subflows/launch-fresh-app.yaml
+- tapOn:
+    id: 'onboarding-get-started'
+- extendedWaitUntil:
+    visible:
+      id: 'seed-setup-import'
+    timeout: 20000
+- tapOn:
+    id: 'seed-setup-import'
+- extendedWaitUntil:
+    visible:
+      id: 'import-seed-screen'
+    timeout: 10000
+# Nothing typed: the Import button is disabled
+- assertVisible:
+    id: 'login-button'
+    enabled: false
+- assertVisible:
+    id: 'import-seed-word-count'
+    text: '0 / 12 words'
+# The counter follows the typed words
+- tapOn:
+    id: 'import-seed-input'
+- inputText: 'apple banana cherry'
+- assertVisible:
+    id: 'import-seed-word-count'
+    text: '3 / 12 words'
+- assertVisible:
+    id: 'login-button'
+    enabled: true
+# 12 dictionary words with a wrong checksum: the count is accepted but the phrase is rejected
+- eraseText: 40
+- inputText: 'apple apple apple apple apple apple apple apple apple apple apple apple'
+- assertVisible:
+    id: 'import-seed-word-count'
+    text: '12 / 12 words'
+- assertVisible: '✓ 12 words entered'
+- hideKeyboard
+- tapOn:
+    id: 'login-button'
+- assertVisible: 'Please enter a valid 12-words seed phrase.'
+- assertVisible:
+    id: 'import-seed-screen'

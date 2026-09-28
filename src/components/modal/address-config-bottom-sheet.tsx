@@ -78,11 +78,14 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
     <Modal ref={ref} snapPoints={['44%']} bottomInset={bottomInset} keyboardBehavior="interactive" keyboardBlurBehavior="restore">
       <View className="flex-1 px-6 pb-4">
         <View className="flex-1">
-          <Text className={`mb-4 text-2xl font-bold ${theme.textPrimary}`}>{t('addressConfig.title')}</Text>
+          <Text testID="address-config-title" className={`mb-4 text-2xl font-bold ${theme.textPrimary}`}>
+            {t('addressConfig.title')}
+          </Text>
 
           <View className="mb-4">
             <Text className={`mb-2 text-sm font-medium ${theme.textSecondary}`}>{t('addressConfig.amount')}</Text>
             <Input
+              testID="address-config-amount-input"
               value={amount?.toString() || ''}
               onChangeText={(text) => setAmount(text ? Number(text) : undefined)}
               placeholder={bitcoinUnit === 'SATS' ? 'e.g., 1000' : 'e.g., 0.0001'}
@@ -96,6 +99,7 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
           <View className="mb-4">
             <Text className={`mb-2 text-sm font-medium ${theme.textSecondary}`}>{t('addressConfig.note')}</Text>
             <Input
+              testID="address-config-note-input"
               value={note}
               onChangeText={setNote}
               placeholder={t('addressConfig.notePlaceholder')}
@@ -109,7 +113,7 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
         </View>
 
         <View>
-          <Button label={t('addressConfig.saveButton')} fullWidth size="lg" variant="secondary" onPress={handleSave} />
+          <Button testID="address-config-save" label={t('addressConfig.saveButton')} fullWidth size="lg" variant="secondary" onPress={handleSave} />
         </View>
       </View>
     </Modal>

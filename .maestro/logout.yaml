@@ -1,0 +1,52 @@
+appId: ${APP_ID}
+name: Log out - warning when the phrase is not backed up, cancel and confirm
+tags:
+  - settings
+  - wallet
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-logout
+- extendedWaitUntil:
+    visible:
+      id: 'logout-sheet-title'
+    timeout: 10000
+- assertVisible: 'Delete account?'
+- assertVisible: 'If you log out now, you risk permanently losing access to your assets!'
+- assertVisible:
+    id: 'logout-backup-button'
+# Cancel keeps the wallet
+- tapOn:
+    id: 'logout-cancel-button'
+- assertNotVisible:
+    id: 'logout-sheet-title'
+- assertVisible:
+    id: 'settings-screen'
+# "Back up seed phrase" leads to the backup warning
+- tapOn:
+    id: 'settings-logout'
+- tapOn:
+    id: 'logout-backup-button'
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-warning-screen'
+    timeout: 10000
+- tapOn:
+    id: 'cancel-button'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 10000
+# Confirm: the wallet is removed and the onboarding is shown again
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-logout
+- tapOn:
+    id: 'logout-confirm-button'
+- extendedWaitUntil:
+    visible:
+      id: 'onboarding-screen'
+    timeout: 20000

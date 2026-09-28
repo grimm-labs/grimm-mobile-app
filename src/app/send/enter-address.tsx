@@ -79,7 +79,7 @@ export default function LightningPaymentScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="send-ln-address-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitle: () => LightningPaymentScreenHeaderTitle(t('lightningPayment.title')),
@@ -93,6 +93,7 @@ export default function LightningPaymentScreen() {
           <View className="mb-2">
             <View className="relative">
               <Input
+                testID="send-ln-address-input"
                 value={invoiceInput}
                 onChangeText={handleInvoiceChange}
                 placeholder={t('lightningPayment.placeholder')}
@@ -110,6 +111,7 @@ export default function LightningPaymentScreen() {
 
           <View>
             <Button
+              testID="send-ln-address-continue"
               label={isLoading ? t('lightningPayment.processing') : t('lightningPayment.payButton')}
               onPress={handlePayment}
               fullWidth={true}

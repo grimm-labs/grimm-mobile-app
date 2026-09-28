@@ -1,0 +1,62 @@
+appId: ${APP_ID}
+name: Settings - Breez SDK details, About and Help
+tags:
+  - settings
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/wait-for-lightning.yaml
+# Developers > Breez SDK: deposits are loaded once the SDK is connected
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-breez-sdk
+- extendedWaitUntil:
+    visible:
+      id: 'breez-sdk-screen'
+    timeout: 10000
+- assertVisible:
+    id: 'breez-sdk-balance'
+- extendedWaitUntil:
+    visible:
+      id: 'breez-sdk-deposits-status-value'
+      text: 'Last refresh at .*'
+    timeout: 60000
+- assertVisible:
+    id: 'breez-sdk-deposits-value'
+- tapOn:
+    id: 'breez-sdk-refresh'
+- extendedWaitUntil:
+    visible:
+      id: 'breez-sdk-deposits-status-value'
+      text: 'Last refresh at .*'
+    timeout: 60000
+- back
+# About
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-about
+- extendedWaitUntil:
+    visible:
+      id: 'about-screen'
+    timeout: 10000
+- assertVisible:
+    id: 'about-version'
+    text: 'Version \d+\.\d+\.\d+.*'
+- assertVisible: 'Terms of Service'
+- assertVisible: 'Privacy Policy'
+- back
+# Help & Support
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-help
+- extendedWaitUntil:
+    visible:
+      id: 'need-help-screen'
+    timeout: 10000
+- assertVisible:
+    id: 'need-help-support-items'
+- back
+- assertVisible:
+    id: 'settings-screen'
