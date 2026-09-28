@@ -1,6 +1,6 @@
 # Fresh install -> Get Started -> Create a new seed phrase -> Home.
-# Creating a wallet starts Breez (Lightning) and BDK (on-chain) in the background: use
-# wait-for-lightning.yaml before steps that need a connected Breez SDK.
+# Creating a wallet starts Breez (Lightning) and BDK (on-chain) in the background. This subflow waits for the first
+# on-chain sync; use wait-for-lightning.yaml before steps that need a connected Breez SDK.
 appId: ${APP_ID}
 ---
 - runFlow: launch-fresh-app.yaml
@@ -25,3 +25,4 @@ appId: ${APP_ID}
       id: 'home-screen'
     timeout: 60000
 - runFlow: dismiss-system-dialogs.yaml
+- runFlow: wait-for-wallet-sync.yaml

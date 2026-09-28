@@ -178,24 +178,17 @@ prompts/          template AI prompts (partly stale)
 
 ## E2E tests (Maestro)
 
-Layout:
+The suite lives in `.maestro/` (about 23 flows): wallet creation, import, backup and restore, home, receive, send validation, every settings screen, logout and QR scanning. Features that need a funded wallet are out of scope. **Read `.maestro/README.md` before adding a flow**: it has the layout, the subflows, the conventions and the coverage table.
 
-```text
-.maestro/
-  config.yaml                 # flows: ['*'] → every flow at the root is a test
-  onboarding.yaml             # tags: smoke, onboarding
-  need-help.yaml              # tags: smoke, onboarding
-  subflows/
-    launch-fresh-app.yaml     # launchApp(clearState) + wait up to 60 s for onboarding-screen
-```
+Key rules:
 
-Rules for new flows:
-
-- Put one test per file at the root of `.maestro/`, with header `appId: ${APP_ID}`, a `name:` and `tags:`. Put reusable steps in `subflows/` and call them with `runFlow: subflows/<file>.yaml`. Files in subfolders are not run as tests.
-- Each flow must be independent: start with `runFlow: subflows/launch-fresh-app.yaml` (or another subflow that sets up its state). Don't depend on the order of execution.
-- Select elements by `id` (the React Native `testID`), not by text: the UI is translated and the device locale can change. After navigation or network calls, use `extendedWaitUntil` rather than bare `assertVisible`.
-- `launchApp` grants all permissions by default, so the Android 13+ notification prompt does not appear after "Get started".
-- Flows that create a wallet talk to real services: Breez (needs `BREEZ_API_KEY`), Esplora/mempool, the notification service. Prefer testnet, and never use a funded mainnet seed.
+- There is one test per file at the root of `.maestro/`, with `appId: ${APP_ID}`, a `name:` and `tags:`. Reusable steps go in `subflows/`: `launch-fresh-app`, `create-wallet`, `wait-for-lightning`, `open-settings-item`, `read-recovery-phrase`, `verify-recovery-phrase` and `dismiss-system-dialogs`.
+- Flows are independent: start with `subflows/launch-fresh-app.yaml` or `subflows/create-wallet.yaml`.
+- Select by `id` (testID). testIDs are kebab-case and prefixed with the screen. Selection lists use `<prefix>-option-<value>` and `<prefix>-option-<value>-selected`. Add testIDs to new screens.
+- Run `subflows/wait-for-lightning.yaml` before any step that needs Breez (invoices, address parsing, LN address availability).
+- Use `extendedWaitUntil` after navigation or network calls. After a tap that shows a flash message (1.5–4 s), add `waitToSettleTimeoutMs: 500`.
+- `launchApp` grants all permissions by default. Never register anything for real (for example, the LN address flow cancels the confirmation).
+- Flows talk to real services: Breez mainnet, Esplora indexers, the staging notification service.
 
 Running locally:
 
@@ -210,12 +203,12 @@ Use a **release** build. A debug build contains `expo-dev-client`: after `clearS
 
 Use an **arm64 device or emulator** (Apple Silicon emulators are fine). CI pins Maestro `2.10.0` (`MAESTRO_VERSION` in `e2e-android.yml`); use the same version locally (`curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.10.0 bash`).
 
-In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). It runs on every pull request and every push to `master` (markdown-only changes are skipped), and can be started manually:
+In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). It runs on every pull request and every push to `master` (markdown-only changes are skipped), and can be started manually. A manual run can reuse the APK of a previous run with `-f apk-run-id=<run id>`, which skips the build, and filter flows with `-f include-tags=<tags>`.
 
 - Job 1 builds a **staging release APK for `arm64-v8a` only** with `.github/actions/setup-jdk-generate-apk`.
-- Job 2 runs the flows on a GitHub-hosted emulator: API 35 `google_apis` x86_64 with KVM, which translates ARM code.
+- Job 2 runs the flows on a GitHub-hosted emulator: API 35 `google_apis` x86_64 with KVM, which translates ARM code. The emulator has 3 cores and an emulated back camera, and system error dialogs are hidden.
 - Reports go in the `e2e-android-report` artifact: JUnit, Maestro debug output, and logcat on failure.
-- A full run takes about 25 minutes (about 16 of them for the Gradle build).
+- A full run takes about 40 minutes: about 12 for the Gradle build and about 25 for the flows.
 
 ## Builds, environments and CI
 
@@ -239,6 +232,9 @@ In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). 
 ## Gotchas
 
 - **bdk-rn is arm64-only on Android.** Its `libbdkffi.a` exists only for `arm64-v8a`, and its Gradle config restricts the ABI to that. An APK that contains another ABI folder (x86_64, armeabi-v7a) is missing `libbdk-rn.so` for that ABI, and the app crashes at startup on such devices. This is why the E2E APK is built with `-PreactNativeArchitectures=arm64-v8a`. The production AAB also ships `armeabi-v7a`, so 32-bit ARM devices are affected.
+- **Never call blocking bdk-rn network methods on the JS thread.** `EsploraClient.getHeight()` and `broadcast()` are synchronous and freeze the whole UI until the indexer answers. Use the `fetch` helpers in `src/lib/bdk-blockchain-connect.ts` (`fetchEsploraTipHeight`, `fetchIndexerFeeRates`). `fullScan` and `sync` are async and fine.
+- The mempool fee API (`MEMPOOL_URL`) can be unreachable. The on-chain send screen then falls back to the connected indexer's fees (`useBdk().getIndexerFeeRates`).
+- React Native's `KeyboardAvoidingView` does not work inside a `Modal` on Android (edge-to-edge). Use the one from `react-native-keyboard-controller`. `CameraView` must not have children.
 - The root `env.js` throws on missing variables. Any command that evaluates the Expo config (prebuild, Gradle JS bundling, `expo config`) needs `.env.<APP_ENV>`.
 - The same Breez `storageDir` is shared between networks, and the testnet/regtest mapping is inconsistent (see "Wallets and networks").
 - Background pollers (Breez 10 s, BDK 60 s + 30 s retry, prices 20 s) run from providers. Avoid adding more intervals; reuse the existing refresh functions.
