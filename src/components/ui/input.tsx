@@ -1,4 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { cssInterop } from 'nativewind';
 import * as React from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -9,6 +11,9 @@ import { tv } from 'tailwind-variants';
 
 import colors from './colors';
 import { Text } from './text';
+
+// Resolve className into style like for the core TextInput
+cssInterop(BottomSheetTextInput, { className: 'style' });
 
 const inputTv = tv({
   slots: {
@@ -48,6 +53,11 @@ export interface NInputProps extends TextInputProps {
   error?: string;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
+  /**
+   * Set when the input is rendered in a bottom sheet (`Modal`): the sheet only moves above the keyboard
+   * when the focused input is a `BottomSheetTextInput`, otherwise the keyboard covers it on Android.
+   */
+  bottomSheet?: boolean;
 }
 
 type TRule<T extends FieldValues> = Omit<RegisterOptions<T>, 'disabled' | 'valueAsNumber' | 'valueAsDate' | 'setValueAs'> | undefined;
@@ -62,7 +72,8 @@ export type InputControllerType<T extends FieldValues> = {
 interface ControlledInputProps<T extends FieldValues> extends NInputProps, InputControllerType<T> {}
 
 export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
-  const { label, error, testID, prefix, suffix, disabled, ...inputProps } = props;
+  const { label, error, testID, prefix, suffix, disabled, bottomSheet = false, ...inputProps } = props;
+  const TextInputComponent = (bottomSheet ? BottomSheetTextInput : NTextInput) as typeof NTextInput;
   const [isFocussed, setIsFocussed] = React.useState(false);
   const onBlur = React.useCallback(() => setIsFocussed(false), []);
   const onFocus = React.useCallback(() => setIsFocussed(true), []);
@@ -87,7 +98,7 @@ export const Input = React.forwardRef<NTextInput, NInputProps>((props, ref) => {
         )}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {prefix && <View className="ml-2">{prefix}</View>}
-          <NTextInput
+          <TextInputComponent
             testID={testID}
             ref={ref}
             placeholderTextColor={colors.neutral[400]}

@@ -86,6 +86,7 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
             <Text className={`mb-2 text-sm font-medium ${theme.textSecondary}`}>{t('addressConfig.amount')}</Text>
             <Input
               testID="address-config-amount-input"
+              bottomSheet
               value={amount?.toString() || ''}
               onChangeText={(text) => setAmount(text ? Number(text) : undefined)}
               placeholder={bitcoinUnit === 'SATS' ? 'e.g., 1000' : 'e.g., 0.0001'}
@@ -100,6 +101,7 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
             <Text className={`mb-2 text-sm font-medium ${theme.textSecondary}`}>{t('addressConfig.note')}</Text>
             <Input
               testID="address-config-note-input"
+              bottomSheet
               value={note}
               onChangeText={setNote}
               placeholder={t('addressConfig.notePlaceholder')}
