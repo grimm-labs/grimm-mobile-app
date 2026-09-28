@@ -4,8 +4,8 @@ import { createMockEsploraClient, createMockTransaction, createMockWallet } from
 import { syncWalletWithEsplora } from '@/lib/bdk/esplora';
 
 describe('syncWalletWithEsplora', () => {
-  it('runs fullScan when wallet has no transactions', async () => {
-    const wallet = createMockWallet({ transactions: jest.fn(() => []) });
+  it('runs fullScan when the wallet has never been synced (checkpoint at genesis)', async () => {
+    const wallet = createMockWallet({ latestCheckpoint: jest.fn(() => ({ height: 0 })) });
     const persister = {};
     const client = createMockEsploraClient();
 
@@ -18,10 +18,8 @@ describe('syncWalletWithEsplora', () => {
     expect(wallet.persist).toHaveBeenCalledWith(persister);
   });
 
-  it('skips fullScan when wallet already has transactions', async () => {
-    const wallet = createMockWallet({
-      transactions: jest.fn(() => [{ transaction: createMockTransaction(), chainPosition: {} } as never]),
-    });
+  it('skips fullScan once the wallet has been synced, even without transactions', async () => {
+    const wallet = createMockWallet({ latestCheckpoint: jest.fn(() => ({ height: 850000 })), transactions: jest.fn(() => []) });
     const persister = {};
     const client = createMockEsploraClient();
 
@@ -33,8 +31,21 @@ describe('syncWalletWithEsplora', () => {
     expect(wallet.persist).toHaveBeenCalledWith(persister);
   });
 
+  it('skips fullScan when the synced wallet has transactions', async () => {
+    const wallet = createMockWallet({
+      latestCheckpoint: jest.fn(() => ({ height: 850000 })),
+      transactions: jest.fn(() => [{ transaction: createMockTransaction(), chainPosition: {} } as never]),
+    });
+    const client = createMockEsploraClient();
+
+    await syncWalletWithEsplora(wallet as never, {} as never, client as never);
+
+    expect(client.fullScan).not.toHaveBeenCalled();
+    expect(client.sync).toHaveBeenCalled();
+  });
+
   it('propagates sync errors', async () => {
-    const wallet = createMockWallet({ transactions: jest.fn(() => [{ transaction: createMockTransaction(), chainPosition: {} } as never]) });
+    const wallet = createMockWallet({ latestCheckpoint: jest.fn(() => ({ height: 850000 })) });
     const client = createMockEsploraClient({
       sync: jest.fn(async () => {
         throw new Error('status=429, errorMessage=Too Many Requests');

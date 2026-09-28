@@ -84,6 +84,7 @@ export type MockWallet = {
   startSyncWithRevealedSpks: jest.Mock<{ build: () => object }>;
   applyUpdate: jest.Mock<void>;
   persist: jest.Mock<boolean>;
+  latestCheckpoint: jest.Mock<{ height: number }>;
   revealNextAddress: jest.Mock<MockAddressInfo>;
   sign: jest.Mock<boolean>;
   finalizePsbt: jest.Mock<boolean>;
@@ -131,6 +132,7 @@ export function createMockWallet(overrides?: Partial<MockWallet>): MockWallet {
     startSyncWithRevealedSpks: jest.fn(() => ({ build: () => ({}) })),
     applyUpdate: jest.fn(),
     persist: jest.fn(() => true),
+    latestCheckpoint: jest.fn(() => ({ height: 0 })),
     revealNextAddress: jest.fn(() => ({
       address: { toString: () => 'tb1qtestaddress' },
       index: 0,
