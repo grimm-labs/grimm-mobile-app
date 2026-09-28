@@ -48,8 +48,10 @@ tags:
     id: 'send-onchain-fee-low'
 - assertVisible:
     id: 'send-onchain-fee-fast'
+# Selecting a fee is idempotent: retry the tap if it was dropped
 - tapOn:
     id: 'send-onchain-fee-fast'
+    retryTapIfNoChange: true
 - assertVisible:
     id: 'send-onchain-fee-fast'
     selected: true

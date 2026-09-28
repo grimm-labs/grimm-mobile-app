@@ -51,9 +51,13 @@ tags:
 - tapOn:
     id: 'address-config-amount-input'
 - inputText: '1000'
+- waitForAnimationToEnd:
+    timeout: 5000
 - tapOn:
     id: 'address-config-note-input'
 - inputText: 'Maestro'
+- waitForAnimationToEnd:
+    timeout: 5000
 - tapOn:
     id: 'address-config-save'
 - assertNotVisible:
