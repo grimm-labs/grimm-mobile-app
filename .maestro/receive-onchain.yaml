@@ -46,19 +46,14 @@ tags:
 # Let the sheet finish opening, or the tap can land on the backdrop and close it
 - waitForAnimationToEnd:
     timeout: 5000
-# No hideKeyboard in a sheet: on Android it presses back and closes the sheet.
-# The amount keypad's done key (Enter) closes the keyboard instead.
+# Keep the keyboard open until Generate: the sheet stays above it. Closing the keyboard (back or done key)
+# makes the sheet slide down, and a tap during that animation lands on the backdrop and closes the sheet.
 - tapOn:
     id: 'address-config-amount-input'
 - inputText: '1000'
-- pressKey: Enter
-- waitForAnimationToEnd:
-    timeout: 5000
 - tapOn:
     id: 'address-config-note-input'
 - inputText: 'Maestro'
-- waitForAnimationToEnd:
-    timeout: 5000
 - tapOn:
     id: 'address-config-save'
 - assertNotVisible:
