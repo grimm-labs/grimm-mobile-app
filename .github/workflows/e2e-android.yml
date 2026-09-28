@@ -12,6 +12,8 @@
 # it translates ARM code, which is what lets an arm64-only APK run on the x86_64 runner.
 # This workflow runs on every pull request and every push to main/master (changes that only touch markdown files are skipped), and can be manually triggered from the Actions tab.
 # On pull requests, a new push cancels the run in progress for the same PR; runs on main/master are never cancelled.
+# Manual runs can reuse the APK of a previous run (`apk-run-id`, skips the ~16 min Gradle build when only flows changed)
+# and run a subset of the flows (`include-tags`).
 # Reports: the JUnit report, Maestro debug output (screenshots, logs) and a logcat dump on failure are uploaded as the `e2e-android-report` artifact.
 
 # GITHUB SECRETS REQUIRED: None
@@ -25,6 +27,15 @@ name: E2E Tests Android (Maestro + Github Action)
 
 on:
   workflow_dispatch:
+    inputs:
+      apk-run-id:
+        description: 'Reuse the test APK of a previous run of this workflow (run ID) instead of building it'
+        required: false
+        default: ''
+      include-tags:
+        description: 'Only run the flows with one of these Maestro tags (comma separated)'
+        required: false
+        default: ''
   push:
     branches: [main, master]
     paths-ignore:
@@ -36,6 +47,7 @@ on:
 
 permissions:
   contents: read
+  actions: read # download the APK of another run (apk-run-id)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -50,9 +62,12 @@ env:
   EMULATOR_API_LEVEL: 35
   EMULATOR_TARGET: google_apis
   EMULATOR_ARCH: x86_64
+  # The runner has 4 vCPUs; 2 cores were not enough and system apps hit ANRs (the dialog hides the app from Maestro)
+  EMULATOR_CORES: 3
 
 jobs:
   generate-test-apk:
+    if: github.event_name != 'workflow_dispatch' || inputs.apk-run-id == ''
     name: Generate Test APK (Gradle)
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -94,8 +109,10 @@ jobs:
   test-android:
     name: Run Android E2E Tests (Maestro + Github Action)
     needs: generate-test-apk
+    # Also run when the build is skipped because a previous APK is reused
+    if: ${{ !cancelled() && (needs.generate-test-apk.result == 'success' || needs.generate-test-apk.result == 'skipped') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       - name: Checkout project repo
@@ -123,6 +140,8 @@ jobs:
         with:
           name: test-apk
           path: ${{ runner.temp }}/test-apk
+          run-id: ${{ inputs.apk-run-id || github.run_id }}
+          github-token: ${{ github.token }}
 
       - name: AVD cache
         uses: actions/cache@v6
@@ -131,7 +150,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_TARGET }}-${{ env.EMULATOR_ARCH }}
+          key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_TARGET }}-${{ env.EMULATOR_ARCH }}-cores${{ env.EMULATOR_CORES }}
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -143,7 +162,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          cores: 2
+          cores: ${{ env.EMULATOR_CORES }}
           ram-size: 4096M
           profile: Nexus 6
           script: echo "Generated AVD snapshot for caching."
@@ -153,6 +172,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           APK_PATH: ${{ runner.temp }}/test-apk/app-release.apk
+          INCLUDE_TAGS: ${{ inputs.include-tags }}
         with:
           api-level: ${{ env.EMULATOR_API_LEVEL }}
           target: ${{ env.EMULATOR_TARGET }}
@@ -160,14 +180,15 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          cores: 2
+          cores: ${{ env.EMULATOR_CORES }}
           ram-size: 4096M
           profile: Nexus 6
           script: |
             mkdir -p e2e-report
+            adb shell settings put global hide_error_dialogs 1
             adb install -r "$APK_PATH"
             adb logcat -c
-            maestro test .maestro/ --env APP_ID="$APP_ID" --format junit --output e2e-report/report.xml --debug-output e2e-report/debug --flatten-debug-output || { adb logcat -d > e2e-report/logcat.txt; exit 1; }
+            maestro test .maestro/ --env APP_ID="$APP_ID" ${INCLUDE_TAGS:+--include-tags "$INCLUDE_TAGS"} --format junit --output e2e-report/report.xml --debug-output e2e-report/debug --flatten-debug-output || { adb logcat -d > e2e-report/logcat.txt; exit 1; }
 
       - name: Upload E2E report
         if: always()
