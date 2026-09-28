@@ -212,7 +212,8 @@
         "listUnknownPackages": false,
         "exclude": [
           "react-native-restart",
-          "i18next"
+          "i18next",
+          "react-native-flash-message"
         ]
       }
     },
