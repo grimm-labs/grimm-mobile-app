@@ -66,7 +66,7 @@ export default function ImportSeedPhrase() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className={`flex-1 ${theme.screen}`}>
+      <SafeAreaView testID="import-seed-screen" className={`flex-1 ${theme.screen}`}>
         <View className="flex h-full justify-between px-2">
           <Stack.Screen
             options={{
@@ -89,6 +89,7 @@ export default function ImportSeedPhrase() {
 
             <View className="mb-6">
               <Input
+                testID="import-seed-input"
                 value={seedPhraseInput}
                 onChangeText={handleTextChange}
                 placeholder={t('importSeed.placeholder')}
@@ -103,10 +104,12 @@ export default function ImportSeedPhrase() {
               />
 
               <View className="mt-2 flex-row items-center justify-between">
-                <Text className={`text-sm font-semibold ${theme.textMuted}`}>
+                <Text testID="import-seed-word-count" className={`text-sm font-semibold ${theme.textMuted}`}>
                   {seedPhraseInput.trim() ? seedPhraseInput.trim().split(/\s+/).length : 0} / 12 {t('importSeed.words')}
                 </Text>
-                <Text className="font-semibold text-primary-600 dark:text-primary-400">{getValidationMessage(seedPhraseInput)}</Text>
+                <Text testID="import-seed-valid-count" className="font-semibold text-primary-600 dark:text-primary-400">
+                  {getValidationMessage(seedPhraseInput)}
+                </Text>
               </View>
             </View>
           </ScrollView>

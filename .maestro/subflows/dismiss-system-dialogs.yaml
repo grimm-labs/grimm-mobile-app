@@ -1,0 +1,9 @@
+# Closes Android system dialogs that can cover the app on a slow CI emulator
+# (e.g. "Pixel Launcher isn't responding"), otherwise Maestro can't see the app anymore.
+appId: ${APP_ID}
+---
+- runFlow:
+    when:
+      visible: ".*isn't responding.*"
+    commands:
+      - tapOn: 'Wait'

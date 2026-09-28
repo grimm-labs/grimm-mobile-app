@@ -5,7 +5,7 @@ import React from 'react';
 import { colors, Pressable, Text, View } from '@/components/ui';
 
 const Key = ({ value, onPress }: { value: string; onPress: () => void }) => (
-  <Pressable onPress={onPress} className="flex h-16 w-[30%] items-center justify-center rounded-2xl bg-gray-200 dark:bg-charcoal-800">
+  <Pressable testID={`numeric-pad-key-${value === '.' ? 'dot' : value}`} onPress={onPress} className="flex h-16 w-[30%] items-center justify-center rounded-2xl bg-gray-200 dark:bg-charcoal-800">
     <Text className="text-3xl font-medium text-gray-800 dark:text-charcoal-100">{value}</Text>
   </Pressable>
 );

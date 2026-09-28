@@ -4,6 +4,7 @@ appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true
+- runFlow: dismiss-system-dialogs.yaml
 - extendedWaitUntil:
     visible:
       id: 'onboarding-screen'

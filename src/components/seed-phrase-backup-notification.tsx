@@ -16,13 +16,13 @@ export const SeedPhraseBackupNotification: React.FC = () => {
   };
 
   return (
-    <View className="mb-4 rounded-xl bg-yellow-50 p-4 dark:bg-yellow-900/30">
+    <View testID="seed-backup-banner" className="mb-4 rounded-xl bg-yellow-50 p-4 dark:bg-yellow-900/30">
       <View className="flex-row items-start">
         <View className="flex-1">
           <Text className={`mb-1 text-sm font-semibold ${theme.textPrimary}`}>{t('seedPhraseBackup.title')}</Text>
           <Text className={`mb-3 text-xs leading-4 ${theme.textSecondary}`}>{t('seedPhraseBackup.description')}</Text>
           <View className="flex-row items-center space-x-3">
-            <Pressable onPress={handleBackupPress} className="flex-row items-center rounded-lg bg-yellow-400 px-4 py-2.5">
+            <Pressable testID="seed-backup-banner-cta" onPress={handleBackupPress} className="flex-row items-center rounded-lg bg-yellow-400 px-4 py-2.5">
               <Ionicons name="shield-checkmark" size={16} color="white" />
               <Text className="ml-2 text-xs font-semibold text-white">{t('seedPhraseBackup.cta')}</Text>
             </Pressable>

@@ -1,0 +1,35 @@
+appId: ${APP_ID}
+name: Settings - switch the language to French and back
+tags:
+  - settings
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-language
+# The device language (English) is shown as selected
+- extendedWaitUntil:
+    visible:
+      id: 'language-option-en-selected'
+    timeout: 10000
+- tapOn:
+    id: 'language-option-fr'
+- assertVisible:
+    id: 'language-option-fr-selected'
+- back
+# The UI switches immediately
+- assertVisible: 'Paramètres'
+- tapOn:
+    id: 'tab-index'
+- assertVisible: 'Solde Total'
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-language
+- tapOn:
+    id: 'language-option-en'
+- assertVisible:
+    id: 'language-option-en-selected'
+- back
+- assertVisible: 'Settings'

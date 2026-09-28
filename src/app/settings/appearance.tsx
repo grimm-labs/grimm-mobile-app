@@ -25,11 +25,12 @@ interface ThemeConfig {
 interface ThemeOptionProps {
   theme: ThemeConfig;
   isSelected: boolean;
+  testID?: string;
   onPress: () => void;
 }
 
-const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }) => (
-  <Pressable onPress={onPress} style={{ opacity: 1 }}>
+const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress, testID }) => (
+  <Pressable testID={testID} accessibilityState={{ selected: isSelected }} onPress={onPress} style={{ opacity: 1 }}>
     <View
       className={`
       mb-3 flex flex-row items-center 
@@ -68,7 +69,7 @@ const ThemeOption = React.memo<ThemeOptionProps>(({ theme, isSelected, onPress }
         </View>
       </View>
 
-      <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
+      <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons testID={`${testID}-selected`} name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
     </View>
   </Pressable>
 ));
@@ -150,7 +151,7 @@ export default function ThemeSelector() {
           <FocusAwareStatusBar />
           <View className="mt-4 flex-1">
             {themeOptions.map((option) => (
-              <ThemeOption key={option.theme.id} theme={option.theme} isSelected={option.isSelected} onPress={option.onPress} />
+              <ThemeOption key={option.theme.id} testID={`appearance-option-${option.theme.id}`} theme={option.theme} isSelected={option.isSelected} onPress={option.onPress} />
             ))}
           </View>
         </View>

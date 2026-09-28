@@ -31,7 +31,9 @@ const ExpiryOption = React.memo<ExpiryOptionProps>(({ title, description, second
           <Text className="text-sm font-medium text-gray-900 dark:text-charcoal-100">{title}</Text>
           {description ? <Text className="mt-1 text-xs leading-4 text-gray-500 dark:text-charcoal-400">{description}</Text> : null}
         </View>
-        <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
+        <View className="size-6 shrink-0 items-center justify-center">
+          {isSelected && <Ionicons testID={`ln-invoice-expiry-option-${seconds}-selected`} name="checkmark-circle" size={20} color={colors.primary[600]} />}
+        </View>
       </View>
     </Pressable>
   );
@@ -75,7 +77,7 @@ export default function LnInvoiceExpiryScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="ln-invoice-expiry-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
           <FocusAwareStatusBar />

@@ -28,15 +28,17 @@ export const changeLanguage = (lang: Language) => {
   I18nManager.forceRTL(false);
 };
 
+// Language currently applied by i18next (e.g. 'en-US' from the device locale), reduced to a supported language
+const getActiveLanguage = (): Language => (i18n.language?.split('-')[0] === 'fr' ? 'fr' : 'en');
+
 export const useSelectedLanguage = () => {
   const [language, setLanguageState] = useState<Language | undefined>(undefined);
 
   useEffect(() => {
     const loadLanguage = async () => {
       const storedLang = await AsyncStorage.getItem(LOCAL);
-      if (storedLang) {
-        setLanguageState(storedLang as Language);
-      }
+      // Without a stored choice the app follows the device locale: show that language as selected
+      setLanguageState(storedLang ? (storedLang as Language) : getActiveLanguage());
     };
     loadLanguage();
   }, []);

@@ -1,0 +1,55 @@
+appId: ${APP_ID}
+name: Settings - notifications and appearance
+tags:
+  - settings
+---
+- runFlow: subflows/create-wallet.yaml
+# Notifications: status and switch (disabling only explains how to do it in the device settings)
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-notifications
+- extendedWaitUntil:
+    visible:
+      id: 'notifications-screen'
+    timeout: 10000
+- assertVisible: 'Push Notifications'
+- assertVisible:
+    id: 'notifications-status'
+- extendedWaitUntil:
+    visible:
+      id: 'notifications-switch'
+      enabled: true
+    timeout: 60000
+- tapOn:
+    id: 'notifications-switch'
+- runFlow:
+    when:
+      visible: '(Disable Notifications|Permission Denied)'
+    commands:
+      - tapOn: '(?i)cancel'
+- assertVisible:
+    id: 'notifications-screen'
+- back
+# Appearance: system by default, then dark, light and back to system
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-appearance
+- extendedWaitUntil:
+    visible:
+      id: 'appearance-option-system-selected'
+    timeout: 10000
+- tapOn:
+    id: 'appearance-option-dark'
+- assertVisible:
+    id: 'appearance-option-dark-selected'
+- tapOn:
+    id: 'appearance-option-light'
+- assertVisible:
+    id: 'appearance-option-light-selected'
+- tapOn:
+    id: 'appearance-option-system'
+- assertVisible:
+    id: 'appearance-option-system-selected'
+- back

@@ -88,7 +88,7 @@ export default function AboutScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="about-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full">
           <Stack.Screen options={screenOptions} />
           <FocusAwareStatusBar />
@@ -98,7 +98,7 @@ export default function AboutScreen() {
                 <Logo />
               </View>
               <Text className="my-6 text-2xl font-bold text-gray-600 dark:text-charcoal-300">Grimm App</Text>
-              <Text className="text-base text-gray-400 dark:text-charcoal-500">
+              <Text testID="about-version" className="text-base text-gray-400 dark:text-charcoal-500">
                 {t('about.version', { version: Env.VERSION })} {Application.nativeBuildVersion ? `(${Application.nativeBuildVersion})` : null}
               </Text>
             </View>

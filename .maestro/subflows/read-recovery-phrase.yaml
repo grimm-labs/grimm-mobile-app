@@ -1,0 +1,17 @@
+# Reads the 12 words shown on the recovery phrase screen into `output.words` (index 0 = word #1).
+appId: ${APP_ID}
+---
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-phrase-word-12'
+    timeout: 10000
+- evalScript: ${output.words = []}
+- evalScript: ${output.wordIndex = 1}
+- repeat:
+    times: 12
+    commands:
+      - copyTextFrom:
+          id: ${'recovery-phrase-word-' + output.wordIndex}
+      - evalScript: ${output.words.push(maestro.copiedText.trim())}
+      - evalScript: ${output.wordIndex = output.wordIndex + 1}
+- assertTrue: ${output.words.length == 12}

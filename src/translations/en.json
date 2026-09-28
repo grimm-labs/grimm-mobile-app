@@ -1,6 +1,7 @@
 {
   "about": {
     "error_generic": "An error occurred while opening the link",
+    "error_rating": "Unable to open the store to rate the app.",
     "error_title": "Error",
     "error_unable_link": "Unable to open the link: {{url}}",
     "header_title": "About",
@@ -180,8 +181,8 @@
       "headerTitle": "Create Lightning Address",
       "invalidFormat": "Only lowercase letters, numbers, and hyphens are allowed",
       "taken": "Username already taken",
-      "tooLong": "Username must be at most 30 characters",
-      "tooShort": "Username must be at least 3 characters",
+      "tooLong": "Username must be at most {{max}} characters",
+      "tooShort": "Username must be at least {{min}} characters",
       "usernamePlaceholder": "username"
     },
     "currentAddress": "Your Lightning Address",
@@ -397,6 +398,8 @@
         "low": "Slow",
         "medium": "Normal"
       },
+      "feesError": "Unable to load the network fees.",
+      "feesRetry": "Try again",
       "headerTitle": "Send Bitcoin",
       "invalidAmount": "Invalid amount",
       "loadingFees": "Loading fees..."
@@ -474,6 +477,7 @@
   "receive_onchain": {
     "address_settings": "Address Settings",
     "copied": "Address copied to clipboard",
+    "copy": "Copy",
     "error_generic": "An error occurred while generating the address.",
     "error_title": "Receiving Error",
     "header": "Receive",
@@ -481,6 +485,7 @@
     "loading_title": "Generating address...",
     "new_address": "New Address",
     "scan_text": "Scan this QR code to send funds to this address",
+    "share": "Share",
     "share_title": "Share Bitcoin address"
   },
   "receive_payment": {

@@ -204,15 +204,17 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
       });
     });
 
-    it('shows invalidData error on generic parse failure', async () => {
+    it('shows the error screen with invalidData on generic parse failure', async () => {
       mockSearchParams = { rawInvoice: 'lnbc1...' };
       mockParseInput.mockRejectedValueOnce(new Error('something else'));
 
       setup(<PaymentDetailsScreen />);
 
       await waitFor(() => {
-        expect(mockShowErrorMessage).toHaveBeenCalledWith('paymentDetails.errors.invalidData');
+        expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
       });
+      expect(screen.getByText('paymentDetails.errors.invalidData')).toBeOnTheScreen();
+      expect(mockShowErrorMessage).not.toHaveBeenCalled();
     });
 
     it('executes bolt11 payment on confirm', async () => {
@@ -423,7 +425,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
   });
 
   describe('Invalid payment guard', () => {
-    it('shows error when trying to send without decoded data (bolt11 path)', async () => {
+    it('shows the error screen instead of a payable screen when the payment cannot be prepared (bolt11 path)', async () => {
       mockSearchParams = { rawInvoice: 'lnbc1...' };
       mockParseInput.mockResolvedValueOnce({
         tag: 'Bolt11Invoice',
@@ -437,14 +439,16 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
           },
         ],
       });
-      // prepareSend fails so no savedPrepareResponse
+      // prepareSend fails so no savedPrepareResponse: nothing can be paid
       mockPrepareSend.mockRejectedValueOnce(new Error('some error'));
 
       setup(<PaymentDetailsScreen />);
 
       await waitFor(() => {
-        expect(mockShowErrorMessage).toHaveBeenCalledWith('paymentDetails.errors.invalidData');
+        expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
       });
+      expect(screen.getByText('paymentDetails.errors.invalidData')).toBeOnTheScreen();
+      expect(screen.queryByText('paymentDetails.amount')).not.toBeOnTheScreen();
     });
   });
 

@@ -1,0 +1,45 @@
+appId: ${APP_ID}
+name: Scan QR - camera screen and denied permission
+tags:
+  - scan
+---
+- runFlow: subflows/create-wallet.yaml
+# Camera allowed (Maestro grants permissions at launch)
+- tapOn:
+    id: 'home-scan-button'
+- extendedWaitUntil:
+    visible:
+      id: 'scan-qr-instruction'
+    timeout: 20000
+- assertVisible: 'Scanning...'
+- tapOn:
+    id: 'scan-qr-close'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 10000
+# Camera denied: relaunch without clearing the wallet
+- launchApp:
+    permissions:
+      camera: deny
+- runFlow: subflows/dismiss-system-dialogs.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 60000
+- tapOn:
+    id: 'home-scan-button'
+- runFlow:
+    when:
+      visible:
+        id: 'com.android.permissioncontroller:id/permission_deny_button'
+    commands:
+      - tapOn:
+          id: 'com.android.permissioncontroller:id/permission_deny_button'
+- extendedWaitUntil:
+    visible:
+      id: 'scan-qr-no-access'
+    timeout: 20000
+- assertVisible: 'No Camera Access'
+- assertVisible:
+    id: 'open-settings-button'

@@ -16,11 +16,12 @@ interface LanguageOptionProps {
   language: string;
   nativeName: string;
   isSelected: boolean;
+  testID?: string;
   onPress: () => void;
 }
 
-const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, isSelected, onPress }) => (
-  <Pressable onPress={onPress} style={{ opacity: 1 }}>
+const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, isSelected, onPress, testID }) => (
+  <Pressable testID={testID} accessibilityState={{ selected: isSelected }} onPress={onPress} style={{ opacity: 1 }}>
     <View className="flex min-h-[64px] flex-row items-center justify-between border-b-[0.5px] border-gray-200 px-2 py-4">
       <View className="flex flex-1 flex-row items-center">
         <View className="flex-1">
@@ -28,7 +29,7 @@ const LanguageOption = React.memo<LanguageOptionProps>(({ language, nativeName, 
           <Text className="text-sm text-gray-500 dark:text-charcoal-400">{nativeName}</Text>
         </View>
       </View>
-      <View className="ml-3 size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
+      <View className="ml-3 size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons testID={`${testID}-selected`} name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
     </View>
   </Pressable>
 ));
@@ -102,7 +103,7 @@ export default function LanguageSelector() {
           <FocusAwareStatusBar />
           <View className="flex-1">
             {languageOptions.map((l) => (
-              <LanguageOption key={l.code} language={l.name} nativeName={l.nativeName} isSelected={l.isSelected} onPress={l.onPress} />
+              <LanguageOption key={l.code} testID={`language-option-${l.code}`} language={l.name} nativeName={l.nativeName} isSelected={l.isSelected} onPress={l.onPress} />
             ))}
           </View>
           <View className="mb-4 mt-6 px-2">

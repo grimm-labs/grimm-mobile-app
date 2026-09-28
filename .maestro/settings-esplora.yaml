@@ -1,0 +1,56 @@
+appId: ${APP_ID}
+name: Settings - choose the Esplora indexer
+tags:
+  - settings
+  - onchain
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-esplora-server
+- extendedWaitUntil:
+    visible:
+      id: 'esplora-server-screen'
+    timeout: 10000
+- assertVisible:
+    id: 'esplora-server-network'
+    text: 'Network: mainnet'
+# The default indexer is in use once the on-chain wallet is connected
+- extendedWaitUntil:
+    visible:
+      id: 'esplora-server-option-mempool.bitdevsyde.org-in-use'
+    timeout: 120000
+- assertVisible:
+    id: 'esplora-server-option-mempool.space'
+- assertVisible:
+    id: 'esplora-server-option-blockstream.info'
+- assertVisible:
+    id: 'esplora-server-option-bitcoin.lu.ke'
+- assertVisible:
+    id: 'esplora-server-save'
+    enabled: false
+- extendedWaitUntil:
+    visible:
+      id: 'esplora-server-option-mempool.space'
+      enabled: true
+    timeout: 60000
+- tapOn:
+    id: 'esplora-server-option-mempool.space'
+- assertVisible:
+    id: 'esplora-server-option-mempool.space-selected'
+- tapOn:
+    id: 'esplora-server-save'
+# Saving connects to the new indexer and goes back to Settings
+- extendedWaitUntil:
+    visible:
+      id: 'settings-screen'
+    timeout: 60000
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-esplora-server
+- extendedWaitUntil:
+    visible:
+      id: 'esplora-server-option-mempool.space-in-use'
+    timeout: 30000

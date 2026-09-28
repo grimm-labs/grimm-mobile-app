@@ -51,7 +51,9 @@ export const LogoutBottomSheet = React.forwardRef<BottomSheetModal, LogoutBottom
       <BottomSheetView>
         <View className="px-6 pb-4">
           <View className="mb-4">
-            <Text className={`mb-2 text-2xl font-bold ${theme.textPrimary}`}>{t('logoutBottomSheet.title')}</Text>
+            <Text testID="logout-sheet-title" className={`mb-2 text-2xl font-bold ${theme.textPrimary}`}>
+              {t('logoutBottomSheet.title')}
+            </Text>
             <Text className={`mb-2 text-base ${theme.textSecondary}`}>{t('logoutBottomSheet.description')}</Text>
             {!hasSeedBackup && (
               <>
@@ -61,9 +63,9 @@ export const LogoutBottomSheet = React.forwardRef<BottomSheetModal, LogoutBottom
             )}
           </View>
           <View>
-            {!hasSeedBackup && <Button label={t('logoutBottomSheet.backupButton')} fullWidth size="lg" variant="default" textClassName="text-base" onPress={handleBackupFirst} />}
-            <Button label={t('logoutBottomSheet.logoutButton')} fullWidth size="lg" variant="destructive" textClassName="text-base" onPress={handleLogout} />
-            <Button label={t('logoutBottomSheet.cancelButton')} fullWidth size="lg" variant="outline" textClassName="text-base" onPress={dismiss} />
+            {!hasSeedBackup && <Button testID="logout-backup-button" label={t('logoutBottomSheet.backupButton')} fullWidth size="lg" variant="default" textClassName="text-base" onPress={handleBackupFirst} />}
+            <Button testID="logout-confirm-button" label={t('logoutBottomSheet.logoutButton')} fullWidth size="lg" variant="destructive" textClassName="text-base" onPress={handleLogout} />
+            <Button testID="logout-cancel-button" label={t('logoutBottomSheet.cancelButton')} fullWidth size="lg" variant="outline" textClassName="text-base" onPress={dismiss} />
           </View>
         </View>
       </BottomSheetView>

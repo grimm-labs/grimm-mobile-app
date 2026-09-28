@@ -1,0 +1,126 @@
+appId: ${APP_ID}
+name: Back up the recovery phrase, log out and restore the wallet
+tags:
+  - wallet
+  - backup
+---
+- runFlow: subflows/create-wallet.yaml
+# Home banner -> warning screen -> Cancel goes back home
+- tapOn:
+    id: 'seed-backup-banner-cta'
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-warning-screen'
+    timeout: 10000
+- assertVisible: 'Attention'
+- tapOn:
+    id: 'cancel-button'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 10000
+- assertVisible:
+    id: 'seed-backup-banner'
+# Banner -> warning -> Proceed shows the 12 words
+- tapOn:
+    id: 'seed-backup-banner-cta'
+- tapOn:
+    id: 'proceed-button'
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-phrase-screen'
+    timeout: 10000
+- runFlow: subflows/read-recovery-phrase.yaml
+# The copy confirmation only lasts 2 s, less than a tap takes on the CI emulator: it is not asserted
+- tapOn:
+    id: 'copy-button'
+# Wrong words are rejected
+- tapOn:
+    id: 'saved-button'
+- extendedWaitUntil:
+    visible:
+      id: 'verify-word-input-0'
+    timeout: 10000
+- evalScript: ${output.verifyIndex = 0}
+- repeat:
+    times: 4
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: ${'verify-word-input-' + output.verifyIndex}
+          direction: DOWN
+          centerElement: true
+      - tapOn:
+          id: ${'verify-word-input-' + output.verifyIndex}
+      - inputText: 'wrong'
+      - hideKeyboard
+      - evalScript: ${output.verifyIndex = output.verifyIndex + 1}
+# This error only lasts 1.5 s: don't wait for the screen to settle after the tap
+- tapOn:
+    id: 'verify-button'
+    waitToSettleTimeoutMs: 500
+- assertVisible: 'One or more words are incorrect. Please try again.'
+- back
+# The right words complete the backup: the banner disappears
+- tapOn:
+    id: 'saved-button'
+- runFlow: subflows/verify-recovery-phrase.yaml
+- tapOn:
+    id: 'verify-button'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 10000
+- assertNotVisible:
+    id: 'seed-backup-banner'
+# Once backed up, the phrase can still be viewed but not verified again
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-backup
+- tapOn:
+    id: 'proceed-button'
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-phrase-word-12'
+    timeout: 10000
+- assertNotVisible:
+    id: 'saved-button'
+- back
+- back
+# Log out: no "not backed up" warning anymore
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-logout
+- extendedWaitUntil:
+    visible:
+      id: 'logout-sheet-title'
+    timeout: 10000
+- assertNotVisible:
+    id: 'logout-backup-button'
+- tapOn:
+    id: 'logout-confirm-button'
+- extendedWaitUntil:
+    visible:
+      id: 'onboarding-screen'
+    timeout: 20000
+# Restore the same wallet from the saved words
+- tapOn:
+    id: 'onboarding-get-started'
+- tapOn:
+    id: 'seed-setup-import'
+- tapOn:
+    id: 'import-seed-input'
+- inputText: ${output.words.join(' ')}
+- assertVisible: '✓ 12 words entered'
+- hideKeyboard
+- tapOn:
+    id: 'login-button'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 60000
+# An imported wallet is considered backed up
+- assertNotVisible:
+    id: 'seed-backup-banner'

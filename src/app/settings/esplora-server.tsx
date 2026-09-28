@@ -25,14 +25,15 @@ interface ServerOptionProps {
 
 const ServerOption = React.memo<ServerOptionProps>(({ id, baseUrl, isSelected, isActive, onPress, disabled = false }) => {
   const { t } = useTranslation();
+  const testID = `esplora-server-option-${id}`;
   return (
-    <Pressable onPress={onPress} style={{ opacity: disabled ? 0.5 : 1 }} disabled={disabled}>
+    <Pressable testID={testID} accessibilityState={{ selected: isSelected, disabled }} onPress={onPress} style={{ opacity: disabled ? 0.5 : 1 }} disabled={disabled}>
       <View className="flex min-h-[64px] flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-2 py-4">
         <View className="flex-1 pr-4">
           <View className="flex-row items-center">
             <Text className="text-sm font-medium text-gray-900 dark:text-charcoal-100">{id}</Text>
             {isActive && (
-              <View className="ml-2 rounded-full bg-success-100 px-2 py-0.5">
+              <View testID={`${testID}-in-use`} className="ml-2 rounded-full bg-success-100 px-2 py-0.5">
                 <Text className="text-[10px] font-semibold text-success-700">{t('esploraServer.inUse')}</Text>
               </View>
             )}
@@ -40,7 +41,11 @@ const ServerOption = React.memo<ServerOptionProps>(({ id, baseUrl, isSelected, i
           <Text className="mt-1 text-xs text-gray-500 dark:text-charcoal-400">{baseUrl}</Text>
         </View>
         <View className="size-6 shrink-0 items-center justify-center">
-          {isActive ? <Ionicons name="checkmark-circle" size={20} color={colors.success[600]} /> : isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}
+          {isActive ? (
+            <Ionicons testID={`${testID}-active`} name="checkmark-circle" size={20} color={colors.success[600]} />
+          ) : (
+            isSelected && <Ionicons testID={`${testID}-selected`} name="checkmark-circle" size={20} color={colors.primary[600]} />
+          )}
         </View>
       </View>
     </Pressable>
@@ -98,13 +103,15 @@ export default function EsploraServerScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="esplora-server-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <View className="flex h-full px-4">
           <Stack.Screen options={screenOptions} />
           <FocusAwareStatusBar />
 
           <View className="mb-2 mt-4 px-2">
-            <Text className="text-xs text-gray-600 dark:text-charcoal-300">{t('esploraServer.currentNetwork', { network })}</Text>
+            <Text testID="esplora-server-network" className="text-xs text-gray-600 dark:text-charcoal-300">
+              {t('esploraServer.currentNetwork', { network })}
+            </Text>
           </View>
 
           <View className="mt-2 flex-1">
@@ -126,7 +133,13 @@ export default function EsploraServerScreen() {
           </View>
 
           <View className="mb-8 mt-4">
-            <Pressable className={`flex-row items-center justify-center rounded-xl p-4 ${canSave ? 'bg-primary-600' : 'bg-neutral-200'}`} onPress={handleSave} disabled={!canSave}>
+            <Pressable
+              testID="esplora-server-save"
+              accessibilityState={{ disabled: !canSave }}
+              className={`flex-row items-center justify-center rounded-xl p-4 ${canSave ? 'bg-primary-600' : 'bg-neutral-200'}`}
+              onPress={handleSave}
+              disabled={!canSave}
+            >
               {isSaving ? <ActivityIndicator size="small" color="#fff" /> : <Text className={`text-center font-bold ${canSave ? 'text-white' : 'text-gray-400 dark:text-charcoal-500'}`}>{t('esploraServer.save')}</Text>}
             </Pressable>
           </View>

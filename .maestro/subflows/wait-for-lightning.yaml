@@ -1,0 +1,16 @@
+# Waits until the Breez SDK (Lightning) is connected, using the status shown in Settings > Networks,
+# then comes back to the Home tab. Call it from the Home screen.
+appId: ${APP_ID}
+---
+- tapOn:
+    id: 'tab-settings'
+- tapOn:
+    id: 'settings-networks'
+- extendedWaitUntil:
+    visible:
+      id: 'network-status'
+      text: 'Connected to .*'
+    timeout: 120000
+- back
+- tapOn:
+    id: 'tab-index'

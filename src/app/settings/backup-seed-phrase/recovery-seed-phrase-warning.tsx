@@ -23,7 +23,7 @@ export default function MnemonicWarning() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView>
+      <SafeAreaView testID="recovery-warning-screen">
         <View className="flex h-full justify-between px-4">
           <Stack.Screen
             options={{

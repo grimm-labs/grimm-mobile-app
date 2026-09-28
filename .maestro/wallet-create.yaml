@@ -1,0 +1,48 @@
+appId: ${APP_ID}
+name: Create a new wallet
+tags:
+  - smoke
+  - wallet
+---
+- runFlow: subflows/launch-fresh-app.yaml
+- tapOn:
+    id: 'onboarding-get-started'
+- extendedWaitUntil:
+    visible:
+      id: 'seed-setup-screen'
+    timeout: 20000
+- assertVisible: 'Choose how you want to set up your wallet.'
+- assertVisible:
+    id: 'seed-setup-create'
+- assertVisible:
+    id: 'seed-setup-import'
+- tapOn:
+    id: 'seed-setup-create'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 60000
+# A new wallet is empty and not backed up yet
+- assertVisible:
+    id: 'home-total-balance'
+    text: '0 SATS'
+- assertVisible:
+    id: 'home-total-balance-fiat'
+- assertVisible:
+    id: 'seed-backup-banner'
+- assertVisible:
+    id: 'home-bitcoin-wallet-card'
+- assertVisible:
+    id: 'home-lightning-wallet-card'
+- assertVisible:
+    id: 'home-bitcoin-wallet-balance'
+    text: '0 SATS'
+- assertVisible:
+    id: 'home-lightning-wallet-balance'
+    text: '0 SATS'
+- assertVisible:
+    id: 'home-send-button'
+- assertVisible:
+    id: 'home-receive-button'
+- assertVisible:
+    id: 'home-scan-button'

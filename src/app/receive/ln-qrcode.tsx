@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Clipboard, Pressable, ScrollView, Share } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Share } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -74,7 +75,7 @@ export default function ReceivePaymentScreen() {
 
   const copyToClipboard = async () => {
     if (paymentRequest) {
-      await Clipboard.setString(paymentRequest);
+      await Clipboard.setStringAsync(paymentRequest);
       showMessage({ message: t('receive_payment.copied'), type: 'success', duration: 2000 });
     }
   };
@@ -103,7 +104,7 @@ export default function ReceivePaymentScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="receive-invoice-loading" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -124,7 +125,7 @@ export default function ReceivePaymentScreen() {
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="receive-invoice-error" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -140,11 +141,13 @@ export default function ReceivePaymentScreen() {
               <Ionicons name="alert-circle" size={48} color="#EF4444" />
             </View>
             <Text className="mb-2 text-xl font-semibold text-gray-800 dark:text-charcoal-100">{t('receive_payment.error_title')}</Text>
-            <Text className="mb-6 text-center text-gray-600 dark:text-charcoal-300">{error}</Text>
+            <Text testID="receive-invoice-error-message" className="mb-6 text-center text-gray-600 dark:text-charcoal-300">
+              {error}
+            </Text>
           </View>
 
           <View className="mb-8">
-            <Button label={t('receive_payment.retry')} onPress={handleRetry} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button testID="receive-invoice-retry" label={t('receive_payment.retry')} onPress={handleRetry} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
           </View>
         </View>
       </SafeAreaView>
@@ -153,7 +156,7 @@ export default function ReceivePaymentScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="receive-invoice-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -166,19 +169,23 @@ export default function ReceivePaymentScreen() {
         <View className="flex-1 px-4">
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             {type === 'onchain' && (
-              <View className="mb-2 mt-3 rounded-lg bg-blue-500 px-2 py-4">
+              <View testID="receive-invoice-onchain-info" className="mb-2 mt-3 rounded-lg bg-blue-500 px-2 py-4">
                 <Text className="text-center text-sm text-white">{t('receive_payment.onchain_info')}</Text>
               </View>
             )}
             {type === 'lightning' && (
               <View className="mb-2 mt-3">
                 <View className="items-center rounded-2xl p-6">
-                  <Text className="mb-2 text-2xl font-light text-gray-800 dark:text-charcoal-100">{parseInt(satsAmount, 10).toLocaleString()} SATS</Text>
+                  <Text testID="receive-invoice-amount" className="mb-2 text-2xl font-light text-gray-800 dark:text-charcoal-100">
+                    {parseInt(satsAmount, 10).toLocaleString()} SATS
+                  </Text>
                   <Text className="text-lg text-gray-500 dark:text-charcoal-400">
                     {Number(convertBitcoinToFiat(Number(satsAmount), BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toFixed(2)).toLocaleString()} {selectedFiatCurrency}
                   </Text>
                   <View className="rounded-lg bg-white p-3 dark:bg-charcoal-900">
-                    <Text className="text-sm text-gray-600 dark:text-charcoal-300">{note || defaultNotes}</Text>
+                    <Text testID="receive-invoice-note" className="text-sm text-gray-600 dark:text-charcoal-300">
+                      {note || defaultNotes}
+                    </Text>
                   </View>
                   {remainingSecs !== null && (
                     <View className="mt-3 flex-row items-center justify-center">
@@ -201,10 +208,12 @@ export default function ReceivePaymentScreen() {
                   </View>
                 </View>
               ) : (
-                <View className="bg-white p-6 dark:bg-charcoal-900">{paymentRequest && <QRCode value={paymentRequest?.toUpperCase()} size={200} backgroundColor="white" color="black" />}</View>
+                <View testID="receive-invoice-qr" className="bg-white p-6 dark:bg-charcoal-900">
+                  {paymentRequest && <QRCode value={paymentRequest?.toUpperCase()} size={200} backgroundColor="white" color="black" />}
+                </View>
               )}
               {type === 'onchain' && (
-                <Pressable onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
+                <Pressable testID="receive-invoice-address" onPress={copyToClipboard} className="mx-4 flex flex-row flex-wrap justify-center">
                   {splitStringIntoChunks(paymentRequest?.toUpperCase(), 6).map((s) => (
                     <View className="m-2" key={s}>
                       <Text className="text-base font-bold text-primary-600">{s}</Text>
@@ -235,7 +244,16 @@ export default function ReceivePaymentScreen() {
             )}
           </ScrollView>
           <View>
-            <Button label={t('receive_payment.close')} disabled={!paymentRequest} onPress={handleSubmit} fullWidth={true} variant="secondary" textClassName="text-base text-white" size="lg" />
+            <Button
+              testID="receive-invoice-close"
+              label={t('receive_payment.close')}
+              disabled={!paymentRequest}
+              onPress={handleSubmit}
+              fullWidth={true}
+              variant="secondary"
+              textClassName="text-base text-white"
+              size="lg"
+            />
           </View>
         </View>
       </SafeAreaView>

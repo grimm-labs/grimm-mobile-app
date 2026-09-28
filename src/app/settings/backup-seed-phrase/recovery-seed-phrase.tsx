@@ -72,7 +72,7 @@ export default function SeedPhraseScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="recovery-phrase-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -99,7 +99,9 @@ export default function SeedPhraseScreen() {
                     {row.map(({ word, index }) => (
                       <View key={index} className="mx-1 flex-1 rounded-xl border border-gray-200 py-2">
                         <Text className="text-center text-xs font-semibold text-gray-500 dark:text-charcoal-400">{index + 1}</Text>
-                        <Text className="mt-1 text-center text-xs font-semibold text-gray-900 dark:text-charcoal-100">{word}</Text>
+                        <Text testID={`recovery-phrase-word-${index + 1}`} className="mt-1 text-center text-xs font-semibold text-gray-900 dark:text-charcoal-100">
+                          {word}
+                        </Text>
                       </View>
                     ))}
                   </View>

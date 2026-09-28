@@ -15,6 +15,8 @@ type Props = {
   type: WalletType;
   balanceSats: number;
   lightningNetworkType?: LightningNetworkType;
+  /** Prefix for the balance testIDs: `${testID}-balance` and `${testID}-fiat` */
+  testID?: string;
 };
 
 const getWalletIcon = (type: WalletType) => {
@@ -38,7 +40,7 @@ const getNetwork = (type: WalletType) => {
   }
 };
 
-export const WalletView = ({ name, symbol, type, balanceSats }: Props) => {
+export const WalletView = ({ name, symbol, type, balanceSats, testID }: Props) => {
   const { hideBalance, selectedCountry, bitcoinUnit } = useContext(AppContext);
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const { bitcoinPrices } = useBitcoin();
@@ -61,12 +63,16 @@ export const WalletView = ({ name, symbol, type, balanceSats }: Props) => {
         </View>
         <View>
           {hideBalance ? (
-            <Text className={`text-right text-xl font-semibold ${theme.textPrimary}`}>********</Text>
+            <Text testID={testID ? `${testID}-balance` : undefined} className={`text-right text-xl font-semibold ${theme.textPrimary}`}>
+              ********
+            </Text>
           ) : (
             <View className="text-right">
-              <Text className={`text-right text-xl font-bold ${theme.textPrimary}`}>{formatBalance(balanceSats, bitcoinUnit)}</Text>
+              <Text testID={testID ? `${testID}-balance` : undefined} className={`text-right text-xl font-bold ${theme.textPrimary}`}>
+                {formatBalance(balanceSats, bitcoinUnit)}
+              </Text>
               <View className="my-1" />
-              <Text className={`text-right text-sm font-medium ${theme.textSecondary}`}>
+              <Text testID={testID ? `${testID}-fiat` : undefined} className={`text-right text-sm font-medium ${theme.textSecondary}`}>
                 {convertBitcoinToFiat(balanceSats, BitcoinUnit.Sats, selectedFiatCurrency, bitcoinPrices).toLocaleString('en-US', { maximumFractionDigits: 2 })} {selectedFiatCurrency}{' '}
               </Text>
             </View>

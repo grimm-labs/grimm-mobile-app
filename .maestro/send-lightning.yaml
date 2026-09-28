@@ -1,0 +1,39 @@
+appId: ${APP_ID}
+name: Send via Lightning - input validation
+tags:
+  - send
+  - lightning
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/wait-for-lightning.yaml
+- tapOn:
+    id: 'home-send-button'
+- tapOn:
+    id: 'send-method-lightning'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-address-screen'
+    timeout: 10000
+# Empty input
+- tapOn:
+    id: 'send-ln-address-continue'
+- assertVisible: 'Please enter a valid Lightning invoice'
+# Not an invoice nor an address
+- tapOn:
+    id: 'send-ln-address-input'
+- inputText: 'not-an-invoice'
+- hideKeyboard
+- tapOn:
+    id: 'send-ln-address-continue'
+- assertVisible: '(Unable to prepare payment. Invalid address|Sorry, we do not support this Bitcoin or Lightning address)'
+# A Bitcoin address is recognized but can't be paid from the Lightning flow (BIP173 test vector)
+- tapOn:
+    id: 'send-ln-address-input'
+- eraseText: 30
+- inputText: 'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4'
+- hideKeyboard
+- tapOn:
+    id: 'send-ln-address-continue'
+- assertVisible: 'Sorry, payment to a Bitcoin address is not supported yet'
+- assertVisible:
+    id: 'send-ln-address-screen'

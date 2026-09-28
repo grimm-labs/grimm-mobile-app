@@ -15,6 +15,7 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@
 import { NumericKeypad } from '@/components/ui';
 import { convertBitcoinToFiat, convertBtcToSats, getFiatCurrency } from '@/lib';
 import { AppContext, useBdk } from '@/lib/context';
+import type { IndexerFeeRates } from '@/lib/context/bdk-context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { BitcoinUnit } from '@/types/enum';
 
@@ -37,15 +38,18 @@ export default function OnchainSendAmountScreen() {
   const { recipientAddress } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit, selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { balance: bdkBalance } = useBdk();
+  const { balance: bdkBalance, getIndexerFeeRates } = useBdk();
 
   const [amount, setAmount] = useState('0');
   const [fiatAmount, setFiatAmount] = useState('0');
   const [selectedFee, setSelectedFee] = useState<FeeSpeed>('medium');
   const [feeOptions, setFeeOptions] = useState<FeeOption[]>([]);
   const [validationError, setValidationError] = useState('');
+  const [isIndexerFeesPending, setIsIndexerFeesPending] = useState(false);
+  const [feesError, setFeesError] = useState(false);
 
-  const { mutate: getBitcoinRecommendedFees, isPending } = useBitcoinRecommendedFees();
+  const { mutate: getBitcoinRecommendedFees, isPending: isMempoolFeesPending } = useBitcoinRecommendedFees();
+  const isPending = isMempoolFeesPending || isIndexerFeesPending;
 
   const isBtcUnit = bitcoinUnit === BitcoinUnit.Btc;
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
@@ -54,26 +58,52 @@ export default function OnchainSendAmountScreen() {
 
   const isAmountInvalid = !feeOptions.length || !Number(amount) || satsAmount >= bdkBalance;
 
+  const applyFeeRates = useCallback(
+    (rates: IndexerFeeRates) => {
+      setFeeOptions([
+        { speed: 'low', label: t('onchainSend.enterAmount.fees.low'), satsPerVbyte: rates.hourFee, estimatedTime: '~60 min' },
+        { speed: 'medium', label: t('onchainSend.enterAmount.fees.medium'), satsPerVbyte: rates.halfHourFee, estimatedTime: '~30 min' },
+        { speed: 'fast', label: t('onchainSend.enterAmount.fees.fast'), satsPerVbyte: rates.fastestFee, estimatedTime: '~10 min' },
+      ]);
+    },
+    [t],
+  );
+
+  // When the mempool fee API is unreachable, the screen used to stay without fees (and Continue disabled) forever:
+  // fall back to the connected indexer, then show an error with a retry
+  const fetchFeesFromIndexer = useCallback(async () => {
+    setIsIndexerFeesPending(true);
+    try {
+      applyFeeRates(await getIndexerFeeRates());
+    } catch (error) {
+      console.error('Error fetching fees from the indexer', error);
+      setFeesError(true);
+    } finally {
+      setIsIndexerFeesPending(false);
+    }
+  }, [applyFeeRates, getIndexerFeeRates]);
+
   const fetchBitcoinRecommendedFees = useCallback(() => {
+    setFeesError(false);
     getBitcoinRecommendedFees(
       {},
       {
         onSuccess: (response: RecommendedFeesResponse) => {
-          const valid = [response.fastestFee, response.halfHourFee, response.hourFee].every((fee) => Number(fee) > 0);
-          if (valid) {
-            setFeeOptions([
-              { speed: 'low', label: t('onchainSend.enterAmount.fees.low'), satsPerVbyte: Number(response.hourFee), estimatedTime: '~60 min' },
-              { speed: 'medium', label: t('onchainSend.enterAmount.fees.medium'), satsPerVbyte: Number(response.halfHourFee), estimatedTime: '~30 min' },
-              { speed: 'fast', label: t('onchainSend.enterAmount.fees.fast'), satsPerVbyte: Number(response.fastestFee), estimatedTime: '~10 min' },
-            ]);
+          const rates = { fastestFee: Number(response.fastestFee), halfHourFee: Number(response.halfHourFee), hourFee: Number(response.hourFee) };
+          if (Object.values(rates).every((fee) => fee > 0)) {
+            applyFeeRates(rates);
           } else {
             console.warn('Invalid fee response');
+            fetchFeesFromIndexer();
           }
         },
-        onError: (error) => console.error('Error fetching recommended fees', error),
+        onError: (error) => {
+          console.error('Error fetching recommended fees', error);
+          fetchFeesFromIndexer();
+        },
       },
     );
-  }, [getBitcoinRecommendedFees, t]);
+  }, [getBitcoinRecommendedFees, applyFeeRates, fetchFeesFromIndexer]);
 
   useEffect(() => {
     fetchBitcoinRecommendedFees();
@@ -119,7 +149,7 @@ export default function OnchainSendAmountScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="send-onchain-amount-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <Stack.Screen
           options={{
@@ -132,7 +162,9 @@ export default function OnchainSendAmountScreen() {
         <View className="flex-1 px-4 pt-6">
           <View className="mb-6 items-center">
             <View className="flex-row items-center">
-              <Text className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>{amount}</Text>
+              <Text testID="send-onchain-amount-value" className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>
+                {amount}
+              </Text>
               <Text className="ml-2 text-2xl font-light text-gray-400 dark:text-charcoal-500">{bitcoinUnit}</Text>
             </View>
             {validationError && <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text>}
@@ -151,13 +183,26 @@ export default function OnchainSendAmountScreen() {
           <View className="mb-6">
             <Text className="mb-3 text-base font-semibold text-gray-700 dark:text-charcoal-200">{t('onchainSend.enterAmount.feeSelection')}</Text>
             {isPending ? (
-              <View className="flex items-center justify-center">
+              <View testID="send-onchain-fees-loading" className="flex items-center justify-center">
                 <ActivityIndicator size="small" color={colors.primary[600]} />
+              </View>
+            ) : feesError && !feeOptions.length ? (
+              <View testID="send-onchain-fees-error" className="items-center">
+                <Text className="text-center text-sm text-danger-600">{t('onchainSend.enterAmount.feesError')}</Text>
+                <Pressable testID="send-onchain-fees-retry" onPress={fetchBitcoinRecommendedFees} className="mt-2">
+                  <Text className="text-sm font-semibold text-primary-600">{t('onchainSend.enterAmount.feesRetry')}</Text>
+                </Pressable>
               </View>
             ) : (
               <View className="flex-row justify-between">
                 {feeOptions.map((fee) => (
-                  <Pressable key={fee.speed} onPress={() => setSelectedFee(fee.speed)} className={`mx-1 flex-1 rounded-xl p-2 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100 dark:bg-charcoal-850'}`}>
+                  <Pressable
+                    key={fee.speed}
+                    testID={`send-onchain-fee-${fee.speed}`}
+                    accessibilityState={{ selected: selectedFee === fee.speed }}
+                    onPress={() => setSelectedFee(fee.speed)}
+                    className={`mx-1 flex-1 rounded-xl p-2 ${selectedFee === fee.speed ? 'bg-primary-600' : 'bg-gray-100 dark:bg-charcoal-850'}`}
+                  >
                     <Text className={`text-center text-sm font-semibold ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.label}</Text>
                     <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.satsPerVbyte} sat/vB</Text>
                     <Text className={`mt-1 text-center text-xs ${selectedFee === fee.speed ? 'text-white' : 'text-gray-700 dark:text-charcoal-200'}`}>{fee.estimatedTime}</Text>
@@ -168,13 +213,24 @@ export default function OnchainSendAmountScreen() {
           </View>
           {Number(amount) > 0 && satsAmount >= bdkBalance && (
             <View>
-              <Text className="text-center text-base font-semibold text-danger-600">{t('onchainSend.enterAmount.invalidAmount')}</Text>
+              <Text testID="send-onchain-amount-invalid" className="text-center text-base font-semibold text-danger-600">
+                {t('onchainSend.enterAmount.invalidAmount')}
+              </Text>
             </View>
           )}
           <View className="flex-1" />
           <NumericKeypad amount={amount} setAmount={setAmount} isBtcUnit={isBtcUnit} />
           <View className="mb-4">
-            <Button label={t('onchainSend.enterAmount.continueButton')} onPress={handleSubmit} fullWidth variant="secondary" size="lg" disabled={isAmountInvalid} textClassName="text-base text-white" />
+            <Button
+              testID="send-onchain-amount-continue"
+              label={t('onchainSend.enterAmount.continueButton')}
+              onPress={handleSubmit}
+              fullWidth
+              variant="secondary"
+              size="lg"
+              disabled={isAmountInvalid}
+              textClassName="text-base text-white"
+            />
           </View>
         </View>
       </SafeAreaView>

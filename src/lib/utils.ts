@@ -169,9 +169,10 @@ export const generateRandomUsername = (): string => {
   return `${adj}-${noun}-${num}`;
 };
 
-export const validateLnUsername = (username: string, t: (key: string) => string): string | null => {
-  if (username.length < LN_USERNAME_MIN_LENGTH) return t('lnAddressSettings.create.tooShort');
-  if (username.length > LN_USERNAME_MAX_LENGTH) return t('lnAddressSettings.create.tooLong');
+// The limits are interpolated in the messages so they can't drift from the rules again
+export const validateLnUsername = (username: string, t: (key: string, options?: Record<string, unknown>) => string): string | null => {
+  if (username.length < LN_USERNAME_MIN_LENGTH) return t('lnAddressSettings.create.tooShort', { min: LN_USERNAME_MIN_LENGTH });
+  if (username.length > LN_USERNAME_MAX_LENGTH) return t('lnAddressSettings.create.tooLong', { max: LN_USERNAME_MAX_LENGTH });
   if (!LN_USERNAME_REGEX.test(username)) return t('lnAddressSettings.create.invalidFormat');
   return null;
 };

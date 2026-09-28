@@ -7,7 +7,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Linking } from 'react-native';
+import { Dimensions, Linking, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
@@ -163,7 +163,7 @@ export default function ScanQrScreen() {
             }}
           />
           <FocusAwareStatusBar />
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
+          <View testID="scan-qr-permission-required" style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
             <Text>{t('scan_qr.permission_required')}</Text>
           </View>
         </SafeAreaView>
@@ -185,7 +185,7 @@ export default function ScanQrScreen() {
             }}
           />
           <FocusAwareStatusBar />
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
+          <View testID="scan-qr-no-access" style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
             <ScreenTitle title={t('scan_qr.no_access_title')} className="text-center text-2xl font-normal" />
             <View style={{ marginBottom: 16 }} />
             <Text testID="form-subtitle" className="mb-3 text-center text-sm font-normal">
@@ -199,7 +199,8 @@ export default function ScanQrScreen() {
               className="mb-4"
               textClassName="text-base"
               onPress={async () => {
-                await Linking.openURL('app-settings://GrimmApp');
+                // `app-settings://` only exists on iOS; openSettings opens the app settings on both platforms
+                await Linking.openSettings().catch((err) => console.error('Error opening settings:', err));
               }}
             />
           </View>
@@ -224,102 +225,107 @@ export default function ScanQrScreen() {
 
         <View style={{ flex: 1 }}>
           <CameraView
-            style={{ flex: 1 }}
+            style={StyleSheet.absoluteFill}
             facing={facing}
             enableTorch={flashEnabled && facing === 'back'}
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
             }}
             onBarcodeScanned={isScanning ? handleQrCodeScanned : undefined}
-          >
-            <View style={{ flex: 1, position: 'relative' }}>
-              <View
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                }}
-              />
-              <View
-                style={{
-                  position: 'absolute',
-                  top: (screenHeight - SCAN_FRAME_SIZE) / 2 - 100,
-                  left: (screenWidth - SCAN_FRAME_SIZE) / 2,
-                  width: SCAN_FRAME_SIZE,
-                  height: SCAN_FRAME_SIZE,
-                  backgroundColor: 'transparent',
-                  borderRadius: 12,
-                }}
-              />
-              <ScanFrame />
-              <View
-                style={{
-                  position: 'absolute',
-                  top: (screenHeight - SCAN_FRAME_SIZE) / 2 - 180,
-                  left: 0,
-                  right: 0,
-                  alignItems: 'center',
-                }}
-              >
-                <Text className="text-center text-xl font-normal text-gray-300">{t('scan_qr.instruction')}</Text>
-                <Text className="my-6 text-center text-sm font-normal text-gray-300">{isScanning ? t('scan_qr.scanning') : t('scan_qr.processing')}</Text>
-              </View>
-              <View
-                style={{
-                  position: 'absolute',
-                  bottom: 80,
-                  left: 0,
-                  right: 0,
-                  flexDirection: 'row',
-                  justifyContent: 'space-around',
-                  alignItems: 'center',
-                  paddingHorizontal: 60,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={toggleCameraFacing}
-                  style={{
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    borderRadius: 30,
-                    padding: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Ionicons name="camera-reverse" size={24} color="white" />
-                </TouchableOpacity>
-                {facing === 'back' && (
-                  <TouchableOpacity
-                    onPress={toggleFlash}
-                    style={{
-                      backgroundColor: flashEnabled ? colors.primary[600] : 'rgba(255,255,255,0.2)',
-                      borderRadius: 30,
-                      padding: 15,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Ionicons name={flashEnabled ? 'flash' : 'flash-off'} size={24} color="white" />
-                  </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  onPress={toggleClose}
-                  style={{
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    borderRadius: 30,
-                    padding: 15,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Ionicons name="close-outline" size={24} color="white" />
-                </TouchableOpacity>
-              </View>
+          />
+          {/* CameraView does not support children (expo-camera warns it can crash): the overlay is a sibling drawn on top */}
+          <View style={StyleSheet.absoluteFill}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+              }}
+            />
+            <View
+              style={{
+                position: 'absolute',
+                top: (screenHeight - SCAN_FRAME_SIZE) / 2 - 100,
+                left: (screenWidth - SCAN_FRAME_SIZE) / 2,
+                width: SCAN_FRAME_SIZE,
+                height: SCAN_FRAME_SIZE,
+                backgroundColor: 'transparent',
+                borderRadius: 12,
+              }}
+            />
+            <ScanFrame />
+            <View
+              style={{
+                position: 'absolute',
+                top: (screenHeight - SCAN_FRAME_SIZE) / 2 - 180,
+                left: 0,
+                right: 0,
+                alignItems: 'center',
+              }}
+            >
+              <Text testID="scan-qr-instruction" className="text-center text-xl font-normal text-gray-300">
+                {t('scan_qr.instruction')}
+              </Text>
+              <Text className="my-6 text-center text-sm font-normal text-gray-300">{isScanning ? t('scan_qr.scanning') : t('scan_qr.processing')}</Text>
             </View>
-          </CameraView>
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 80,
+                left: 0,
+                right: 0,
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                paddingHorizontal: 60,
+              }}
+            >
+              <TouchableOpacity
+                testID="scan-qr-flip-camera"
+                onPress={toggleCameraFacing}
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  borderRadius: 30,
+                  padding: 15,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Ionicons name="camera-reverse" size={24} color="white" />
+              </TouchableOpacity>
+              {facing === 'back' && (
+                <TouchableOpacity
+                  testID="scan-qr-toggle-flash"
+                  onPress={toggleFlash}
+                  style={{
+                    backgroundColor: flashEnabled ? colors.primary[600] : 'rgba(255,255,255,0.2)',
+                    borderRadius: 30,
+                    padding: 15,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Ionicons name={flashEnabled ? 'flash' : 'flash-off'} size={24} color="white" />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity
+                testID="scan-qr-close"
+                onPress={toggleClose}
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  borderRadius: 30,
+                  padding: 15,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Ionicons name="close-outline" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

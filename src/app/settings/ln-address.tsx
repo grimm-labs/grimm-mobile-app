@@ -151,7 +151,7 @@ export default function LnAddressScreen() {
   const canSubmit = username.length >= LN_USERNAME_MIN_LENGTH && !validationError && !isLoading;
 
   const renderEmptyState = () => (
-    <View className="flex-1 px-4">
+    <View testID="ln-address-empty" className="flex-1 px-4">
       <View className="flex-1 items-center justify-center">
         <View className="mb-6 rounded-full bg-primary-600 p-6">
           <Ionicons name="at" size={48} color={colors.white} />
@@ -160,7 +160,7 @@ export default function LnAddressScreen() {
         <Text className="text-small text-center text-gray-500 dark:text-charcoal-400">{t('lnAddressSettings.emptyState.subtitle')}</Text>
       </View>
       <View className="pb-4">
-        <Button label={t('lnAddressSettings.emptyState.cta')} variant="secondary" textClassName="text-base text-white" size="lg" fullWidth onPress={handleStartCreate} />
+        <Button testID="ln-address-get-started" label={t('lnAddressSettings.emptyState.cta')} variant="secondary" textClassName="text-base text-white" size="lg" fullWidth onPress={handleStartCreate} />
       </View>
     </View>
   );
@@ -169,18 +169,18 @@ export default function LnAddressScreen() {
     <View className="flex-1 px-4 pt-6">
       <View className="mb-6 rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900">
         <Text className="mb-1 text-sm text-gray-500 dark:text-charcoal-400">{t('lnAddressSettings.currentAddress')}</Text>
-        <Pressable onPress={handleCopyAddress} className="flex-row items-center justify-between">
+        <Pressable testID="ln-address-current" onPress={handleCopyAddress} className="flex-row items-center justify-between">
           <Text className="text-lg font-medium text-gray-800 dark:text-charcoal-100">{lightningAddress}</Text>
           <Ionicons name="copy-outline" size={20} color={colors.neutral[500]} />
         </Pressable>
       </View>
 
-      <Pressable onPress={handleStartEdit} className="mb-3 flex-row items-center justify-center py-2">
+      <Pressable testID="ln-address-edit" onPress={handleStartEdit} className="mb-3 flex-row items-center justify-center py-2">
         <Ionicons name="create-outline" size={18} color={colors.primary[600]} />
         <Text className="ml-2 text-sm font-medium text-primary-600">{t('lnAddressSettings.edit.headerTitle')}</Text>
       </Pressable>
 
-      <Button label={t('lnAddressSettings.delete.button')} variant="destructive" size="lg" textClassName="text-white text-base" fullWidth onPress={() => deleteModal.present()} />
+      <Button testID="ln-address-delete" label={t('lnAddressSettings.delete.button')} variant="destructive" size="lg" textClassName="text-white text-base" fullWidth onPress={() => deleteModal.present()} />
     </View>
   );
 
@@ -189,6 +189,7 @@ export default function LnAddressScreen() {
       {/* Username input with domain preview */}
       <View className="mb-2">
         <Input
+          testID="ln-address-username-input"
           placeholder={t('lnAddressSettings.create.usernamePlaceholder')}
           value={username}
           onChangeText={handleUsernameChange}
@@ -200,13 +201,14 @@ export default function LnAddressScreen() {
       </View>
 
       {/* Generate random name button */}
-      <Pressable onPress={handleGenerateRandom} className="mb-3 flex-row items-center justify-center py-2">
+      <Pressable testID="ln-address-generate-random" onPress={handleGenerateRandom} className="mb-3 flex-row items-center justify-center py-2">
         <Ionicons name="shuffle" size={18} color={colors.primary[600]} />
         <Text className="ml-2 text-sm font-medium text-primary-600">{t('lnAddressSettings.create.generateRandom')}</Text>
       </Pressable>
 
       {/* Submit button */}
       <Button
+        testID="ln-address-submit"
         label={mode === 'edit' ? t('lnAddressSettings.edit.save') : t('lnAddressSettings.confirm.confirmButton')}
         variant="secondary"
         textClassName="text-base text-white"
@@ -227,7 +229,7 @@ export default function LnAddressScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView testID="ln-address-screen" style={{ flex: 1 }}>
         <View className="flex h-full">
           <Stack.Screen
             options={{
@@ -239,7 +241,7 @@ export default function LnAddressScreen() {
                 mode === 'view' ? (
                   <HeaderLeft />
                 ) : (
-                  <Pressable onPress={handleBack} className="mr-4">
+                  <Pressable testID="ln-address-form-back" onPress={handleBack} className="mr-4">
                     <Ionicons name="arrow-back-outline" size={24} color={colors.primary[600]} />
                   </Pressable>
                 ),
@@ -254,10 +256,21 @@ export default function LnAddressScreen() {
           <View className="flex-1 px-6 pb-8">
             <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.confirm.title')}</Text>
             <Text className="mb-2 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.confirm.message')}</Text>
-            <Text className="mb-6 text-lg font-bold text-primary-600">{fullAddress}</Text>
+            <Text testID="ln-address-confirm-address" className="mb-6 text-lg font-bold text-primary-600">
+              {fullAddress}
+            </Text>
             <View>
-              <Button label={t('lnAddressSettings.confirm.confirmButton')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" loading={isSubmitting} onPress={handleConfirmCreate} />
-              <Button label={t('lnAddressSettings.confirm.cancelButton')} fullWidth size="lg" variant="outline" onPress={confirmModal.dismiss} />
+              <Button
+                testID="ln-address-confirm-button"
+                label={t('lnAddressSettings.confirm.confirmButton')}
+                fullWidth
+                size="lg"
+                variant="secondary"
+                textClassName="text-base text-white"
+                loading={isSubmitting}
+                onPress={handleConfirmCreate}
+              />
+              <Button testID="ln-address-confirm-cancel" label={t('lnAddressSettings.confirm.cancelButton')} fullWidth size="lg" variant="outline" onPress={confirmModal.dismiss} />
             </View>
           </View>
         </Modal>
@@ -268,8 +281,8 @@ export default function LnAddressScreen() {
             <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.delete.title')}</Text>
             <Text className="mb-6 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.delete.message')}</Text>
             <View>
-              <Button label={t('lnAddressSettings.delete.confirmButton')} fullWidth size="lg" variant="destructive" loading={isSubmitting} onPress={handleConfirmDelete} />
-              <Button label={t('lnAddressSettings.delete.cancelButton')} fullWidth size="lg" variant="outline" onPress={deleteModal.dismiss} />
+              <Button testID="ln-address-delete-confirm" label={t('lnAddressSettings.delete.confirmButton')} fullWidth size="lg" variant="destructive" loading={isSubmitting} onPress={handleConfirmDelete} />
+              <Button testID="ln-address-delete-cancel" label={t('lnAddressSettings.delete.cancelButton')} fullWidth size="lg" variant="outline" onPress={deleteModal.dismiss} />
             </View>
           </View>
         </Modal>

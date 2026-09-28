@@ -13,8 +13,31 @@ import { WalletView } from '@/components/wallet-view';
 import { AppContext, useBdk, useBreez } from '@/lib/context';
 import { AppNetwork } from '@/lib/context/breez-context';
 
-export default function Home() {
+const AccountCards = ({ balanceBdk, balanceBreez }: { balanceBdk: number; balanceBreez: number }) => {
   const router = useRouter();
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <View className="mb-4 flex-row items-center justify-between">
+        <Text className="text-xl font-bold text-gray-600 dark:text-charcoal-300">{t('home.accounts')}</Text>
+      </View>
+      <Pressable
+        testID="home-bitcoin-wallet-card"
+        onPress={() => router.push('/wallets/bitcoin-wallet-details')}
+        className="rounded-xl border border-gray-100 bg-gray-50 p-2 dark:border-charcoal-700 dark:bg-charcoal-900 "
+      >
+        <WalletView name={t('home.walletName')} symbol="BTC" type="On-chain" balanceSats={balanceBdk} testID="home-bitcoin-wallet" />
+      </Pressable>
+      <View className="my-2" />
+      <Pressable testID="home-lightning-wallet-card" onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl border border-gray-100 bg-gray-50 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
+        <WalletView name={t('home.l2WalletName')} symbol="BTC" type="Lightning" balanceSats={balanceBreez} lightningNetworkType="spark" testID="home-lightning-wallet" />
+      </Pressable>
+    </>
+  );
+};
+
+export default function Home() {
   const { isSeedPhraseBackup } = useContext(AppContext);
   const { balance: balanceBreez, network, refreshWalletInfo } = useBreez();
   const { balance: balanceBdk, retryBdkConnection, isSyncing } = useBdk();
@@ -34,7 +57,7 @@ export default function Home() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="home-screen" className="flex-1 bg-white dark:bg-charcoal-950">
         <FocusAwareStatusBar />
         <View className="flex-1">
           <View className="flex flex-row items-center justify-between border-b border-neutral-200 px-4 dark:border-charcoal-700">
@@ -43,13 +66,14 @@ export default function Home() {
             </View>
           </View>
           {network === AppNetwork.TESTNET && (
-            <View className="bg-danger-500 py-2">
+            <View testID="home-network-warning" className="bg-danger-500 py-2">
               <Text className="text-center text-sm font-semibold text-white">{t('home.networkWarning')}</Text>
             </View>
           )}
           <EsploraConnectionBanner />
           <View className="flex-1">
             <ScrollView
+              testID="home-scroll"
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
               refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor={colors.primary[600]} colors={[colors.primary[600]]} />}
@@ -59,16 +83,7 @@ export default function Home() {
                 <View className="mb-8" />
                 {!isSeedPhraseBackup && <SeedPhraseBackupNotification />}
                 <View className="mb-4" />
-                <View className="mb-4 flex-row items-center justify-between">
-                  <Text className="text-xl font-bold text-gray-600 dark:text-charcoal-300">{t('home.accounts')}</Text>
-                </View>
-                <Pressable onPress={() => router.push('/wallets/bitcoin-wallet-details')} className="rounded-xl border border-gray-100 bg-gray-50 p-2 dark:border-charcoal-700 dark:bg-charcoal-900 ">
-                  <WalletView name={t('home.walletName')} symbol="BTC" type="On-chain" balanceSats={balanceBdk} />
-                </Pressable>
-                <View className="my-2" />
-                <Pressable onPress={() => router.push('/wallets/ln-wallet-details')} className="rounded-xl border border-gray-100 bg-gray-50 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                  <WalletView name={t('home.l2WalletName')} symbol="BTC" type="Lightning" balanceSats={balanceBreez} lightningNetworkType="spark" />
-                </Pressable>
+                <AccountCards balanceBdk={balanceBdk} balanceBreez={balanceBreez} />
               </View>
             </ScrollView>
           </View>

@@ -1,0 +1,72 @@
+appId: ${APP_ID}
+name: Send on-chain - address validation, fees and insufficient balance
+tags:
+  - send
+  - onchain
+---
+- runFlow: subflows/create-wallet.yaml
+# The address is parsed by the Breez SDK
+- runFlow: subflows/wait-for-lightning.yaml
+- tapOn:
+    id: 'home-send-button'
+- tapOn:
+    id: 'send-method-onchain'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-address-screen'
+    timeout: 10000
+# Empty input
+- tapOn:
+    id: 'send-onchain-address-continue'
+- assertVisible: 'Please enter a valid address'
+# Invalid input
+- tapOn:
+    id: 'send-onchain-address-input'
+- inputText: 'not-an-address'
+- hideKeyboard
+- tapOn:
+    id: 'send-onchain-address-continue'
+- assertVisible: '(Address verification failed|Unsupported address type)'
+# Valid mainnet address (BIP173 test vector) -> amount screen
+- tapOn:
+    id: 'send-onchain-address-input'
+- eraseText: 30
+- inputText: 'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4'
+- hideKeyboard
+- tapOn:
+    id: 'send-onchain-address-continue'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-amount-screen'
+    timeout: 20000
+# Fee options come from the mempool API, or from the connected indexer when it is unreachable
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-fee-medium'
+    timeout: 60000
+- assertVisible:
+    id: 'send-onchain-fee-low'
+- assertVisible:
+    id: 'send-onchain-fee-fast'
+# Selecting a fee is idempotent: retry the tap if it was dropped
+- tapOn:
+    id: 'send-onchain-fee-fast'
+    retryTapIfNoChange: true
+- assertVisible:
+    id: 'send-onchain-fee-fast'
+    selected: true
+# The wallet is empty: any amount is invalid and Continue stays disabled
+- tapOn:
+    id: 'numeric-pad-key-5'
+- tapOn:
+    id: 'numeric-pad-key-0'
+- tapOn:
+    id: 'numeric-pad-key-0'
+- assertVisible:
+    id: 'send-onchain-amount-value'
+    text: '500'
+- assertVisible:
+    id: 'send-onchain-amount-invalid'
+- assertVisible:
+    id: 'send-onchain-amount-continue'
+    enabled: false

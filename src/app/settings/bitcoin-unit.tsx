@@ -17,17 +17,18 @@ interface UnitOptionProps {
   title: string;
   description: string;
   isSelected: boolean;
+  testID?: string;
   onPress: () => void;
 }
 
-const UnitOption = React.memo<UnitOptionProps>(({ title, description, isSelected, onPress }) => (
-  <Pressable onPress={onPress} style={{ opacity: 1 }}>
+const UnitOption = React.memo<UnitOptionProps>(({ title, description, isSelected, onPress, testID }) => (
+  <Pressable testID={testID} accessibilityState={{ selected: isSelected }} onPress={onPress} style={{ opacity: 1 }}>
     <View className="flex min-h-[72px] flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-2 py-4">
       <View className="flex-1 pr-4">
         <Text className="mb-1 text-sm font-medium text-gray-900 dark:text-charcoal-100">{title}</Text>
         <Text className="text-xs leading-4 text-gray-500 dark:text-charcoal-400">{description}</Text>
       </View>
-      <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
+      <View className="size-6 shrink-0 items-center justify-center">{isSelected && <Ionicons testID={`${testID}-selected`} name="checkmark-circle" size={20} color={colors.primary[600]} />}</View>
     </View>
   </Pressable>
 ));
@@ -102,7 +103,7 @@ export default function BitcoinUnitScreen() {
 
           <View className="mt-4">
             {unitOptions.map((option) => (
-              <UnitOption key={option.key} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} />
+              <UnitOption key={option.key} testID={`bitcoin-unit-option-${option.key}`} title={option.title} description={option.description} isSelected={option.isSelected} onPress={option.onPress} />
             ))}
           </View>
 

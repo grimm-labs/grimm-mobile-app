@@ -1,5 +1,5 @@
 export { amountToNumber, balanceToSats } from './balance';
-export { broadcastTransaction, getEsploraHeight, syncWalletWithEsplora } from './esplora';
+export { broadcastTransaction, syncWalletWithEsplora } from './esplora';
 export { mapCanonicalTxToOnchain, mapWalletTransactions, sortOnchainTransactions } from './map-transaction';
 export { generateMnemonic12, isValidMnemonic, parseMnemonic } from './mnemonic';
 export { type BreezNetwork, toBdkNetwork, toNetworkKind } from './network';

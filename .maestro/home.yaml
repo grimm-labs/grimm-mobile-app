@@ -1,0 +1,86 @@
+appId: ${APP_ID}
+name: Home - balance visibility, tabs, transactions and payment sheets
+tags:
+  - home
+---
+- runFlow: subflows/create-wallet.yaml
+# Hide / show the balance from the "Total Balance" toggle
+- tapOn:
+    id: 'home-balance-toggle'
+- assertVisible:
+    id: 'home-total-balance'
+    text: '\*\*\*\*\*\*\*\*'
+- assertVisible:
+    id: 'home-bitcoin-wallet-balance'
+    text: '\*\*\*\*\*\*\*\*'
+- assertVisible:
+    id: 'home-lightning-wallet-balance'
+    text: '\*\*\*\*\*\*\*\*'
+- tapOn:
+    id: 'home-total-balance'
+- assertVisible:
+    id: 'home-total-balance'
+    text: '0 SATS'
+# Send sheet offers Lightning and on-chain (tapping the label works too)
+- tapOn: 'Send'
+- assertVisible:
+    id: 'send-method-lightning'
+- assertVisible:
+    id: 'send-method-onchain'
+- assertVisible: 'Send via Lightning Network'
+- assertVisible: 'Send via Bitcoin Network'
+# Android back closes the sheet (not the app)
+- back
+- assertNotVisible:
+    id: 'send-method-lightning'
+- waitForAnimationToEnd:
+    timeout: 5000
+# Receive sheet
+- tapOn:
+    id: 'home-receive-button'
+- assertVisible:
+    id: 'receive-method-lightning'
+- assertVisible:
+    id: 'receive-method-onchain'
+- assertVisible: 'Receive via Lightning Network'
+- assertVisible: 'Receive via Bitcoin Network'
+- back
+# Transactions tab: empty for a new wallet, whatever the filter
+- tapOn:
+    id: 'tab-transactions'
+- extendedWaitUntil:
+    visible:
+      id: 'transactions-screen'
+    timeout: 10000
+- assertVisible:
+    id: 'transactions-empty'
+- assertVisible: 'No Transactions'
+- tapOn:
+    id: 'transactions-filter-lightning'
+- assertVisible:
+    id: 'transactions-empty'
+- tapOn:
+    id: 'transactions-filter-onchain'
+- assertVisible:
+    id: 'transactions-empty'
+- tapOn:
+    id: 'transactions-filter-pending'
+- assertVisible:
+    id: 'transactions-empty'
+- tapOn:
+    id: 'transactions-filter-confirmed'
+- assertVisible:
+    id: 'transactions-empty'
+- tapOn:
+    id: 'transactions-filter-all'
+- assertVisible:
+    id: 'transactions-empty'
+# Settings tab and back to Home
+- tapOn:
+    id: 'tab-settings'
+- assertVisible:
+    id: 'settings-screen'
+- tapOn:
+    id: 'tab-index'
+- assertVisible:
+    id: 'home-screen'

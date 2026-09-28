@@ -138,6 +138,7 @@ const TabLayout = () => {
           name={name}
           options={{
             tabBarIcon: tabBarIcon(iconName),
+            tabBarButtonTestID: `tab-${name}`,
             headerShown: false,
             title,
           }}

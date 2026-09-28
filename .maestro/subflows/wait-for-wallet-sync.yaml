@@ -1,0 +1,25 @@
+# Waits until the on-chain wallet is connected and its first sync is over, then comes back to the Home tab.
+# The first sync of a wallet scans ~60 addresses: taps made meanwhile can be dropped on CI emulators.
+# Settings > Esplora Indexer shows it: "In use" appears once connected and the rows are disabled while syncing.
+appId: ${APP_ID}
+---
+- runFlow:
+    file: open-settings-item.yaml
+    env:
+      ITEM_ID: settings-esplora-server
+- extendedWaitUntil:
+    visible:
+      id: 'esplora-server-option-.*-in-use'
+    timeout: 120000
+- extendedWaitUntil:
+    visible:
+      id: 'esplora-server-option-blockstream\.info'
+      enabled: true
+    timeout: 120000
+- back
+- tapOn:
+    id: 'tab-index'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 10000
