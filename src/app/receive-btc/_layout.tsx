@@ -47,6 +47,12 @@ export default function ReceivePaymentScreen() {
 
   const openAddressConfig = () => addressConfigRef.current?.present();
 
+  // getReceiveAddress changes on every BDK state update (sync, balance...). Depending on it regenerated (and revealed)
+  // a new address each time the wallet synced: the address changed under the user and open sheets were closed.
+  // The address is only generated on mount and on explicit actions (New Address, retry).
+  const getReceiveAddressRef = useRef(getReceiveAddress);
+  getReceiveAddressRef.current = getReceiveAddress;
+
   const generateAddress = useCallback(async () => {
     try {
       setLoading(true);
@@ -54,7 +60,7 @@ export default function ReceivePaymentScreen() {
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const bitcoinAddress = await getReceiveAddress();
+      const bitcoinAddress = await getReceiveAddressRef.current();
 
       if (bitcoinAddress) {
         setAddress(bitcoinAddress);
@@ -68,7 +74,7 @@ export default function ReceivePaymentScreen() {
     } finally {
       setLoading(false);
     }
-  }, [t, getReceiveAddress]);
+  }, [t]);
 
   useEffect(() => {
     generateAddress();
