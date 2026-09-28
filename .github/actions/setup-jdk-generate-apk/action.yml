@@ -4,16 +4,34 @@
 
 # ✍️ Description:
 # This is a composite action, which means it can be used in other actions.
-# This action is used to set up the JDK environment and generate an Android APK for testing.
-# This action accepts one input: `APP_ENV`, which is used to generate an APK for a specific environment (development, staging, production). We use staging by default.
-# Before generating the APK, we run a pre-build script to generate the necessary native folders based on the APP_ENV.
-# On success, the APK is generated at `./android/app/build/outputs/apk/release/app-release.apk`.
+# It sets up the JDK + Gradle and generates a release APK (signed with the debug keystore) used by the E2E workflows.
+#
+# Prerequisites (done by the calling workflow):
+#   - dependencies are installed (./.github/actions/setup-node-pnpm-install)
+#   - `.env.<APP_ENV>` exists at the repo root: env.js validates it with zod and throws if a variable is missing,
+#     both during `expo prebuild` and during the Gradle JS bundling step.
+#
+# Inputs:
+#   `APP_ENV`: development, staging or production. Drives the package name (e.g. com.grimm.labs.app.staging).
+#   `ANDROID_ARCHS`: comma separated ABIs to build. Defaults to `arm64-v8a` because bdk-rn 1.0.0 ships its Rust
+#                    library for arm64-v8a only: an APK that contains another ABI folder (x86_64, armeabi-v7a...)
+#                    crashes as soon as the app imports bdk-rn on a device using that ABI.
+#                    Building a single ABI is also much faster than the 4 ABIs of android/gradle.properties.
+#   `GOOGLE_SERVICES_JSON_BASE64`: optional base64 google-services.json (secret GOOGLE_SERVICES_JSON).
+#                    android/app/build.gradle always applies the Google Services plugin, so the build fails without
+#                    this file. When the secret is not available (e.g. PRs from forks) we fall back to
+#                    credentials/firebase/google-services.example.json: the app builds and runs, only push
+#                    notifications cannot work.
+#
+# Output: `apk-path`, the path of the generated APK (./android/app/build/outputs/apk/release/app-release.apk).
 
 # 👀 Example usage:
-#       - name : 📦 Set Up JDK + Generate Test APK
+#       - name: 📦 Set Up JDK + Generate Test APK
+#         id: build-apk
 #         uses: ./.github/actions/setup-jdk-generate-apk
 #         with:
-#           APP_ENV: 'staging'
+#           APP_ENV: staging
+#           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
 name: 'Setup  JDK + GRADLE + Generate APK'
 description: 'Setup  JDK + GRADLE + Generate APK'
@@ -22,27 +40,58 @@ inputs:
     description: 'APP_ENV (one of): development, staging, production'
     required: true
     default: 'staging'
+  ANDROID_ARCHS:
+    description: 'Comma separated list of ABIs to build (reactNativeArchitectures)'
+    required: false
+    default: 'arm64-v8a'
+  GOOGLE_SERVICES_JSON_BASE64:
+    description: 'Base64 encoded google-services.json (falls back to the example file when empty)'
+    required: false
+    default: ''
+outputs:
+  apk-path:
+    description: 'Path of the generated APK'
+    value: ./android/app/build/outputs/apk/release/app-release.apk
 
 runs:
   using: 'composite'
   steps:
-    - name: Set Up JDK
-      uses: actions/setup-java@v3
+    - name: ☕ Set Up JDK
+      uses: actions/setup-java@v6
       with:
-        distribution: 'zulu' # See 'Supported distributions' for available options
+        distribution: 'zulu'
         java-version: '17'
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
 
-    - name: Generate Test APK
+    - name: 🐘 Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
+
+    - name: 🔥 Setup Firebase google-services.json
+      shell: bash
+      env:
+        GOOGLE_SERVICES_JSON_BASE64: ${{ inputs.GOOGLE_SERVICES_JSON_BASE64 }}
       run: |
-        pnpm prebuild:${{ inputs.APP_ENV }}
-        cd  android
-        chmod +x ./gradlew
-        ./gradlew assembleRelease --no-daemon
-        cd ..
+        mkdir -p ./credentials/firebase
+        if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
+          echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > ./credentials/firebase/google-services.json
+          echo "✅ google-services.json created from secret"
+        else
+          cp ./credentials/firebase/google-services.example.json ./credentials/firebase/google-services.json
+          echo "::warning::GOOGLE_SERVICES_JSON secret not available, using google-services.example.json (push notifications will not work in this build)"
+        fi
+
+    - name: 📱 Generate Test APK
       shell: bash
       env:
         EXPO_NO_DOTENV: '1'
         APP_ENV: ${{ inputs.APP_ENV }}
+        ANDROID_ARCHS: ${{ inputs.ANDROID_ARCHS }}
         CI: 'true'
+      run: |
+        if [ ! -f ".env.${APP_ENV}" ]; then
+          echo "::error::.env.${APP_ENV} is missing: create it before calling this action (see env.js)"
+          exit 1
+        fi
+        pnpm prebuild:${APP_ENV} --platform android --no-install
+        cd android
+        chmod +x ./gradlew
+        ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures="${ANDROID_ARCHS}"

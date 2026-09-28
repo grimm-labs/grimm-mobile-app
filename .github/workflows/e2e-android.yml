@@ -1,95 +1,145 @@
 # Links:
 # Source file: https://github.com/obytes/react-native-template-obytes/blob/master/.github/workflows/e2e-android.yml
 # End-to-end testing: https://starter.obytes.com/testing/end-to-end-testing/
+# Emulator runner: https://github.com/ReactiveCircus/android-emulator-runner
 
 # Description:
-# This workflow is used to run end-to-end tests on Android using Maestro.
-# As a first step, it will generate a test APK using the Gradle build and then upload it as an artifact.
-# A new job will be started to run the tests using the test APK generated in the previous job.
-# To test the app, we set up an Android emulator using the `reactivecircus/android-emulator-runner` action. This runner requires macOS as the operating system for the runner.
-# This workflow will be triggered on pull requests (PRs) with the label "android-test-github" or can be manually triggered from the Actions tab.
-#
+# This workflow is used to run end-to-end tests on Android using Maestro on a GitHub hosted emulator (free, no Maestro Cloud account needed).
+# It is the only E2E pipeline of the project: we don't use Maestro Cloud.
+# As a first step, it generates a staging test APK (arm64-v8a, see .github/actions/setup-jdk-generate-apk) and uploads it as an artifact.
+# A second job starts an Android emulator with `reactivecircus/android-emulator-runner` on ubuntu (KVM) and runs the flows of .maestro/ on it.
+# The APK only contains arm64-v8a native libraries (bdk-rn has no x86_64 build), so we use an API 35 google_apis x86_64 image:
+# it translates ARM code, which is what lets an arm64-only APK run on the x86_64 runner.
+# This workflow runs on every pull request and every push to main/master (changes that only touch markdown files are skipped), and can be manually triggered from the Actions tab.
+# On pull requests, a new push cancels the run in progress for the same PR; runs on main/master are never cancelled.
+# Reports: the JUnit report, Maestro debug output (screenshots, logs) and a logcat dump on failure are uploaded as the `e2e-android-report` artifact.
 
 # GITHUB SECRETS REQUIRED: None
+# GITHUB SECRETS OPTIONAL:
+# BREEZ_API_KEY: Breez SDK API key (not needed by the current flows).
+# GOOGLE_SERVICES_JSON: base64 encoded google-services.json (falls back to the example file when missing).
+# GITHUB VARIABLES:
+# NOTIFICATION_API_URL_STAGING: notification service URL (a default staging URL is used when missing).
 
 name: E2E Tests Android (Maestro + Github Action)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - '**.md'
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - '**.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  APP_ENV: staging
+  APP_ID: com.grimm.labs.app.staging
+  MAESTRO_VERSION: 2.10.0
+  # The default driver startup timeout is too short for a freshly booted CI emulator
+  MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
+  EMULATOR_API_LEVEL: 35
+  EMULATOR_TARGET: google_apis
+  EMULATOR_ARCH: x86_64
 
 jobs:
   generate-test-apk:
-    if: github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'android-test-github'))
     name: Generate Test APK (Gradle)
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout project repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v7
 
-      - name: Create .env.production
+      - name: Create .env.staging
+        env:
+          BREEZ_API_KEY: ${{ secrets.BREEZ_API_KEY }}
+          NOTIFICATION_API_URL: ${{ vars.NOTIFICATION_API_URL_STAGING || 'https://notification-service-staging.usegrimm.app' }}
         run: |
-          echo "BREEZ_API_KEY=${{ secrets.BREEZ_API_KEY }}" >> .env.production
-          echo "YADIO_API_URL=https://api.yadio.io" >> .env.production
-          echo "MEMPOOL_URL=https://mempool.space" >> .env.production
-          echo "NOTIFICATION_API_URL=${{ vars.NOTIFICATION_API_URL_PROD }}" >> .env.production
+          {
+            echo "BREEZ_API_KEY=${BREEZ_API_KEY}"
+            echo "YADIO_API_URL=https://api.yadio.io"
+            echo "MEMPOOL_URL=https://mempool.space"
+            echo "NOTIFICATION_API_URL=${NOTIFICATION_API_URL}"
+          } > .env.staging
 
       - name: Setup Node + PNPM + install deps
         uses: ./.github/actions/setup-node-pnpm-install
 
       - name: Set Up JDK + Generate Test APK
+        id: build-apk
         uses: ./.github/actions/setup-jdk-generate-apk
         with:
-          APP_ENV: production
+          APP_ENV: ${{ env.APP_ENV }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
       - name: Upload Test APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-apk
-          path: ./android/app/build/outputs/apk/release/app-release.apk
+          path: ${{ steps.build-apk.outputs.apk-path }}
+          if-no-files-found: error
+          retention-days: 7
 
   test-android:
     name: Run Android E2E Tests (Maestro + Github Action)
     needs: generate-test-apk
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout project repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Set Up JDK (required by Maestro)
+        uses: actions/setup-java@v6
         with:
-          fetch-depth: 0
+          distribution: 'zulu'
+          java-version: '17'
 
       - name: Install Maestro
-        run: npm run install-maestro ## We use npm because we don't need to install deps again
+        run: |
+          curl -Ls --retry 3 --retry-all-errors "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
       - name: Download Test APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: test-apk
-          path: ${{ github.workspace }}
-
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
+          path: ${{ runner.temp }}/test-apk
 
       - name: AVD cache
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         id: avd-cache
         with:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-cache-${{ runner.os }}-api30-x86-64
+          key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_TARGET }}-${{ env.EMULATOR_ARCH }}
 
-      - name: create AVD and generate snapshot for caching
+      - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          arch: x86_64
+          api-level: ${{ env.EMULATOR_API_LEVEL }}
+          target: ${{ env.EMULATOR_TARGET }}
+          arch: ${{ env.EMULATOR_ARCH }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
@@ -98,31 +148,32 @@ jobs:
           profile: Nexus 6
           script: echo "Generated AVD snapshot for caching."
 
+      # Each line of `script` runs in its own shell: keep multi-command logic on one line
       - name: Run tests with Maestro
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          APK_PATH: ${{ runner.temp }}/test-apk/app-release.apk
         with:
-          api-level: 30
-          arch: x86_64
+          api-level: ${{ env.EMULATOR_API_LEVEL }}
+          target: ${{ env.EMULATOR_TARGET }}
+          arch: ${{ env.EMULATOR_ARCH }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
+          disable-animations: true
           cores: 2
           ram-size: 4096M
           profile: Nexus 6
           script: |
-            adb install "${{ github.workspace }}/app-release.apk"
-            $HOME/.maestro/bin/maestro test .maestro/ --env=APP_ID=com.grimm.labs.app  --format junit
+            mkdir -p e2e-report
+            adb install -r "$APK_PATH"
+            adb logcat -c
+            maestro test .maestro/ --env APP_ID="$APP_ID" --format junit --output e2e-report/report.xml --debug-output e2e-report/debug --flatten-debug-output || { adb logcat -d > e2e-report/logcat.txt; exit 1; }
 
-      - name: Upload artifacts
+      - name: Upload E2E report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: e2e-test-logs
-          path: ~/.maestro/tests/**/*
-
-      - name: Store tests result
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e_android_report
-          path: |
-            report.xml
+          name: e2e-android-report
+          path: e2e-report/
+          if-no-files-found: ignore
+          retention-days: 14

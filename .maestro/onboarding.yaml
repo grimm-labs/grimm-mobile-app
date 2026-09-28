@@ -1,9 +1,10 @@
 appId: ${APP_ID}
+name: Onboarding screen
+tags:
+  - smoke
+  - onboarding
 ---
-- clearState
-- launchApp
-- assertVisible:
-    id: 'onboarding-screen'
+- runFlow: subflows/launch-fresh-app.yaml
 - assertVisible:
     id: 'onboarding-content'
 - assertVisible:

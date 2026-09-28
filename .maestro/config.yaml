@@ -1,6 +1,5 @@
+# Maestro workspace configuration: https://docs.maestro.dev/maestro-flows/workspace-management/project-configuration
+# Every flow at the root of .maestro/ is a test. Reusable steps live in subflows/ and only run through `runFlow`.
+# Flows are independent (each one starts from a fresh install state), so they can run in any order.
 flows:
-  - onboarding.yaml
-  - need-help.yaml
-
-executionOrder:
-  continueOnFailure: false
+  - '*'
