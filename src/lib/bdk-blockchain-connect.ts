@@ -56,8 +56,67 @@ function createEsploraClient(baseUrl: string): EsploraClient {
   return new EsploraClient(baseUrl, undefined);
 }
 
-function probeEsploraConnection(client: EsploraClient): void {
-  client.getHeight();
+const INDEXER_REQUEST_TIMEOUT_MS = 10_000;
+
+async function fetchFromIndexer(url: string): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), INDEXER_REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${url}`);
+    }
+    return response;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Current block height of an Esplora indexer.
+ * bdk-rn's `EsploraClient.getHeight()` is a synchronous network call: it blocks the JS thread (the whole UI)
+ * until the indexer answers, indefinitely when it doesn't. Indexers are queried with `fetch` instead.
+ */
+export async function fetchEsploraTipHeight(baseUrl: string): Promise<number> {
+  const response = await fetchFromIndexer(`${baseUrl}/blocks/tip/height`);
+  const height = Number((await response.text()).trim());
+  if (!Number.isInteger(height) || height <= 0) {
+    throw new Error(`Invalid tip height from ${baseUrl}`);
+  }
+  return height;
+}
+
+export type IndexerFeeRates = {
+  fastestFee: number;
+  halfHourFee: number;
+  hourFee: number;
+};
+
+const areValidFeeRates = (rates: IndexerFeeRates): boolean => Object.values(rates).every((rate) => Number.isFinite(rate) && rate > 0);
+
+/**
+ * Fee rates (sat/vB) from an indexer: mempool-based indexers expose `/v1/fees/recommended`,
+ * plain Esplora indexers expose `/fee-estimates` (confirmation target in blocks → sat/vB).
+ */
+export async function fetchIndexerFeeRates(baseUrl: string): Promise<IndexerFeeRates> {
+  try {
+    const recommended = await (await fetchFromIndexer(`${baseUrl}/v1/fees/recommended`)).json();
+    const rates = { fastestFee: Number(recommended.fastestFee), halfHourFee: Number(recommended.halfHourFee), hourFee: Number(recommended.hourFee) };
+    if (areValidFeeRates(rates)) {
+      return rates;
+    }
+  } catch {
+    // Not a mempool-based indexer: use the Esplora endpoint below
+  }
+
+  const estimates: Record<string, number> = await (await fetchFromIndexer(`${baseUrl}/fee-estimates`)).json();
+  // eslint-disable-next-line security/detect-object-injection
+  const rateFor = (blocks: '1' | '3' | '6') => Math.max(1, Math.ceil(Number(estimates[blocks])));
+  const rates = { fastestFee: rateFor('1'), halfHourFee: rateFor('3'), hourFee: rateFor('6') };
+  if (!areValidFeeRates(rates)) {
+    throw new Error(`Invalid fee estimates from ${baseUrl}`);
+  }
+  return rates;
 }
 
 export type EsploraConnectResult = {
@@ -78,8 +137,8 @@ export async function connectEsploraBackend(candidates: EsploraServer[], onchain
     const baseUrl = getEsploraBaseUrl(server, onchainNetwork);
     try {
       console.log(`[BDK init] Trying Esplora → ${baseUrl}`);
+      await fetchEsploraTipHeight(baseUrl);
       const client = createEsploraClient(baseUrl);
-      probeEsploraConnection(client);
       console.log(`[BDK init] Esplora connected → ${baseUrl}`);
       return { backend: 'esplora', client, serverId: server.id, baseUrl };
     } catch (error) {

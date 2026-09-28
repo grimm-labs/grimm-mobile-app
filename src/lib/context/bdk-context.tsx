@@ -14,20 +14,30 @@ import {
   createOrLoadWallet,
   estimateTransactionFee,
   formatUnknownError,
-  getEsploraHeight,
   type OnchainTransaction,
   readWalletSnapshot,
   revealReceiveAddress,
   syncWalletWithEsplora,
   toBdkNetwork,
 } from '../bdk';
-import { connectEsploraBackend, type EsploraConnectResult, type EsploraServerOption, isEsploraRateLimitError, migrateLegacyServerId, orderEsploraServers, toEsploraServerOptions } from '../bdk-blockchain-connect';
+import {
+  connectEsploraBackend,
+  type EsploraConnectResult,
+  type EsploraServerOption,
+  fetchEsploraTipHeight,
+  fetchIndexerFeeRates,
+  type IndexerFeeRates,
+  isEsploraRateLimitError,
+  migrateLegacyServerId,
+  orderEsploraServers,
+  toEsploraServerOptions,
+} from '../bdk-blockchain-connect';
 import { DEFAULT_ESPLORA_SERVERS, DEFAULT_SERVER_ID } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { getItem as getStorageItem, removeItem as removeStorageItem, setItem as setStorageItem } from '../storage';
 import { useBreez } from './breez-context';
 
-export type { EsploraServerOption, OnchainTransaction };
+export type { EsploraServerOption, IndexerFeeRates, OnchainTransaction };
 
 const SYNC_INTERVAL = 60000;
 const INIT_RETRY_INTERVAL = 30000;
@@ -194,6 +204,8 @@ interface BdkContextType extends BdkState {
   calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
   getReceiveAddress: () => Promise<string>;
   getBlockainHeight: () => Promise<number | undefined>;
+  /** Fee rates from the connected indexer (fallback when the mempool fee API is unreachable) */
+  getIndexerFeeRates: () => Promise<IndexerFeeRates>;
   availableServers: EsploraServerOption[];
   selectedServerId: string | null;
   setSelectedServer: (serverId: string) => Promise<void>;
@@ -222,6 +234,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const { getItem: _getSeedPhrase } = useSecureStorage('seedPhrase');
   const isInitializingRef = useRef<boolean>(false);
   const esploraClientRef = useRef<EsploraClient | null>(null);
+  const esploraBaseUrlRef = useRef<string | null>(null);
   const walletRef = useRef<WalletInterface | null>(null);
   const persisterRef = useRef<PersisterInterface | null>(null);
   const { network } = useBreez();
@@ -300,6 +313,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
       console.log('Disconnecting BDK...');
 
       esploraClientRef.current = null;
+
+      esploraBaseUrlRef.current = null;
       walletRef.current = null;
       persisterRef.current = null;
 
@@ -375,10 +390,17 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   };
 
   const getBlockainHeight = async (): Promise<number | undefined> => {
-    if (esploraClientRef.current) {
-      return getEsploraHeight(esploraClientRef.current);
+    if (esploraBaseUrlRef.current) {
+      return fetchEsploraTipHeight(esploraBaseUrlRef.current);
     }
     return undefined;
+  };
+
+  const getIndexerFeeRates = async (): Promise<IndexerFeeRates> => {
+    if (!esploraBaseUrlRef.current) {
+      throw new Error('Blockchain indexer not connected');
+    }
+    return fetchIndexerFeeRates(esploraBaseUrlRef.current);
   };
 
   const syncWallet = useCallback(
@@ -432,6 +454,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
               console.warn(`[BDK sync] Rate limited on ${currentId} — switching to ${server.id}`);
               const connectResult = await connectEsploraBackend([server], onchainNetwork, { manualSelection: true });
               esploraClientRef.current = connectResult.client;
+              esploraBaseUrlRef.current = connectResult.baseUrl;
               setSelectedServerId(connectResult.serverId);
               await persistServerId(onchainNetwork, connectResult.serverId);
               await applySyncResult();
@@ -480,6 +503,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         updateState({ isSyncing: true, error: null, isConnected: false, isBdkInitialized: false, wallet: null });
 
         esploraClientRef.current = null;
+
+        esploraBaseUrlRef.current = null;
         walletRef.current = null;
         persisterRef.current = null;
 
@@ -532,6 +557,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           try {
             const connectResult: EsploraConnectResult = await connectEsploraBackend([server], onchainNetwork, { manualSelection: true });
             esploraClientRef.current = connectResult.client;
+            esploraBaseUrlRef.current = connectResult.baseUrl;
             walletRef.current = wallet;
             persisterRef.current = persister;
             currentNetworkRef.current = network;
@@ -572,6 +598,8 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         });
 
         esploraClientRef.current = null;
+
+        esploraBaseUrlRef.current = null;
         walletRef.current = null;
         persisterRef.current = null;
         updateState({
@@ -697,6 +725,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     calculateTransactionFee,
     getReceiveAddress,
     getBlockainHeight,
+    getIndexerFeeRates,
     availableServers,
     selectedServerId,
     setSelectedServer,

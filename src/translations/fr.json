@@ -398,6 +398,8 @@
         "low": "Lent",
         "medium": "Normal"
       },
+      "feesError": "Impossible de charger les frais du réseau.",
+      "feesRetry": "Réessayer",
       "headerTitle": "Envoyer du Bitcoin",
       "invalidAmount": "Montant invalide",
       "loadingFees": "Chargement des frais..."

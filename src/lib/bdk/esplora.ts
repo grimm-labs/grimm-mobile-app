@@ -21,7 +21,3 @@ export async function syncWalletWithEsplora(wallet: WalletInterface, persister: 
 export async function broadcastTransaction(client: EsploraClient, tx: BroadcastTx): Promise<void> {
   client.broadcast(tx);
 }
-
-export async function getEsploraHeight(client: EsploraClient): Promise<number> {
-  return client.getHeight();
-}

@@ -398,6 +398,8 @@
         "low": "Slow",
         "medium": "Normal"
       },
+      "feesError": "Unable to load the network fees.",
+      "feesRetry": "Try again",
       "headerTitle": "Send Bitcoin",
       "invalidAmount": "Invalid amount",
       "loadingFees": "Loading fees..."
