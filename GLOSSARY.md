@@ -18,6 +18,16 @@ A self-custodial Bitcoin wallet for Android and iOS. One Recovery Phrase on the 
 
 **Total**: The Amount plus the Network Fee: everything that leaves the sender's wallet for one transaction. _Avoid_: total amount, sent
 
+**Invoice**: A Lightning payment request created by the recipient. It either fixes the Amount or leaves it to the payer. _Avoid_: bolt11, payment request
+
+**Lightning Address**: An identifier shaped like `name@domain` that provides an Invoice on request, for an Amount the payer chooses. _Avoid_: LN address
+
+**Bitcoin URI**: A `bitcoin:` link or QR code that names an on-chain address, and may add an Amount and an Invoice. _Avoid_: BIP21, unified QR
+
+**Payment Input**: Anything the user scans, pastes or opens as a link to pay, withdraw or sign in, before the app knows what kind it is. _Avoid_: QR data; invoice or address for the general case
+
+**Withdrawal**: Bringing into the Lightning wallet funds that a service offers (a voucher, an ATM, a faucet), within the limits that service sets. _Avoid_: LNURL-withdraw, claim, redeem
+
 ### Access
 
 **App Lock**: An optional protection, off until the user creates a PIN, that keeps the app hidden until the user proves they are the owner. _Avoid_: security, passcode lock
@@ -31,5 +41,7 @@ A self-custodial Bitcoin wallet for Android and iOS. One Recovery Phrase on the 
 **Biometric Unlock**: An optional shortcut that accepts the phone's biometrics instead of typing the PIN. It requires a PIN. _Avoid_: Face ID, Touch ID, fingerprint (these are methods, not the feature)
 
 **Sensitive Action**: An action that asks for the PIN or Biometric Unlock again, even when the app is already unlocked. _Avoid_: protected action, secure action
+
+**Lightning Login**: Signing in to a website with an identity derived from the Recovery Phrase, different for each website. _Avoid_: LNURL-auth, sign in with Lightning
 
 **Lockout**: A waiting period, after too many wrong PINs, during which the app refuses any PIN. It never deletes anything. _Avoid_: ban, block, wipe

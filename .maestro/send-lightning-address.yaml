@@ -1,0 +1,76 @@
+appId: ${APP_ID}
+name: Send via Lightning - Lightning Address amount screen
+tags:
+  - send
+  - lightning
+# A real Lightning Address registered by the team on pay.usegrimm.app, never paid (empty wallet).
+# LNURL_PAY is the same address as LNURL-pay: the bech32 encoding of https://pay.usegrimm.app/.well-known/lnurlp/admin-test
+env:
+  LN_ADDRESS: admin-test@pay.usegrimm.app
+  LNURL_PAY: LNURL1DP68GURN8GHJ7URP0YH82UM9VAEXJMTD9ESHQUP09EMK2MRV944KUMMHDCHKCMN4WFK8QTMPV3KKJM3DW3JHXAQJA9KPP
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/wait-for-lightning.yaml
+- tapOn:
+    id: 'home-send-button'
+- tapOn:
+    id: 'send-method-lightning'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-address-screen'
+    timeout: 10000
+# Lightning Address: "Send to" shows the address, the limits show from the start
+- tapOn:
+    id: 'send-ln-address-input'
+- inputText: ${LN_ADDRESS}
+- hideKeyboard
+- tapOn:
+    id: 'send-ln-address-continue'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-amount-send-to'
+      text: 'Send to ${LN_ADDRESS}'
+    timeout: 30000
+- assertVisible:
+    id: 'send-ln-amount-limits'
+    text: 'Enter an amount between .* and .*'
+- assertVisible:
+    id: 'send-ln-amount-continue'
+    enabled: false
+# 1 000 sats is within the limits, but above the balance of the empty wallet
+- tapOn:
+    id: 'numeric-pad-key-1'
+- tapOn:
+    id: 'numeric-pad-key-0'
+- tapOn:
+    id: 'numeric-pad-key-0'
+- tapOn:
+    id: 'numeric-pad-key-0'
+- assertVisible:
+    id: 'send-ln-amount-value'
+    text: '1000'
+- assertNotVisible:
+    id: 'send-ln-amount-limits'
+- assertVisible:
+    id: 'send-ln-amount-insufficient'
+- assertVisible:
+    id: 'send-ln-amount-continue'
+    enabled: false
+# LNURL-pay: "Send to" shows the domain
+- back
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-address-screen'
+    timeout: 10000
+- tapOn:
+    id: 'send-ln-address-input'
+- eraseText: 40
+- inputText: ${LNURL_PAY}
+- hideKeyboard
+- tapOn:
+    id: 'send-ln-address-continue'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-amount-send-to'
+      text: 'Send to pay.usegrimm.app'
+    timeout: 30000
