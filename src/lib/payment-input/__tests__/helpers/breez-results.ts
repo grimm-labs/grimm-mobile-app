@@ -4,7 +4,7 @@
  */
 import type { InputType, Payment } from '@/lib/context/breez-context';
 
-import { BitcoinNetwork, InputType_Tags, PaymentStatus, PaymentType } from './fake-breez-context';
+import { BitcoinNetwork, InputType_Tags, LnurlCallbackStatus_Tags, PaymentStatus, PaymentType } from './fake-breez-context';
 
 export const MAINNET_INVOICE = 'lnbc1invoice';
 
@@ -118,3 +118,7 @@ export function aPayment({ status = PaymentStatus.Completed, amountSats = 1000 }
     conversionDetails: undefined,
   } as unknown as Payment;
 }
+
+/** What lnurlAuth resolves with: the website accepted the sign-in, or refused it with a reason. */
+export const anLnurlAuthOk = () => ({ tag: LnurlCallbackStatus_Tags.Ok });
+export const anLnurlAuthError = (reason: string) => ({ tag: LnurlCallbackStatus_Tags.ErrorStatus, inner: { errorDetails: { reason } } });

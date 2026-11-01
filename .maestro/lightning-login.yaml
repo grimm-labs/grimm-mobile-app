@@ -1,0 +1,46 @@
+appId: ${APP_ID}
+name: Lightning Login - confirmation with the title of the action, never signs in by itself
+tags:
+  - lightning
+  - login
+# LNURL-auth requests for example.com (a reserved domain) with a fixed k1, bech32-encoded:
+# https://example.com/lnurl-auth?tag=login&k1=<k1>&action=register, and the same without action.
+# Breez reads them without the network. The flow never taps Sign in.
+env:
+  REGISTER_REQUEST: LNURL1DP68GURN8GHJ7ETCV9KHQMR99E3K7MF0D3H82UNV94SH2ARG8A6XZEEAD3HKW6TWYE4NZ0T9XFSKVD3JX56XZWRYVC6RXVEJXC6XVCFJXDNRVDM9VGURZWPCXCEN2EP3X43K2WPCXDJNSENRXQERQWFC89JR2E3CXFSK2DNXXYCK2FNPVD6XJMMW84EX2EMFWD6X2US6GXF06
+  LOGIN_REQUEST: LNURL1DP68GURN8GHJ7ETCV9KHQMR99E3K7MF0D3H82UNV94SH2ARG8A6XZEEAD3HKW6TWYE4NZ0T9XFSKVD3JX56XZWRYVC6RXVEJXC6XVCFJXDNRVDM9VGURZWPCXCEN2EP3X43K2WPCXDJNSENRXQERQWFC89JR2E3CXFSK2DNXXYCK2YTD7ZW
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/wait-for-lightning.yaml
+# Pasted, with action=register: "Create an account"; Cancel goes back to the paste screen
+- runFlow:
+    file: subflows/paste-on-lightning-screen.yaml
+    env:
+      PAYMENT_INPUT: ${REGISTER_REQUEST}
+- extendedWaitUntil:
+    visible:
+      id: 'lightning-login-title'
+      text: 'Create an account on example\.com\?'
+    timeout: 30000
+- assertVisible:
+    id: 'lightning-login-confirm'
+- tapOn:
+    id: 'lightning-login-cancel'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-address-screen'
+    timeout: 10000
+- runFlow: subflows/back-to-home.yaml
+# Opened as a lightning: link, without action: "Sign in"; Cancel goes back to Home
+- openLink: 'lightning:${LOGIN_REQUEST}'
+- extendedWaitUntil:
+    visible:
+      id: 'lightning-login-title'
+      text: 'Sign in to example\.com\?'
+    timeout: 30000
+- tapOn:
+    id: 'lightning-login-cancel'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 10000
