@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { colors } from '@/components/ui';
 import { initializeLanguage } from '@/lib';
 import { AppContext, useBdk } from '@/lib/context';
+import { useAppLock } from '@/lib/context/app-lock-context';
 import { useBreez } from '@/lib/context/breez-context';
 
 const SPLASH_HIDE_DELAY = 1000;
@@ -27,6 +28,7 @@ const TabLayout = () => {
   const { isDataLoaded, hasSeedPhrase } = useContext(AppContext);
   const { isBreezInitialized, initializeBreez, isDataLoaded: isBreezDataLoaded } = useBreez();
   const { isBdkInitialized, initializeBdk } = useBdk();
+  const { isAppLockLoaded } = useAppLock();
 
   const splashHiddenRef = useRef(false);
   const { t } = useTranslation();
@@ -94,8 +96,9 @@ const TabLayout = () => {
     }
   }, [hasSeedPhrase]);
 
+  // The splash stays up until the App Lock state is loaded, so the home screen never flashes before the Lock Screen
   useEffect(() => {
-    if (isDataLoaded && isLanguageLoaded) {
+    if (isDataLoaded && isLanguageLoaded && isAppLockLoaded) {
       if (!hasSeedPhrase) {
         hideSplash();
       } else {
@@ -103,7 +106,7 @@ const TabLayout = () => {
         return () => clearTimeout(timer);
       }
     }
-  }, [hideSplash, isDataLoaded, isLanguageLoaded, hasSeedPhrase]);
+  }, [hideSplash, isDataLoaded, isLanguageLoaded, isAppLockLoaded, hasSeedPhrase]);
 
   useEffect(() => {
     return () => {
