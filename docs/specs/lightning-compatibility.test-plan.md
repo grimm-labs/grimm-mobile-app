@@ -189,33 +189,34 @@ Short names: `uri` = `src/lib/payment-input/__tests__/bitcoin-uri.test.ts`; `rou
 
 ## Part 3: Withdrawal
 
-Short names: `domain` = `src/lib/lightning/__tests__/domain.test.ts`; `withdrawal` = `src/app/receive/__tests__/withdrawal.test.tsx`; plus `route`, `entry`, `limits` and `i18n`.
+Short names: `domain` = `src/lib/lightning/__tests__/domain.test.ts`; `request` = `src/lib/lightning/__tests__/withdrawal-request.test.ts`; `withdrawal` = `src/app/receive/__tests__/withdrawal.test.tsx`; plus `route`, `entry` and `i18n`. In `withdrawal`, the boundary rows run once per unit (SATS, BTC) with the limits 1 500 msat and 5 000 999 msat (2 and 5 000 sats), like Part 1.
 
-| Item                               | Level       | Test file › test name                                                                                                      | Status  |
-| ---------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- | ------- |
-| P3-1                               | Unit        | `route` › {network}: LNURL-withdraw → withdrawal                                                                           | planned |
-| P3-1                               | Integration | `entry` › {entry point}: LNURL-withdraw → receive/withdrawal                                                               | planned |
-| P3-1                               | Integration | `withdrawal` › parses the Payment Input again with Breez                                                                   | planned |
-| P3-1                               | Integration | `withdrawal` › a parse result that is not LNURL-withdraw shows an error and no Withdraw button                             | planned |
-| P3-2                               | Unit        | `domain` › returns the host of a URL with a port, a path, a query string, a subdomain                                      | planned |
-| P3-2                               | Unit        | `domain` › returns null for an invalid URL                                                                                 | planned |
-| P3-2                               | Integration | `withdrawal` › shows the domain of the callback and defaultDescription                                                     | planned |
-| P3-3                               | Integration | `withdrawal` › equal limits show the Amount without a keypad                                                               | planned |
-| P3-3                               | Integration | `withdrawal` › a range is pre-filled with the maximum and editable                                                         | planned |
-| P3-3                               | Integration | `withdrawal` › in SATS: Withdraw is disabled with the limits message at min − 1 and max + 1, enabled at min and max        | planned |
-| P3-3                               | Integration | `withdrawal` › in BTC: Withdraw is disabled with the limits message at min − 1 and max + 1, enabled at min and max         | planned |
-| P3-4                               | Unit        | `src/lib/lightning/__tests__/withdrawal-request.test.ts` › the request has the Amount in sats and completionTimeoutSecs 60 | planned |
-| P3-4                               | Integration | `withdrawal` › Withdraw calls lnurlWithdraw with the Amount in sats and the parsed request                                 | planned |
-| P3-4                               | Integration | `withdrawal` › a double tap on Withdraw calls lnurlWithdraw once; the button shows its loading state                       | planned |
-| P3-5 (row `Completed`)             | Integration | `withdrawal` › `Completed` opens the success screen with transactionType received and the Amount                           | planned |
-| P3-5 (row no `Payment` after 60 s) | Integration | `withdrawal` › no Payment opens the pending screen in received mode                                                        | planned |
-| P3-5 (row `Pending`)               | Integration | `withdrawal` › `Pending` opens the pending screen in received mode                                                         | planned |
-| P3-5 (row `Failed`)                | Integration | `withdrawal` › `Failed` shows the withdrawal error and stays on the screen                                                 | planned |
-| P3-5 (row exception)               | Integration | `withdrawal` › an exception shows the withdrawal error and stays on the screen                                             | planned |
-| P3-5                               | Integration | `withdrawal` › a retry after an error calls lnurlWithdraw again                                                            | planned |
-| P3-6                               | Integration | `withdrawal` › one tap on Withdraw calls lnurlWithdraw, with no confirmation step                                          | planned |
-| testIDs                            | Integration | `withdrawal` selects by the spec's testIDs                                                                                 | planned |
-| Translations                       | Unit        | `i18n` › EN and FR have the same Part 3 keys, with the spec's copy                                                         | planned |
+| Item                               | Level       | Test file › test name                                                                                                                                      | Status |
+| ---------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| P3-1                               | Unit        | `route` › {network}: LNURL-withdraw → withdrawal (with and without lightning:)                                                                             | green  |
+| P3-1                               | Integration | `entry` › {entry point}: LNURL-withdraw → /receive/withdrawal                                                                                              | green  |
+| P3-1                               | Integration | `withdrawal` › parses the Payment Input again with Breez, once Breez is started                                                                            | green  |
+| P3-1                               | Integration | `withdrawal` › a failed parse / a parse result that is not LNURL-withdraw shows an error and no Withdraw button                                            | green  |
+| P3-2                               | Unit        | `domain` › returns the host of {11 URLs: port, path, query string, fragment, subdomains, userinfo, upper case, IP, .onion} without port, path or query     | green  |
+| P3-2                               | Unit        | `domain` › returns null for an invalid URL (6 cases)                                                                                                       | green  |
+| P3-2                               | Integration | `withdrawal` › shows the domain of the callback and defaultDescription                                                                                     | green  |
+| P3-3                               | Integration | `withdrawal` › equal limits show the Amount without a keypad (SATS, BTC)                                                                                   | green  |
+| P3-3                               | Integration | `withdrawal` › a range is pre-filled with the maximum (SATS, BTC) and editable                                                                             | green  |
+| P3-3                               | Integration | `withdrawal` › in {unit} › at min − 1 / min / max / max + 1, Withdraw enabled: false / true / true / false, with the limits message when disabled          | green  |
+| P3-3                               | Integration | `withdrawal` › the limits message shows min and max in the user's unit (SATS, BTC)                                                                         | green  |
+| P3-4                               | Unit        | `request` › the request has the Amount in sats and completionTimeoutSecs 60                                                                                | green  |
+| P3-4                               | Integration | `withdrawal` › one tap on Withdraw calls lnurlWithdraw with the Amount in sats and the parsed request, with no confirmation step                           | green  |
+| P3-4                               | Integration | `withdrawal` › sends the Amount in sats when it is entered in BTC                                                                                          | green  |
+| P3-4                               | Integration | `withdrawal` › a double tap on Withdraw calls lnurlWithdraw once; the button shows its loading state                                                       | green  |
+| P3-5 (row `Completed`)             | Integration | `withdrawal` › `Completed` opens the success screen with transactionType received and the Amount                                                           | green  |
+| P3-5 (row no `Payment` after 60 s) | Integration | `withdrawal` › no Payment (not received after 60 s) opens the pending screen in received mode                                                              | green  |
+| P3-5 (row `Pending`)               | Integration | `withdrawal` › `Pending` opens the pending screen in received mode                                                                                         | green  |
+| P3-5 (row `Failed`)                | Integration | `withdrawal` › `Failed` shows the withdrawal error and stays on the screen                                                                                 | green  |
+| P3-5 (row exception)               | Integration | `withdrawal` › an exception shows the withdrawal error and stays on the screen                                                                             | green  |
+| P3-5                               | Integration | `withdrawal` › a retry after an error calls lnurlWithdraw again                                                                                            | green  |
+| P3-6                               | Integration | `withdrawal` › one tap on Withdraw calls lnurlWithdraw … with no confirmation step                                                                         | green  |
+| testIDs                            | Integration | `withdrawal` selects by `withdrawal-screen`, `withdrawal-domain`, `withdrawal-description`, `withdrawal-amount`, `withdrawal-limits`, `withdrawal-confirm` | green  |
+| Translations                       | Unit        | `i18n` › EN and FR have the same Part 3 keys, with the spec copy                                                                                           | green  |
 
 ## Part 4: Lightning Login
 
@@ -311,3 +312,14 @@ Each line was changed on its own, the Part 1 suites were run, then the line was 
 | An Invoice without an Amount loses its Amount on Continue | `ln-amount` › Invoice without an Amount: Continue opens transaction-details with rawInvoice and amountSats |
 | `bitcoin:` links not redirected | `deep-link` and `intent` › the bitcoin:/BITCOIN: cases (6 tests) |
 | Every other Breez result routed as `lightningAmount` (the "unsupported" rows) | `route` › LNURL-withdraw, LNURL-auth, BOLT12, Spark, silent payment, URL, BitcoinAddress/Bip21, routeLightningInput (both networks); `entry` › BOLT12, LNURL-withdraw, LNURL-auth, Lightning with a non-Lightning value (4 entry points) (32 tests) |
+
+### Part 3
+
+| Mutation | Caught by |
+| --- | --- |
+| Pre-filled with the minimum instead of the maximum | `withdrawal` › a range is pre-filled with the maximum (SATS, BTC); one tap on Withdraw calls lnurlWithdraw with the Amount…; the three outcome rows that check the Amount (6 tests) |
+| `Pending` treated as `Completed` | `withdrawal` › `Pending` opens the pending screen in received mode |
+| The 60 s timeout removed | `request` › the request has the Amount in sats and completionTimeoutSecs 60 |
+| The double-tap guard removed | `withdrawal` › a double tap on Withdraw calls lnurlWithdraw once |
+| The domain keeps the port | `domain` › 3 URLs with a port; `withdrawal` › shows the domain of the callback (4 tests) |
+| LNURL-withdraw routed as "unsupported" again | `route` › LNURL-withdraw → withdrawal (both networks); `entry` › LNURL-withdraw (4 entry points) (6 tests) |

@@ -13,6 +13,7 @@ export type PaymentInputRoute =
   | { kind: 'lightningAmount'; paymentInput: string }
   | ({ kind: 'onchainAmount' } & OnchainDestination)
   | { kind: 'chooseMethod'; onchain: OnchainDestination; lightning: string }
+  | { kind: 'withdrawal'; paymentInput: string }
   | { kind: 'error'; reason: PaymentInputError };
 
 export type PaymentInputDeps = {
@@ -74,6 +75,8 @@ export async function routeLightningInput(text: string, deps: PaymentInputDeps):
     case InputType_Tags.LightningAddress:
     case InputType_Tags.LnurlPay:
       return { kind: 'lightningAmount', paymentInput: input };
+    case InputType_Tags.LnurlWithdraw:
+      return { kind: 'withdrawal', paymentInput: input };
     default:
       // On-chain formats are decided before the Breez parse: a BitcoinAddress or Bip21 result here is unsupported
       return error('unsupported');

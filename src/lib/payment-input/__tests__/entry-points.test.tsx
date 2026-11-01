@@ -123,7 +123,7 @@ const CASES: Case[] = [
   { name: 'Invoice of another network (Regtest on mainnet)', input: REGTEST_INVOICE, error: 'paymentInput.errors.otherNetworkInvoice' },
   { name: 'Invoice of another network (Bitcoin on testnet)', input: INVOICE, network: AppNetwork.TESTNET, error: 'paymentInput.errors.otherNetworkInvoice' },
   { name: 'invalid Bitcoin URI', input: `bitcoin:${MAINNET_ADDRESS}?amount=1,5`, error: 'paymentInput.errors.unsupported' },
-  { name: 'LNURL-withdraw (until Part 3)', input: 'lnurlwithdraw', error: 'paymentInput.errors.unsupported' },
+  { name: 'LNURL-withdraw', input: 'lnurlwithdraw', destination: { pathname: '/receive/withdrawal', params: { paymentInput: 'lnurlwithdraw' } } },
   { name: 'LNURL-auth (until Part 4)', input: 'lnurlauth', error: 'paymentInput.errors.unsupported' },
   { name: 'BOLT12 offer', input: 'lno1bolt12offer', error: 'paymentInput.errors.unsupported' },
   { name: 'unknown text', input: 'not-an-invoice', error: 'paymentInput.errors.unsupported' },

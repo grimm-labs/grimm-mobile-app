@@ -1,4 +1,5 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -8,6 +9,25 @@ import type { PaymentInputDeps, PaymentInputError, PaymentInputRoute } from '@/l
 import { routeLightningInput, routePaymentInput } from '@/lib/payment-input/route-payment-input';
 
 type ChooseMethodRoute = Extract<PaymentInputRoute, { kind: 'chooseMethod' }>;
+
+/** The screen a route leads to; null for the method sheet and the errors. */
+function destinationOf(route: PaymentInputRoute): Href | null {
+  switch (route.kind) {
+    case 'lightningDetails':
+      return { pathname: '/send/transaction-details', params: { rawInvoice: route.rawInvoice } };
+    case 'lightningAmount':
+      return { pathname: '/send/enter-amount', params: { paymentInput: route.paymentInput } };
+    case 'onchainAmount':
+      return {
+        pathname: '/send-onchain/enter-amount',
+        params: route.amountSats === undefined ? { recipientAddress: route.address } : { recipientAddress: route.address, amountSats: String(route.amountSats) },
+      };
+    case 'withdrawal':
+      return { pathname: '/receive/withdrawal', params: { paymentInput: route.paymentInput } };
+    default:
+      return null;
+  }
+}
 
 type UsePaymentInputOptions = {
   /** The scanner and the paste screens push the destination; /payment-input replaces itself with it. */
@@ -38,28 +58,16 @@ export function usePaymentInput({ navigation, onError, onSheetDismiss }: UsePaym
 
   const handleRoute = useCallback(
     (route: PaymentInputRoute) => {
-      const go: typeof router.push = (href) => (navigation === 'push' ? router.push(href) : router.replace(href));
-      switch (route.kind) {
-        case 'lightningDetails':
-          go({ pathname: '/send/transaction-details', params: { rawInvoice: route.rawInvoice } });
-          break;
-        case 'lightningAmount':
-          go({ pathname: '/send/enter-amount', params: { paymentInput: route.paymentInput } });
-          break;
-        case 'onchainAmount':
-          go({
-            pathname: '/send-onchain/enter-amount',
-            params: route.amountSats === undefined ? { recipientAddress: route.address } : { recipientAddress: route.address, amountSats: String(route.amountSats) },
-          });
-          break;
-        case 'chooseMethod':
-          choiceRef.current = route;
-          setIsSheetOpen(true);
-          sheetRef.current?.present();
-          break;
-        case 'error':
-          callbacksRef.current.onError(route.reason);
-          break;
+      const destination = destinationOf(route);
+      if (destination) {
+        if (navigation === 'push') router.push(destination);
+        else router.replace(destination);
+      } else if (route.kind === 'chooseMethod') {
+        choiceRef.current = route;
+        setIsSheetOpen(true);
+        sheetRef.current?.present();
+      } else if (route.kind === 'error') {
+        callbacksRef.current.onError(route.reason);
       }
     },
     [navigation, router],
