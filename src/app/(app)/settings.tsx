@@ -9,14 +9,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LogoutBottomSheet } from '@/components/logout-bottom-sheet';
 import { SettingsItem } from '@/components/settings-item';
 import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
-import { AppContext, useBdk } from '@/lib/context';
-import { useBreez } from '@/lib/context/breez-context';
+import { AppContext } from '@/lib/context';
+import { useWalletReset } from '@/lib/hooks/use-wallet-reset';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { resetAppData, isSeedPhraseBackup, hideBalance, setHideBalance, preventScreenCapture, setPreventScreenCapture } = useContext(AppContext);
-  const { disconnectBreez } = useBreez();
-  const { disconnectBdk } = useBdk();
+  const { isSeedPhraseBackup, hideBalance, setHideBalance, preventScreenCapture, setPreventScreenCapture } = useContext(AppContext);
+  const resetWallet = useWalletReset();
 
   const router = useRouter();
   const logoutModalRef = useRef<any>(null);
@@ -29,13 +28,6 @@ export default function Settings() {
 
   const redirectToBackupSeedPhrase = () => {
     router.push('/settings/backup-seed-phrase/recovery-seed-phrase-warning');
-  };
-
-  const handleLogout = async () => {
-    await resetAppData();
-    await disconnectBreez();
-    await disconnectBdk();
-    router.push('/');
   };
 
   return (
@@ -97,22 +89,14 @@ export default function Settings() {
             <View className="mb-6">
               <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.security')}</Text>
               <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                {/* <SettingsItem icon="lock-closed" title={t('settings.security.pin.title')} subtitle={t('settings.security.pin.subtitle')} onPress={() => console.log('PIN change pressed')} /> */}
+                <SettingsItem
+                  icon="lock-closed"
+                  title={t('settings.security.appLock.title')}
+                  subtitle={t('settings.security.appLock.subtitle')}
+                  onPress={() => router.push('/settings/app-lock')}
+                  testID="settings-app-lock"
+                />
                 <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} testID="settings-backup" />
-                {/* <Pressable className="mb-1 flex-row items-center rounded py-2">
-                  <View className="mr-1 rounded-full p-2">
-                    <Ionicons name="scan-sharp" size={20} color="gray" />
-                  </View>
-                  <View className="ml-2 flex-1">
-                    <Text className="text-base font-medium text-gray-800 dark:text-charcoal-100">{t('settings.security.faceId.title')}</Text>
-                    <Text className="text-sm text-gray-500 dark:text-charcoal-400">{t('settings.security.faceId.subtitle')}</Text>
-                  </View>
-                  <View>
-                    <Switch.Root checked={isFaceIdEnabled} onChange={setIsFaceIdEnabled} accessibilityLabel="switch" className="pb-2">
-                      <Switch.Icon checked={isFaceIdEnabled} />
-                    </Switch.Root>
-                  </View>
-                </Pressable> */}
                 <Pressable testID="settings-hide-balance" className="mb-1 flex-row items-center rounded py-2" onPress={() => setHideBalance(!hideBalance)}>
                   <View className="mr-1 rounded-full p-2">
                     <Ionicons name="eye" size={20} color="gray" />
@@ -201,7 +185,7 @@ export default function Settings() {
                 <Text className="text-center font-bold text-red-600">{t('settings.signOut')}</Text>
               </Pressable>
             </View>
-            <LogoutBottomSheet ref={logoutModalRef} onLogout={handleLogout} hasSeedBackup={isSeedPhraseBackup} onBackupSeed={redirectToBackupSeedPhrase} />
+            <LogoutBottomSheet ref={logoutModalRef} onLogout={resetWallet} hasSeedBackup={isSeedPhraseBackup} onBackupSeed={redirectToBackupSeedPhrase} />
           </ScrollView>
         </View>
       </SafeAreaView>

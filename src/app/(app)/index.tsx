@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { RefreshControl } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { AppLockNotification } from '@/components/app-lock-notification';
 import { EsploraConnectionBanner } from '@/components/esplora-connection-banner';
 import { SeedPhraseBackupNotification } from '@/components/seed-phrase-backup-notification';
 import { colors, FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
@@ -82,6 +83,7 @@ export default function Home() {
                 <WalletOverview />
                 <View className="mb-8" />
                 {!isSeedPhraseBackup && <SeedPhraseBackupNotification />}
+                <AppLockNotification />
                 <View className="mb-4" />
                 <AccountCards balanceBdk={balanceBdk} balanceBreez={balanceBreez} />
               </View>

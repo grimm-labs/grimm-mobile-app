@@ -145,6 +145,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['react-native-edge-to-edge'],
     'expo-secure-store',
     [
+      'expo-local-authentication',
+      {
+        faceIDPermission: 'Allow $(PRODUCT_NAME) to use Face ID to unlock your wallet.',
+      },
+    ],
+    [
       'expo-camera',
       {
         cameraPermission: 'Allow $(PRODUCT_NAME) to access your camera',

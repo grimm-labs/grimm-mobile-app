@@ -13,6 +13,7 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useAppLock } from '@/lib/context/app-lock-context';
 import { useSecureStorage } from '@/lib/hooks';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
 
@@ -21,21 +22,29 @@ const CLIPBOARD_CLEAR_DELAY = 60_000;
 export default function SeedPhraseScreen() {
   const { isSeedPhraseBackup } = useContext(AppContext);
   const { getItem: getSeedPhrase } = useSecureStorage('seedPhrase');
+  const { authorizeSensitiveAction } = useAppLock();
   const [seedPhrase, setSeedPhrase] = useState<string | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
   const stackScreenOptions = useStackScreenOptions();
 
   useEffect(() => {
+    let isActive = true;
     const loadSeedPhrase = async () => {
+      // Sensitive Action: the Recovery Phrase is not even read until the user is authenticated
+      if (!(await authorizeSensitiveAction('recoveryPhrase'))) {
+        if (isActive) router.back();
+        return;
+      }
       const phrase = await getSeedPhrase();
-      setSeedPhrase(phrase);
+      if (isActive) setSeedPhrase(phrase);
     };
     loadSeedPhrase();
     return () => {
+      isActive = false;
       setSeedPhrase(null);
     };
-  }, [getSeedPhrase]);
+  }, [authorizeSensitiveAction, getSeedPhrase, router]);
 
   const organizedWords = useMemo(() => {
     if (!seedPhrase) return [];

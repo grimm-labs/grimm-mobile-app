@@ -73,6 +73,9 @@ tags:
     timeout: 10000
 - assertNotVisible:
     id: 'seed-backup-banner'
+# Backed up: the App Lock card takes the place of the backup banner
+- assertVisible:
+    id: 'home-app-lock-card'
 # Once backed up, the phrase can still be viewed but not verified again
 - runFlow:
     file: subflows/open-settings-item.yaml

@@ -1,0 +1,15 @@
+# Types a 6-digit PIN on an App Lock keypad. The keypad submits by itself at the 6th digit. Usage:
+#   - runFlow:
+#       file: subflows/enter-pin.yaml
+#       env:
+#         PIN_PAD: lock-screen-pin-pad   # or app-lock-set-pin-pad
+#         PIN: '123456'
+appId: ${APP_ID}
+---
+- evalScript: ${output.pinIndex = 0}
+- repeat:
+    times: 6
+    commands:
+      - tapOn:
+          id: ${PIN_PAD + '-key-' + PIN.charAt(output.pinIndex)}
+      - evalScript: ${output.pinIndex = output.pinIndex + 1}

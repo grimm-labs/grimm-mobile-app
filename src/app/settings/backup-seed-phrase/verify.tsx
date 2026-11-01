@@ -13,6 +13,7 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, Input, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { useAppLock } from '@/lib/context/app-lock-context';
 import { useSecureStorage } from '@/lib/hooks';
 
 interface WordToVerify {
@@ -24,15 +25,22 @@ interface WordToVerify {
 export default function SeedPhraseVerificationScreen() {
   const { setIsSeedPhraseBackup } = useContext(AppContext);
   const { getItem: getSeedPhrase } = useSecureStorage('seedPhrase');
+  const { authorizeSensitiveAction } = useAppLock();
   const router = useRouter();
   const { t } = useTranslation();
 
   const [wordsToVerify, setWordsToVerify] = useState<WordToVerify[]>([]);
 
   useEffect(() => {
+    let isActive = true;
     const loadAndSelectWords = async () => {
+      // Sensitive Action: usually already granted by the Recovery Phrase screen just before
+      if (!(await authorizeSensitiveAction('recoveryPhrase'))) {
+        if (isActive) router.back();
+        return;
+      }
       const seedPhrase = await getSeedPhrase();
-      if (seedPhrase) {
+      if (seedPhrase && isActive) {
         const words = seedPhrase.split(' ');
         const positions = new Set<number>();
 
@@ -53,7 +61,10 @@ export default function SeedPhraseVerificationScreen() {
       }
     };
     loadAndSelectWords();
-  }, [getSeedPhrase]);
+    return () => {
+      isActive = false;
+    };
+  }, [authorizeSensitiveAction, getSeedPhrase, router]);
 
   const handleInputChange = (index: number, value: string) => {
     const updated = [...wordsToVerify];

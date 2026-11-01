@@ -1,0 +1,44 @@
+appId: ${APP_ID}
+name: App Lock - 30 s Lockout after 5 wrong PINs, then Forgot PIN resets the wallet
+tags:
+  - settings
+  - app-lock
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/turn-on-app-lock.yaml
+- launchApp
+- runFlow: subflows/dismiss-system-dialogs.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen'
+    timeout: 60000
+# 5 wrong PINs start a 30-second Lockout
+- repeat:
+    times: 5
+    commands:
+      - runFlow:
+          file: subflows/enter-pin.yaml
+          env:
+            PIN_PAD: lock-screen-pin-pad
+            PIN: '000000'
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen-lockout'
+    timeout: 10000
+- assertVisible: 'Too many wrong PINs\. Try again in 0:[0-3][0-9]\.'
+# Forgot PIN: the confirmation explains the Wallet Reset, then onboarding
+- tapOn:
+    id: 'lock-screen-forgot-pin'
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen-reset-confirm'
+    timeout: 10000
+- assertVisible: 'Reset your wallet?'
+- tapOn:
+    id: 'lock-screen-reset-confirm'
+- extendedWaitUntil:
+    visible:
+      id: 'onboarding-screen'
+    timeout: 20000
+- assertNotVisible:
+    id: 'lock-screen'

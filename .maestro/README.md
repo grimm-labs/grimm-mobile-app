@@ -15,6 +15,8 @@ End-to-end tests for the Android app, written with [Maestro](https://docs.maestr
     open-settings-item.yaml      # Settings tab → scroll to a row → open it (env ITEM_ID)
     read-recovery-phrase.yaml    # read the 12 words of the backup screen into output.words
     verify-recovery-phrase.yaml  # answer the 4 random words of the verification screen
+    enter-pin.yaml               # type a 6-digit PIN on an App Lock keypad (env PIN_PAD, PIN)
+    turn-on-app-lock.yaml        # Settings › App Lock › Turn on, PIN 123456 twice
     dismiss-system-dialogs.yaml  # close "… isn't responding" dialogs on slow CI emulators
 ```
 
@@ -31,8 +33,11 @@ End-to-end tests for the Android app, written with [Maestro](https://docs.maestr
 - Flash messages last 1.5–4 s and a tap can take longer than that on the CI emulator. Only assert the long error messages (with `waitToSettleTimeoutMs: 500` on the tap). Check a copy by pasting it (`longPressOn` the field, then `tapOn: 'Paste'`).
 - Wait for the closing animation (`waitForAnimationToEnd`) before opening another bottom sheet.
 - Inputs below the fold need `scrollUntilVisible` (with `centerElement: true` when the label above must stay visible).
+- Maestro has no sleep. To let time pass (the 30 s auto-lock), wait for an id that never shows with `extendedWaitUntil` and `optional: true`.
 
 ## Running
+
+Run the flows on a device or emulator **without a screen lock**, like the CI emulator. With App Lock off, viewing the Recovery Phrase asks for the phone's own authentication when the phone has a screen lock, and Maestro cannot answer it.
 
 ```sh
 # Local (arm64 device or emulator with a release build installed, see AGENTS.md)
@@ -47,7 +52,7 @@ gh workflow run e2e-android.yml --ref <branch> -f apk-run-id=<run id> -f include
 
 ## Coverage
 
-Features that need a funded wallet (sending, transaction lists and details, transaction notes, unclaimed deposits) or a real camera (scanning a QR code) are out of scope.
+Features that need a funded wallet (sending, transaction lists and details, transaction notes, unclaimed deposits), a real camera (scanning a QR code) or biometrics (Biometric Unlock, see the manual checklist of the App Lock spec) are out of scope.
 
 | Area         | Feature                                                                                                                            | Flow                       |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
@@ -56,6 +61,9 @@ Features that need a funded wallet (sending, transaction lists and details, tran
 | Wallet       | Import: word counter, disabled button, invalid phrase rejected                                                                     | `wallet-import-validation` |
 | Wallet       | Backup: warning (cancel/proceed), phrase display and copy, wrong words rejected, verification, banner gone, no second verification | `wallet-backup-restore`    |
 | Wallet       | Log out and restore the same wallet from its recovery phrase                                                                       | `wallet-backup-restore`    |
+| Home         | App Lock card shown right after the backup                                                                                         | `wallet-backup-restore`    |
+| App Lock     | Turn on, Lock Screen at launch, wrong PIN, auto-lock after 30 s in background, PIN asked for the backup, change PIN, turn off      | `app-lock`                 |
+| App Lock     | 30 s Lockout after 5 wrong PINs, Forgot PIN resets the wallet                                                                      | `app-lock-forgot-pin`      |
 | Wallet       | Bitcoin and Lightning account details (balance, hide toggle, empty history, Send/Receive, LN address row)                          | `wallet-details`           |
 | Home         | Hide/show balance, Send and Receive sheets, tabs                                                                                   | `home`                     |
 | Transactions | Empty history and every filter                                                                                                     | `home`                     |

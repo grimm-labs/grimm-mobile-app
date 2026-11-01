@@ -182,7 +182,7 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 - [ ] Tor support for network privacy
 - [ ] Coin mixing integration (Whirlpool, JoinMarket)
 - [ ] Encrypted cloud backups with key server
-- [ ] Biometric authentication
+- [x] Biometric authentication
 - [ ] Enhanced transaction privacy features
 
 ### Phase 6: Integration and Interoperability

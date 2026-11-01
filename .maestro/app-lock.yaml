@@ -1,0 +1,156 @@
+appId: ${APP_ID}
+name: App Lock - turn on, Lock Screen at launch and after 30 s in background, PIN for the backup, change PIN, turn off
+tags:
+  - settings
+  - app-lock
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/turn-on-app-lock.yaml
+# A cold start shows the Lock Screen; a wrong PIN is refused, the right one unlocks
+- launchApp
+- runFlow: subflows/dismiss-system-dialogs.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen'
+    timeout: 60000
+- assertVisible: 'Enter your PIN'
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: lock-screen-pin-pad
+      PIN: '000000'
+- extendedWaitUntil:
+    visible: 'Wrong PIN. 4 attempts left before a 30-second wait.'
+    timeout: 10000
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: lock-screen-pin-pad
+      PIN: '123456'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 20000
+- assertNotVisible:
+    id: 'lock-screen'
+# More than 30 s in the background locks the app again. Maestro has no sleep: wait for an element that never shows
+- pressKey: Home
+- extendedWaitUntil:
+    visible:
+      id: 'app-lock-never-shown'
+    timeout: 35000
+    optional: true
+- launchApp:
+    stopApp: false
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen'
+    timeout: 20000
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: lock-screen-pin-pad
+      PIN: '123456'
+- extendedWaitUntil:
+    notVisible:
+      id: 'lock-screen'
+    timeout: 10000
+# Viewing the Recovery Phrase asks for the PIN again (Sensitive Action)
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-backup
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-warning-screen'
+    timeout: 10000
+- tapOn:
+    id: 'proceed-button'
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen-cancel'
+    timeout: 10000
+- assertNotVisible:
+    id: 'recovery-phrase-word-1'
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: lock-screen-pin-pad
+      PIN: '123456'
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-phrase-word-12'
+    timeout: 10000
+- back
+- back
+# Change the PIN: the current PIN first, then the new one twice
+- runFlow:
+    file: subflows/open-settings-item.yaml
+    env:
+      ITEM_ID: settings-app-lock
+- extendedWaitUntil:
+    visible:
+      id: 'app-lock-change-pin'
+    timeout: 10000
+- tapOn:
+    id: 'app-lock-change-pin'
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen-cancel'
+    timeout: 10000
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: lock-screen-pin-pad
+      PIN: '123456'
+- extendedWaitUntil:
+    visible: 'Choose your new 6-digit PIN'
+    timeout: 10000
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: app-lock-set-pin-pad
+      PIN: '654321'
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: app-lock-set-pin-pad
+      PIN: '654321'
+- extendedWaitUntil:
+    visible:
+      id: 'app-lock-turn-off'
+    timeout: 10000
+# Turn App Lock off: the old PIN is refused, the new one is accepted
+- tapOn:
+    id: 'app-lock-turn-off'
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen-cancel'
+    timeout: 10000
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: lock-screen-pin-pad
+      PIN: '123456'
+- extendedWaitUntil:
+    visible:
+      id: 'lock-screen-error'
+    timeout: 10000
+- runFlow:
+    file: subflows/enter-pin.yaml
+    env:
+      PIN_PAD: lock-screen-pin-pad
+      PIN: '654321'
+- extendedWaitUntil:
+    visible:
+      id: 'app-lock-turn-on'
+    timeout: 10000
+# Off: a cold start goes straight to Home
+- launchApp
+- runFlow: subflows/dismiss-system-dialogs.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 60000
+- assertNotVisible:
+    id: 'lock-screen'
