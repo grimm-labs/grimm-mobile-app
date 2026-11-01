@@ -3,7 +3,7 @@
 /* eslint-disable max-lines-per-function */
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -11,8 +11,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import SlideToConfirm from '@/components/slide-to-confirm';
-import { colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, View } from '@/components/ui';
 import { convertBitcoinToFiat, convertSatsToBtc, getFiatCurrency } from '@/lib';
+import { isInsufficientFundsError } from '@/lib/bdk/errors';
 import { AppContext, useBdk } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import { BitcoinUnit } from '@/types/enum';
@@ -23,6 +24,13 @@ type SearchParams = {
   feeSpeed: 'low' | 'medium' | 'fast';
   feeSatsPerVbyte: string;
 };
+
+type FeeEstimation = 'pending' | 'done' | 'insufficientFunds' | 'failed';
+
+const feeEstimationErrorKeys = {
+  insufficientFunds: 'onchainSend.summary.errors.insufficientFunds',
+  failed: 'onchainSend.summary.errors.feeEstimationFailed',
+} as const;
 
 interface TransactionDetail {
   label: string;
@@ -61,6 +69,11 @@ export default function OnchainSummaryTransactionScreen() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [estimatedFeeSats, setEstimatedFeeSats] = useState(0);
+  const [feeEstimation, setFeeEstimation] = useState<FeeEstimation>('pending');
+
+  // BdkProvider gives a new function on every render (every sync): estimate again only when the transaction changes
+  const calculateTransactionFeeRef = useRef(calculateTransactionFee);
+  calculateTransactionFeeRef.current = calculateTransactionFee;
 
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const satsValue = Number(satsAmount);
@@ -86,13 +99,14 @@ export default function OnchainSummaryTransactionScreen() {
   const handleConfirm = async () => {
     setIsProcessing(true);
     try {
-      const txId = await sendTransaction(recipientAddress, 1000, feeSatsPerVbyteNum);
+      const txId = await sendTransaction(recipientAddress, satsValue, feeSatsPerVbyteNum);
       if (txId) {
         await new Promise((resolve) => setTimeout(resolve, 1000 * 2));
-        router.push(`/send-onchain/transaction-result?satsAmount=${encodeURIComponent(totalSats)}&txId=${encodeURIComponent(txId)}`);
+        router.push(`/send-onchain/transaction-result?satsAmount=${encodeURIComponent(satsValue)}&txId=${encodeURIComponent(txId)}`);
       }
     } catch (error) {
       console.error('Failed to send transaction: ', error);
+      showErrorMessage(t('onchainSend.summary.errors.sendFailed'));
     } finally {
       setIsProcessing(false);
     }
@@ -122,12 +136,23 @@ export default function OnchainSummaryTransactionScreen() {
   ];
 
   useEffect(() => {
-    async function prepareTx() {
-      const fee = await calculateTransactionFee(recipientAddress, satsValue, feeSatsPerVbyteNum);
-      setEstimatedFeeSats(fee);
-    }
-    prepareTx();
-  }, [recipientAddress, satsValue, feeSatsPerVbyteNum, wallet, calculateTransactionFee]);
+    let isCancelled = false;
+    setFeeEstimation('pending');
+    calculateTransactionFeeRef
+      .current(recipientAddress, satsValue, feeSatsPerVbyteNum)
+      .then((fee) => {
+        if (isCancelled) return;
+        setEstimatedFeeSats(fee);
+        setFeeEstimation('done');
+      })
+      .catch((error) => {
+        if (isCancelled) return;
+        setFeeEstimation(isInsufficientFundsError(error) ? 'insufficientFunds' : 'failed');
+      });
+    return () => {
+      isCancelled = true;
+    };
+  }, [recipientAddress, satsValue, feeSatsPerVbyteNum, wallet]);
 
   return (
     <SafeAreaProvider>
@@ -151,6 +176,11 @@ export default function OnchainSummaryTransactionScreen() {
             {transactionDetails.map((detail, index) => (
               <DetailRow key={index} detail={detail} />
             ))}
+            {(feeEstimation === 'insufficientFunds' || feeEstimation === 'failed') && (
+              <Text testID="send-onchain-summary-fee-error" className="text-center text-sm font-semibold text-danger-600">
+                {t(feeEstimationErrorKeys[feeEstimation])}
+              </Text>
+            )}
           </View>
           <View className="mb-6 rounded-xl bg-neutral-100 p-6 dark:bg-charcoal-900">
             <Text className="mb-2 text-center text-sm font-medium text-gray-600 dark:text-charcoal-300">{t('onchainSend.summary.totalAmount')}</Text>
@@ -165,7 +195,7 @@ export default function OnchainSummaryTransactionScreen() {
           </View>
         </ScrollView>
         <View className="p-4">
-          <SlideToConfirm onConfirm={handleConfirm} loading={isProcessing} />
+          <SlideToConfirm onConfirm={handleConfirm} loading={isProcessing} disabled={feeEstimation !== 'done'} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

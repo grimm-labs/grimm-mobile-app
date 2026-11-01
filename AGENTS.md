@@ -77,14 +77,18 @@ prompts/          template AI prompts (partly stale)
 
 ### Navigation
 
-- `src/app/_layout.tsx` (root) wraps everything in providers, in this order (outermost first). The order matters because of hook dependencies: `AppContextProvider` → `NotificationProvider` → `WalletErrorBoundary` → `BreezProvider` → `GestureHandlerRootView` → `KeyboardProvider` → `ThemeProvider` → `APIProvider` (react-query) → `BitcoinPriceProvider` → `WalletErrorBoundary` → `BdkProvider` → `BottomSheetModalProvider`. `PrivacyOverlay` sits inside `GestureHandlerRootView`.
+- `src/app/_layout.tsx` (root) wraps everything in providers, in this order (outermost first). The order matters because of hook dependencies: `AppContextProvider` → `AppLockProvider` → `NotificationProvider` → `WalletErrorBoundary` → `BreezProvider` → `GestureHandlerRootView` → `KeyboardProvider` → `ThemeProvider` → `APIProvider` (react-query) → `BitcoinPriceProvider` → `WalletErrorBoundary` → `BdkProvider` → `BottomSheetModalProvider`. `PrivacyOverlay` sits inside `GestureHandlerRootView`. `LockScreen` sits last inside `BottomSheetModalProvider`, after `FlashMessage`.
 - The root `<Stack>` declares `(app)` and `onboarding`. Every other folder (`auth/`, `send/`, `send-onchain/`, `receive/`, `settings/`, `wallets/`, `transaction-details/`…) is an implicit screen of that root stack. `receive-btc/_layout.tsx` and `scan-qr/_layout.tsx` are full screens written as layouts.
-- `src/app/(app)/_layout.tsx` is the gate and the wallet bootstrapper. It renders nothing until the data and the language are loaded. If there is no seed (`hasSeedPhrase`), it redirects to `/onboarding`. Otherwise it renders the tabs (`index`, `transactions`, `settings`), starts Breez and BDK, and hides the splash screen.
+- `src/app/(app)/_layout.tsx` is the gate and the wallet bootstrapper. It renders nothing until the data and the language are loaded. If there is no seed (`hasSeedPhrase`), it redirects to `/onboarding`. Otherwise it renders the tabs (`index`, `transactions`, `settings`), starts Breez and BDK, and hides the splash screen once the App Lock state is loaded (`isAppLockLoaded`).
   - Screens outside `(app)` are not gated. They rely on `(app)` having mounted first.
   - The `onboarding` AsyncStorage flag is saved but never used for routing.
 - Onboarding flow: `onboarding.tsx` → "Get started". This asks for notification permission, then goes to `auth/create-or-import-seed.tsx`. From there the user can import a seed via `auth/import-seed-phrase.tsx`. When a seed is created, the app runs `router.dismissAll()` then `router.replace('/')`.
 - `+native-intent.tsx` turns `lightning:<invoice>` links into `/send/transaction-details?rawInvoice=…`. Schemes: `GrimmApp`, `lightning`.
-- There is no PIN or biometric lock. Privacy features:
+- **App Lock** (spec: `docs/specs/onchain-amount-fix-and-app-lock.md`, vocabulary: `GLOSSARY.md`) is an optional 6-digit PIN with optional Biometric Unlock. It is a UI gate (ADR 0001): the Recovery Phrase stays stored as before.
+  - `LockScreen` is a React Native `Modal` over every route. It never navigates, so the user is back on the same screen after unlocking. It locks at a cold start and after more than 30 s in the `background` state (`inactive` does not count).
+  - Sensitive Actions (viewing the Recovery Phrase, changing the PIN, toggling Biometric Unlock, turning App Lock off) call `useAppLock().authorizeSensitiveAction(kind)` and proceed only when it resolves `true`. A new screen that shows the Recovery Phrase must call it before reading the secure store.
+  - The rules (Lockout schedule, auto-lock, PIN hash, biometrics) are pure functions in `src/lib/app-lock/`.
+- Other privacy features:
   - `PrivacyOverlay` shows the splash image when the app goes to the background.
   - `ScreenCaptureGuard` blocks screenshots when that setting is on.
   - `hideBalance` hides the balance.
@@ -93,6 +97,7 @@ prompts/          template AI prompts (partly stale)
 
 | Where | What |
 | --- | --- |
+| `lib/context/app-lock-context.tsx` (`useAppLock`) | `isAppLockLoaded`, `isAppLockEnabled`, `isLocked`, Biometric Unlock state, `failedAttempts`/`lockoutUntil`/`isLockedOut`, the PIN actions, `authorizeSensitiveAction(kind)`, `resetAppLock()` |
 | `lib/context/app-context-provider.tsx` (`AppContext`, `useAppContext`) | `hasSeedPhrase`, `isDataLoaded`, `hideBalance`, `preventScreenCapture`, `selectedCountry` (default Cameroon/XAF), `bitcoinUnit`, `isSeedPhraseBackup`, `resetAppData()` |
 | `lib/context/breez-context.tsx` (`useBreez`) | Breez SDK lifecycle, balances, payments, LN address, unclaimed deposits, `network` (`AppNetwork.MAINNET/TESTNET`), polls every 10 s |
 | `lib/context/bdk-context.tsx` (`useBdk`) | BDK wallet lifecycle, Esplora server selection/fallback, sync every 60 s, send/fee estimation, cached snapshot |
@@ -100,9 +105,11 @@ prompts/          template AI prompts (partly stale)
 | `lib/context/notification-context.tsx` (`useNotifications`) | Permission status, device registration with the notification service |
 
 - **Seed phrase**: expo-secure-store key `seedPhrase`, accessed with `useSecureStorage('seedPhrase')`. Several providers read it independently. Never log it and never store it anywhere else.
-- AsyncStorage keys include `hideBalance`, `preventScreenCapture`, `selectedCountry`, `bitcoinUnit`, `isSeedPhraseBackup`, `appNetwork`, `lnAddress`, `SELECTED_THEME`, `local` (language), `selectedEsploraServer_<network>` and `bdkWalletSnapshot_<network>`. Use the JSON helpers in `lib/storage.tsx`.
+- **App Lock**: expo-secure-store keys `appLockPinHash`, `appLockPinSalt`, `appLockBiometricEnabled`, `appLockFailedAttempts`, `appLockLockoutUntil` (`APP_LOCK_KEYS` in `lib/app-lock/storage.ts`). App Lock is on when `appLockPinHash` exists. Never log the PIN.
+- AsyncStorage keys include `hideBalance`, `preventScreenCapture`, `selectedCountry`, `bitcoinUnit`, `isSeedPhraseBackup`, `appNetwork`, `lnAddress`, `SELECTED_THEME`, `local` (language), `selectedEsploraServer_<network>`, `bdkWalletSnapshot_<network>` and `appLockCardDismissed`. Use the JSON helpers in `lib/storage.tsx`.
 - SQLite `grimm-local.db` (`lib/sqlite`): table `transaction_notes`, with keys `ln:<id>` / `onchain:<txid>`.
-- `resetAppData()` (logout) does not clear everything. The country, theme, language, network, Esplora server, BDK `.db` file and Breez `spark-data` all survive it.
+- The Wallet Reset (Sign Out, Forgot PIN) is `useWalletReset()` from `@/lib/hooks/use-wallet-reset` (deliberately not re-exported from `@/lib/hooks`: it pulls in the Breez and BDK contexts). It runs `resetAppData()`, disconnects Breez and BDK, deletes the App Lock keys and `appLockCardDismissed`, then navigates to `/`.
+- `resetAppData()` does not clear everything. The country, theme, language, network, Esplora server, BDK `.db` file and Breez `spark-data` all survive it.
 
 ### Wallets and networks
 
@@ -173,22 +180,25 @@ prompts/          template AI prompts (partly stale)
 - Give the translation mock a **stable** `t`: declare `const mockT = (key: string) => key;` at module scope and mock `useTranslation: () => ({ t: mockT })`. An inline `t: (k) => k` creates a new function on every render. Screens with `t` in `useCallback`/`useEffect` deps then loop forever and `waitFor` times out.
 - `transformIgnorePatterns` does not transform `@breeztech/*`. Anything that imports the Breez SDK must mock `@breeztech/breez-sdk-spark-react-native` or `@/lib/context/breez-context`.
 - For BDK, put `jest.mock('bdk-rn', () => require('@/lib/bdk/__tests__/helpers/mock-bdk-rn'))` before the imports.
+- For App Lock, use the fakes in `src/lib/app-lock/__tests__/helpers/` (`fake-secure-store`, `fake-local-authentication`, `fake-expo-crypto`, `app-state`, `console-spy`) and `renderWithAppLock` / `startAppWithAppLock`, which render a screen with the real `AppLockProvider` and `LockScreen`. The secure-store fake survives an unmount, so a remount is an app restart. `src/components/__tests__/lock-screen.test.tsx` shows the pattern.
+- Give the `expo-router` mock a **stable** router object (`const mockRouter = {…}`, `useRouter: () => mockRouter`), like the real singleton. Screens with `router` in effect deps loop forever on a new object per render.
 - `src/components/__tests__/screen-capture-guard.test.tsx` builds a full `AppContext` value. When you add a field to `AppContext`, add it there too or `pnpm type-check` fails.
 - `jest.mock` factories may only reference variables prefixed with `mock`.
 
 ## E2E tests (Maestro)
 
-The suite lives in `.maestro/` (about 23 flows): wallet creation, import, backup and restore, home, receive, send validation, every settings screen, logout and QR scanning. Features that need a funded wallet are out of scope. **Read `.maestro/README.md` before adding a flow**: it has the layout, the subflows, the conventions and the coverage table.
+The suite lives in `.maestro/` (about 25 flows): wallet creation, import, backup and restore, home, receive, send validation, every settings screen, logout, App Lock and QR scanning. Features that need a funded wallet are out of scope. **Read `.maestro/README.md` before adding a flow**: it has the layout, the subflows, the conventions and the coverage table.
 
 Key rules:
 
-- There is one test per file at the root of `.maestro/`, with `appId: ${APP_ID}`, a `name:` and `tags:`. Reusable steps go in `subflows/`: `launch-fresh-app`, `create-wallet`, `wait-for-lightning`, `open-settings-item`, `read-recovery-phrase`, `verify-recovery-phrase` and `dismiss-system-dialogs`.
+- There is one test per file at the root of `.maestro/`, with `appId: ${APP_ID}`, a `name:` and `tags:`. Reusable steps go in `subflows/`: `launch-fresh-app`, `create-wallet`, `wait-for-lightning`, `open-settings-item`, `read-recovery-phrase`, `verify-recovery-phrase`, `enter-pin`, `turn-on-app-lock` and `dismiss-system-dialogs`.
 - Flows are independent: start with `subflows/launch-fresh-app.yaml` or `subflows/create-wallet.yaml`.
 - Select by `id` (testID). testIDs are kebab-case and prefixed with the screen. Selection lists use `<prefix>-option-<value>` and `<prefix>-option-<value>-selected`. Add testIDs to new screens.
 - Run `subflows/wait-for-lightning.yaml` before any step that needs Breez (invoices, address parsing, LN address availability).
 - Use `extendedWaitUntil` after navigation or network calls. After a tap that shows a flash message (1.5–4 s), add `waitToSettleTimeoutMs: 500`.
 - `launchApp` grants all permissions by default. Never register anything for real (for example, the LN address flow cancels the confirmation).
 - Flows talk to real services: Breez mainnet, Esplora indexers, the staging notification service.
+- Run the flows on a device or emulator **without a screen lock** (the CI emulator has none). With App Lock off, viewing the Recovery Phrase asks for the phone's own authentication when the phone has a screen lock, which Maestro cannot answer.
 
 Running locally:
 
@@ -237,5 +247,6 @@ In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). 
 - React Native's `KeyboardAvoidingView` does not work inside a `Modal` on Android (edge-to-edge). Use the one from `react-native-keyboard-controller`. `CameraView` must not have children.
 - The root `env.js` throws on missing variables. Any command that evaluates the Expo config (prebuild, Gradle JS bundling, `expo config`) needs `.env.<APP_ENV>`.
 - The same Breez `storageDir` is shared between networks, and the testnet/regtest mapping is inconsistent (see "Wallets and networks").
+- Routes are typed from `.expo/types/router.d.ts`, which only the dev server regenerates (it is gitignored, so CI type-checks routes loosely). After adding a route, run `pnpm start` once, or a local `pnpm type-check` rejects `router.push` to the new route.
 - Background pollers (Breez 10 s, BDK 60 s + 30 s retry, prices 20 s) run from providers. Avoid adding more intervals; reuse the existing refresh functions.
 - `.husky/post-merge` looks for `pnpm-lock.yml` (typo), so it never auto-installs after a merge.
