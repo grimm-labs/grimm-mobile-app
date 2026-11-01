@@ -85,6 +85,26 @@ export function aBitcoinAddress(address = 'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv
   } as unknown as InputType;
 }
 
+export function anLnurlWithdraw({ callback = 'https://faucet.example.com/lnurlw/callback', defaultDescription = 'Faucet', minWithdrawableMsat = 1000n, maxWithdrawableMsat = 10_000_000n } = {}) {
+  return {
+    tag: InputType_Tags.LnurlWithdraw,
+    inner: [{ callback, k1: 'k1', defaultDescription, minWithdrawable: minWithdrawableMsat, maxWithdrawable: maxWithdrawableMsat }],
+  } as unknown as InputType;
+}
+
+export function anLnurlAuth({ domain = 'example.com', action }: { domain?: string; action?: string } = {}) {
+  const k1 = 'e2af6254a8df433264fa23f67eb8188635d15ce883e8fc020989d5f82ae6f11e';
+  return {
+    tag: InputType_Tags.LnurlAuth,
+    inner: [{ k1, action, domain, url: `https://${domain}/lnurl-auth?tag=login&k1=${k1}` }],
+  } as unknown as InputType;
+}
+
+/** A parse result of a kind the app does not handle (BOLT12, Spark, silent payment, URL, Bip21…): only its tag matters. */
+export function aParseResult(tag: InputType_Tags) {
+  return { tag, inner: [{}] } as unknown as InputType;
+}
+
 export function aPayment({ status = PaymentStatus.Completed, amountSats = 1000 }: { status?: PaymentStatus; amountSats?: number } = {}) {
   return {
     id: 'payment-id',

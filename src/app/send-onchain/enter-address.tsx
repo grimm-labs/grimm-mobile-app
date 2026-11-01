@@ -8,9 +8,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
+import { PaymentMethodBottomSheet } from '@/components/modal/payment-method-bottom-sheet';
 import { Button, colors, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, View } from '@/components/ui';
-import { useBreez } from '@/lib/context/breez-context';
-import { InputType_Tags } from '@/lib/context/breez-context';
+import { usePaymentInput } from '@/lib/hooks/use-payment-input';
+import { paymentInputErrorKey } from '@/lib/payment-input/error-messages';
 
 const LightningPaymentScreenHeaderTitle = (title: string) => <HeaderTitle title={title} />;
 
@@ -22,30 +23,19 @@ export default function EnterAddressScreen() {
   const { t } = useTranslation();
   const { input } = useLocalSearchParams<SearchParams>();
   const router = useRouter();
-  const { parseInput } = useBreez();
+  // Same rules as every entry point: an Invoice pasted here opens the Lightning flow
+  const { routeInput, methodSheet } = usePaymentInput({
+    navigation: 'push',
+    onError: (reason) => showErrorMessage(t(paymentInputErrorKey(reason, 'onchainSend.enterAddress.errors.invalidAddress'))),
+  });
 
   const [addressInput, setAddressInput] = useState(input?.trim() || '');
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePayment = async () => {
-    if (!addressInput.trim()) {
-      showErrorMessage(t('onchainSend.enterAddress.errors.invalidAddress'));
-      return;
-    }
-
     try {
       setIsLoading(true);
-      const parsed = await parseInput(addressInput.trim());
-      switch (parsed.tag) {
-        case InputType_Tags.BitcoinAddress:
-          router.push(`/send-onchain/enter-amount?recipientAddress=${encodeURIComponent(addressInput.trim())}`);
-          break;
-        default:
-          showErrorMessage(t('onchainSend.enterAddress.errors.unsupportedAddress'));
-          break;
-      }
-    } catch (error) {
-      showErrorMessage(t('onchainSend.enterAddress.errors.addressVerificationFailed'));
+      await routeInput(addressInput);
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +87,7 @@ export default function EnterAddressScreen() {
             />
           </View>
         </ScrollView>
+        <PaymentMethodBottomSheet ref={methodSheet.ref} mode="send" onSelect={methodSheet.onSelect} onDismiss={methodSheet.onDismiss} />
       </SafeAreaView>
     </SafeAreaProvider>
   );

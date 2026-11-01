@@ -1,0 +1,32 @@
+appId: ${APP_ID}
+name: 'Links - bitcoin and lightning links open the right screen'
+tags:
+  - links
+# BIP173 address and the BOLT 11 mainnet Invoice without an Amount ("Please consider supporting this project")
+env:
+  ADDRESS: bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4
+  NO_AMOUNT_INVOICE: lnbc1pvjluezsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygspp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaq9qrsgq357wnc5r2ueh7ck6q93dj32dlqnls087fxdwk8qakdyafkq3yap9us6v52vjjsrvywa6rt52cm9r9zqt8r2t7mlcwspyetp5h2tztugp9lfyql
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/wait-for-lightning.yaml
+# bitcoin: link -> /payment-input -> the on-chain amount screen, pre-filled
+- openLink: 'bitcoin:${ADDRESS}?amount=0.0001'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-amount-screen'
+    timeout: 20000
+- assertVisible:
+    id: 'send-onchain-amount-value'
+    text: '10000'
+- runFlow: subflows/back-to-home.yaml
+# lightning: link with an Invoice without an Amount -> the Lightning amount screen
+- openLink: 'lightning:${NO_AMOUNT_INVOICE}'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-amount-screen'
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-amount-send-to'
+      text: 'Send to Please consider supporting this project'
+    timeout: 30000

@@ -25,11 +25,14 @@ type SearchParams = {
 
 type Recipient = {
   sendTo: string;
-  limits: SatLimits;
+  /** The recipient's limits; an Invoice without an Amount has none */
+  limits?: SatLimits;
+  /** Set for an Invoice without an Amount: Continue pays this Invoice with the Amount entered */
+  bolt11?: string;
 };
 
 // What the recipient accepts, read from the Breez parse: undefined for anything this screen cannot pay
-function readRecipient(parsed: InputType): Recipient | undefined {
+function readRecipient(parsed: InputType, invoiceLabel: string): Recipient | undefined {
   let recipient: Recipient | undefined;
   if (parsed.tag === InputType_Tags.LightningAddress) {
     const { address, payRequest } = parsed.inner[0];
@@ -38,8 +41,12 @@ function readRecipient(parsed: InputType): Recipient | undefined {
     const payRequest = parsed.inner[0];
     recipient = { sendTo: payRequest.domain, limits: toSatLimits(payRequest.minSendable, payRequest.maxSendable) };
   }
+  if (parsed.tag === InputType_Tags.Bolt11Invoice && parsed.inner[0].amountMsat === undefined) {
+    const invoice = parsed.inner[0];
+    return { sendTo: invoice.description || invoiceLabel, bolt11: invoice.invoice.bolt11 };
+  }
   // Limits with no whole sat inside (for example 1 500 msat to 1 500 msat) cannot be paid
-  return recipient && hasPayableAmount(recipient.limits) ? recipient : undefined;
+  return recipient?.limits && hasPayableAmount(recipient.limits) ? recipient : undefined;
 }
 
 export default function LightningAddressAmountScreen() {
@@ -59,7 +66,7 @@ export default function LightningAddressAmountScreen() {
   const isBtcUnit = bitcoinUnit === BitcoinUnit.Btc;
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const satsAmount = isBtcUnit ? convertBtcToSats(Number(amount)) : Number(amount);
-  const isOutsideLimits = !!recipient && !isWithinLimits(satsAmount, recipient.limits);
+  const isOutsideLimits = !!recipient?.limits && !isWithinLimits(satsAmount, recipient.limits);
   // Continue waits for the parse: without it, the recipient's limits are unknown
   const isAmountInvalid = !recipient || !Number(amount) || satsAmount > balance || isOutsideLimits;
 
@@ -70,7 +77,7 @@ export default function LightningAddressAmountScreen() {
     const parseRecipient = async () => {
       setParseFailed(false);
       try {
-        const parsed = readRecipient(await parseInput(paymentInput.trim()));
+        const parsed = readRecipient(await parseInput(paymentInput.trim()), t('enterAmount.lightningInvoice'));
         if (cancelled) return;
         if (!parsed) {
           setRecipient(undefined);
@@ -79,7 +86,7 @@ export default function LightningAddressAmountScreen() {
         }
         setRecipient(parsed);
         // A fixed Amount (equal limits) is pre-filled; the keypad stays enabled
-        if (isFixedAmount(parsed.limits)) {
+        if (parsed.limits && isFixedAmount(parsed.limits)) {
           setAmount(toKeypadAmount(parsed.limits.minSats, bitcoinUnit));
         }
       } catch (error) {
@@ -95,7 +102,7 @@ export default function LightningAddressAmountScreen() {
     return () => {
       cancelled = true;
     };
-  }, [isBreezInitialized, paymentInput, parseInput, bitcoinUnit]);
+  }, [isBreezInitialized, paymentInput, parseInput, bitcoinUnit, t]);
 
   useEffect(() => {
     if (!amount || amount === '0' || amount === '.') {
@@ -124,6 +131,10 @@ export default function LightningAddressAmountScreen() {
       return;
     }
 
+    if (recipient?.bolt11) {
+      router.push({ pathname: '/send/transaction-details', params: { rawInvoice: recipient.bolt11, amountSats: satsValue.toString() } });
+      return;
+    }
     router.push({
       pathname: '/send/transaction-details',
       params: {
@@ -166,7 +177,7 @@ export default function LightningAddressAmountScreen() {
                 {t('lightningPayment.errors.preparePaymentFailed')}
               </Text>
             )}
-            {recipient && isOutsideLimits && (
+            {recipient?.limits && isOutsideLimits && (
               <Text testID="send-ln-amount-limits" className={`mt-2 text-center text-sm ${Number(amount) ? 'text-red-500' : 'text-gray-500 dark:text-charcoal-400'}`}>
                 {t('enterAmount.limits', { min: formatBalance(recipient.limits.minSats, bitcoinUnit), max: formatBalance(recipient.limits.maxSats, bitcoinUnit) })}
               </Text>

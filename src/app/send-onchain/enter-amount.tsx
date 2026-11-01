@@ -13,7 +13,7 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { NumericKeypad } from '@/components/ui';
-import { convertBitcoinToFiat, convertBtcToSats, getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, convertBtcToSats, getFiatCurrency, toKeypadAmount } from '@/lib';
 import { AppContext, useBdk } from '@/lib/context';
 import type { IndexerFeeRates } from '@/lib/context/bdk-context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
@@ -21,6 +21,8 @@ import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
   recipientAddress: string;
+  /** The amount of a Bitcoin URI: pre-fills the Amount, which the user can change */
+  amountSats?: string;
 };
 
 type FeeSpeed = 'low' | 'medium' | 'fast';
@@ -35,12 +37,15 @@ interface FeeOption {
 export default function OnchainSendAmountScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { recipientAddress } = useLocalSearchParams<SearchParams>();
+  const { recipientAddress, amountSats } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit, selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
   const { balance: bdkBalance, getIndexerFeeRates } = useBdk();
 
-  const [amount, setAmount] = useState('0');
+  const [amount, setAmount] = useState(() => {
+    const prefilledSats = Number(amountSats);
+    return Number.isInteger(prefilledSats) && prefilledSats > 0 ? toKeypadAmount(prefilledSats, bitcoinUnit) : '0';
+  });
   const [fiatAmount, setFiatAmount] = useState('0');
   const [selectedFee, setSelectedFee] = useState<FeeSpeed>('medium');
   const [feeOptions, setFeeOptions] = useState<FeeOption[]>([]);
