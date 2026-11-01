@@ -222,29 +222,30 @@ Short names: `domain` = `src/lib/lightning/__tests__/domain.test.ts`; `request` 
 
 Short names: `login` = `src/app/__tests__/lightning-login.test.tsx`; plus `route`, `entry` and `i18n`.
 
-| Item                     | Level       | Test file › test name                                                                                | Status  |
-| ------------------------ | ----------- | ---------------------------------------------------------------------------------------------------- | ------- |
-| P4-1                     | Unit        | `route` › {network}: LNURL-auth → lightningLogin                                                     | planned |
-| P4-1                     | Integration | `entry` › {entry point}: LNURL-auth → lightning-login                                                | planned |
-| P4-1                     | Integration | `login` › parses the Payment Input again with Breez                                                  | planned |
-| P4-1                     | Integration | `login` › a parse result that is not LNURL-auth shows an error and no Sign in button                 | planned |
-| P4-2 (title `register`)  | Integration | `login` › action register: "Create an account on {{domain}}?"                                        | planned |
-| P4-2 (title `link`)      | Integration | `login` › action link: "Link your account on {{domain}}?"                                            | planned |
-| P4-2 (title `login`)     | Integration | `login` › action login: "Sign in to {{domain}}?"                                                     | planned |
-| P4-2 (title `auth`)      | Integration | `login` › action auth: "Sign in to {{domain}}?"                                                      | planned |
-| P4-2 (title none)        | Integration | `login` › no action: "Sign in to {{domain}}?"                                                        | planned |
-| P4-2 (title other value) | Integration | `login` › an unknown action: "Sign in to {{domain}}?"                                                | planned |
-| P4-2                     | Integration | `login` › shows the identity note with the domain, Sign in and Cancel                                | planned |
-| P4-3                     | Integration | `login` › lnurlAuth is not called on mount                                                           | planned |
-| P4-3                     | Integration | `login` › Cancel goes back and never calls lnurlAuth                                                 | planned |
-| P4-3                     | Integration | `login` › each tap on Sign in calls lnurlAuth exactly once                                           | planned |
-| P4-4                     | Integration | `login` › `Ok`: "Signed in to {{domain}}", then dismissAll and replace('/')                          | planned |
-| P4-5                     | Integration | `login` › `ErrorStatus`: "{{domain}} refused the sign-in: {{reason}}", stays on the screen           | planned |
-| P4-5                     | Integration | `login` › an exception: "The sign-in could not be completed. Please try again.", stays on the screen | planned |
-| P4-5                     | Integration | `login` › a retry after an error calls lnurlAuth again                                               | planned |
-| P4-6                     | Integration | `login` › with App Lock on, Sign in calls lnurlAuth without asking for the PIN                       | planned |
-| testIDs                  | Integration | `login` selects by the spec's testIDs                                                                | planned |
-| Translations             | Unit        | `i18n` › EN and FR have the same Part 4 keys, with the spec's copy                                   | planned |
+| Item                     | Level       | Test file › test name                                                                                                                 | Status |
+| ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| P4-1                     | Unit        | `route` › {network}: LNURL-auth → lightningLogin (with and without lightning:)                                                        | green  |
+| P4-1                     | Integration | `entry` › {entry point}: LNURL-auth → /lightning-login                                                                                | green  |
+| P4-1                     | Integration | `login` › parses the Payment Input again with Breez, once Breez is started                                                            | green  |
+| P4-1                     | Integration | `login` › a failed parse / a parse result that is not LNURL-auth shows an error and no Sign in button                                 | green  |
+| P4-2 (title `register`)  | Integration | `login` › action register: the title is lightningLogin.title.register                                                                 | green  |
+| P4-2 (title `link`)      | Integration | `login` › action link: the title is lightningLogin.title.link                                                                         | green  |
+| P4-2 (title `login`)     | Integration | `login` › action login: the title is lightningLogin.title.signIn                                                                      | green  |
+| P4-2 (title `auth`)      | Integration | `login` › action auth: the title is lightningLogin.title.signIn                                                                       | green  |
+| P4-2 (title none)        | Integration | `login` › action undefined: the title is lightningLogin.title.signIn                                                                  | green  |
+| P4-2 (title other value) | Integration | `login` › action subscribe: the title is lightningLogin.title.signIn                                                                  | green  |
+| P4-2                     | Integration | `login` › shows the identity note with the domain, Sign in and Cancel                                                                 | green  |
+| P4-3                     | Integration | `login` › lnurlAuth is not called on mount                                                                                            | green  |
+| P4-3                     | Integration | `login` › Cancel goes back and never calls lnurlAuth                                                                                  | green  |
+| P4-3                     | Integration | `login` › each tap on Sign in calls lnurlAuth exactly once, with the parsed request (a double tap calls it once)                      | green  |
+| P4-3                     | Integration | `entry` › {entry point}: every case checks that lnurlAuth is never called by the routing                                              | green  |
+| P4-4                     | Integration | `login` › `Ok`: "Signed in to {{domain}}", then dismissAll and replace('/')                                                           | green  |
+| P4-5                     | Integration | `login` › `ErrorStatus`: "{{domain}} refused the sign-in: {{reason}}", stays on the screen                                            | green  |
+| P4-5                     | Integration | `login` › an exception: "The sign-in could not be completed. Please try again.", stays on the screen                                  | green  |
+| P4-5                     | Integration | `login` › a retry after an error calls lnurlAuth again                                                                                | green  |
+| P4-6                     | Integration | `login` › is not a Sensitive Action: Sign in does not ask for the PIN (authorizeSensitiveAction, which would refuse, is never called) | green  |
+| testIDs                  | Integration | `login` selects by `lightning-login-screen`, `lightning-login-title`, `lightning-login-confirm`, `lightning-login-cancel`             | green  |
+| Translations             | Unit        | `i18n` › EN and FR have the same Part 4 keys, with the spec copy; FR puts a space before ? and :                                      | green  |
 
 ## Maestro
 
@@ -259,7 +260,7 @@ Each part writes its flows in its own pull request (spec, "Maestro"). They run a
 | 2 | `.maestro/send-routing.yaml` (new) | P2-4, P2-7, P2-8, P2-9, P2-10, P2-11, P2-12, P2-13, P2-15 | not run locally (syntax checked); runs in `e2e-android` on the PR |
 | 2 | `.maestro/deep-links.yaml` (new) | P2-17, P2-18, P2-19 | not run locally (syntax checked); runs in `e2e-android` on the PR |
 | 3 | — | no stable LNURL-withdraw service (decided with the user) | manual checklist |
-| 4 | `.maestro/lightning-login.yaml` (new) | P4-1, P4-2 (`register`, no action), P4-3 (Cancel) | planned |
+| 4 | `.maestro/lightning-login.yaml` (new) | P4-1, P4-2 (`register`, no action), P4-3 (Cancel) | not run locally (syntax checked); runs in `e2e-android` on the PR |
 
 Part 2, not run locally: the arm64 emulator `Medium_Phone_API_36.0` (no screen lock) refused even the arm64-only release APK (73 MB) with `INSTALL_FAILED_INSUFFICIENT_STORAGE`, at 525 MB free; the user chose to leave it as it is. `maestro check-syntax` passes on every new or changed flow and subflow. The `send-lightning-address` flow also needs `admin-test@pay.usegrimm.app` to be registered (it answered 404 on 2026-11-01).
 
@@ -323,3 +324,15 @@ Each line was changed on its own, the Part 1 suites were run, then the line was 
 | The double-tap guard removed | `withdrawal` › a double tap on Withdraw calls lnurlWithdraw once |
 | The domain keeps the port | `domain` › 3 URLs with a port; `withdrawal` › shows the domain of the callback (4 tests) |
 | LNURL-withdraw routed as "unsupported" again | `route` › LNURL-withdraw → withdrawal (both networks); `entry` › LNURL-withdraw (4 entry points) (6 tests) |
+
+### Part 4
+
+| Mutation                                                      | Caught by                                                                                                                                             |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lnurlAuth` called in a mount effect                          | `login` › lnurlAuth is not called on mount; Cancel goes back and never calls lnurlAuth; each tap on Sign in calls lnurlAuth exactly once; … (6 tests) |
+| `link` reads as a sign-in                                     | `login` › action link: the title is lightningLogin.title.link                                                                                         |
+| `register` reads as a sign-in                                 | `login` › action register: the title is lightningLogin.title.register                                                                                 |
+| `ErrorStatus` treated as `Ok`                                 | `login` › `ErrorStatus`: "{{domain}} refused the sign-in: {{reason}}", stays on the screen                                                            |
+| The double-tap guard removed                                  | `login` › each tap on Sign in calls lnurlAuth exactly once                                                                                            |
+| Lightning Login asks for the PIN (`authorizeSensitiveAction`) | `login` › is not a Sensitive Action…; the Result tests (6 tests)                                                                                      |
+| LNURL-auth routed as "unsupported" again                      | `route` › LNURL-auth → lightningLogin (both networks); `entry` › LNURL-auth (4 entry points) (6 tests)                                                |

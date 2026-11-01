@@ -285,6 +285,12 @@ This changes three behaviours on purpose: a Bitcoin address pasted on the Lightn
 5. `ErrorStatus`: an error flash message "{{domain}} refused the sign-in: {{reason}}". An exception: "The sign-in could not be completed. Please try again." In both cases the user stays on the screen and can tap Sign in again.
 6. Lightning Login is not a Sensitive Action. If sends ever ask for the PIN, Lightning Login follows the same rule.
 
+#### Clarifications decided during Part 4 (to confirm in review)
+
+- While Breez is starting, the screen waits for it before the parse. When the parse fails or returns something other than LNURL-auth, the screen shows "Sorry, we do not support this Bitcoin or Lightning address" and no Sign in button.
+- The Cancel button uses a new key `lightningLogin.cancel` ("Cancel", "Annuler"); the spec's table has no label for it. Cancel is disabled while the sign-in is in progress.
+- The screen has no header title: the title of item 2 is its heading.
+
 ### Changes
 
 - `src/lib/context/breez-context.tsx`: add `lnurlAuth(requestData)` to the context and re-export `LnurlAuthRequestDetails` and `LnurlCallbackStatus_Tags`.

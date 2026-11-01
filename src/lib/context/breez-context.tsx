@@ -8,6 +8,8 @@ import type {
   GetInfoResponse,
   InputType,
   ListPaymentsRequest,
+  LnurlAuthRequestDetails,
+  LnurlCallbackStatus,
   LnurlPayRequestDetails,
   LnurlWithdrawRequestDetails,
   Payment,
@@ -82,6 +84,8 @@ interface BreezContextType {
   executeLnurlPay: (prepareResponse: PrepareLnurlPayResponse) => Promise<Payment | undefined>;
   /** Asks the service to pay an Invoice for the Amount; resolves with the Payment, or undefined if it is not received after 60 s */
   lnurlWithdraw: (amountSats: number, withdrawRequest: LnurlWithdrawRequestDetails) => Promise<Payment | undefined>;
+  /** Lightning Login: signs the website's challenge with the identity derived for that domain */
+  lnurlAuth: (requestData: LnurlAuthRequestDetails) => Promise<LnurlCallbackStatus>;
   unclaimedDeposits: DepositInfo[];
   listUnclaimedDeposits: () => Promise<DepositInfo[]>;
   refreshUnclaimedDeposits: () => Promise<DepositInfo[]>;
@@ -137,6 +141,9 @@ const defaultContext: BreezContextType = {
     throw new Error('Breez not initialized');
   },
   lnurlWithdraw: async () => {
+    throw new Error('Breez not initialized');
+  },
+  lnurlAuth: async () => {
     throw new Error('Breez not initialized');
   },
   unclaimedDeposits: [],
@@ -481,6 +488,11 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     return response.payment;
   }, []);
 
+  const lnurlAuth = useCallback(async (requestData: LnurlAuthRequestDetails): Promise<LnurlCallbackStatus> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    return sdkRef.current.lnurlAuth(requestData);
+  }, []);
+
   const initializeBreez = useCallback(async (): Promise<void> => {
     if (isInitializingRef.current || isBreezInitialized) return;
 
@@ -669,6 +681,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     prepareLnurlPay,
     executeLnurlPay,
     lnurlWithdraw,
+    lnurlAuth,
     unclaimedDeposits,
     listUnclaimedDeposits,
     refreshUnclaimedDeposits,
@@ -692,6 +705,8 @@ export type {
   DepositInfo,
   GetInfoResponse,
   InputType,
+  LnurlAuthRequestDetails,
+  LnurlCallbackStatus,
   LnurlPayRequestDetails,
   LnurlWithdrawRequest,
   LnurlWithdrawRequestDetails,
@@ -701,4 +716,4 @@ export type {
   ReceivePaymentResponse,
   SendPaymentResponse,
 };
-export { BitcoinNetwork, InputType_Tags, PaymentStatus, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';
+export { BitcoinNetwork, InputType_Tags, LnurlCallbackStatus_Tags, PaymentStatus, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';

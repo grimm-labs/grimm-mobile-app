@@ -28,6 +28,21 @@ const PART_3 = {
   'withdrawal.errors.failed': ['The withdrawal could not be completed. Please try again.', "Le retrait n'a pas pu aboutir. Veuillez réessayer."],
 };
 
+const PART_4 = {
+  'lightningLogin.title.signIn': ['Sign in to {{domain}}?', 'Se connecter à {{domain}} ?'],
+  'lightningLogin.title.register': ['Create an account on {{domain}}?', 'Créer un compte sur {{domain}} ?'],
+  'lightningLogin.title.link': ['Link your account on {{domain}}?', 'Lier votre compte sur {{domain}} ?'],
+  'lightningLogin.note': [
+    '{{domain}} will receive an identity that Grimm App creates for this website only. It cannot see your funds or your other logins.',
+    '{{domain}} recevra une identité que Grimm App crée pour ce site uniquement. Il ne peut voir ni vos fonds ni vos autres connexions.',
+  ],
+  'lightningLogin.confirm': ['Sign in', 'Se connecter'],
+  'lightningLogin.cancel': ['Cancel', 'Annuler'],
+  'lightningLogin.success': ['Signed in to {{domain}}', 'Connecté à {{domain}}'],
+  'lightningLogin.errors.refused': ['{{domain}} refused the sign-in: {{reason}}', '{{domain}} a refusé la connexion : {{reason}}'],
+  'lightningLogin.errors.failed': ['The sign-in could not be completed. Please try again.', "La connexion n'a pas pu aboutir. Veuillez réessayer."],
+};
+
 // No screen uses them any more once every entry point routes through usePaymentInput
 const REMOVED_IN_PART_2 = [
   'lightningPayment.errors.bitcoinNotSupported',
@@ -62,6 +77,18 @@ describe('Lightning compatibility translations', () => {
       expect([key, valueAt(en, key)]).toEqual([key, english]);
       expect([key, valueAt(fr, key)]).toEqual([key, french]);
     });
+  });
+
+  it('EN and FR have the same Part 4 keys, with the spec copy', () => {
+    Object.entries(PART_4).forEach(([key, [english, french]]) => {
+      expect([key, valueAt(en, key)]).toEqual([key, english]);
+      expect([key, valueAt(fr, key)]).toEqual([key, french]);
+    });
+  });
+
+  it('FR puts a space before ? and :', () => {
+    [fr.lightningLogin.title.signIn, fr.lightningLogin.title.register, fr.lightningLogin.title.link].forEach((title) => expect(title).toMatch(/ \?$/));
+    expect(fr.lightningLogin.errors.refused).toContain(' : ');
   });
 
   it('the keys Part 2 replaces are gone from EN and FR', () => {

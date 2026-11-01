@@ -31,6 +31,11 @@ export enum InputType_Tags {
   SparkInvoice = 'SparkInvoice',
 }
 
+export enum LnurlCallbackStatus_Tags {
+  Ok = 'Ok',
+  ErrorStatus = 'ErrorStatus',
+}
+
 export enum PaymentStatus {
   Completed,
   Pending,
@@ -71,6 +76,7 @@ const actions = {
   prepareLnurlPay: jest.fn(),
   executeLnurlPay: jest.fn(),
   lnurlWithdraw: jest.fn(),
+  lnurlAuth: jest.fn(),
 };
 
 let value = { ...DEFAULT_STATE, ...actions };

@@ -162,7 +162,7 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 - [x] QR code scanning and generation
 - [x] Basic wallet security with secure storage
 - [x] Transaction history and balance display
-- [ ] LNURL support (pay, withdraw, auth)
+- [x] LNURL support (pay, withdraw, auth)
 - [ ] Lightning address support
 
 ### Phase 2: On-Chain Bitcoin (In Progress)
