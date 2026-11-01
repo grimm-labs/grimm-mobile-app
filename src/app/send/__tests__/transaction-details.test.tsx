@@ -1,19 +1,14 @@
 import React from 'react';
 
+import { aLightningAddress, anInvoice, anLnurlPay, aPayment, MAINNET_INVOICE } from '@/lib/payment-input/__tests__/helpers/breez-results';
+import { fakeBreez, PaymentStatus } from '@/lib/payment-input/__tests__/helpers/fake-breez-context';
+import { fakeRouter, router } from '@/lib/payment-input/__tests__/helpers/fake-expo-router';
 import { cleanup, screen, setup, waitFor } from '@/lib/test-utils';
 
 import PaymentDetailsScreen from '../transaction-details';
 
-const mockPush = jest.fn();
-const mockBack = jest.fn();
-const mockParseInput = jest.fn();
-const mockPrepareSend = jest.fn();
-const mockExecuteSend = jest.fn();
-const mockPrepareLnurlPay = jest.fn();
-const mockExecuteLnurlPay = jest.fn();
 const mockShowErrorMessage = jest.fn();
-
-let mockSearchParams: Record<string, string | undefined> = {};
+const mockT = (key: string) => key;
 
 jest.mock('react-native-safe-area-context', () => {
   const React = require('react');
@@ -36,49 +31,16 @@ jest.mock('@/components/ui/focus-aware-status-bar', () => ({
 }));
 
 jest.mock('react-i18next', () => ({
-  initReactI18next: {
-    type: '3rdParty',
-    init: jest.fn(),
-  },
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  initReactI18next: { type: '3rdParty', init: jest.fn() },
+  useTranslation: () => ({ t: mockT }),
 }));
 
 jest.mock('@/lib/i18n', () => ({
   translate: (key: string) => key,
 }));
 
-jest.mock('expo-router', () => {
-  const React = require('react');
-  return {
-    useRouter: () => ({
-      push: mockPush,
-      back: mockBack,
-    }),
-    useLocalSearchParams: () => mockSearchParams,
-    Stack: {
-      Screen: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
-    },
-  };
-});
-
-jest.mock('@/lib/context/breez-context', () => ({
-  useBreez: () => ({
-    parseInput: mockParseInput,
-    prepareSend: mockPrepareSend,
-    executeSend: mockExecuteSend,
-    prepareLnurlPay: mockPrepareLnurlPay,
-    executeLnurlPay: mockExecuteLnurlPay,
-    balance: 100000,
-    isBreezInitialized: true,
-  }),
-  InputType_Tags: {
-    Bolt11Invoice: 'Bolt11Invoice',
-    LightningAddress: 'LightningAddress',
-    LnurlPay: 'LnurlPay',
-  },
-}));
+jest.mock('expo-router', () => require('@/lib/payment-input/__tests__/helpers/fake-expo-router'));
+jest.mock('@/lib/context/breez-context', () => require('@/lib/payment-input/__tests__/helpers/fake-breez-context'));
 
 jest.mock('@/lib/context', () => {
   const React = require('react');
@@ -101,9 +63,11 @@ jest.mock('@/lib', () => ({
 }));
 
 jest.mock('@/components/ui/utils', () => ({
+  ...jest.requireActual('@/components/ui/utils'),
   showErrorMessage: (...args: unknown[]) => mockShowErrorMessage(...args),
 }));
 
+// The slider is a gesture; the tests only need "confirm unless loading"
 jest.mock('@/components/slide-to-confirm', () => {
   const React = require('react');
   const { Pressable, Text } = require('react-native');
@@ -116,65 +80,182 @@ jest.mock('@/components/slide-to-confirm', () => {
 
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
+const SEND_ERROR = 'paymentDetails.errors.sendFailed';
+
+beforeEach(() => {
+  fakeBreez.reset();
+  fakeRouter.reset();
+});
+
 afterEach(() => {
   cleanup();
   jest.clearAllMocks();
-  mockSearchParams = {};
 });
 
+function renderDetails(params: Record<string, string | undefined>) {
+  fakeRouter.setParams(params);
+  return setup(<PaymentDetailsScreen />);
+}
+
+const PREPARED_INVOICE = { paymentMethod: { inner: { sparkTransferFeeSats: 0n, lightningFeeSats: 0n } } };
+const PREPARED_LNURL = { amountSats: 1000n, feeSats: 0n };
+
+// Every kind of Lightning payment follows the same outcome rules (P1-1); only the SDK calls differ
+const KINDS = [
+  {
+    kind: 'Invoice',
+    params: { rawInvoice: MAINNET_INVOICE },
+    arrange: () => {
+      fakeBreez.parseInput.mockResolvedValue(anInvoice({ amountSats: 1000 }));
+      fakeBreez.prepareSend.mockResolvedValue(PREPARED_INVOICE);
+    },
+    prepared: PREPARED_INVOICE,
+    execute: fakeBreez.executeSend,
+    // executeSend resolves a SendPaymentResponse, executeLnurlPay the Payment itself
+    answer: (payment: unknown) => ({ payment }),
+  },
+  {
+    kind: 'Lightning Address',
+    params: { paymentInput: 'alice@pay.usegrimm.app', amountSats: '1000' },
+    arrange: () => {
+      fakeBreez.parseInput.mockResolvedValue(aLightningAddress());
+      fakeBreez.prepareLnurlPay.mockResolvedValue(PREPARED_LNURL);
+    },
+    prepared: PREPARED_LNURL,
+    execute: fakeBreez.executeLnurlPay,
+    answer: (payment: unknown) => payment,
+  },
+  {
+    kind: 'LNURL-pay',
+    params: { paymentInput: 'lnurl1shop', amountSats: '1000' },
+    arrange: () => {
+      fakeBreez.parseInput.mockResolvedValue(anLnurlPay());
+      fakeBreez.prepareLnurlPay.mockResolvedValue(PREPARED_LNURL);
+    },
+    prepared: PREPARED_LNURL,
+    execute: fakeBreez.executeLnurlPay,
+    answer: (payment: unknown) => payment,
+  },
+];
+
 describe('PaymentDetailsScreen (transaction-details)', () => {
+  describe.each(KINDS)('Outcome of the slide to confirm: $kind', ({ kind, params, arrange, prepared, execute, answer }) => {
+    async function slide(user: ReturnType<typeof setup>['user']) {
+      await user.press(await screen.findByTestId('slide-to-confirm'));
+    }
+
+    beforeEach(arrange);
+
+    it(`${kind}: \`Completed\` opens the success screen with the payment's Amount`, async () => {
+      execute.mockResolvedValueOnce(answer(aPayment({ status: PaymentStatus.Completed, amountSats: 1000 })));
+      const { user } = renderDetails(params);
+
+      await slide(user);
+
+      await waitFor(() =>
+        expect(router.push).toHaveBeenCalledWith({
+          pathname: '/transaction-result/success-screen',
+          params: { transactionType: 'sent', satsAmount: '1000' },
+        }),
+      );
+      expect(mockShowErrorMessage).not.toHaveBeenCalled();
+    });
+
+    it(`${kind}: \`Pending\` opens the pending screen in sent mode with the payment's Amount`, async () => {
+      execute.mockResolvedValueOnce(answer(aPayment({ status: PaymentStatus.Pending, amountSats: 1000 })));
+      const { user } = renderDetails(params);
+
+      await slide(user);
+
+      await waitFor(() =>
+        expect(router.push).toHaveBeenCalledWith({
+          pathname: '/transaction-result/pending-screen',
+          params: { transactionType: 'sent', satsAmount: '1000' },
+        }),
+      );
+      expect(router.push).toHaveBeenCalledTimes(1);
+      expect(mockShowErrorMessage).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['`Failed`', () => execute.mockResolvedValueOnce(answer(aPayment({ status: PaymentStatus.Failed })))],
+      ['no Payment', () => execute.mockResolvedValueOnce(answer(undefined))],
+      ['an exception', () => execute.mockRejectedValueOnce(new Error('route not found'))],
+    ])(`${kind}: %s shows the send error and stays on the screen`, async (_outcome, arrangeOutcome) => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      arrangeOutcome();
+      const { user } = renderDetails(params);
+
+      await slide(user);
+
+      await waitFor(() => expect(mockShowErrorMessage).toHaveBeenCalledWith(SEND_ERROR));
+      expect(router.push).not.toHaveBeenCalled();
+      expect(router.replace).not.toHaveBeenCalled();
+      expect(screen.getByTestId('send-ln-details-screen')).toBeOnTheScreen();
+    });
+
+    it(`${kind}: the slider works again after a failure`, async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      let rejectPayment: (error: Error) => void = () => {};
+      execute.mockReturnValueOnce(new Promise((_resolve, reject) => (rejectPayment = reject)));
+      const { user } = renderDetails(params);
+
+      await slide(user);
+      await waitFor(() => expect(screen.getByTestId('slide-to-confirm')).toBeDisabled());
+
+      rejectPayment(new Error('route not found'));
+
+      await waitFor(() => expect(screen.getByTestId('slide-to-confirm')).toBeEnabled());
+      expect(mockShowErrorMessage).toHaveBeenCalledWith(SEND_ERROR);
+    });
+
+    it(`${kind}: a second slide after a failure pays the same prepared payment again`, async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      execute.mockRejectedValueOnce(new Error('route not found')).mockResolvedValueOnce(answer(aPayment({ status: PaymentStatus.Completed, amountSats: 1000 })));
+      const { user } = renderDetails(params);
+
+      await slide(user);
+      await waitFor(() => expect(mockShowErrorMessage).toHaveBeenCalledWith(SEND_ERROR));
+      await slide(user);
+
+      await waitFor(() => expect(router.push).toHaveBeenCalledWith(expect.objectContaining({ pathname: '/transaction-result/success-screen' })));
+      expect(execute).toHaveBeenCalledTimes(2);
+      expect(execute.mock.calls[0][0]).toBe(prepared);
+      expect(execute.mock.calls[1][0]).toBe(prepared);
+    });
+  });
+
   describe('Bolt11 Invoice flow', () => {
     it('shows loading state initially', () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockReturnValue(new Promise(() => {})); // never resolves
+      fakeBreez.parseInput.mockReturnValue(new Promise(() => {})); // never resolves
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       expect(screen.getByText('paymentDetails.loading')).toBeOnTheScreen();
       expect(screen.getByText('paymentDetails.loadingSubtitle')).toBeOnTheScreen();
     });
 
     it('displays invoice details after parsing', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [
-          {
-            amountMsat: 5000000n,
-            invoice: { bolt11: 'lnbc1...' },
-            payeePubkey: '03abc123',
-            description: 'Test payment',
-            expiry: 3600n,
-            timestamp: BigInt(Math.floor(Date.now() / 1000)),
-          },
-        ],
-      });
-      mockPrepareSend.mockResolvedValueOnce({
-        paymentMethod: {
-          inner: { sparkTransferFeeSats: 10n, lightningFeeSats: 5n },
-        },
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ amountSats: 5000, description: 'Test payment' }));
+      fakeBreez.prepareSend.mockResolvedValueOnce({ paymentMethod: { inner: { sparkTransferFeeSats: 10n, lightningFeeSats: 5n } } });
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.amount')).toBeOnTheScreen();
       });
 
       expect(screen.getByText('5000 SAT')).toBeOnTheScreen();
-      expect(screen.getByText('03abc123')).toBeOnTheScreen();
+      expect(screen.getByText('03payee')).toBeOnTheScreen();
       expect(screen.getByText('Test payment')).toBeOnTheScreen();
       expect(screen.getByText('paymentDetails.networkFee')).toBeOnTheScreen();
+      expect(fakeBreez.prepareSend).toHaveBeenCalledWith(MAINNET_INVOICE);
     });
 
     it('shows decode error when invoice parsing fails', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [{ amountMsat: undefined }],
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice());
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
@@ -182,33 +263,23 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('shows not enough funds error', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [
-          {
-            amountMsat: 5000000n,
-            invoice: { bolt11: 'lnbc1...' },
-            payeePubkey: '03abc123',
-            expiry: 3600n,
-            timestamp: BigInt(Math.floor(Date.now() / 1000)),
-          },
-        ],
-      });
-      mockPrepareSend.mockRejectedValueOnce(new Error('not enough funds'));
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ amountSats: 5000 }));
+      fakeBreez.prepareSend.mockRejectedValueOnce(new Error('not enough funds'));
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
       });
+      expect(screen.getByText('paymentDetails.errors.notEnoughFunds')).toBeOnTheScreen();
     });
 
     it('shows the error screen with invalidData on generic parse failure', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockRejectedValueOnce(new Error('something else'));
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockRejectedValueOnce(new Error('something else'));
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
@@ -216,63 +287,14 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
       expect(screen.getByText('paymentDetails.errors.invalidData')).toBeOnTheScreen();
       expect(mockShowErrorMessage).not.toHaveBeenCalled();
     });
-
-    it('executes bolt11 payment on confirm', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      const mockPrepareResponse = {
-        paymentMethod: {
-          inner: { sparkTransferFeeSats: 0n, lightningFeeSats: 0n },
-        },
-      };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [
-          {
-            amountMsat: 1000000n,
-            invoice: { bolt11: 'lnbc1...' },
-            payeePubkey: '03abc123',
-            expiry: 3600n,
-            timestamp: BigInt(Math.floor(Date.now() / 1000)),
-          },
-        ],
-      });
-      mockPrepareSend.mockResolvedValueOnce(mockPrepareResponse);
-      mockExecuteSend.mockResolvedValueOnce({
-        payment: { amount: 1000n },
-      });
-
-      const { user } = setup(<PaymentDetailsScreen />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('slide-to-confirm')).toBeOnTheScreen();
-      });
-
-      await user.press(screen.getByTestId('slide-to-confirm'));
-
-      await waitFor(() => {
-        expect(mockExecuteSend).toHaveBeenCalledWith(mockPrepareResponse);
-      });
-
-      expect(mockPush).toHaveBeenCalledWith({
-        pathname: '/transaction-result/success-screen',
-        params: { transactionType: 'sent', satsAmount: '1000' },
-      });
-    });
   });
 
   describe('Lightning Address flow', () => {
     it('displays LN address as destination', async () => {
-      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LightningAddress',
-        inner: [{ address: 'bob@pay.usegrimm.app', payRequest: { callback: 'https://getalby.com/lnurlp/alice' } }],
-      });
-      mockPrepareLnurlPay.mockResolvedValueOnce({
-        amountSats: 5000n,
-        feeSats: 10n,
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce(aLightningAddress({ address: 'bob@pay.usegrimm.app' }));
+      fakeBreez.prepareLnurlPay.mockResolvedValueOnce({ amountSats: 5000n, feeSats: 10n });
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' });
 
       await waitFor(() => {
         expect(screen.getByText('bob@pay.usegrimm.app')).toBeOnTheScreen();
@@ -282,17 +304,10 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('handles LnurlPay input type', async () => {
-      mockSearchParams = { paymentInput: 'lnurl1...', amountSats: '3000' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LnurlPay',
-        inner: [{ callback: 'https://usegrimm.app/lnurlp' }],
-      });
-      mockPrepareLnurlPay.mockResolvedValueOnce({
-        amountSats: 3000n,
-        feeSats: 5n,
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce(anLnurlPay());
+      fakeBreez.prepareLnurlPay.mockResolvedValueOnce({ amountSats: 3000n, feeSats: 5n });
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ paymentInput: 'lnurl1shop', amountSats: '3000' });
 
       await waitFor(() => {
         expect(screen.getByText('3000 SAT')).toBeOnTheScreen();
@@ -300,13 +315,9 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('shows decode error for unsupported parsed type', async () => {
-      mockSearchParams = { paymentInput: 'bad@pay.usegrimm.app', amountSats: '1000' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'BitcoinAddress',
-        inner: [{ address: 'bc1q...' }],
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce({ tag: 'BitcoinAddress', inner: [{ address: 'bc1q...' }] });
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ paymentInput: 'bad@pay.usegrimm.app', amountSats: '1000' });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
@@ -314,14 +325,10 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('shows not enough funds error for LN address', async () => {
-      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LightningAddress',
-        inner: [{ address: 'bob@pay.usegrimm.app', payRequest: {} }],
-      });
-      mockPrepareLnurlPay.mockRejectedValueOnce(new Error('not enough funds'));
+      fakeBreez.parseInput.mockResolvedValueOnce(aLightningAddress());
+      fakeBreez.prepareLnurlPay.mockRejectedValueOnce(new Error('not enough funds'));
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ paymentInput: 'alice@pay.usegrimm.app', amountSats: '5000' });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
@@ -329,66 +336,25 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
 
     it('shows invalidData error for generic LN address failure', async () => {
-      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LightningAddress',
-        inner: [{ address: 'bob@pay.usegrimm.app', payRequest: {} }],
-      });
-      mockPrepareLnurlPay.mockRejectedValueOnce(new Error('generic failure'));
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockResolvedValueOnce(aLightningAddress());
+      fakeBreez.prepareLnurlPay.mockRejectedValueOnce(new Error('generic failure'));
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ paymentInput: 'alice@pay.usegrimm.app', amountSats: '5000' });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
       });
     });
 
-    it('executes LNURL payment on confirm', async () => {
-      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
-      const mockLnurlPrepareResponse = {
-        amountSats: 5000n,
-        feeSats: 10n,
-      };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LightningAddress',
-        inner: [{ address: 'bob@pay.usegrimm.app', payRequest: { callback: 'https://getalby.com' } }],
-      });
-      mockPrepareLnurlPay.mockResolvedValueOnce(mockLnurlPrepareResponse);
-      mockExecuteLnurlPay.mockResolvedValueOnce({ amount: 5000n });
-
-      const { user } = setup(<PaymentDetailsScreen />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('slide-to-confirm')).toBeOnTheScreen();
-      });
-
-      await user.press(screen.getByTestId('slide-to-confirm'));
-
-      await waitFor(() => {
-        expect(mockExecuteLnurlPay).toHaveBeenCalledWith(mockLnurlPrepareResponse);
-      });
-
-      expect(mockPush).toHaveBeenCalledWith({
-        pathname: '/transaction-result/success-screen',
-        params: { transactionType: 'sent', satsAmount: '5000' },
-      });
-    });
-
     it('does not show expiry timer for LN address', async () => {
-      mockSearchParams = { paymentInput: 'bob@pay.usegrimm.app', amountSats: '5000' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LightningAddress',
-        inner: [{ address: 'bob@pay.usegrimm.app', payRequest: {} }],
-      });
-      mockPrepareLnurlPay.mockResolvedValueOnce({
-        amountSats: 5000n,
-        feeSats: 0n,
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce(aLightningAddress());
+      fakeBreez.prepareLnurlPay.mockResolvedValueOnce({ amountSats: 5000n, feeSats: 0n });
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ paymentInput: 'alice@pay.usegrimm.app', amountSats: '5000' });
 
       await waitFor(() => {
-        expect(screen.getByText('bob@pay.usegrimm.app')).toBeOnTheScreen();
+        expect(screen.getByText('alice@pay.usegrimm.app')).toBeOnTheScreen();
       });
 
       expect(screen.queryByText('paymentDetails.expiresIn')).not.toBeOnTheScreen();
@@ -397,26 +363,10 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
 
   describe('Insufficient balance', () => {
     it('shows insufficient balance for bolt11 when total exceeds balance', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [
-          {
-            amountMsat: BigInt(200000 * 1000),
-            invoice: { bolt11: 'lnbc1...' },
-            payeePubkey: '03abc123',
-            expiry: 3600n,
-            timestamp: BigInt(Math.floor(Date.now() / 1000)),
-          },
-        ],
-      });
-      mockPrepareSend.mockResolvedValueOnce({
-        paymentMethod: {
-          inner: { sparkTransferFeeSats: 0n, lightningFeeSats: 0n },
-        },
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ amountSats: 200_000 }));
+      fakeBreez.prepareSend.mockResolvedValueOnce(PREPARED_INVOICE);
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errors.notEnoughFunds')).toBeOnTheScreen();
@@ -426,23 +376,12 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
 
   describe('Invalid payment guard', () => {
     it('shows the error screen instead of a payable screen when the payment cannot be prepared (bolt11 path)', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [
-          {
-            amountMsat: 1000000n,
-            invoice: { bolt11: 'lnbc1...' },
-            payeePubkey: '03abc',
-            expiry: 3600n,
-            timestamp: BigInt(Math.floor(Date.now() / 1000)),
-          },
-        ],
-      });
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ amountSats: 1000 }));
       // prepareSend fails so no savedPrepareResponse: nothing can be paid
-      mockPrepareSend.mockRejectedValueOnce(new Error('some error'));
+      fakeBreez.prepareSend.mockRejectedValueOnce(new Error('some error'));
 
-      setup(<PaymentDetailsScreen />);
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.errorMessage')).toBeOnTheScreen();
@@ -454,13 +393,9 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
 
   describe('Error screen', () => {
     it('renders go back button on error screen', async () => {
-      mockSearchParams = { rawInvoice: 'lnbc1...' };
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [{ amountMsat: undefined }],
-      });
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice());
 
-      const { user } = setup(<PaymentDetailsScreen />);
+      const { user } = renderDetails({ rawInvoice: MAINNET_INVOICE });
 
       await waitFor(() => {
         expect(screen.getByText('paymentDetails.goBack')).toBeOnTheScreen();
@@ -468,7 +403,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
 
       await user.press(screen.getByText('paymentDetails.goBack'));
 
-      expect(mockBack).toHaveBeenCalled();
+      expect(router.back).toHaveBeenCalled();
     });
   });
 });

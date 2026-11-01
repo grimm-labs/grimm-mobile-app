@@ -154,6 +154,7 @@
     "headerTitle": "Enter amount",
     "insufficientBalance": "Your balance is insufficient",
     "invalidAmount": "Please enter a valid amount",
+    "limits": "Enter an amount between {{min}} and {{max}}",
     "notePlaceholder": "Add a note here...",
     "satsLabel": "SATS",
     "sendTo": "Send to"
@@ -508,7 +509,8 @@
       "decode": "Error while decoding LN invoice",
       "invalidData": "Invalid invoice data",
       "invalidPayment": "Invalid payment data",
-      "notEnoughFunds": "Your balance is insufficient"
+      "notEnoughFunds": "Your balance is insufficient",
+      "sendFailed": "The payment could not be sent. Please try again."
     },
     "expired": "Expired",
     "expiredMessage": "This invoice has expired",
@@ -740,6 +742,11 @@
     "date": "on the date of",
     "fiatEquivalent": "That's {{amount}} {{currency}}!",
     "okButton": "Okay!",
+    "pending": {
+      "note": "It will appear in your transactions once it completes.",
+      "receivedTitle": "Withdrawal in progress",
+      "sentTitle": "Payment in progress"
+    },
     "received": "You received",
     "sent": "Transaction sent"
   },

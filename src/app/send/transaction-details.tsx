@@ -15,9 +15,9 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Te
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
-import type { Bolt11InvoiceDetails, PrepareLnurlPayResponse, PrepareSendPaymentResponse } from '@/lib/context/breez-context';
+import type { Bolt11InvoiceDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse } from '@/lib/context/breez-context';
 import { useBreez } from '@/lib/context/breez-context';
-import { InputType_Tags } from '@/lib/context/breez-context';
+import { InputType_Tags, PaymentStatus } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
@@ -182,28 +182,31 @@ export default function PaymentDetailsScreen() {
 
     setPaymentIsProcessing(true);
     try {
+      // A retry reuses the saved prepared payment, so it pays the same Invoice: an Invoice can only be paid once
+      let payment: Payment | undefined;
       if (isLnAddress && savedLnurlPrepareResponse) {
-        const payment = await executeLnurlPay(savedLnurlPrepareResponse);
-        if (payment) {
-          router.push({
-            pathname: '/transaction-result/success-screen',
-            params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
-          });
-        } else {
-          showErrorMessage(t('paymentDetails.errors.invalidPayment'));
-        }
+        payment = await executeLnurlPay(savedLnurlPrepareResponse);
       } else if (savedPrepareResponse) {
-        const sendResponse = await executeSend(savedPrepareResponse);
-        const payment = sendResponse.payment;
-        if (payment) {
-          router.push({
-            pathname: '/transaction-result/success-screen',
-            params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
-          });
-        }
+        payment = (await executeSend(savedPrepareResponse))?.payment;
       }
+      showPaymentOutcome(payment);
+    } catch (error) {
+      console.error('Error sending the Lightning payment:', (error as Error)?.message);
+      showErrorMessage(t('paymentDetails.errors.sendFailed'));
     } finally {
       setPaymentIsProcessing(false);
+    }
+  };
+
+  // The SDK waits up to 60 s for the payment to complete: a payment can come back still Pending, or Failed
+  const showPaymentOutcome = (payment: Payment | undefined) => {
+    const params = { transactionType: 'sent', satsAmount: Number(payment?.amount ?? 0).toString() };
+    if (payment?.status === PaymentStatus.Completed) {
+      router.push({ pathname: '/transaction-result/success-screen', params });
+    } else if (payment?.status === PaymentStatus.Pending) {
+      router.push({ pathname: '/transaction-result/pending-screen', params });
+    } else {
+      showErrorMessage(t('paymentDetails.errors.sendFailed'));
     }
   };
 

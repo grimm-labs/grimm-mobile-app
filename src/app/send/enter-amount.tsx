@@ -10,15 +10,36 @@ import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { NumericKeypad } from '@/components/ui';
-import { convertBitcoinToFiat, convertBtcToSats, getFiatCurrency } from '@/lib';
+import { convertBitcoinToFiat, convertBtcToSats, formatBalance, getFiatCurrency, toKeypadAmount } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
-import { useBreez } from '@/lib/context/breez-context';
+import type { InputType } from '@/lib/context/breez-context';
+import { InputType_Tags, useBreez } from '@/lib/context/breez-context';
+import type { SatLimits } from '@/lib/lightning/amount-limits';
+import { isFixedAmount, isWithinLimits, toSatLimits } from '@/lib/lightning/amount-limits';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
   paymentInput: string;
 };
+
+type Recipient = {
+  sendTo: string;
+  limits: SatLimits;
+};
+
+// What the recipient accepts, read from the Breez parse: undefined for anything this screen cannot pay
+function readRecipient(parsed: InputType): Recipient | undefined {
+  if (parsed.tag === InputType_Tags.LightningAddress) {
+    const { address, payRequest } = parsed.inner[0];
+    return { sendTo: address, limits: toSatLimits(payRequest.minSendable, payRequest.maxSendable) };
+  }
+  if (parsed.tag === InputType_Tags.LnurlPay) {
+    const payRequest = parsed.inner[0];
+    return { sendTo: payRequest.domain, limits: toSatLimits(payRequest.minSendable, payRequest.maxSendable) };
+  }
+  return undefined;
+}
 
 export default function LightningAddressAmountScreen() {
   const { t } = useTranslation();
@@ -26,16 +47,49 @@ export default function LightningAddressAmountScreen() {
   const { paymentInput } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit, selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { balance } = useBreez();
+  const { balance, parseInput, isBreezInitialized } = useBreez();
 
   const [amount, setAmount] = useState('0');
   const [fiatAmount, setFiatAmount] = useState('0');
   const [validationError, setValidationError] = useState('');
+  const [recipient, setRecipient] = useState<Recipient>();
+  const [parseFailed, setParseFailed] = useState(false);
 
   const isBtcUnit = bitcoinUnit === BitcoinUnit.Btc;
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const satsAmount = isBtcUnit ? convertBtcToSats(Number(amount)) : Number(amount);
-  const isAmountInvalid = !Number(amount) || satsAmount > balance;
+  const isOutsideLimits = !!recipient && !isWithinLimits(satsAmount, recipient.limits);
+  // Continue waits for the parse: without it, the recipient's limits are unknown
+  const isAmountInvalid = !recipient || !Number(amount) || satsAmount > balance || isOutsideLimits;
+
+  useEffect(() => {
+    if (!isBreezInitialized || !paymentInput) return;
+
+    let cancelled = false;
+    const parseRecipient = async () => {
+      try {
+        const parsed = readRecipient(await parseInput(paymentInput.trim()));
+        if (cancelled) return;
+        if (!parsed) {
+          setParseFailed(true);
+          return;
+        }
+        setRecipient(parsed);
+        // A fixed Amount (equal limits) is pre-filled; the keypad stays enabled
+        if (isFixedAmount(parsed.limits)) {
+          setAmount(toKeypadAmount(parsed.limits.minSats, bitcoinUnit));
+        }
+      } catch (error) {
+        console.error('Error parsing the Lightning recipient:', (error as Error)?.message);
+        if (!cancelled) setParseFailed(true);
+      }
+    };
+    parseRecipient();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isBreezInitialized, paymentInput, parseInput, bitcoinUnit]);
 
   useEffect(() => {
     if (!amount || amount === '0' || amount === '.') {
@@ -86,17 +140,31 @@ export default function LightningAddressAmountScreen() {
           }}
         />
         <View className="flex-1 px-4 pt-6">
-          <View className="mb-4 items-center">
-            <Text className="text-base text-gray-500 dark:text-charcoal-400">
-              {t('enterAmount.sendTo')} {paymentInput}
-            </Text>
+          <View className="mb-4 min-h-6 items-center">
+            {recipient && (
+              <Text testID="send-ln-amount-send-to" className="text-base text-gray-500 dark:text-charcoal-400">
+                {t('enterAmount.sendTo')} {recipient.sendTo}
+              </Text>
+            )}
           </View>
           <View className="mb-6 items-center">
             <View className="flex-row items-center">
-              <Text className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>{amount}</Text>
+              <Text testID="send-ln-amount-value" className={`text-6xl font-light ${validationError ? 'text-red-400' : 'text-gray-800 dark:text-charcoal-100'}`}>
+                {amount}
+              </Text>
               <Text className="ml-2 text-2xl font-light text-gray-400 dark:text-charcoal-500">{bitcoinUnit}</Text>
             </View>
             {validationError && <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text>}
+            {parseFailed && (
+              <Text testID="send-ln-amount-error" className="mt-2 text-center text-sm text-red-500">
+                {t('lightningPayment.errors.preparePaymentFailed')}
+              </Text>
+            )}
+            {recipient && isOutsideLimits && (
+              <Text testID="send-ln-amount-limits" className={`mt-2 text-center text-sm ${Number(amount) ? 'text-red-500' : 'text-gray-500 dark:text-charcoal-400'}`}>
+                {t('enterAmount.limits', { min: formatBalance(recipient.limits.minSats, bitcoinUnit), max: formatBalance(recipient.limits.maxSats, bitcoinUnit) })}
+              </Text>
+            )}
           </View>
           <View className="mb-6 items-center">
             <View className="rounded-full bg-primary-600 p-2">
