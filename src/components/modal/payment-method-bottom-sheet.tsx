@@ -14,6 +14,8 @@ type PaymentMethod = 'onchain' | 'lightning';
 interface PaymentMethodBottomSheetProps {
   mode: 'send' | 'receive';
   onSelect: (method: PaymentMethod) => void;
+  /** The sheet was closed without a choice (backdrop, back button, swipe down) */
+  onDismiss?: () => void;
 }
 
 interface PaymentMethodOptionProps {
@@ -44,10 +46,12 @@ const PaymentMethodOption = ({ icon, iconBgClass, title, description, onPress, c
   );
 };
 
-export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, PaymentMethodBottomSheetProps>(({ mode, onSelect }, forwardedRef) => {
+export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, PaymentMethodBottomSheetProps>(({ mode, onSelect, onDismiss }, forwardedRef) => {
   const { ref, present, dismiss } = useModal();
   const { t } = useTranslation();
   const bottomInset = useModalBottomInset();
+  // The sheet also reports a dismiss after a choice: only a close without a choice reaches onDismiss
+  const hasChosenRef = React.useRef(false);
 
   React.useImperativeHandle(
     forwardedRef,
@@ -65,12 +69,18 @@ export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, Payme
   );
 
   const handleSelect = (method: PaymentMethod) => {
+    hasChosenRef.current = true;
     dismiss();
     onSelect(method);
   };
 
+  const handleDismiss = () => {
+    if (!hasChosenRef.current) onDismiss?.();
+    hasChosenRef.current = false;
+  };
+
   return (
-    <Modal ref={ref} snapPoints={['34%']} title="" showCloseButton={false} bottomInset={bottomInset}>
+    <Modal ref={ref} snapPoints={['34%']} title="" showCloseButton={false} bottomInset={bottomInset} onDismiss={handleDismiss}>
       <View className="flex-1 px-6 pb-4 pt-2">
         <PaymentMethodOption
           icon="flash"

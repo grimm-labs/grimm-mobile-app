@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { aBitcoinAddress, aLightningAddress, anLnurlPay } from '@/lib/payment-input/__tests__/helpers/breez-results';
+import { aBitcoinAddress, aLightningAddress, anInvoice, anLnurlPay } from '@/lib/payment-input/__tests__/helpers/breez-results';
 import { fakeBreez } from '@/lib/payment-input/__tests__/helpers/fake-breez-context';
 import { fakeRouter, router } from '@/lib/payment-input/__tests__/helpers/fake-expo-router';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@/lib/test-utils';
@@ -275,6 +275,55 @@ describe('LightningAddressAmountScreen (enter-amount)', () => {
       clearAmount();
       typeAmount(prefilled);
       expect(screen.getByTestId('send-ln-amount-continue')).toBeEnabled();
+    });
+  });
+
+  describe('Invoice without an Amount (P2-15)', () => {
+    const INVOICE = 'lnbc1invoicewithoutamount';
+
+    it('"Send to" shows the description', async () => {
+      fakeBreez.parseInput.mockResolvedValue(anInvoice({ bolt11: INVOICE, description: 'Coffee at the shop' }));
+      renderAmount({ paymentInput: INVOICE });
+
+      expect(await screen.findByTestId('send-ln-amount-send-to')).toHaveTextContent('enterAmount.sendTo Coffee at the shop');
+    });
+
+    it('"Send to" shows "Lightning invoice" without a description', async () => {
+      fakeBreez.parseInput.mockResolvedValue(anInvoice({ bolt11: INVOICE }));
+      renderAmount({ paymentInput: INVOICE });
+
+      expect(await screen.findByTestId('send-ln-amount-send-to')).toHaveTextContent('enterAmount.sendTo enterAmount.lightningInvoice');
+    });
+
+    it('any Amount above 0 is accepted, with no limits message', async () => {
+      fakeBreez.parseInput.mockResolvedValue(anInvoice({ bolt11: INVOICE }));
+      await renderParsed({ paymentInput: INVOICE });
+
+      expect(screen.queryByTestId('send-ln-amount-limits')).not.toBeOnTheScreen();
+      expect(screen.getByTestId('send-ln-amount-continue')).toBeDisabled();
+      typeAmount('1');
+      expect(screen.getByTestId('send-ln-amount-continue')).toBeEnabled();
+      typeAmount('00000');
+      expect(screen.getByTestId('send-ln-amount-value')).toHaveTextContent('100000');
+      expect(screen.getByTestId('send-ln-amount-continue')).toBeEnabled();
+      expect(screen.queryByTestId('send-ln-amount-limits')).not.toBeOnTheScreen();
+    });
+
+    it('Continue opens transaction-details with rawInvoice and amountSats', async () => {
+      fakeBreez.parseInput.mockResolvedValue(anInvoice({ bolt11: INVOICE }));
+      await renderParsed({ paymentInput: INVOICE });
+
+      typeAmount('2100');
+      fireEvent.press(screen.getByTestId('send-ln-amount-continue'));
+
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/send/transaction-details', params: { rawInvoice: INVOICE, amountSats: '2100' } });
+    });
+
+    it('an Invoice that has its own Amount shows preparePaymentFailed', async () => {
+      fakeBreez.parseInput.mockResolvedValue(anInvoice({ bolt11: INVOICE, amountSats: 1000 }));
+      renderAmount({ paymentInput: INVOICE });
+
+      expect(await screen.findByTestId('send-ln-amount-error')).toHaveTextContent('lightningPayment.errors.preparePaymentFailed');
     });
   });
 

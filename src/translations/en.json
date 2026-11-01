@@ -154,6 +154,7 @@
     "headerTitle": "Enter amount",
     "insufficientBalance": "Your balance is insufficient",
     "invalidAmount": "Please enter a valid amount",
+    "lightningInvoice": "Lightning invoice",
     "limits": "Enter an amount between {{min}} and {{max}}",
     "notePlaceholder": "Add a note here...",
     "satsLabel": "SATS",
@@ -206,12 +207,8 @@
   },
   "lightningPayment": {
     "errors": {
-      "bitcoinNotSupported": "Sorry, payment to a Bitcoin address is not supported yet",
       "invalidInvoice": "Please enter a valid Lightning invoice",
-      "lightningAddressNotSupported": "Sorry, we do not support Lightning Address payments",
-      "preparePaymentFailed": "Unable to prepare payment. Invalid address",
-      "unsupportedAddress": "Sorry, we do not support this Bitcoin or Lightning address",
-      "zeroAmountNotSupported": "Sorry, we do not support zero-amount Lightning payments"
+      "preparePaymentFailed": "Unable to prepare payment. Invalid address"
     },
     "payButton": "Continue",
     "placeholder": "Lightning Invoice or Address",
@@ -435,9 +432,7 @@
     "enterAddress": {
       "continueButton": "Continue",
       "errors": {
-        "addressVerificationFailed": "Address verification failed",
-        "invalidAddress": "Please enter a valid address",
-        "unsupportedAddress": "Unsupported address type"
+        "invalidAddress": "Please enter a valid address"
       },
       "paste": "Paste",
       "placeholder": "Input address or Scan QR",
@@ -525,6 +520,16 @@
     "to": "To",
     "total": "Total",
     "unknown": "Unknown"
+  },
+  "paymentInput": {
+    "errors": {
+      "lightningFailed": "The Lightning wallet could not start",
+      "lightningStarting": "The Lightning wallet is starting. Please try again in a moment.",
+      "otherNetworkAddress": "This address belongs to another Bitcoin network",
+      "otherNetworkInvoice": "This invoice belongs to another Bitcoin network",
+      "unsupported": "Sorry, we do not support this Bitcoin or Lightning address"
+    },
+    "reading": "Reading…"
   },
   "quickActions": {
     "airtime": "Airtime",

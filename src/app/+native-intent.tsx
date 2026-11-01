@@ -1,12 +1,8 @@
-import { extractBolt11FromLightningUri } from '@/lib/lightning/deep-link';
+import { toPaymentInputPath } from '@/lib/lightning/deep-link';
 
 export function redirectSystemPath({ path, initial: _initial }: { path: string; initial: boolean }) {
   try {
-    const rawInvoice = extractBolt11FromLightningUri(path);
-    if (rawInvoice) {
-      return `/send/transaction-details?rawInvoice=${encodeURIComponent(rawInvoice)}`;
-    }
-    return path;
+    return toPaymentInputPath(path) ?? path;
   } catch {
     return '/(app)';
   }

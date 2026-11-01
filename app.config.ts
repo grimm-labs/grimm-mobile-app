@@ -70,7 +70,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     infoPlist: {
       NSCameraUsageDescription: 'This app uses the camera to scan QR codes',
-      CFBundleURLTypes: [{ CFBundleURLSchemes: [Env.SCHEME] }, { CFBundleURLSchemes: ['lightning'] }],
+      // lightning: and bitcoin: links open /payment-input (src/app/+native-intent.tsx)
+      CFBundleURLTypes: [{ CFBundleURLSchemes: [Env.SCHEME] }, { CFBundleURLSchemes: ['lightning'] }, { CFBundleURLSchemes: ['bitcoin'] }],
     },
   },
   experiments: {
@@ -88,7 +89,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         action: 'VIEW',
         autoVerify: false,
-        data: [{ scheme: 'lightning' }],
+        data: [{ scheme: 'lightning' }, { scheme: 'bitcoin' }],
         category: ['BROWSABLE', 'DEFAULT'],
       },
     ],

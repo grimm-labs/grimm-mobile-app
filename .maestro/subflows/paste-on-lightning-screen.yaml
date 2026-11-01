@@ -1,0 +1,18 @@
+# From Home: Send > Lightning, pastes ${PAYMENT_INPUT} in the Lightning paste screen and taps Continue.
+appId: ${APP_ID}
+---
+- tapOn:
+    id: 'home-send-button'
+- tapOn:
+    id: 'send-method-lightning'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-address-screen'
+    timeout: 10000
+- tapOn:
+    id: 'send-ln-address-input'
+- inputText: ${PAYMENT_INPUT}
+- hideKeyboard
+- tapOn:
+    id: 'send-ln-address-continue'
+    waitToSettleTimeoutMs: 500

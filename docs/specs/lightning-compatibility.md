@@ -159,6 +159,14 @@ This changes three behaviours on purpose: a Bitcoin address pasted on the Lightn
     - its errors come with a Back button, which runs `router.dismissAll()` then `router.replace('/')`. Closing the method sheet does the same.
 20. Opening a link never pays or signs in by itself: a send keeps its slide to confirm, Lightning Login keeps its confirmation (Part 4). With App Lock on, the Lock Screen covers the destination until the user unlocks (App Lock spec, Part 2 item 11).
 
+#### Clarifications decided during Part 2 (to confirm in review)
+
+- At `/payment-input`, the Lightning choice of the method sheet while Breez is starting shows the "starting" error (item 14) instead of waiting (item 19 waits only for the link itself). With `breezError`, it shows "could not start".
+- An empty Payment Input at the scanner or at `/payment-input` (a `lightning:` link with nothing after it) shows "unsupported".
+- A Bitcoin URI whose address is valid on neither network is "unsupported": the fall-through to the Breez parse of item 11 applies to a plain Payment Input only.
+- The Back button of `/payment-input` reuses `paymentDetails.goBack` ("Go Back"); the spec's table has no label for it.
+- The scanner stops scanning while the method sheet is open, so the camera cannot present it again behind itself.
+
 ### Changes
 
 **Native**

@@ -1,0 +1,95 @@
+appId: ${APP_ID}
+name: Send - Payment Input routing (Bitcoin URI, method sheet, Invoice without an Amount, other networks)
+tags:
+  - send
+  - routing
+# BOLT 11 test vectors (expired, which the routing allows): the mainnet "Please consider supporting this project"
+# Invoice without an Amount, and the testnet Invoice with a fallback address. BIP173 test vectors for the addresses.
+env:
+  ADDRESS: bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4
+  TESTNET_ADDRESS: tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx
+  NO_AMOUNT_INVOICE: lnbc1pvjluezsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygspp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaq9qrsgq357wnc5r2ueh7ck6q93dj32dlqnls087fxdwk8qakdyafkq3yap9us6v52vjjsrvywa6rt52cm9r9zqt8r2t7mlcwspyetp5h2tztugp9lfyql
+  TESTNET_INVOICE: lntb20m1pvjluezsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygshp58yjmdan79s6qqdhdzgynm4zwqd5d7xmw5fk98klysy043l2ahrqspp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqfpp3x9et2e20v6pu37c5d9vax37wxq72un989qrsgqdj545axuxtnfemtpwkc45hx9d2ft7x04mt8q7y6t0k2dge9e7h8kpy9p34ytyslj3yu569aalz2xdk8xkd7ltxqld94u8h2esmsmacgpghe9k8
+---
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/wait-for-lightning.yaml
+# Bitcoin URI with an amount: the on-chain amount screen, pre-filled
+- runFlow:
+    file: subflows/paste-on-lightning-screen.yaml
+    env:
+      PAYMENT_INPUT: 'bitcoin:${ADDRESS}?amount=0.0001'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-amount-screen'
+    timeout: 20000
+- assertVisible:
+    id: 'send-onchain-amount-value'
+    text: '10000'
+- runFlow: subflows/back-to-home.yaml
+# The same URI with an Invoice: the method sheet. On-chain keeps the amount
+- runFlow:
+    file: subflows/paste-on-lightning-screen.yaml
+    env:
+      PAYMENT_INPUT: 'bitcoin:${ADDRESS}?amount=0.0001&lightning=${NO_AMOUNT_INVOICE}'
+- extendedWaitUntil:
+    visible:
+      id: 'send-method-onchain'
+    timeout: 10000
+- assertVisible:
+    id: 'send-method-lightning'
+- tapOn:
+    id: 'send-method-onchain'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-amount-screen'
+    timeout: 20000
+- assertVisible:
+    id: 'send-onchain-amount-value'
+    text: '10000'
+- runFlow: subflows/back-to-home.yaml
+# The same URI, Lightning: the Invoice has no Amount, so the Lightning amount screen
+- runFlow:
+    file: subflows/paste-on-lightning-screen.yaml
+    env:
+      PAYMENT_INPUT: 'bitcoin:${ADDRESS}?amount=0.0001&lightning=${NO_AMOUNT_INVOICE}'
+- extendedWaitUntil:
+    visible:
+      id: 'send-method-lightning'
+    timeout: 10000
+- tapOn:
+    id: 'send-method-lightning'
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-amount-screen'
+    timeout: 30000
+- runFlow: subflows/back-to-home.yaml
+# The Invoice without an Amount alone: "Send to" shows its description
+- runFlow:
+    file: subflows/paste-on-lightning-screen.yaml
+    env:
+      PAYMENT_INPUT: ${NO_AMOUNT_INVOICE}
+- extendedWaitUntil:
+    visible:
+      id: 'send-ln-amount-send-to'
+      text: 'Send to Please consider supporting this project'
+    timeout: 30000
+- runFlow: subflows/back-to-home.yaml
+# A testnet address on mainnet
+- runFlow:
+    file: subflows/paste-on-lightning-screen.yaml
+    env:
+      PAYMENT_INPUT: ${TESTNET_ADDRESS}
+- assertVisible: 'This address belongs to another Bitcoin network'
+- assertVisible:
+    id: 'send-ln-address-screen'
+- runFlow: subflows/back-to-home.yaml
+# A testnet Invoice on mainnet
+- runFlow:
+    file: subflows/paste-on-lightning-screen.yaml
+    env:
+      PAYMENT_INPUT: ${TESTNET_INVOICE}
+- extendedWaitUntil:
+    visible: 'This invoice belongs to another Bitcoin network'
+    timeout: 10000
+- assertVisible:
+    id: 'send-ln-address-screen'

@@ -673,4 +673,4 @@ export const useBreez = (): BreezContextType => {
 
 // Re-export types and enums that consumers need
 export type { Bolt11InvoiceDetails, DepositInfo, GetInfoResponse, InputType, LnurlPayRequestDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
-export { InputType_Tags, PaymentStatus, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';
+export { BitcoinNetwork, InputType_Tags, PaymentStatus, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';

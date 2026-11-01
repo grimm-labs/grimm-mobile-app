@@ -83,7 +83,9 @@ prompts/          template AI prompts (partly stale)
   - Screens outside `(app)` are not gated. They rely on `(app)` having mounted first.
   - The `onboarding` AsyncStorage flag is saved but never used for routing.
 - Onboarding flow: `onboarding.tsx` → "Get started". This asks for notification permission, then goes to `auth/create-or-import-seed.tsx`. From there the user can import a seed via `auth/import-seed-phrase.tsx`. When a seed is created, the app runs `router.dismissAll()` then `router.replace('/')`.
-- `+native-intent.tsx` turns `lightning:<invoice>` links into `/send/transaction-details?rawInvoice=…`. Schemes: `GrimmApp`, `lightning`.
+- `+native-intent.tsx` sends `lightning:` and `bitcoin:` links (any case) to `/payment-input?input=<the encoded URL>` (`toPaymentInputPath` in `lib/lightning/deep-link.ts`). `/payment-input` routes the Payment Input, then replaces itself with the destination. Schemes: `GrimmApp`, `lightning`, `bitcoin`.
+- **Payment Input routing** (spec: `docs/specs/lightning-compatibility.md`): the scanner, both paste screens (`send/enter-address`, `send-onchain/enter-address`) and `/payment-input` all route through `usePaymentInput` (`lib/hooks/use-payment-input.ts`, not re-exported from `@/lib/hooks`: it pulls in the Breez context) and the pure rules in `lib/payment-input` (`routePaymentInput`, `parseBitcoinUri`). Bitcoin addresses and Bitcoin URIs are checked locally with BDK, so on-chain sends work while Breez is starting or down; only the Lightning formats need the Breez parse. A Bitcoin URI with `lightning=` presents `PaymentMethodBottomSheet` (its `onDismiss` fires only when it closes without a choice).
+- Payment result screens: `transaction-result/success-screen` and `transaction-result/pending-screen` (a Lightning payment still `Pending` after the SDK timeout).
 - **App Lock** (spec: `docs/specs/onchain-amount-fix-and-app-lock.md`, vocabulary: `GLOSSARY.md`) is an optional 6-digit PIN with optional Biometric Unlock. It is a UI gate (ADR 0001): the Recovery Phrase stays stored as before.
   - `LockScreen` is a React Native `Modal` over every route. It never navigates, so the user is back on the same screen after unlocking. It locks at a cold start and after more than 30 s in the `background` state (`inactive` does not count).
   - Sensitive Actions (viewing the Recovery Phrase, changing the PIN, toggling Biometric Unlock, turning App Lock off) call `useAppLock().authorizeSensitiveAction(kind)` and proceed only when it resolves `true`. A new screen that shows the Recovery Phrase must call it before reading the secure store.
@@ -193,10 +195,10 @@ The suite lives in `.maestro/` (about 25 flows): wallet creation, import, backup
 
 Key rules:
 
-- There is one test per file at the root of `.maestro/`, with `appId: ${APP_ID}`, a `name:` and `tags:`. Reusable steps go in `subflows/`: `launch-fresh-app`, `create-wallet`, `wait-for-lightning`, `open-settings-item`, `read-recovery-phrase`, `verify-recovery-phrase`, `enter-pin`, `turn-on-app-lock` and `dismiss-system-dialogs`.
+- There is one test per file at the root of `.maestro/`, with `appId: ${APP_ID}`, a `name:` and `tags:`. Reusable steps go in `subflows/`: `launch-fresh-app`, `create-wallet`, `wait-for-lightning`, `open-settings-item`, `read-recovery-phrase`, `verify-recovery-phrase`, `enter-pin`, `turn-on-app-lock`, `dismiss-system-dialogs`, `paste-on-lightning-screen` and `back-to-home`.
 - Flows are independent: start with `subflows/launch-fresh-app.yaml` or `subflows/create-wallet.yaml`.
 - Select by `id` (testID). testIDs are kebab-case and prefixed with the screen. Selection lists use `<prefix>-option-<value>` and `<prefix>-option-<value>-selected`. Add testIDs to new screens.
-- Run `subflows/wait-for-lightning.yaml` before any step that needs Breez (invoices, address parsing, LN address availability).
+- Run `subflows/wait-for-lightning.yaml` before any step that needs Breez (invoices, Lightning Addresses, any text that is not a Bitcoin address, LN address availability). Bitcoin addresses and Bitcoin URIs without `lightning=` do not need it.
 - Use `extendedWaitUntil` after navigation or network calls. After a tap that shows a flash message (1.5–4 s), add `waitToSettleTimeoutMs: 500`.
 - `launchApp` grants all permissions by default. Never register anything for real (for example, the LN address flow cancels the confirmation).
 - Flows talk to real services: Breez mainnet, Esplora indexers, the staging notification service.

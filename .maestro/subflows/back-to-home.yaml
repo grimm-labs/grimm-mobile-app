@@ -1,0 +1,9 @@
+# Presses back (closing any open sheet first) until the Home screen shows.
+appId: ${APP_ID}
+---
+- repeat:
+    while:
+      notVisible:
+        id: 'home-screen'
+    commands:
+      - back

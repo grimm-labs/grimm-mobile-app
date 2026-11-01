@@ -154,6 +154,7 @@
     "headerTitle": "Entrer le montant",
     "insufficientBalance": "Votre solde est insuffisant",
     "invalidAmount": "Veuillez entrer un montant valide",
+    "lightningInvoice": "Facture Lightning",
     "limits": "Saisissez un montant entre {{min}} et {{max}}",
     "notePlaceholder": "Ajoutez une note ici...",
     "satsLabel": "SATS",
@@ -206,12 +207,8 @@
   },
   "lightningPayment": {
     "errors": {
-      "bitcoinNotSupported": "Désolé, le paiement vers une adresse Bitcoin n'est pas encore pris en charge",
       "invalidInvoice": "Veuillez entrer une facture Lightning valide",
-      "lightningAddressNotSupported": "Désolé, nous ne prenons pas en charge les paiements par adresse Lightning",
-      "preparePaymentFailed": "Impossible de préparer le paiement. Adresse invalide",
-      "unsupportedAddress": "Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning",
-      "zeroAmountNotSupported": "Désolé, nous ne prenons pas en charge les paiements Lightning sans montant"
+      "preparePaymentFailed": "Impossible de préparer le paiement. Adresse invalide"
     },
     "payButton": "Continuer",
     "placeholder": "Facture ou adresse Lightning",
@@ -435,9 +432,7 @@
     "enterAddress": {
       "continueButton": "Continuer",
       "errors": {
-        "addressVerificationFailed": "Échec de la vérification de l’adresse",
-        "invalidAddress": "Veuillez entrer une adresse valide",
-        "unsupportedAddress": "Type d’adresse non pris en charge"
+        "invalidAddress": "Veuillez entrer une adresse valide"
       },
       "paste": "Coller",
       "placeholder": "Saisir l’adresse ou scanner le QR code",
@@ -525,6 +520,16 @@
     "to": "À",
     "total": "Total",
     "unknown": "Inconnu"
+  },
+  "paymentInput": {
+    "errors": {
+      "lightningFailed": "Le portefeuille Lightning n'a pas pu démarrer",
+      "lightningStarting": "Le portefeuille Lightning démarre. Veuillez réessayer dans un instant.",
+      "otherNetworkAddress": "Cette adresse appartient à un autre réseau Bitcoin",
+      "otherNetworkInvoice": "Cette facture appartient à un autre réseau Bitcoin",
+      "unsupported": "Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning"
+    },
+    "reading": "Lecture…"
   },
   "quickActions": {
     "airtime": "Crédit téléphonique",
