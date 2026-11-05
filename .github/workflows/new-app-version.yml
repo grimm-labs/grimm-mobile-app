@@ -53,11 +53,14 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Create .env.development
+        env:
+          BREEZ_API_KEY: ${{ secrets.BREEZ_API_KEY }}
+          NOTIFICATION_API_URL: ${{ vars.NOTIFICATION_API_URL_DEV }}
         run: |
-          echo "BREEZ_API_KEY=${{ secrets.BREEZ_API_KEY }}" >> .env.development
+          echo "BREEZ_API_KEY=${BREEZ_API_KEY}" >> .env.development
           echo "YADIO_API_URL=https://api.yadio.io" >> .env.development
           echo "MEMPOOL_URL=https://mempool.space" >> .env.development
-          echo "NOTIFICATION_API_URL=${{ vars.NOTIFICATION_API_URL_DEV }}" >> .env.development
+          echo "NOTIFICATION_API_URL=${NOTIFICATION_API_URL}" >> .env.development
 
       - name: Git User Setup
         run: |
@@ -68,5 +71,8 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm-install
 
       - name: Run App release
+        env:
+          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
         run: |
-          pnpm app-release ${{ github.event.inputs.release-type }}
+          case "$RELEASE_TYPE" in patch|minor|major) ;; *) echo "Invalid release type: $RELEASE_TYPE" >&2; exit 1 ;; esac
+          pnpm app-release "$RELEASE_TYPE"
