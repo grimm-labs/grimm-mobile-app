@@ -57,6 +57,8 @@ env:
   APP_ENV: staging
   APP_ID: com.grimm.labs.app.staging
   MAESTRO_VERSION: 2.10.0
+  # SHA-256 of maestro.zip for MAESTRO_VERSION (checksums_sha256.txt of the cli-<version> GitHub release); update both together
+  MAESTRO_SHA256: 29b675e10cc12080e445e9bfb2e2b4e4dfb9c0f2e30d5884120d258b5e1cd991
   # The default driver startup timeout is too short for a freshly booted CI emulator
   MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
   EMULATOR_API_LEVEL: 35
@@ -133,9 +135,15 @@ jobs:
           java-version: '17'
 
       - name: Install Maestro
+        # Download the pinned release archive and check its SHA-256 instead of piping the install script into bash
         run: |
-          curl -Ls --retry 3 --retry-all-errors "https://get.maestro.mobile.dev" | bash
-          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+          curl -fsSL --retry 3 --retry-all-errors -o "$RUNNER_TEMP/maestro.zip" "https://github.com/mobile-dev-inc/Maestro/releases/download/cli-${MAESTRO_VERSION}/maestro.zip"
+          echo "${MAESTRO_SHA256}  $RUNNER_TEMP/maestro.zip" | sha256sum --check --strict
+          mkdir -p "$HOME/.maestro"
+          unzip -q "$RUNNER_TEMP/maestro.zip" -d "$HOME/.maestro"
+          chmod +x "$HOME/.maestro/maestro/bin/maestro"
+          "$HOME/.maestro/maestro/bin/maestro" --version
+          echo "$HOME/.maestro/maestro/bin" >> "$GITHUB_PATH"
 
       - name: Download Test APK
         uses: actions/download-artifact@v8
