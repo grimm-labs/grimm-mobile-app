@@ -23,9 +23,9 @@ expo-env.d.ts
 # @end expo-cli
 
 # Local environment files
-.env.development
-.env.staging
-.env.production
+.env
+.env.*
+!.env.example
 
 # Firebase Android config (single file, all Android apps — Gradle picks client by package name)
 google-services.json
