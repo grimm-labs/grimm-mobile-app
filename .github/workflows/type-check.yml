@@ -37,7 +37,7 @@ jobs:
 
       - name: Install Reviewdog
         if: github.event_name == 'pull_request'
-        uses: reviewdog/action-setup@v1
+        uses: reviewdog/action-setup@d8a7baabd7f3e8544ee4dbde3ee41d0011c3a93f # v1.5.0
 
       - name: Run TypeScript PR # Reviewdog tsc errorformat: %f:%l:%c - error TS%n: %m
         # We only need to add the reviewdog step if it's a pull request
