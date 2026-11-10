@@ -70,6 +70,7 @@ const actions = {
   executeSend: jest.fn(),
   prepareLnurlPay: jest.fn(),
   executeLnurlPay: jest.fn(),
+  lnurlWithdraw: jest.fn(),
 };
 
 let value = { ...DEFAULT_STATE, ...actions };

@@ -22,6 +22,12 @@ const PART_2 = {
   'enterAmount.lightningInvoice': ['Lightning invoice', 'Facture Lightning'],
 };
 
+const PART_3 = {
+  'withdrawal.title': ['Withdrawal', 'Retrait'],
+  'withdrawal.confirm': ['Withdraw', 'Retirer'],
+  'withdrawal.errors.failed': ['The withdrawal could not be completed. Please try again.', "Le retrait n'a pas pu aboutir. Veuillez réessayer."],
+};
+
 // No screen uses them any more once every entry point routes through usePaymentInput
 const REMOVED_IN_PART_2 = [
   'lightningPayment.errors.bitcoinNotSupported',
@@ -46,6 +52,13 @@ describe('Lightning compatibility translations', () => {
 
   it('EN and FR have the same Part 2 keys, with the spec copy', () => {
     Object.entries(PART_2).forEach(([key, [english, french]]) => {
+      expect([key, valueAt(en, key)]).toEqual([key, english]);
+      expect([key, valueAt(fr, key)]).toEqual([key, french]);
+    });
+  });
+
+  it('EN and FR have the same Part 3 keys, with the spec copy', () => {
+    Object.entries(PART_3).forEach(([key, [english, french]]) => {
       expect([key, valueAt(en, key)]).toEqual([key, english]);
       expect([key, valueAt(fr, key)]).toEqual([key, french]);
     });

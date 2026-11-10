@@ -813,5 +813,12 @@
     "scanQr": "Scanner QR",
     "send": "Envoyer",
     "totalBalance": "Solde Total"
+  },
+  "withdrawal": {
+    "confirm": "Retirer",
+    "errors": {
+      "failed": "Le retrait n'a pas pu aboutir. Veuillez réessayer."
+    },
+    "title": "Retrait"
   }
 }

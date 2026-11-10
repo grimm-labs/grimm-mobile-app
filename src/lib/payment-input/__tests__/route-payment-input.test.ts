@@ -92,8 +92,9 @@ describe.each([
     });
   });
 
-  it('LNURL-withdraw → unsupported (replaced in Part 3)', async () => {
-    expect(await route('lnurlwithdraw')).toEqual({ kind: 'error', reason: 'unsupported' });
+  it('LNURL-withdraw → withdrawal', async () => {
+    expect(await route('lnurlwithdraw')).toEqual({ kind: 'withdrawal', paymentInput: 'lnurlwithdraw' });
+    expect(await route('LIGHTNING:lnurlwithdraw')).toEqual({ kind: 'withdrawal', paymentInput: 'lnurlwithdraw' });
   });
 
   it('LNURL-auth → unsupported (replaced in Part 4)', async () => {

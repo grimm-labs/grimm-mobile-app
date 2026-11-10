@@ -813,5 +813,12 @@
     "scanQr": "Scan QR",
     "send": "Send",
     "totalBalance": "Total Balance"
+  },
+  "withdrawal": {
+    "confirm": "Withdraw",
+    "errors": {
+      "failed": "The withdrawal could not be completed. Please try again."
+    },
+    "title": "Withdrawal"
   }
 }

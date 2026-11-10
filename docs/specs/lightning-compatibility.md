@@ -245,6 +245,13 @@ This changes three behaviours on purpose: a Bitcoin address pasted on the Lightn
 
 6. There is no confirmation step: a Withdrawal only brings funds in.
 
+#### Clarifications decided during Part 3 (to confirm in review)
+
+- The domain is the host of the `callback` URL without its port (`https://faucet.example.com:8443/…` shows `faucet.example.com`), and nothing when the URL is invalid.
+- While Breez is starting, the screen waits for it before the parse. When the parse fails or returns something other than LNURL-withdraw, the screen shows "Sorry, we do not support this Bitcoin or Lightning address" and no Withdraw button.
+- The success and pending screens show the Amount the user chose (also when the SDK returns no `Payment`).
+- `lnurlWithdraw` resolves with the `Payment`, or `undefined` when there is none; the request is built by a pure `toWithdrawRequest` (`src/lib/lightning/withdrawal-request.ts`), so the 60 s timeout is unit-tested.
+
 ### Changes
 
 - `src/lib/context/breez-context.tsx`: add `lnurlWithdraw(amountSats, withdrawRequest)` to the context and re-export the `LnurlWithdrawRequestDetails` type.
