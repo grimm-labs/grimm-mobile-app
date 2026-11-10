@@ -167,6 +167,7 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 
 ### Phase 2: On-Chain Bitcoin (In Progress)
 
+- [x] Bitcoin URIs (BIP21): scan, paste or open a `bitcoin:` link, with its amount and its Lightning invoice
 - [ ] Native Bitcoin wallet with bech32 addresses
 - [ ] Custom fee selection and RBF support
 - [ ] Transaction labeling for privacy

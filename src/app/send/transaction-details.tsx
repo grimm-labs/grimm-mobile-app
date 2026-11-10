@@ -52,7 +52,9 @@ export default function PaymentDetailsScreen() {
   const isLnAddress = !!paymentInput && !!amountSats;
   const parsedAmountSats = parseInt(amountSats || '', 10);
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
-  const amountSat = isLnAddress ? (isNaN(parsedAmountSats) ? 0 : parsedAmountSats) : convertMsatToSats(decodedInvoiceData?.amountMsat || 0n);
+  // An Invoice without an Amount is paid with the Amount entered on send/enter-amount
+  const invoiceAmountSat = decodedInvoiceData?.amountMsat === undefined ? parsedAmountSats : convertMsatToSats(decodedInvoiceData.amountMsat);
+  const amountSat = isLnAddress ? (isNaN(parsedAmountSats) ? 0 : parsedAmountSats) : decodedInvoiceData ? invoiceAmountSat : 0;
   const totalAmountSat = Number((feesSat || 0) + amountSat);
   const hasInsufficientBalance = totalAmountSat > balance;
 
@@ -96,9 +98,20 @@ export default function PaymentDetailsScreen() {
       if (!rawInvoice) return;
       try {
         const parsed = await parseInput(rawInvoice.trim());
-        if (parsed.tag === InputType_Tags.Bolt11Invoice && parsed.inner[0].amountMsat !== undefined) {
-          setDecodedInvoiceData(parsed.inner[0]);
-          const prepareResponse = await prepareSend(parsed.inner[0].invoice.bolt11);
+        if (parsed.tag !== InputType_Tags.Bolt11Invoice) {
+          setDecodeError(t('paymentDetails.errors.decode'));
+          return;
+        }
+        const invoice = parsed.inner[0];
+        const hasOwnAmount = invoice.amountMsat !== undefined;
+        // amountSats is only for an Invoice without an Amount: never pay another Amount than the Invoice's
+        if (amountSats !== undefined && (hasOwnAmount || isNaN(parsedAmountSats) || parsedAmountSats <= 0)) {
+          setDecodeError(t('paymentDetails.errors.invalidData'));
+          return;
+        }
+        if (hasOwnAmount || amountSats !== undefined) {
+          setDecodedInvoiceData(invoice);
+          const prepareResponse = hasOwnAmount ? await prepareSend(invoice.invoice.bolt11) : await prepareSend(invoice.invoice.bolt11, parsedAmountSats);
           const method = prepareResponse.paymentMethod;
           let totalFees = 0;
           if (method && 'inner' in method) {

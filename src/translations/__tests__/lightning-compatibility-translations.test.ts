@@ -12,6 +12,26 @@ const PART_1 = {
   'enterAmount.limits': ['Enter an amount between {{min}} and {{max}}', 'Saisissez un montant entre {{min}} et {{max}}'],
 };
 
+const PART_2 = {
+  'paymentInput.errors.unsupported': ['Sorry, we do not support this Bitcoin or Lightning address', 'Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning'],
+  'paymentInput.errors.otherNetworkAddress': ['This address belongs to another Bitcoin network', 'Cette adresse appartient à un autre réseau Bitcoin'],
+  'paymentInput.errors.otherNetworkInvoice': ['This invoice belongs to another Bitcoin network', 'Cette facture appartient à un autre réseau Bitcoin'],
+  'paymentInput.errors.lightningStarting': ['The Lightning wallet is starting. Please try again in a moment.', 'Le portefeuille Lightning démarre. Veuillez réessayer dans un instant.'],
+  'paymentInput.errors.lightningFailed': ['The Lightning wallet could not start', "Le portefeuille Lightning n'a pas pu démarrer"],
+  'paymentInput.reading': ['Reading…', 'Lecture…'],
+  'enterAmount.lightningInvoice': ['Lightning invoice', 'Facture Lightning'],
+};
+
+// No screen uses them any more once every entry point routes through usePaymentInput
+const REMOVED_IN_PART_2 = [
+  'lightningPayment.errors.bitcoinNotSupported',
+  'lightningPayment.errors.zeroAmountNotSupported',
+  'lightningPayment.errors.unsupportedAddress',
+  'lightningPayment.errors.lightningAddressNotSupported',
+  'onchainSend.enterAddress.errors.unsupportedAddress',
+  'onchainSend.enterAddress.errors.addressVerificationFailed',
+];
+
 function valueAt(translations: object, key: string): unknown {
   return key.split('.').reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], translations);
 }
@@ -21,6 +41,20 @@ describe('Lightning compatibility translations', () => {
     Object.entries(PART_1).forEach(([key, [english, french]]) => {
       expect([key, valueAt(en, key)]).toEqual([key, english]);
       expect([key, valueAt(fr, key)]).toEqual([key, french]);
+    });
+  });
+
+  it('EN and FR have the same Part 2 keys, with the spec copy', () => {
+    Object.entries(PART_2).forEach(([key, [english, french]]) => {
+      expect([key, valueAt(en, key)]).toEqual([key, english]);
+      expect([key, valueAt(fr, key)]).toEqual([key, french]);
+    });
+  });
+
+  it('the keys Part 2 replaces are gone from EN and FR', () => {
+    REMOVED_IN_PART_2.forEach((key) => {
+      expect([key, valueAt(en, key)]).toEqual([key, undefined]);
+      expect([key, valueAt(fr, key)]).toEqual([key, undefined]);
     });
   });
 

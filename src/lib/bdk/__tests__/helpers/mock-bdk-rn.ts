@@ -192,8 +192,21 @@ export const TxBuilder = jest.fn().mockImplementation(() => ({
   finish: jest.fn(() => new Psbt()),
 }));
 
+// Like bdk-ffi, an address is checked against the network: the prefix tells the network (bc1/1/3 mainnet, tb1/m/n/2
+// testnet and signet, bcrt1 regtest). The length is not checked, so short fakes such as 'tb1qtest' stay valid.
+const ADDRESS_NETWORKS: { pattern: RegExp; networks: Network[] }[] = [
+  { pattern: /^bcrt1[a-z0-9]+$/i, networks: [Network.Regtest] },
+  { pattern: /^(bc1[a-z0-9]+|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/, networks: [Network.Bitcoin] },
+  { pattern: /^BC1[A-Z0-9]+$/, networks: [Network.Bitcoin] },
+  { pattern: /^(tb1[a-z0-9]+|TB1[A-Z0-9]+|[mn2][a-km-zA-HJ-NP-Z1-9]{25,34})$/, networks: [Network.Testnet, Network.Testnet4, Network.Signet] },
+];
+
 export class Address {
-  constructor(_addr: string, _network: Network) {}
+  constructor(addr: string, network: Network) {
+    const match = ADDRESS_NETWORKS.find(({ pattern }) => pattern.test(addr));
+    if (!match) throw new Error(`AddressParseError: ${addr}`);
+    if (!match.networks.includes(network)) throw new Error(`RequiredNetwork: ${addr} is not valid for network ${network}`);
+  }
   scriptPubkey = jest.fn(() => ({}));
 }
 

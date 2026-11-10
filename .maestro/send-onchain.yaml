@@ -5,7 +5,8 @@ tags:
   - onchain
 ---
 - runFlow: subflows/create-wallet.yaml
-# The address is parsed by the Breez SDK
+# Addresses are checked locally, but text that is not an address goes to the Breez parse: wait for it so the
+# invalid input gives "unsupported" and not "the Lightning wallet is starting"
 - runFlow: subflows/wait-for-lightning.yaml
 - tapOn:
     id: 'home-send-button'
@@ -26,7 +27,7 @@ tags:
 - hideKeyboard
 - tapOn:
     id: 'send-onchain-address-continue'
-- assertVisible: '(Address verification failed|Unsupported address type)'
+- assertVisible: 'Sorry, we do not support this Bitcoin or Lightning address'
 # Valid mainnet address (BIP173 test vector) -> amount screen
 - tapOn:
     id: 'send-onchain-address-input'

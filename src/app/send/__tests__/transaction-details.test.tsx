@@ -225,6 +225,72 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
     });
   });
 
+  describe('Invoice without an Amount (P2-16)', () => {
+    const INVOICE_WITHOUT_AMOUNT = 'lnbc1invoicewithoutamount';
+
+    it('rawInvoice + amountSats: prepareSend(bolt11, amountSats), shows that Amount, the fee and the Total', async () => {
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ bolt11: INVOICE_WITHOUT_AMOUNT }));
+      fakeBreez.prepareSend.mockResolvedValueOnce({ paymentMethod: { inner: { sparkTransferFeeSats: 3n, lightningFeeSats: 4n } } });
+
+      renderDetails({ rawInvoice: INVOICE_WITHOUT_AMOUNT, amountSats: '2100' });
+
+      expect(await screen.findByTestId('send-ln-details-amount')).toHaveTextContent('2100 SAT');
+      expect(fakeBreez.prepareSend).toHaveBeenCalledWith(INVOICE_WITHOUT_AMOUNT, 2100);
+      expect(screen.getByText('7 SAT')).toBeOnTheScreen();
+      expect(screen.getByText('2107 SAT')).toBeOnTheScreen();
+    });
+
+    it('rawInvoice + amountSats: the expiry countdown is shown', async () => {
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ bolt11: INVOICE_WITHOUT_AMOUNT }));
+      fakeBreez.prepareSend.mockResolvedValueOnce(PREPARED_INVOICE);
+
+      renderDetails({ rawInvoice: INVOICE_WITHOUT_AMOUNT, amountSats: '2100' });
+
+      expect(await screen.findByText(/paymentDetails.expiresIn/)).toBeOnTheScreen();
+    });
+
+    it('rawInvoice + amountSats: `Completed` opens the success screen (Part 1 outcomes apply)', async () => {
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ bolt11: INVOICE_WITHOUT_AMOUNT }));
+      fakeBreez.prepareSend.mockResolvedValueOnce(PREPARED_INVOICE);
+      fakeBreez.executeSend.mockResolvedValueOnce({ payment: aPayment({ status: PaymentStatus.Completed, amountSats: 2100 }) });
+      const { user } = renderDetails({ rawInvoice: INVOICE_WITHOUT_AMOUNT, amountSats: '2100' });
+
+      await user.press(await screen.findByTestId('slide-to-confirm'));
+
+      await waitFor(() => expect(router.push).toHaveBeenCalledWith({ pathname: '/transaction-result/success-screen', params: { transactionType: 'sent', satsAmount: '2100' } }));
+      expect(fakeBreez.executeSend).toHaveBeenCalledWith(PREPARED_INVOICE);
+    });
+
+    it('amountSats with an Invoice that has its own Amount shows invalidData and never calls prepareSend', async () => {
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ bolt11: MAINNET_INVOICE, amountSats: 1000 }));
+
+      renderDetails({ rawInvoice: MAINNET_INVOICE, amountSats: '2100' });
+
+      expect(await screen.findByTestId('send-ln-details-error-message')).toHaveTextContent('paymentDetails.errors.invalidData');
+      expect(fakeBreez.prepareSend).not.toHaveBeenCalled();
+    });
+
+    it.each(['0', '-5', 'abc'])('rawInvoice + an invalid amountSats (%s) shows invalidData', async (amountSats) => {
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ bolt11: INVOICE_WITHOUT_AMOUNT }));
+
+      renderDetails({ rawInvoice: INVOICE_WITHOUT_AMOUNT, amountSats });
+
+      expect(await screen.findByTestId('send-ln-details-error-message')).toHaveTextContent('paymentDetails.errors.invalidData');
+      expect(fakeBreez.prepareSend).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Expired Invoice (P2-13)', () => {
+    it('an expired Invoice shows "This invoice has expired"', async () => {
+      fakeBreez.parseInput.mockResolvedValueOnce(anInvoice({ amountSats: 1000, timestamp: Math.floor(Date.now() / 1000) - 7200, expirySecs: 3600 }));
+      fakeBreez.prepareSend.mockResolvedValueOnce(PREPARED_INVOICE);
+
+      renderDetails({ rawInvoice: MAINNET_INVOICE });
+
+      expect(await screen.findByText('paymentDetails.expiredMessage')).toBeOnTheScreen();
+    });
+  });
+
   describe('Bolt11 Invoice flow', () => {
     it('shows loading state initially', () => {
       fakeBreez.parseInput.mockReturnValue(new Promise(() => {})); // never resolves
