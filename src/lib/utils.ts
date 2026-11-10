@@ -16,6 +16,9 @@ import { TransactionSource, UnifiedTransactionStatus, UnifiedTransactionType } f
 
 import { Env } from './env';
 
+// The amount helpers have no native dependency, so the tests can use them without the Breez SDK
+export { convertBtcToSats, convertSatsToBtc, formatBalance, toKeypadAmount } from './bitcoin-amount';
+
 export function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url));
 }
@@ -30,28 +33,6 @@ export const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_stor
   }
 
   return store;
-};
-
-export const convertSatsToBtc = (sats: number): string => {
-  return (sats / 100_000_000).toFixed(8);
-};
-
-export const convertBtcToSats = (btc: number): number => {
-  return Math.round(btc * 1e8);
-};
-
-export const formatBalance = (total: number, unit: BitcoinUnit): string => {
-  if (unit === BitcoinUnit.Sats) {
-    if (total === 0) {
-      return '0 SATS';
-    }
-    return `${total.toLocaleString('en-US')} SATS`;
-  }
-
-  if (unit === BitcoinUnit.Btc) {
-    return `${convertSatsToBtc(total)} BTC`;
-  }
-  return total.toLocaleString();
 };
 
 /**

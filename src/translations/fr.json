@@ -154,6 +154,7 @@
     "headerTitle": "Entrer le montant",
     "insufficientBalance": "Votre solde est insuffisant",
     "invalidAmount": "Veuillez entrer un montant valide",
+    "limits": "Saisissez un montant entre {{min}} et {{max}}",
     "notePlaceholder": "Ajoutez une note ici...",
     "satsLabel": "SATS",
     "sendTo": "Envoyer à"
@@ -508,7 +509,8 @@
       "decode": "Erreur lors du décodage de la facture LN",
       "invalidData": "Données de facture invalides",
       "invalidPayment": "Données de paiement invalides",
-      "notEnoughFunds": "Votre solde est insuffisant"
+      "notEnoughFunds": "Votre solde est insuffisant",
+      "sendFailed": "Le paiement n'a pas pu être envoyé. Veuillez réessayer."
     },
     "expired": "Expirée",
     "expiredMessage": "Cette facture a expiré",
@@ -740,6 +742,11 @@
     "date": "à la date du",
     "fiatEquivalent": "Cela représente {{amount}} {{currency}} !",
     "okButton": "D'accord !",
+    "pending": {
+      "note": "Il apparaîtra dans vos transactions une fois terminé.",
+      "receivedTitle": "Retrait en cours",
+      "sentTitle": "Paiement en cours"
+    },
     "received": "Vous avez reçu",
     "sent": "Transaction envoyée"
   },
