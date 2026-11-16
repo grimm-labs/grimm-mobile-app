@@ -72,6 +72,7 @@ Features that need a funded wallet (sending, transaction lists and details, tran
 | Receive      | On-chain: address, copy (pasted in the send screen), new address (address settings sheet disabled for now)                         | `receive-onchain`          |
 | Receive      | Lightning account on-chain deposit address                                                                                         | `receive-onchain`          |
 | Send         | Lightning: empty input, invalid input, Bitcoin address refused                                                                     | `send-lightning`           |
+| Send         | Lightning Address and LNURL-pay: "Send to", limits, insufficient balance (needs `admin-test@pay.usegrimm.app`)                     | `send-lightning-address`   |
 | Send         | On-chain: empty and invalid address, valid address, fee options, insufficient balance                                              | `send-onchain`             |
 | Scan         | Camera screen and close; camera permission denied                                                                                  | `scan-qr`                  |
 | Settings     | Network switch to testnet (warning banner) and back to mainnet (confirmation, cancel)                                              | `settings-network`         |

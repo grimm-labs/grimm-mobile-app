@@ -22,6 +22,7 @@ import {
   LnurlPayRequest,
   MaxFee,
   Network,
+  PaymentStatus,
   PaymentType,
   PrepareLnurlPayRequest,
   PrepareSendPaymentRequest,
@@ -41,6 +42,7 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import { logUnclaimedDeposits } from '../breez/unclaimed-deposits-log';
 import { DEFAULT_LN_INVOICE_EXPIRY_SECS, GRIMM_APP_LN_URL_DOMAIN } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
+import { PAYMENT_COMPLETION_TIMEOUT_MS, waitWhilePending } from '../lightning/wait-for-payment';
 
 export enum AppNetwork {
   MAINNET = 'mainnet',
@@ -74,9 +76,11 @@ interface BreezContextType {
   receiveBitcoinAddress: () => Promise<ReceivePaymentResponse>;
   parseInput: (input: string) => Promise<InputType>;
   prepareSend: (paymentRequest: string, amountSats?: number) => Promise<PrepareSendPaymentResponse>;
-  executeSend: (prepareResponse: PrepareSendPaymentResponse) => Promise<SendPaymentResponse>;
+  /** `idempotencyKey` (a UUID): sending again with the same key never makes a second payment. */
+  executeSend: (prepareResponse: PrepareSendPaymentResponse, idempotencyKey?: string) => Promise<SendPaymentResponse>;
   prepareLnurlPay: (amountSats: number, payRequest: LnurlPayRequestDetails) => Promise<PrepareLnurlPayResponse>;
-  executeLnurlPay: (prepareResponse: PrepareLnurlPayResponse) => Promise<Payment | undefined>;
+  /** Waits up to 60 s for the payment to leave Pending (`lnurlPay` itself returns as soon as it starts). */
+  executeLnurlPay: (prepareResponse: PrepareLnurlPayResponse, idempotencyKey?: string) => Promise<Payment | undefined>;
   unclaimedDeposits: DepositInfo[];
   listUnclaimedDeposits: () => Promise<DepositInfo[]>;
   refreshUnclaimedDeposits: () => Promise<DepositInfo[]>;
@@ -433,7 +437,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     );
   }, []);
 
-  const executeSend = useCallback(async (prepareResponse: PrepareSendPaymentResponse): Promise<SendPaymentResponse> => {
+  const executeSend = useCallback(async (prepareResponse: PrepareSendPaymentResponse, idempotencyKey?: string): Promise<SendPaymentResponse> => {
     if (!sdkRef.current) throw new Error('Breez SDK not initialized');
 
     return sdkRef.current.sendPayment(
@@ -441,8 +445,9 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         prepareResponse,
         options: SendPaymentOptions.Bolt11Invoice.new({
           preferSpark: false,
-          completionTimeoutSecs: 60,
+          completionTimeoutSecs: PAYMENT_COMPLETION_TIMEOUT_MS / 1000,
         }),
+        idempotencyKey,
       }),
     );
   }, []);
@@ -457,14 +462,21 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     );
   }, []);
 
-  const executeLnurlPay = useCallback(async (prepareResponse: PrepareLnurlPayResponse): Promise<Payment | undefined> => {
+  const executeLnurlPay = useCallback(async (prepareResponse: PrepareLnurlPayResponse, idempotencyKey?: string): Promise<Payment | undefined> => {
     if (!sdkRef.current) throw new Error('Breez SDK not initialized');
-    const response = await sdkRef.current.lnurlPay(
+    const sdk = sdkRef.current;
+    const response = await sdk.lnurlPay(
       LnurlPayRequest.new({
         prepareResponse,
+        idempotencyKey,
       }),
     );
-    return response.payment;
+    // lnurlPay has no completion timeout: wait here like sendPayment does, so a send that completes in seconds is not shown as Pending
+    return waitWhilePending({
+      initial: response.payment,
+      isPending: (payment) => payment.status === PaymentStatus.Pending,
+      refresh: async (payment) => (await sdk.getPayment({ paymentId: payment.id })).payment,
+    });
   }, []);
 
   const initializeBreez = useCallback(async (): Promise<void> => {
@@ -673,4 +685,4 @@ export const useBreez = (): BreezContextType => {
 
 // Re-export types and enums that consumers need
 export type { Bolt11InvoiceDetails, DepositInfo, GetInfoResponse, InputType, LnurlPayRequestDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
-export { InputType_Tags, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';
+export { InputType_Tags, PaymentStatus, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';

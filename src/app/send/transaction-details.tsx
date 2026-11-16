@@ -2,8 +2,9 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
 import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { randomUUID } from 'expo-crypto';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -15,9 +16,9 @@ import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Te
 import { convertBitcoinToFiat, getFiatCurrency } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
-import type { Bolt11InvoiceDetails, PrepareLnurlPayResponse, PrepareSendPaymentResponse } from '@/lib/context/breez-context';
+import type { Bolt11InvoiceDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse } from '@/lib/context/breez-context';
 import { useBreez } from '@/lib/context/breez-context';
-import { InputType_Tags } from '@/lib/context/breez-context';
+import { InputType_Tags, PaymentStatus } from '@/lib/context/breez-context';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
@@ -43,6 +44,8 @@ export default function PaymentDetailsScreen() {
   const [paymentIsProcessing, setPaymentIsProcessing] = useState(false);
   const [savedPrepareResponse, setSavedPrepareResponse] = useState<PrepareSendPaymentResponse | null>(null);
   const [savedLnurlPrepareResponse, setSavedLnurlPrepareResponse] = useState<PrepareLnurlPayResponse | null>(null);
+  // One payment per screen: every slide sends with this key, so a retry after an error can never pay twice
+  const idempotencyKeyRef = useRef<string | null>(null);
 
   const convertMsatToSats = (msat: bigint | undefined) => {
     if (msat === undefined) return 0;
@@ -182,28 +185,32 @@ export default function PaymentDetailsScreen() {
 
     setPaymentIsProcessing(true);
     try {
+      // A retry reuses the saved prepared payment and the same idempotency key: the SDK makes one payment at most
+      idempotencyKeyRef.current ??= randomUUID();
+      let payment: Payment | undefined;
       if (isLnAddress && savedLnurlPrepareResponse) {
-        const payment = await executeLnurlPay(savedLnurlPrepareResponse);
-        if (payment) {
-          router.push({
-            pathname: '/transaction-result/success-screen',
-            params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
-          });
-        } else {
-          showErrorMessage(t('paymentDetails.errors.invalidPayment'));
-        }
+        payment = await executeLnurlPay(savedLnurlPrepareResponse, idempotencyKeyRef.current);
       } else if (savedPrepareResponse) {
-        const sendResponse = await executeSend(savedPrepareResponse);
-        const payment = sendResponse.payment;
-        if (payment) {
-          router.push({
-            pathname: '/transaction-result/success-screen',
-            params: { transactionType: 'sent', satsAmount: Number(payment.amount).toString() },
-          });
-        }
+        payment = (await executeSend(savedPrepareResponse, idempotencyKeyRef.current))?.payment;
       }
+      showPaymentOutcome(payment);
+    } catch (error) {
+      console.error('Error sending the Lightning payment:', (error as Error)?.message);
+      showErrorMessage(t('paymentDetails.errors.sendFailed'));
     } finally {
       setPaymentIsProcessing(false);
+    }
+  };
+
+  // The send waits up to 60 s for the payment to complete: a payment can come back still Pending, or Failed
+  const showPaymentOutcome = (payment: Payment | undefined) => {
+    const params = { transactionType: 'sent', satsAmount: Number(payment?.amount ?? 0).toString() };
+    if (payment?.status === PaymentStatus.Completed) {
+      router.push({ pathname: '/transaction-result/success-screen', params });
+    } else if (payment?.status === PaymentStatus.Pending) {
+      router.push({ pathname: '/transaction-result/pending-screen', params });
+    } else {
+      showErrorMessage(t('paymentDetails.errors.sendFailed'));
     }
   };
 
