@@ -1,4 +1,5 @@
 import React from 'react';
+import { BackHandler } from 'react-native';
 
 import { aLightningAddress, anLnurlAuth, anLnurlAuthError, anLnurlAuthOk } from '@/lib/payment-input/__tests__/helpers/breez-results';
 import { fakeBreez } from '@/lib/payment-input/__tests__/helpers/fake-breez-context';
@@ -226,6 +227,109 @@ describe('LightningLoginScreen (lightning-login)', () => {
 
       expect(fakeBreez.lnurlAuth).toHaveBeenCalledTimes(2);
       expect(router.replace).toHaveBeenCalledWith('/');
+    });
+  });
+
+  describe('Review fixes (2026-11-16)', () => {
+    function renderParsing() {
+      fakeRouter.setParams({ paymentInput: LNURL });
+      return render(<LightningLoginScreen />);
+    }
+
+    it('Breez could not start: "could not start" and a Back button, instead of a spinner that never ends', () => {
+      fakeBreez.set({ isBreezInitialized: false, breezError: 'Initialization error' });
+      renderParsing();
+
+      expect(screen.getByTestId('lightning-login-error')).toHaveTextContent('paymentInput.errors.lightningFailed');
+      fireEvent.press(screen.getByTestId('lightning-login-back'));
+      expect(router.back).toHaveBeenCalledTimes(1);
+    });
+
+    it('a network error while reading the request says the website could not be reached', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockRejectedValue(Object.assign(new Error('NetworkError'), { tag: 'NetworkError', inner: ['timeout'] }));
+      renderParsing();
+
+      expect(await screen.findByTestId('lightning-login-error')).toHaveTextContent('paymentInput.errors.unreachable');
+    });
+
+    it('the error view has a Back button; with nothing to go back to, it goes to the start', async () => {
+      fakeBreez.parseInput.mockResolvedValue(aLightningAddress());
+      router.canGoBack.mockReturnValueOnce(false);
+      renderParsing();
+
+      fireEvent.press(await screen.findByTestId('lightning-login-back'));
+
+      expect(router.back).not.toHaveBeenCalled();
+      expect(router.replace).toHaveBeenCalledWith('/');
+    });
+
+    it('a parse that succeeds after a failed one shows the request, not the old error', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockRejectedValueOnce(new Error('invalid input'));
+      renderParsing();
+      expect(await screen.findByTestId('lightning-login-error')).toBeOnTheScreen();
+
+      act(() => fakeBreez.set({ isBreezInitialized: false }));
+      await act(async () => fakeBreez.set({ isBreezInitialized: true }));
+
+      expect(await screen.findByTestId('lightning-login-confirm')).toBeOnTheScreen();
+      expect(screen.queryByTestId('lightning-login-error')).not.toBeOnTheScreen();
+    });
+
+    it('`ErrorStatus` with no reason shows the generic message, never "refused the sign-in: "', async () => {
+      fakeBreez.lnurlAuth.mockResolvedValue(anLnurlAuthError('   '));
+      await renderLogin();
+
+      await act(async () => signIn());
+
+      expect(flash('danger')).toEqual(['lightningLogin.errors.failed']);
+    });
+
+    it('`ErrorStatus` with a very long reason shows it cut at 150 characters', async () => {
+      fakeBreez.lnurlAuth.mockResolvedValue(anLnurlAuthError('x'.repeat(500)));
+      await renderLogin();
+
+      await act(async () => signIn());
+
+      expect(flash('danger')).toEqual([`lightningLogin.errors.refused ${JSON.stringify({ domain: 'example.com', reason: `${'x'.repeat(150)}…` })}`]);
+    });
+
+    it('while signing in, the hardware back button waits (like Cancel)', async () => {
+      const handlers: (() => boolean)[] = [];
+      const addListener = jest.spyOn(BackHandler, 'addEventListener').mockImplementation((_event, handler) => {
+        handlers.push(handler as () => boolean);
+        return { remove: jest.fn() };
+      });
+      fakeBreez.lnurlAuth.mockReturnValue(new Promise(() => {}));
+      await renderLogin();
+
+      act(() => {
+        signIn();
+      });
+
+      expect(handlers.some((handler) => handler() === true)).toBe(true);
+      expect(screen.getByTestId('lightning-login-cancel')).toBeDisabled();
+      addListener.mockRestore();
+    });
+
+    it('leaving while lnurlAuth runs: no flash and no navigation over wherever the user went', async () => {
+      let finish: (status: unknown) => void = () => {};
+      fakeBreez.lnurlAuth.mockReturnValue(new Promise((resolve) => (finish = resolve)));
+      const view = await renderLogin();
+
+      act(() => {
+        signIn();
+      });
+      view.unmount();
+      finish(anLnurlAuthOk());
+      await act(async () => {
+        for (let i = 0; i < 20; i++) await Promise.resolve();
+      });
+
+      expect(mockShowMessage).not.toHaveBeenCalled();
+      expect(router.dismissAll).not.toHaveBeenCalled();
+      expect(router.replace).not.toHaveBeenCalled();
     });
   });
 

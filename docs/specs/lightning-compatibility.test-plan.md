@@ -377,3 +377,16 @@ Each line was changed on its own, the Part 1 suites were run, then the line was 
 | The double-tap guard removed                                  | `login` › each tap on Sign in calls lnurlAuth exactly once                                                                                            |
 | Lightning Login asks for the PIN (`authorizeSensitiveAction`) | `login` › is not a Sensitive Action…; the Result tests (6 tests)                                                                                      |
 | LNURL-auth routed as "unsupported" again                      | `route` › LNURL-auth → lightningLogin (both networks); `entry` › LNURL-auth (4 entry points) (6 tests)                                                |
+
+### Review fixes, Part 4 (2026-11-16)
+
+Each fix was undone on its own to check a test catches it.
+
+| Fix                                                            | Caught by                                                                                                          |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Nothing shows or navigates if the user left during the sign-in | `login` › leaving while lnurlAuth runs…                                                                            |
+| The hardware back button waits for the sign-in                 | `login` › while signing in, the hardware back button waits…                                                        |
+| `breezError` shows "could not start", with Back                | `login` › Breez could not start…                                                                                   |
+| A network error shows "could not reach"                        | `login` › a network error while reading the request…                                                               |
+| A new parse clears the previous error                          | `login` › a parse that succeeds after a failed one…                                                                |
+| An empty `reason` shows the generic message; a long one is cut | `login` › `ErrorStatus` with no reason…; … very long reason…; `reason` › cuts a reason longer than 150 characters… |
