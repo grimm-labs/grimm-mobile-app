@@ -276,7 +276,7 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
       await user.press(await screen.findByTestId('slide-to-confirm'));
 
       await waitFor(() => expect(router.push).toHaveBeenCalledWith({ pathname: '/transaction-result/success-screen', params: { transactionType: 'sent', satsAmount: '2100' } }));
-      expect(fakeBreez.executeSend).toHaveBeenCalledWith(PREPARED_INVOICE);
+      expect(fakeBreez.executeSend).toHaveBeenCalledWith(PREPARED_INVOICE, expect.any(String));
     });
 
     it('amountSats with an Invoice that has its own Amount shows invalidData and never calls prepareSend', async () => {
