@@ -203,7 +203,7 @@ Use a **release** build. A debug build contains `expo-dev-client`: after `clearS
 
 Use an **arm64 device or emulator** (Apple Silicon emulators are fine). CI pins Maestro `2.10.0` (`MAESTRO_VERSION` in `e2e-android.yml`); use the same version locally (`curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.10.0 bash`).
 
-In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). It runs on every pull request and every push to `master` (markdown-only changes are skipped), and can be started manually. A manual run can reuse the APK of a previous run with `-f apk-run-id=<run id>`, which skips the build, and filter flows with `-f include-tags=<tags>`.
+In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). It **only runs when started manually**, on any branch: pushes and pull requests never start it. Start it with `gh workflow run e2e-android.yml --ref <branch>` (or from the Actions tab) before merging a change that affects the flows. A run can reuse the APK of a previous run with `-f apk-run-id=<run id>`, which skips the build, and filter flows with `-f include-tags=<tags>`. A second run on the same branch waits for the first one.
 
 - Job 1 builds a **staging release APK for `arm64-v8a` only** with `.github/actions/setup-jdk-generate-apk`.
 - Job 2 runs the flows on a GitHub-hosted emulator: API 35 `google_apis` x86_64 with KVM, which translates ARM code. The emulator has 3 cores and an emulated back camera, and system error dialogs are hidden.
@@ -226,7 +226,7 @@ In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). 
   2. `new-github-release` creates a draft release.
   3. Publishing the release triggers the EAS QA (staging) and development builds.
   4. `eas-build-prod` is manual.
-- CI checks on PRs to master: `lint-ts`, `type-check`, `test` (with a coverage comment), `codeql`, `e2e-android`, and `security-audit`/`expo-doctor` when `package.json`/lockfile change.
+- CI checks on PRs to master: `lint-ts`, `type-check`, `test` (with a coverage comment), `codeql`, and `security-audit`/`expo-doctor` when `package.json`/lockfile change. `e2e-android` is manual only (see "E2E tests").
 - Workflows create `.env.<env>` from the secret `BREEZ_API_KEY` and the variables `NOTIFICATION_API_URL_{DEV,STAGING,PROD}`.
 
 ## Gotchas
