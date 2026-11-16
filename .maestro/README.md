@@ -1,6 +1,6 @@
 # Maestro E2E tests
 
-End-to-end tests for the Android app, written with [Maestro](https://docs.maestro.dev). They run in GitHub Actions (`.github/workflows/e2e-android.yml`) on every pull request and every push to `master`.
+End-to-end tests for the Android app, written with [Maestro](https://docs.maestro.dev). They run in GitHub Actions (`.github/workflows/e2e-android.yml`) only when started manually, on any branch (see "Running" below: `gh workflow run e2e-android.yml --ref <branch>`). A full run takes about 40 minutes.
 
 ## Layout
 
