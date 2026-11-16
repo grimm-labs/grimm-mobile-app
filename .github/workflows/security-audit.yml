@@ -1,6 +1,16 @@
 # Description:
 # Runs `pnpm audit` to detect known vulnerabilities in dependencies.
 # Fails the build if critical or high severity vulnerabilities are found.
+#
+# Ignored advisories (`pnpm.auditConfig.ignoreGhsas` in package.json):
+# - GHSA-w3rx-r6r6-pgpr, GHSA-5p2g-fcmc-qvqq: added in #243.
+# - GHSA-qr28-fpjm-wq7f (decode-uri-component <= 0.5.0, quadratic decoding of malformed input):
+#   the only fixed version (0.5.1) is ESM-only, and query-string@7 loads it with require().
+#   expo-router 5 (Expo SDK 53) needs query-string@7 (its getPathFromState uses query-string.stringify)
+#   and @react-navigation/core 7.21 depends on it. The vulnerable code only runs through
+#   query-string.parse, which only @react-navigation/core's default getStateFromPath calls, and
+#   expo-router always replaces that function with its own fork (getLinkingConfig). Remove the
+#   exception when expo-router no longer needs query-string@7 (Expo SDK upgrade).
 
 name: Security Audit
 

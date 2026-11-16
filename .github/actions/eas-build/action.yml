@@ -73,8 +73,10 @@ runs:
   using: 'composite'
   steps:
     - name: 💯 Check for EXPO_TOKEN
+      env:
+        EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
       run: |
-        if [ -z "${{ inputs.EXPO_TOKEN }}" ]; then
+        if [ -z "$EXPO_TOKEN" ]; then
           echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
           exit 1
         fi
@@ -88,32 +90,56 @@ runs:
 
     - name: 🔐 Setup Play Store service account for Android submission
       if: ${{ inputs.ANDROID == 'true' && inputs.GOOGLE_SERVICES_KEY_BASE64 != '' }}
+      env:
+        GOOGLE_SERVICES_KEY_BASE64: ${{ inputs.GOOGLE_SERVICES_KEY_BASE64 }}
       run: |
         mkdir -p ./credentials/android
-        echo "${{ inputs.GOOGLE_SERVICES_KEY_BASE64 }}" | base64 -d > ./credentials/android/service-account.json
+        printf '%s' "$GOOGLE_SERVICES_KEY_BASE64" | base64 -d > ./credentials/android/service-account.json
         echo "✅ Play Store service account file created"
       shell: bash
 
     - name: 🔥 Setup Firebase google-services.json
       if: ${{ inputs.ANDROID == 'true' && inputs.GOOGLE_SERVICES_JSON_BASE64 != '' }}
+      env:
+        GOOGLE_SERVICES_JSON_BASE64: ${{ inputs.GOOGLE_SERVICES_JSON_BASE64 }}
       run: |
         mkdir -p ./credentials/firebase
-        echo "${{ inputs.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > ./credentials/firebase/google-services.json
+        printf '%s' "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > ./credentials/firebase/google-services.json
         echo "✅ Firebase google-services.json created"
       shell: bash
 
     - name: ⚙️ Run Prebuild
-      run: pnpm prebuild:${{ inputs.APP_ENV }}
+      env:
+        APP_ENV: ${{ inputs.APP_ENV }}
+      run: |
+        case "$APP_ENV" in development|staging|production) ;; *) echo "Invalid APP_ENV: $APP_ENV" >&2; exit 1 ;; esac
+        pnpm "prebuild:$APP_ENV"
       shell: bash
 
     - name: 📱 Run Android Build
       if: ${{ inputs.ANDROID == 'true' }}
-      run: pnpm build:${{ inputs.APP_ENV }}:android ${{ inputs.AUTO_SUBMIT_ANDROID == 'true' && '--auto-submit' || '' }} --non-interactive --no-wait --message "Build ${{ inputs.APP_ENV }} ${{ inputs.VERSION }}"
+      env:
+        APP_ENV: ${{ inputs.APP_ENV }}
+        VERSION: ${{ inputs.VERSION }}
+        AUTO_SUBMIT: ${{ inputs.AUTO_SUBMIT_ANDROID }}
+      run: |
+        case "$APP_ENV" in development|staging|production) ;; *) echo "Invalid APP_ENV: $APP_ENV" >&2; exit 1 ;; esac
+        args=(--non-interactive --no-wait --message "Build $APP_ENV $VERSION")
+        if [ "$AUTO_SUBMIT" = 'true' ]; then args=(--auto-submit "${args[@]}"); fi
+        pnpm "build:$APP_ENV:android" "${args[@]}"
       shell: bash
 
     - name: 📱 Run IOS Build
       if: ${{ inputs.IOS == 'true' }}
-      run: pnpm build:${{ inputs.APP_ENV }}:ios ${{ inputs.AUTO_SUBMIT_IOS == 'true' && '--auto-submit' || '' }} --non-interactive --clear-cache --no-wait --message "Build ${{ inputs.APP_ENV }} ${{ inputs.VERSION }}"
+      env:
+        APP_ENV: ${{ inputs.APP_ENV }}
+        VERSION: ${{ inputs.VERSION }}
+        AUTO_SUBMIT: ${{ inputs.AUTO_SUBMIT_IOS }}
+      run: |
+        case "$APP_ENV" in development|staging|production) ;; *) echo "Invalid APP_ENV: $APP_ENV" >&2; exit 1 ;; esac
+        args=(--non-interactive --clear-cache --no-wait --message "Build $APP_ENV $VERSION")
+        if [ "$AUTO_SUBMIT" = 'true' ]; then args=(--auto-submit "${args[@]}"); fi
+        pnpm "build:$APP_ENV:ios" "${args[@]}"
       shell: bash
 
     - name: 🧹 Clean up credentials

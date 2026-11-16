@@ -7,11 +7,8 @@
 # It means the server is using a self-signed SSL certificate, which is not trusted by your system's CA store.
 # This is a security feature in Python's ssl module to prevent man-in-the-middle attacks.
 #
-# To connect anyway (not recommended for production), you could disable certificate verification,
-# but this exposes you to security risks. Only do this for testing with servers you trust.
-#
-# Example of disabling verification (uncomment and use at your own risk):
-# context = ssl._create_unverified_context()
+# Certificates are verified by default. To connect anyway to servers using self-signed certificates
+# (not recommended, exposes you to man-in-the-middle attacks), pass --insecure explicitly.
 
 import socket
 import ssl
@@ -43,12 +40,12 @@ def test_electrum_server(host: str, port: int, timeout: float = 5.0, verify_cert
     """
     Try to connect to an Electrum server using SSL.
     Returns True if the connection and handshake succeed and a valid response is received, False otherwise.
-    If verify_cert is False, self-signed certificates are accepted (not secure for production).
+    If verify_cert is False, certificate and hostname checks are skipped (insecure, opt-in via --insecure only).
     """
-    if verify_cert:
-        context = ssl.create_default_context()
-    else:
-        context = ssl._create_unverified_context()
+    context = ssl.create_default_context()
+    if not verify_cert:
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
     try:
         with socket.create_connection((host, port), timeout=timeout) as sock:
             with context.wrap_socket(sock, server_hostname=host) as ssock:
@@ -65,9 +62,13 @@ def test_electrum_server(host: str, port: int, timeout: float = 5.0, verify_cert
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Test Electrum servers (mainnet and testnet)")
-    parser.add_argument('--verify-cert', action='store_true', help='Enable SSL certificate verification (default: disabled)')
+    parser.add_argument('--insecure', action='store_true', help='Disable SSL certificate verification to accept self-signed certificates (insecure, default: verification enabled)')
+    # Kept for backward compatibility: verification is now always enabled unless --insecure is passed
+    parser.add_argument('--verify-cert', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
-    verify_cert = args.verify_cert
+    verify_cert = not args.insecure
+    if not verify_cert:
+        print("WARNING: SSL certificate verification is disabled (--insecure)", file=sys.stderr)
 
     print("\nTesting Mainnet Electrum servers:")
     for name, host, port in MAINNET_SERVERS:
