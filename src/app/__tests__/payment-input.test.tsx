@@ -136,6 +136,39 @@ describe('PaymentInputScreen (/payment-input)', () => {
     expect(router.push).not.toHaveBeenCalled();
   });
 
+  it('while it waits for Breez, Back is there: the user is never stuck on "Reading…"', async () => {
+    fakeBreez.set({ isBreezInitialized: false });
+    renderLink(LN_ADDRESS);
+    await act(async () => {});
+    expect(screen.getByTestId('payment-input-loading')).toBeOnTheScreen();
+
+    fireEvent.press(screen.getByTestId('payment-input-back'));
+
+    expectGoneHome();
+  });
+
+  it('no Back while it routes without waiting (no flash of a button)', () => {
+    fakeBreez.parseInput.mockReturnValue(new Promise(() => {}));
+    renderLink(LN_ADDRESS);
+
+    expect(screen.queryByTestId('payment-input-back')).not.toBeOnTheScreen();
+  });
+
+  it('a new link that reaches the open screen is routed, and the previous error is gone', async () => {
+    const view = renderLink('not a payment');
+    expect(await screen.findByTestId('payment-input-error')).toHaveTextContent('paymentInput.errors.unsupported');
+
+    fakeRouter.setParams({ input: ONCHAIN_URI });
+    const { AppContext } = require('@/lib/context');
+    view.rerender(
+      <AppContext.Provider value={{ hasSeedPhrase: true, isDataLoaded: true }}>
+        <PaymentInputScreen />
+      </AppContext.Provider>,
+    );
+
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith(ONCHAIN_DESTINATION));
+  });
+
   it('breezError with a Lightning format shows "could not start" with Back', async () => {
     fakeBreez.set({ isBreezInitialized: false, breezError: 'Initialization error' });
     renderLink(`lightning:${LN_ADDRESS}`);

@@ -1,7 +1,8 @@
 // A Bitcoin URI (BIP21): the bitcoin: scheme, an address, then parameters such as amount (in BTC) and lightning (an Invoice)
 export type BitcoinUri = { address: string; amountSats?: number; lightning?: string };
 
-const SCHEME = /^bitcoin:/i;
+// Some apps write bitcoin:// (with slashes); the slashes are not part of the address
+const SCHEME = /^bitcoin:(\/\/)?/i;
 const DIGITS = /^\d*$/;
 const SATS_PER_BTC = 100_000_000n;
 

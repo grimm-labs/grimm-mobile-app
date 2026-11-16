@@ -18,6 +18,7 @@ const PART_2 = {
   'paymentInput.errors.otherNetworkInvoice': ['This invoice belongs to another Bitcoin network', 'Cette facture appartient à un autre réseau Bitcoin'],
   'paymentInput.errors.lightningStarting': ['The Lightning wallet is starting. Please try again in a moment.', 'Le portefeuille Lightning démarre. Veuillez réessayer dans un instant.'],
   'paymentInput.errors.lightningFailed': ['The Lightning wallet could not start', "Le portefeuille Lightning n'a pas pu démarrer"],
+  'paymentInput.errors.unreachable': ['Could not reach the recipient. Check your connection and try again.', 'Impossible de joindre le destinataire. Vérifiez votre connexion et réessayez.'],
   'paymentInput.reading': ['Reading…', 'Lecture…'],
   'enterAmount.lightningInvoice': ['Lightning invoice', 'Facture Lightning'],
 };

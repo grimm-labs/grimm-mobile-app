@@ -36,6 +36,17 @@ export default function ScanQrScreen() {
 
   const scanTimeoutRef = useRef<number | null>(null);
 
+  // The same 3-second pause after the method sheet closes: the QR code is often still in front of the camera
+  const wasSheetOpenRef = useRef(false);
+  useEffect(() => {
+    if (wasSheetOpenRef.current && !isSheetOpen) {
+      setIsScanning(false);
+      if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+      scanTimeoutRef.current = setTimeout(() => setIsScanning(true), 3000);
+    }
+    wasSheetOpenRef.current = isSheetOpen;
+  }, [isSheetOpen]);
+
   const checkCameraPermission = useCallback(async () => {
     await requestPermission();
   }, [requestPermission]);

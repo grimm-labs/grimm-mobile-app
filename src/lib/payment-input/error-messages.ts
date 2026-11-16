@@ -5,6 +5,8 @@ const MESSAGES = {
   otherNetworkAddress: 'paymentInput.errors.otherNetworkAddress',
   otherNetworkInvoice: 'paymentInput.errors.otherNetworkInvoice',
   lightningNotReady: 'paymentInput.errors.lightningStarting',
+  lightningFailed: 'paymentInput.errors.lightningFailed',
+  unreachable: 'paymentInput.errors.unreachable',
 } as const;
 
 type EmptyMessage = 'lightningPayment.errors.invalidInvoice' | 'onchainSend.enterAddress.errors.invalidAddress' | (typeof MESSAGES)['unsupported'];

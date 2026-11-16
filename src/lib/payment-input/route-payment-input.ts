@@ -3,7 +3,8 @@ import { AppNetwork, BitcoinNetwork, InputType_Tags } from '@/lib/context/breez-
 
 import { parseBitcoinUri } from './bitcoin-uri';
 
-export type PaymentInputError = 'empty' | 'unsupported' | 'otherNetworkAddress' | 'otherNetworkInvoice' | 'lightningNotReady';
+/** `lightningFailed`: Breez could not start (usePaymentInput); `unreachable`: the Breez parse had a network error. */
+export type PaymentInputError = 'empty' | 'unsupported' | 'otherNetworkAddress' | 'otherNetworkInvoice' | 'lightningNotReady' | 'lightningFailed' | 'unreachable';
 
 export type OnchainDestination = { address: string; amountSats?: number };
 
@@ -23,7 +24,8 @@ export type PaymentInputDeps = {
   parse?: (input: string) => Promise<InputType>;
 };
 
-const LIGHTNING_PREFIX = /^lightning:/i;
+// Some apps write lightning:// (with slashes); the slashes are not part of the Payment Input
+const LIGHTNING_PREFIX = /^lightning:(\/\/)?/i;
 const BITCOIN_URI = /^bitcoin:/i;
 
 // The app's testnet is Breez Regtest (AGENTS.md, "Wallets and networks")
@@ -35,6 +37,9 @@ const BREEZ_NETWORK: Record<AppNetwork, BitcoinNetwork> = {
 const error = (reason: PaymentInputError): PaymentInputRoute => ({ kind: 'error', reason });
 
 const clean = (text: string) => text.trim().replace(LIGHTNING_PREFIX, '').trim();
+
+// The Breez SDK throws an SdkError; its tag is SdkError_Tags.NetworkError when the service could not be reached
+const isNetworkError = (thrown: unknown) => (thrown as { tag?: unknown } | null)?.tag === 'NetworkError';
 
 /**
  * The rules every entry point applies, in order: empty, Bitcoin URI, Bitcoin address (all three without Breez), then
@@ -60,8 +65,9 @@ export async function routeLightningInput(text: string, deps: PaymentInputDeps):
   let parsed: InputType;
   try {
     parsed = await deps.parse(input);
-  } catch {
-    return error('unsupported');
+  } catch (parseError) {
+    // A Lightning Address or LNURL is read over the network: a network error does not mean the format is unsupported
+    return error(isNetworkError(parseError) ? 'unreachable' : 'unsupported');
   }
 
   switch (parsed.tag) {

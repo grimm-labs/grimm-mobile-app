@@ -8,6 +8,23 @@ import type { PaymentInputDeps, PaymentInputError, PaymentInputRoute } from '@/l
 import { routeLightningInput, routePaymentInput } from '@/lib/payment-input/route-payment-input';
 
 type ChooseMethodRoute = Extract<PaymentInputRoute, { kind: 'chooseMethod' }>;
+type ScreenRoute = Extract<PaymentInputRoute, { kind: 'lightningDetails' | 'lightningAmount' | 'onchainAmount' }>;
+type Go = (href: Parameters<ReturnType<typeof useRouter>['push']>[0]) => void;
+
+/** Opens the screen of a destination. */
+function goToScreen(route: ScreenRoute, go: Go) {
+  switch (route.kind) {
+    case 'lightningDetails':
+      return go({ pathname: '/send/transaction-details', params: { rawInvoice: route.rawInvoice } });
+    case 'lightningAmount':
+      return go({ pathname: '/send/enter-amount', params: { paymentInput: route.paymentInput } });
+    case 'onchainAmount':
+      return go({
+        pathname: '/send-onchain/enter-amount',
+        params: route.amountSats === undefined ? { recipientAddress: route.address } : { recipientAddress: route.address, amountSats: String(route.amountSats) },
+      });
+  }
+}
 
 type UsePaymentInputOptions = {
   /** The scanner and the paste screens push the destination; /payment-input replaces itself with it. */
@@ -25,41 +42,34 @@ type UsePaymentInputOptions = {
  */
 export function usePaymentInput({ navigation, onError, onSheetDismiss }: UsePaymentInputOptions) {
   const router = useRouter();
-  const { network, isBreezInitialized, parseInput } = useBreez();
+  const { network, isBreezInitialized, parseInput, breezError } = useBreez();
   const sheetRef = useRef<BottomSheetModal>(null);
   const choiceRef = useRef<ChooseMethodRoute | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // The latest callbacks, so that routeInput keeps its identity when the screen re-renders
+  // The latest callbacks and Breez error, so that routeInput keeps its identity when the screen re-renders
   const callbacksRef = useRef({ onError, onSheetDismiss });
   callbacksRef.current = { onError, onSheetDismiss };
+  const breezErrorRef = useRef(breezError);
+  breezErrorRef.current = breezError;
 
   const deps = useMemo<PaymentInputDeps>(() => ({ network, isValidAddress, parse: isBreezInitialized ? parseInput : undefined }), [network, isBreezInitialized, parseInput]);
 
   const handleRoute = useCallback(
     (route: PaymentInputRoute) => {
-      const go: typeof router.push = (href) => (navigation === 'push' ? router.push(href) : router.replace(href));
+      const go: Go = (href) => (navigation === 'push' ? router.push(href) : router.replace(href));
       switch (route.kind) {
-        case 'lightningDetails':
-          go({ pathname: '/send/transaction-details', params: { rawInvoice: route.rawInvoice } });
-          break;
-        case 'lightningAmount':
-          go({ pathname: '/send/enter-amount', params: { paymentInput: route.paymentInput } });
-          break;
-        case 'onchainAmount':
-          go({
-            pathname: '/send-onchain/enter-amount',
-            params: route.amountSats === undefined ? { recipientAddress: route.address } : { recipientAddress: route.address, amountSats: String(route.amountSats) },
-          });
-          break;
         case 'chooseMethod':
           choiceRef.current = route;
           setIsSheetOpen(true);
           sheetRef.current?.present();
           break;
         case 'error':
-          callbacksRef.current.onError(route.reason);
+          // "Starting, try again" is wrong once Breez failed: it will not start by itself
+          callbacksRef.current.onError(route.reason === 'lightningNotReady' && breezErrorRef.current ? 'lightningFailed' : route.reason);
           break;
+        default:
+          goToScreen(route, go);
       }
     },
     [navigation, router],
@@ -76,10 +86,14 @@ export function usePaymentInput({ navigation, onError, onSheetDismiss }: UsePaym
 
   const onSelect = useCallback(
     async (method: 'lightning' | 'onchain') => {
-      setIsSheetOpen(false);
       const choice = choiceRef.current;
-      if (!choice) return;
-      handleRoute(method === 'onchain' ? { kind: 'onchainAmount', ...choice.onchain } : await routeLightningInput(choice.lightning, deps));
+      try {
+        if (!choice) return;
+        handleRoute(method === 'onchain' ? { kind: 'onchainAmount', ...choice.onchain } : await routeLightningInput(choice.lightning, deps));
+      } finally {
+        // Open until the choice is routed: the scanner must not read the same QR code while the Breez parse runs
+        setIsSheetOpen(false);
+      }
     },
     [deps, handleRoute],
   );

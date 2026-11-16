@@ -200,6 +200,20 @@ Short names: `uri` = `src/lib/payment-input/__tests__/bitcoin-uri.test.ts`; `rou
 | testIDs | Integration | `link-route`, `entry`, `ln-amount`, `onchain-amount` select by `payment-input-screen`, `payment-input-loading`, `payment-input-error`, `payment-input-back`, `send-method-lightning`, `send-method-onchain`, `send-ln-amount-send-to`, `send-onchain-amount-value` | green |
 | Translations | Unit | `i18n` › EN and FR have the same Part 2 keys, with the spec copy; the keys Part 2 replaces are gone from EN and FR | green |
 
+### Review fixes, Part 2 (2026-11-16)
+
+Each fix was undone on its own to check a test catches it.
+
+| Fix                                                           | Caught by                                                                                           |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| The scanner waits 3 s after the method sheet closes           | `entry` › scanner › … once it is closed without a choice, waits 3 s before scanning again           |
+| The sheet counts as open until a Lightning choice is routed   | `entry` › scanner › after choosing Lightning in the sheet, does not scan until the choice is routed |
+| `/payment-input` routes a new link                            | `link-route` › a new link that reaches the open screen is routed…                                   |
+| `/payment-input` shows Back while it waits for Breez          | `link-route` › while it waits for Breez, Back is there…                                             |
+| "Could not start" instead of "starting" after a Breez failure | `entry` › {paste screen}: Breez could not start…                                                    |
+| A network error during the parse is "unreachable"             | `route` › a network error while Breez reads a Lightning Address is "unreachable"…                   |
+| `lightning://` and `bitcoin://`                               | `route` › lightning:// (with slashes…) routes like lightning:; bitcoin:// …                         |
+
 ## Part 3: Withdrawal
 
 Short names: `domain` = `src/lib/lightning/__tests__/domain.test.ts`; `withdrawal` = `src/app/receive/__tests__/withdrawal.test.tsx`; plus `route`, `entry`, `limits` and `i18n`.

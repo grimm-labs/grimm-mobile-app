@@ -527,6 +527,7 @@
       "lightningStarting": "The Lightning wallet is starting. Please try again in a moment.",
       "otherNetworkAddress": "This address belongs to another Bitcoin network",
       "otherNetworkInvoice": "This invoice belongs to another Bitcoin network",
+      "unreachable": "Could not reach the recipient. Check your connection and try again.",
       "unsupported": "Sorry, we do not support this Bitcoin or Lightning address"
     },
     "reading": "Reading…"

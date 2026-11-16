@@ -325,7 +325,7 @@ describe('scanner', () => {
     expect(mockShowErrorMessage).toHaveBeenCalledWith('paymentInput.errors.unsupported');
   });
 
-  it('does not scan while the method sheet is open, and scans again once it is closed without a choice', async () => {
+  it('does not scan while the method sheet is open; once it is closed without a choice, waits 3 s before scanning again', async () => {
     jest.useFakeTimers();
     render(<ScanQrScreen />);
 
@@ -336,8 +336,32 @@ describe('scanner', () => {
 
     act(() => fakeBottomSheet.closeWithoutChoice());
 
+    // The QR code is usually still in front of the camera: reading it at once would open the sheet again
+    expect(fakeCamera.isScanning()).toBe(false);
+    act(() => jest.advanceTimersByTime(2999));
+    expect(fakeCamera.isScanning()).toBe(false);
+    act(() => jest.advanceTimersByTime(1));
     expect(fakeCamera.isScanning()).toBe(true);
     expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('after choosing Lightning in the sheet, does not scan until the choice is routed (the Breez parse can take a while)', async () => {
+    jest.useFakeTimers();
+    render(<ScanQrScreen />);
+    await act(() => fakeCamera.scan(`bitcoin:${MAINNET_ADDRESS}?lightning=${INVOICE}`));
+    act(() => jest.advanceTimersByTime(5000));
+    let finishParse: (result: InputType) => void = () => {};
+    fakeBreez.parseInput.mockReturnValueOnce(new Promise<InputType>((resolve) => (finishParse = resolve)));
+
+    await act(async () => fireEvent.press(screen.getByTestId('send-method-lightning')));
+    expect(fakeCamera.isScanning()).toBe(false);
+    // A parse longer than the 3-second pause: still no scanning while it runs
+    act(() => jest.advanceTimersByTime(10_000));
+    expect(fakeCamera.isScanning()).toBe(false);
+
+    await act(async () => finishParse(anInvoice({ bolt11: INVOICE, amountSats: 1000, network: BitcoinNetwork.Bitcoin })));
+    expect(router.push).toHaveBeenCalledTimes(1);
+    expect(fakeCamera.isScanning()).toBe(false);
   });
 
   it('pushes the destination', async () => {
@@ -365,6 +389,21 @@ describe.each([
 
     expect(mockShowErrorMessage).toHaveBeenCalledWith(emptyMessage);
     expect(fakeBreez.parseInput).not.toHaveBeenCalled();
+  });
+
+  it('Breez could not start: a Lightning format says "could not start", not "starting, try again"', async () => {
+    fakeBreez.set({ isBreezInitialized: false, breezError: 'Initialization error' });
+    await pasteAndContinue(LN_ADDRESS);
+
+    expect(mockShowErrorMessage).toHaveBeenCalledWith('paymentInput.errors.lightningFailed');
+    expect(fakeBreez.parseInput).not.toHaveBeenCalled();
+  });
+
+  it('Breez still starting (no error): "starting, try again"', async () => {
+    fakeBreez.set({ isBreezInitialized: false, breezError: null });
+    await pasteAndContinue(LN_ADDRESS);
+
+    expect(mockShowErrorMessage).toHaveBeenCalledWith('paymentInput.errors.lightningStarting');
   });
 
   it('shows the error as a flash message and keeps the input', async () => {

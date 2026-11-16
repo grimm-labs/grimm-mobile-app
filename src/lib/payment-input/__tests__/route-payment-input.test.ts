@@ -220,3 +220,39 @@ describe('routePaymentInput, order of the rules', () => {
     expect(parse).toHaveBeenCalledWith('bc1-not-valid!');
   });
 });
+
+describe('review fixes (2026-11-16)', () => {
+  const parse = parseOf({
+    [INVOICE_WITH_AMOUNT]: anInvoice({ bolt11: INVOICE_WITH_AMOUNT, amountSats: 1000, network: BitcoinNetwork.Bitcoin }),
+    [LN_ADDRESS]: aLightningAddress({ address: LN_ADDRESS }),
+  });
+  const deps = depsFor(AppNetwork.MAINNET, parse);
+
+  it.each(['lightning://', 'LIGHTNING://'])('%s (with slashes, as some apps write it) routes like lightning:', async (prefix) => {
+    expect(await routePaymentInput(`${prefix}${INVOICE_WITH_AMOUNT}`, deps)).toEqual({ kind: 'lightningDetails', rawInvoice: INVOICE_WITH_AMOUNT });
+    expect(parse).toHaveBeenLastCalledWith(INVOICE_WITH_AMOUNT);
+  });
+
+  it('bitcoin:// (with slashes) routes like bitcoin:, with its amount', async () => {
+    expect(await routePaymentInput(`bitcoin://${MAINNET_ADDRESS}?amount=0.0001`, deps)).toEqual({ kind: 'onchainAmount', address: MAINNET_ADDRESS, amountSats: 10_000 });
+  });
+
+  it('a network error while Breez reads a Lightning Address is "unreachable", not "unsupported"', async () => {
+    const networkError = Object.assign(new Error('NetworkError'), { tag: 'NetworkError', inner: ['connection refused'] });
+    const failing: Parse = jest.fn(async (_input: string): Promise<InputType> => {
+      throw networkError;
+    });
+
+    expect(await routePaymentInput(LN_ADDRESS, depsFor(AppNetwork.MAINNET, failing))).toEqual({ kind: 'error', reason: 'unreachable' });
+  });
+
+  it('any other parse error stays "unsupported"', async () => {
+    const invalid = Object.assign(new Error('InvalidInput'), { tag: 'InvalidInput', inner: ['unknown input'] });
+    const failing: Parse = jest.fn(async (_input: string): Promise<InputType> => {
+      throw invalid;
+    });
+
+    expect(await routePaymentInput('not a payment', depsFor(AppNetwork.MAINNET, failing))).toEqual({ kind: 'error', reason: 'unsupported' });
+    expect(await routeLightningInput('not a payment', depsFor(AppNetwork.MAINNET, parse))).toEqual({ kind: 'error', reason: 'unsupported' });
+  });
+});

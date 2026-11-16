@@ -527,6 +527,7 @@
       "lightningStarting": "Le portefeuille Lightning démarre. Veuillez réessayer dans un instant.",
       "otherNetworkAddress": "Cette adresse appartient à un autre réseau Bitcoin",
       "otherNetworkInvoice": "Cette facture appartient à un autre réseau Bitcoin",
+      "unreachable": "Impossible de joindre le destinataire. Vérifiez votre connexion et réessayez.",
       "unsupported": "Désolé, nous ne prenons pas en charge cette adresse Bitcoin ou Lightning"
     },
     "reading": "Lecture…"

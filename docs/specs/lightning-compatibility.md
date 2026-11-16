@@ -174,6 +174,14 @@ This changes three behaviours on purpose: a Bitcoin address pasted on the Lightn
 - The Back button of `/payment-input` reuses `paymentDetails.goBack` ("Go Back"); the spec's table has no label for it.
 - The scanner stops scanning while the method sheet is open, so the camera cannot present it again behind itself.
 
+#### Clarifications decided in review (2026-11-16)
+
+- After the method sheet closes (a choice or none), the scanner waits its 3 seconds again before scanning: the QR code is usually still in front of the camera. After a Lightning choice, the sheet counts as open until the choice is routed.
+- `lightning://` and `bitcoin://` (with slashes, as some apps write them) are read like `lightning:` and `bitcoin:`.
+- A network error during the Breez parse (`SdkError` tag `NetworkError`, for example a Lightning Address whose service cannot be reached) shows "Could not reach the recipient. Check your connection and try again." instead of "unsupported".
+- When Breez failed to start (`breezError`), every entry point says "The Lightning wallet could not start" instead of "starting, try again".
+- `/payment-input` routes a new link that reaches it while it is open, and shows Back while it waits for Breez.
+
 ### Changes
 
 **Native**
@@ -323,6 +331,7 @@ Every key goes in `en.json` and `fr.json`. The French UI uses "vous", says "port
 | This invoice belongs to another Bitcoin network | Cette facture appartient à un autre réseau Bitcoin |
 | The Lightning wallet is starting. Please try again in a moment. | Le portefeuille Lightning démarre. Veuillez réessayer dans un instant. |
 | The Lightning wallet could not start | Le portefeuille Lightning n'a pas pu démarrer |
+| Could not reach the recipient. Check your connection and try again. | Impossible de joindre le destinataire. Vérifiez votre connexion et réessayez. |
 | Reading… | Lecture… |
 | Withdrawal | Retrait |
 | Withdraw | Retirer |
