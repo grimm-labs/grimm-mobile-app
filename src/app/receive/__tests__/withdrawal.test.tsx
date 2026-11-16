@@ -249,7 +249,9 @@ describe('WithdrawalScreen (receive/withdrawal)', () => {
 
       await act(async () => withdraw());
 
-      expect(router.push).toHaveBeenCalledWith({ pathname: '/transaction-result/success-screen', params: { transactionType: 'received', satsAmount: '5000' } });
+      // replace, not push: Back from the result must not return to a spent offer with a live Withdraw button
+      expect(router.replace).toHaveBeenCalledWith({ pathname: '/transaction-result/success-screen', params: { transactionType: 'received', satsAmount: '5000' } });
+      expect(router.push).not.toHaveBeenCalled();
       expect(mockShowErrorMessage).not.toHaveBeenCalled();
     });
 
@@ -262,8 +264,9 @@ describe('WithdrawalScreen (receive/withdrawal)', () => {
 
       await act(async () => withdraw());
 
-      expect(router.push).toHaveBeenCalledWith({ pathname: '/transaction-result/pending-screen', params: { transactionType: 'received', satsAmount: '5000' } });
-      expect(router.push).toHaveBeenCalledTimes(1);
+      expect(router.replace).toHaveBeenCalledWith({ pathname: '/transaction-result/pending-screen', params: { transactionType: 'received', satsAmount: '5000' } });
+      expect(router.replace).toHaveBeenCalledTimes(1);
+      expect(router.push).not.toHaveBeenCalled();
       expect(mockShowErrorMessage).not.toHaveBeenCalled();
     });
 
@@ -279,6 +282,7 @@ describe('WithdrawalScreen (receive/withdrawal)', () => {
 
       expect(mockShowErrorMessage).toHaveBeenCalledWith(WITHDRAW_ERROR);
       expect(router.push).not.toHaveBeenCalled();
+      expect(router.replace).not.toHaveBeenCalled();
       expect(screen.getByTestId('withdrawal-confirm')).toBeEnabled();
     });
 
@@ -292,7 +296,67 @@ describe('WithdrawalScreen (receive/withdrawal)', () => {
       await act(async () => withdraw());
 
       expect(fakeBreez.lnurlWithdraw).toHaveBeenCalledTimes(2);
-      expect(router.push).toHaveBeenCalledWith(expect.objectContaining({ pathname: '/transaction-result/success-screen' }));
+      expect(router.replace).toHaveBeenCalledWith(expect.objectContaining({ pathname: '/transaction-result/success-screen' }));
+    });
+
+    it('leaving while lnurlWithdraw waits: no result screen over wherever the user went', async () => {
+      let finish: (payment: unknown) => void = () => {};
+      fakeBreez.lnurlWithdraw.mockReturnValue(new Promise((resolve) => (finish = resolve)));
+      const view = await renderParsed();
+
+      // A synchronous act: an async one would wait for lnurlWithdraw, which only resolves below
+      act(() => {
+        withdraw();
+      });
+      expect(fakeBreez.lnurlWithdraw).toHaveBeenCalledTimes(1);
+      view.unmount();
+      finish(aPayment({ status: PaymentStatus.Completed, amountSats: 5000 }));
+      await act(async () => {
+        for (let i = 0; i < 20; i++) await Promise.resolve();
+      });
+
+      expect(router.replace).not.toHaveBeenCalled();
+      expect(router.push).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Review fixes (2026-11-16)', () => {
+    it('Breez could not start: "could not start" instead of a spinner that never ends', () => {
+      fakeBreez.set({ isBreezInitialized: false, breezError: 'Initialization error' });
+      renderWithdrawal();
+
+      expect(screen.getByTestId('withdrawal-error')).toHaveTextContent('paymentInput.errors.lightningFailed');
+      expect(screen.queryByTestId('withdrawal-loading')).not.toBeOnTheScreen();
+    });
+
+    it('limits with no whole sat inside (1 500 msat to 1 500 msat) cannot be withdrawn', async () => {
+      fakeBreez.parseInput.mockResolvedValue(anLnurlWithdraw({ minWithdrawableMsat: 1_500n, maxWithdrawableMsat: 1_500n }));
+      renderWithdrawal();
+
+      expect(await screen.findByTestId('withdrawal-error')).toHaveTextContent('paymentInput.errors.unsupported');
+      expect(screen.queryByTestId('withdrawal-confirm')).not.toBeOnTheScreen();
+    });
+
+    it('a network error while reading the offer says the service could not be reached', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockRejectedValue(Object.assign(new Error('NetworkError'), { tag: 'NetworkError', inner: ['timeout'] }));
+      renderWithdrawal();
+
+      expect(await screen.findByTestId('withdrawal-error')).toHaveTextContent('paymentInput.errors.unreachable');
+    });
+
+    it('a parse that succeeds after a failed one shows the offer, not the old error', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      fakeBreez.parseInput.mockRejectedValueOnce(new Error('invalid input'));
+      renderWithdrawal();
+      expect(await screen.findByTestId('withdrawal-error')).toBeOnTheScreen();
+
+      // Breez restarts and the new parse succeeds
+      act(() => fakeBreez.set({ isBreezInitialized: false }));
+      await act(async () => fakeBreez.set({ isBreezInitialized: true }));
+
+      expect(await screen.findByTestId('withdrawal-confirm')).toBeOnTheScreen();
+      expect(screen.queryByTestId('withdrawal-error')).not.toBeOnTheScreen();
     });
   });
 });

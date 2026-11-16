@@ -10,6 +10,8 @@ export function domainOf(url: string): string | null {
   if (!scheme) return null;
 
   const authority = trimmed.slice(scheme[0].length).split(AUTHORITY_END)[0];
-  const host = authority.slice(authority.lastIndexOf('@') + 1).split(':')[0];
+  const hostAndPort = authority.slice(authority.lastIndexOf('@') + 1);
+  // An IPv6 host is in brackets and has colons of its own: [2001:db8::1]:8443
+  const host = hostAndPort.startsWith('[') ? hostAndPort.slice(0, hostAndPort.indexOf(']') + 1) : hostAndPort.split(':')[0];
   return host && !/\s/.test(host) ? host.toLowerCase() : null;
 }

@@ -21,3 +21,14 @@ describe('domainOf', () => {
     expect(domainOf(url)).toBeNull();
   });
 });
+
+describe('domainOf, IPv6 hosts', () => {
+  it('keeps an IPv6 host in brackets, without its port', () => {
+    expect(domainOf('https://[2001:db8::1]:8443/withdraw')).toBe('[2001:db8::1]');
+    expect(domainOf('https://[2001:DB8::1]/withdraw')).toBe('[2001:db8::1]');
+  });
+
+  it('an unclosed bracket is not a domain', () => {
+    expect(domainOf('https://[2001:db8::1/withdraw')).toBeNull();
+  });
+});

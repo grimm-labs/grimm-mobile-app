@@ -40,7 +40,7 @@ const error = (reason: PaymentInputError): PaymentInputRoute => ({ kind: 'error'
 const clean = (text: string) => text.trim().replace(LIGHTNING_PREFIX, '').trim();
 
 // The Breez SDK throws an SdkError; its tag is SdkError_Tags.NetworkError when the service could not be reached
-const isNetworkError = (thrown: unknown) => (thrown as { tag?: unknown } | null)?.tag === 'NetworkError';
+export const isNetworkError = (thrown: unknown) => (thrown as { tag?: unknown } | null)?.tag === 'NetworkError';
 
 /**
  * The rules every entry point applies, in order: empty, Bitcoin URI, Bitcoin address (all three without Breez), then

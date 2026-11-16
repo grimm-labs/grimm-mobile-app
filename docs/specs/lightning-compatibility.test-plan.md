@@ -245,6 +245,20 @@ Short names: `domain` = `src/lib/lightning/__tests__/domain.test.ts`; `request` 
 | testIDs                            | Integration | `withdrawal` selects by `withdrawal-screen`, `withdrawal-domain`, `withdrawal-description`, `withdrawal-amount`, `withdrawal-limits`, `withdrawal-confirm` | green  |
 | Translations                       | Unit        | `i18n` › EN and FR have the same Part 3 keys, with the spec copy                                                                                           | green  |
 
+### Review fixes, Part 3 (2026-11-16)
+
+Each fix was undone on its own to check a test catches it.
+
+| Fix                                                         | Caught by                                                                       |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| The result screen replaces the Withdrawal screen            | `withdrawal` › `Completed` opens the success screen…; a retry after an error…   |
+| Nothing opens if the user left while `lnurlWithdraw` waited | `withdrawal` › leaving while lnurlWithdraw waits…                               |
+| `breezError` shows "could not start"                        | `withdrawal` › Breez could not start…                                           |
+| Limits with no whole sat inside are refused                 | `withdrawal` › limits with no whole sat inside…                                 |
+| A network error shows "could not reach"                     | `withdrawal` › a network error while reading the offer…                         |
+| A new parse clears the previous error                       | `withdrawal` › a parse that succeeds after a failed one shows the offer…        |
+| IPv6 hosts                                                  | `domain` › keeps an IPv6 host in brackets…; an unclosed bracket is not a domain |
+
 ## Part 4: Lightning Login
 
 Short names: `login` = `src/app/__tests__/lightning-login.test.tsx`; plus `route`, `entry` and `i18n`.
