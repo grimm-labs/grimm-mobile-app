@@ -163,14 +163,15 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 - [x] Basic wallet security with secure storage
 - [x] Transaction history and balance display
 - [x] LNURL support (pay, withdraw, auth)
-- [ ] Lightning address support
+- [x] Lightning address support (pay any Lightning address, claim your own `@pay.usegrimm.app` address)
 
 ### Phase 2: On-Chain Bitcoin (In Progress)
 
 - [x] Bitcoin URIs (BIP21): scan, paste or open a `bitcoin:` link, with its amount and its Lightning invoice
-- [ ] Native Bitcoin wallet with bech32 addresses
-- [ ] Custom fee selection and RBF support
-- [ ] Transaction labeling for privacy
+- [x] Native Bitcoin wallet with bech32 addresses (BIP84, powered by BDK)
+- [x] Fee selection (low, medium and fast presets)
+- [ ] Custom fee rate and RBF fee bumping (transactions already signal opt-in RBF)
+- [x] Transaction labeling for privacy (notes stored on the device)
 
 ### Phase 4: Advanced Features
 
