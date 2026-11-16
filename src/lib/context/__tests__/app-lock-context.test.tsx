@@ -267,6 +267,41 @@ describe('AppLockProvider', () => {
       expect(fakeSecureStore.get('appLockFailedAttempts')).toBeNull();
     });
 
+    it('saves the attempt before checking the PIN: killing the app during the check still counts it', async () => {
+      const { result } = await startAppWithPin();
+      await enterWrongPins(result, 4);
+      const { digestStringAsync } = require('@/lib/app-lock/__tests__/helpers/fake-expo-crypto');
+      let finishHash: (hash: string) => void = () => {};
+      digestStringAsync.mockImplementationOnce(() => new Promise<string>((resolve) => (finishHash = resolve)));
+
+      let attempt: Promise<unknown> = Promise.resolve();
+      await act(async () => {
+        attempt = result.current.unlockWithPin(WRONG_PIN);
+        for (let i = 0; i < 20; i++) await Promise.resolve();
+      });
+
+      // The check has not finished: an app killed now restarts with the 5th attempt and its Lockout already saved
+      expect(fakeSecureStore.get('appLockFailedAttempts')).toBe('5');
+      expect(fakeSecureStore.get('appLockLockoutUntil')).not.toBeNull();
+
+      await act(async () => {
+        finishHash('not-the-stored-hash');
+        await attempt;
+      });
+      expect(result.current).toMatchObject({ failedAttempts: 5, isLockedOut: true });
+    });
+
+    it('the right PIN clears the attempt saved before the check', async () => {
+      const { result } = await startAppWithPin();
+      await enterWrongPins(result, 4);
+
+      expect(await act(() => result.current.unlockWithPin(PIN))).toBe('unlocked');
+
+      expect(result.current).toMatchObject({ isLocked: false, failedAttempts: 0, lockoutUntil: null });
+      expect(fakeSecureStore.get('appLockFailedAttempts')).toBeNull();
+      expect(fakeSecureStore.get('appLockLockoutUntil')).toBeNull();
+    });
+
     it('counts wrong PINs and starts a 30 s Lockout at the 5th', async () => {
       const { result } = await startAppWithPin();
 

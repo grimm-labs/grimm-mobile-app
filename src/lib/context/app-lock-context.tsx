@@ -23,6 +23,7 @@ import {
   saveBiometricUnlockEnabled,
   saveFailedAttempts,
   savePin,
+  savePinHash,
   shouldLockOnResume,
   verifyPin,
 } from '@/lib/app-lock';
@@ -204,18 +205,21 @@ export const AppLockProvider = ({ children }: PropsWithChildren) => {
       const current = await refreshLockout();
       if (isLockedOutAt(current.lockoutUntil, Date.now())) return 'lockedOut';
 
+      // Saved as a failed attempt before the check: killing the app during the check cannot skip the count
+      const next = registerFailedAttempt(current.failedAttempts, Date.now());
+      await saveFailedAttempts(next);
+
       if (pinRef.current && (await verifyPin(pin, pinRef.current))) {
-        await resetFailedAttempts();
+        updateLockout(NO_LOCKOUT);
+        await saveFailedAttempts(NO_LOCKOUT);
         onAuthenticated();
         return 'unlocked';
       }
 
-      const next = registerFailedAttempt(lockoutRef.current.failedAttempts, Date.now());
       updateLockout(next);
-      await saveFailedAttempts(next);
       return next.lockoutUntil === null ? 'wrongPin' : 'lockedOut';
     },
-    [onAuthenticated, refreshLockout, resetFailedAttempts, updateLockout],
+    [onAuthenticated, refreshLockout, updateLockout],
   );
 
   const unlockWithBiometrics = useCallback(async () => {
@@ -229,17 +233,22 @@ export const AppLockProvider = ({ children }: PropsWithChildren) => {
   }, [onAuthenticated, resetFailedAttempts, t]);
 
   const setPin = useCallback(
-    async (pin: string) => {
+    async (pin: string, { keepSalt }: { keepSalt: boolean }) => {
       if (!isValidPin(pin)) throw new Error('The PIN must be 6 digits');
-      const salt = createPinSalt();
+      const current = pinRef.current;
+      // A PIN change keeps the salt, so it is a single write: a crash cannot leave a salt that does not match the hash
+      const salt = keepSalt && current ? current.salt : createPinSalt();
       const stored = { hash: await hashPin(pin, salt), salt };
-      await savePin(stored);
+      await (salt === current?.salt ? savePinHash(stored.hash) : savePin(stored));
       pinRef.current = stored;
       await resetFailedAttempts();
       setIsAppLockEnabled(true);
     },
     [resetFailedAttempts],
   );
+
+  const enableAppLock = useCallback((pin: string) => setPin(pin, { keepSalt: false }), [setPin]);
+  const changePin = useCallback((pin: string) => setPin(pin, { keepSalt: true }), [setPin]);
 
   const clearAppLock = useCallback(async () => {
     await deleteAppLockState();
@@ -318,8 +327,8 @@ export const AppLockProvider = ({ children }: PropsWithChildren) => {
       lockoutUntil: lockout.lockoutUntil,
       isLockedOut,
       sensitiveActionPrompt,
-      enableAppLock: setPin,
-      changePin: setPin,
+      enableAppLock,
+      changePin,
       disableAppLock: clearAppLock,
       setBiometricUnlockEnabled,
       unlockWithPin,
@@ -337,7 +346,8 @@ export const AppLockProvider = ({ children }: PropsWithChildren) => {
       lockout,
       isLockedOut,
       sensitiveActionPrompt,
-      setPin,
+      enableAppLock,
+      changePin,
       clearAppLock,
       setBiometricUnlockEnabled,
       unlockWithPin,

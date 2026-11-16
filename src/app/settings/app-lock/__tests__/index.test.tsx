@@ -117,7 +117,7 @@ describe('App Lock settings screen (settings/app-lock)', () => {
     ['app-lock-biometric-switch', 'app-lock-change-pin', 'app-lock-turn-off'].forEach((testID) => expect(screen.queryByTestId(testID)).not.toBeOnTheScreen());
 
     fireEvent.press(screen.getByTestId('app-lock-turn-on'));
-    expect(mockPush).toHaveBeenCalledWith({ pathname: '/settings/app-lock/set-pin', params: { mode: 'create' } });
+    expect(mockPush).toHaveBeenCalledWith('/settings/app-lock/set-pin');
   });
 
   it('App Lock on: offers Biometric Unlock, Change PIN and Turn off App Lock', async () => {
@@ -161,17 +161,13 @@ describe('App Lock settings screen (settings/app-lock)', () => {
     expect(screen.getByText('Not available: this phone has no strong biometrics enrolled')).toBeOnTheScreen();
   });
 
-  it('Change PIN asks for authentication first; cancelling stays on the screen', async () => {
+  it('Change PIN opens the Set PIN screen, which asks for the current PIN itself (no prompt here, so no double prompt)', async () => {
     await openWithAppLockOn();
 
     await press('app-lock-change-pin');
-    expect(isPromptShown()).toBe(true);
-    await press('lock-screen-cancel');
-    expect(mockPush).not.toHaveBeenCalled();
 
-    await press('app-lock-change-pin');
-    await enterPin(PIN);
-    expect(mockPush).toHaveBeenCalledWith({ pathname: '/settings/app-lock/set-pin', params: { mode: 'change' } });
+    expect(isPromptShown()).toBe(false);
+    expect(mockPush).toHaveBeenCalledWith('/settings/app-lock/set-pin');
   });
 
   it('toggling Biometric Unlock asks for authentication; cancelling leaves it unchanged', async () => {

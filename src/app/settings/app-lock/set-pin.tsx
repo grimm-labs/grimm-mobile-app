@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import { Stack, useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -11,15 +11,49 @@ import { Button, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/compone
 import { useAppLock } from '@/lib/context/app-lock-context';
 import { theme } from '@/lib/theme-classes';
 
-type SearchParams = { mode?: 'create' | 'change' };
-
 type Step = 'enter' | 'confirm' | 'biometricOffer';
 
-/** Enter a PIN, then enter it again. `create` turns App Lock on; `change` comes after a Sensitive Action prompt. */
+type Mode = 'pending' | 'create' | 'change';
+
+/**
+ * Which PIN this screen sets, decided once the App Lock state is loaded: without App Lock it creates the PIN; with
+ * App Lock it changes it, after the Sensitive Action prompt. The screen asks itself, as a link can open it directly.
+ */
+const useSetPinMode = () => {
+  const router = useRouter();
+  const { isAppLockLoaded, isAppLockEnabled, authorizeSensitiveAction } = useAppLock();
+  const [mode, setMode] = useState<Mode>('pending');
+
+  useEffect(() => {
+    if (!isAppLockLoaded || mode !== 'pending') return;
+    if (!isAppLockEnabled) {
+      setMode('create');
+      return;
+    }
+    let isActive = true;
+    authorizeSensitiveAction('changePin').then((authorized) => {
+      if (!isActive) return;
+      if (authorized) {
+        setMode('change');
+      } else if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/');
+      }
+    });
+    return () => {
+      isActive = false;
+    };
+  }, [authorizeSensitiveAction, isAppLockEnabled, isAppLockLoaded, mode, router]);
+
+  return mode;
+};
+
+/** Enter a PIN, then enter it again. */
 export default function SetPinScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { mode } = useLocalSearchParams<SearchParams>();
+  const mode = useSetPinMode();
   const isChange = mode === 'change';
   const { enableAppLock, changePin, isBiometricUnlockAvailable } = useAppLock();
   const [step, setStep] = useState<Step>('enter');
@@ -67,7 +101,7 @@ export default function SetPinScreen() {
           }}
         />
         <FocusAwareStatusBar />
-        {step === 'biometricOffer' ? <BiometricOffer onDone={() => router.back()} /> : <PinEntry title={title} hasMismatch={hasMismatch} onComplete={submit} />}
+        {mode === 'pending' ? null : step === 'biometricOffer' ? <BiometricOffer onDone={() => router.back()} /> : <PinEntry title={title} hasMismatch={hasMismatch} onComplete={submit} />}
       </SafeAreaView>
     </SafeAreaProvider>
   );

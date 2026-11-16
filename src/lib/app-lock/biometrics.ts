@@ -1,4 +1,5 @@
 import * as LocalAuthentication from 'expo-local-authentication';
+import { Platform } from 'react-native';
 
 type PromptMessages = { promptMessage: string; cancelLabel: string };
 
@@ -30,5 +31,14 @@ const authenticate = async (options: LocalAuthentication.LocalAuthenticationOpti
 /** Biometric Unlock never falls back to the Device Passcode. */
 export const promptBiometricUnlock = (messages: PromptMessages) => authenticate({ ...messages, disableDeviceFallback: true, biometricsSecurityLevel: 'strong' });
 
-/** The phone's own authentication, used for the Recovery Phrase when App Lock is off: strong biometrics or the Device Passcode. */
-export const promptPhoneAuthentication = (messages: PromptMessages) => authenticate({ ...messages, disableDeviceFallback: false, biometricsSecurityLevel: 'strong' });
+/**
+ * androidx.biometric refuses strong biometrics + Device Passcode on Android 9 and 10 (API 28-29): building that prompt
+ * throws, and expo-local-authentication does not catch it. Only weak biometrics + Device Passcode is allowed there.
+ */
+const isStrongWithPasscodeUnsupported = () => Platform.OS === 'android' && (Platform.Version === 28 || Platform.Version === 29);
+
+/**
+ * The phone's own authentication, used for the Recovery Phrase when App Lock is off: strong biometrics or the Device
+ * Passcode. On Android 9 and 10 any enrolled biometric counts, the only combination with the Device Passcode there.
+ */
+export const promptPhoneAuthentication = (messages: PromptMessages) => authenticate({ ...messages, disableDeviceFallback: false, biometricsSecurityLevel: isStrongWithPasscodeUnsupported() ? 'weak' : 'strong' });

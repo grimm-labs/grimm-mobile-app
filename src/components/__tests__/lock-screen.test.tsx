@@ -15,7 +15,7 @@ import { seedAppLock, startAppWithAppLock } from '@/lib/app-lock/__tests__/helpe
 import { useAppLock } from '@/lib/context/app-lock-context';
 import { act, cleanup, fireEvent, screen, waitFor } from '@/lib/test-utils';
 
-const mockRouter = { push: jest.fn(), replace: jest.fn(), back: jest.fn(), navigate: jest.fn(), dismissAll: jest.fn() };
+const mockRouter = { push: jest.fn(), replace: jest.fn(), back: jest.fn(), navigate: jest.fn(), dismissAll: jest.fn(), canDismiss: jest.fn(() => true) };
 jest.mock('expo-router', () => ({
   useRouter: () => mockRouter,
 }));
@@ -384,6 +384,7 @@ describe('LockScreen', () => {
       expect(fakeSecureStore.snapshot()).toEqual(before);
       expect(appContext.resetAppData).not.toHaveBeenCalled();
       expect(mockRouter.push).not.toHaveBeenCalled();
+      expect(mockRouter.replace).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -401,7 +402,7 @@ describe('LockScreen', () => {
       expect(isLockScreenShown()).toBe(true);
       expect(screen.getByTestId('lock-screen-reset-confirm')).toBeEnabled();
       expect(fakeSecureStore.get('appLockPinHash')).not.toBeNull();
-      expect(mockRouter.push).not.toHaveBeenCalled();
+      expect(mockRouter.replace).not.toHaveBeenCalled();
     });
 
     it('Reset wallet runs the Wallet Reset and shows onboarding', async () => {
@@ -415,7 +416,8 @@ describe('LockScreen', () => {
       expect(mockDisconnectBreez).toHaveBeenCalledTimes(1);
       expect(mockDisconnectBdk).toHaveBeenCalledTimes(1);
       expect(fakeSecureStore.keys()).toEqual([]);
-      expect(mockRouter.push).toHaveBeenCalledWith('/');
+      expect(mockRouter.dismissAll).toHaveBeenCalledTimes(1);
+      expect(mockRouter.replace).toHaveBeenCalledWith('/');
       await waitFor(() => expect(isLockScreenShown()).toBe(false));
     });
   });

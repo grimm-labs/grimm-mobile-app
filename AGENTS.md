@@ -86,7 +86,7 @@ prompts/          template AI prompts (partly stale)
 - `+native-intent.tsx` turns `lightning:<invoice>` links into `/send/transaction-details?rawInvoice=…`. Schemes: `GrimmApp`, `lightning`.
 - **App Lock** (spec: `docs/specs/onchain-amount-fix-and-app-lock.md`, vocabulary: `GLOSSARY.md`) is an optional 6-digit PIN with optional Biometric Unlock. It is a UI gate (ADR 0001): the Recovery Phrase stays stored as before.
   - `LockScreen` is a React Native `Modal` over every route. It never navigates, so the user is back on the same screen after unlocking. It locks at a cold start and after more than 30 s in the `background` state (`inactive` does not count).
-  - Sensitive Actions (viewing the Recovery Phrase, changing the PIN, toggling Biometric Unlock, turning App Lock off) call `useAppLock().authorizeSensitiveAction(kind)` and proceed only when it resolves `true`. A new screen that shows the Recovery Phrase must call it before reading the secure store.
+  - Sensitive Actions (viewing the Recovery Phrase, changing the PIN, toggling Biometric Unlock, turning App Lock off) call `useAppLock().authorizeSensitiveAction(kind)` and proceed only when it resolves `true`. A screen that a link can open protects itself: a new screen that shows the Recovery Phrase must call it before reading the secure store, and `settings/app-lock/set-pin` calls it on mount when App Lock is on.
   - The rules (Lockout schedule, auto-lock, PIN hash, biometrics) are pure functions in `src/lib/app-lock/`.
 - Other privacy features:
   - `PrivacyOverlay` shows the splash image when the app goes to the background.
@@ -108,7 +108,7 @@ prompts/          template AI prompts (partly stale)
 - **App Lock**: expo-secure-store keys `appLockPinHash`, `appLockPinSalt`, `appLockBiometricEnabled`, `appLockFailedAttempts`, `appLockLockoutUntil` (`APP_LOCK_KEYS` in `lib/app-lock/storage.ts`). App Lock is on when `appLockPinHash` exists. Never log the PIN.
 - AsyncStorage keys include `hideBalance`, `preventScreenCapture`, `selectedCountry`, `bitcoinUnit`, `isSeedPhraseBackup`, `appNetwork`, `lnAddress`, `SELECTED_THEME`, `local` (language), `selectedEsploraServer_<network>`, `bdkWalletSnapshot_<network>` and `appLockCardDismissed`. Use the JSON helpers in `lib/storage.tsx`.
 - SQLite `grimm-local.db` (`lib/sqlite`): table `transaction_notes`, with keys `ln:<id>` / `onchain:<txid>`.
-- The Wallet Reset (Sign Out, Forgot PIN) is `useWalletReset()` from `@/lib/hooks/use-wallet-reset` (deliberately not re-exported from `@/lib/hooks`: it pulls in the Breez and BDK contexts). It runs `resetAppData()`, disconnects Breez and BDK, deletes the App Lock keys and `appLockCardDismissed`, then navigates to `/`.
+- The Wallet Reset (Sign Out, Forgot PIN) is `useWalletReset()` from `@/lib/hooks/use-wallet-reset` (deliberately not re-exported from `@/lib/hooks`: it pulls in the Breez and BDK contexts). It runs `resetAppData()`, disconnects Breez and BDK, deletes the App Lock keys and `appLockCardDismissed`, then runs `router.dismissAll()` (when there is a stack) and `router.replace('/')`, so Back cannot return to the deleted wallet's screens.
 - `resetAppData()` does not clear everything. The country, theme, language, network, Esplora server, BDK `.db` file and Breez `spark-data` all survive it.
 
 ### Wallets and networks

@@ -16,8 +16,10 @@ import { act, cleanup, fireEvent, screen } from '@/lib/test-utils';
 import Settings from '../settings';
 
 const mockPush = jest.fn();
+// The Settings tab is the root of the tabs: nothing to dismiss
+const mockRouter = { push: mockPush, replace: jest.fn(), dismissAll: jest.fn(), canDismiss: jest.fn(() => false) };
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => mockRouter,
 }));
 
 const mockDisconnectBreez = jest.fn(async () => {});
@@ -114,6 +116,7 @@ describe('Settings tab', () => {
     expect(mockDisconnectBdk).toHaveBeenCalledTimes(1);
     expect(fakeSecureStore.keys()).toEqual([]);
     expect(await AsyncStorage.getItem('appLockCardDismissed')).toBeNull();
-    expect(mockPush).toHaveBeenCalledWith('/');
+    expect(mockRouter.dismissAll).not.toHaveBeenCalled();
+    expect(mockRouter.replace).toHaveBeenCalledWith('/');
   });
 });

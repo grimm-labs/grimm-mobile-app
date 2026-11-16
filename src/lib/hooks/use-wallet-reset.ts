@@ -10,7 +10,8 @@ import { removeItem } from '@/lib/storage';
 
 /**
  * The Wallet Reset, shared by Sign Out (Settings) and Forgot PIN (Lock Screen): deletes both wallets and the user's
- * wallet data, App Lock included, then goes back to the start (onboarding, as there is no Recovery Phrase any more).
+ * wallet data, App Lock included, then replaces the whole navigation with the start (onboarding, as there is no
+ * Recovery Phrase any more).
  * Not exported from lib/hooks: it pulls in the Breez and BDK contexts.
  */
 export const useWalletReset = () => {
@@ -26,6 +27,8 @@ export const useWalletReset = () => {
     await disconnectBdk();
     await resetAppLock();
     await removeItem(APP_LOCK_CARD_DISMISSED_KEY);
-    router.push('/');
+    // Forgot PIN can run on any screen: drop every screen of the deleted wallet, so Back cannot return to them
+    if (router.canDismiss()) router.dismissAll();
+    router.replace('/');
   }, [resetAppData, disconnectBreez, disconnectBdk, resetAppLock, router]);
 };

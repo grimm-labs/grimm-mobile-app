@@ -75,7 +75,7 @@ App Lock is a UI gate: the Recovery Phrase stays stored as today and the PIN is 
    - If the two entries differ, the screen says so and starts over at the first entry.
    - If the phone supports Biometric Unlock (see "Biometrics" below), the app then offers to turn it on (**Turn on** / **Not now**).
    - Turning Biometric Unlock on, from this offer or from the switch, opens the biometric prompt once (`disableDeviceFallback: true`). It is turned on only if the prompt succeeds. From the switch, this comes after the Sensitive Action prompt (item 4). _Decided 2026-11-01._
-4. Changing the PIN, turning Biometric Unlock on or off, and turning App Lock off are Sensitive Actions (see below). Changing the PIN then asks for the new PIN twice.
+4. Changing the PIN, turning Biometric Unlock on or off, and turning App Lock off are Sensitive Actions (see below). Changing the PIN then asks for the new PIN twice. The set-PIN screen asks for the current PIN itself when App Lock is on, since a link can open it directly; Cancel goes back. _Decided in review, 2026-11-16._
 5. Turning App Lock off deletes the PIN, Biometric Unlock and the Lockout state.
 
 #### Home card
@@ -107,7 +107,7 @@ App Lock is a UI gate: the Recovery Phrase stays stored as today and the PIN is 
 
 #### Wrong PIN and Lockout
 
-16. Wrong PINs are counted, whether typed on the Lock Screen or in a Sensitive Action prompt. A correct PIN or a successful Biometric Unlock resets the count.
+16. Wrong PINs are counted, whether typed on the Lock Screen or in a Sensitive Action prompt. A correct PIN or a successful Biometric Unlock resets the count. Each attempt is saved as a wrong PIN before the check, then cleared if the PIN is right, so killing the app during the check cannot skip the count.
 17. The count and the Lockout survive killing or restarting the app.
 18. Biometric failures do not count: the operating system limits them and the user falls back to the PIN.
 19. The schedule:
@@ -139,7 +139,7 @@ App Lock is a UI gate: the Recovery Phrase stays stored as today and the PIN is 
     - **Forgot PIN?** is shown in prompt mode too.
     - The Android back button cancels the prompt. On the Lock Screen in lock mode, it does nothing.
     - If the app locks (item 9) while a prompt is open, the Sensitive Action resolves `false` and the Lock Screen switches to lock mode.
-27. When App Lock is off, viewing the Recovery Phrase asks for the phone's authentication: strong biometrics, with fallback to the Device Passcode. If the phone has neither, the words are shown as today.
+27. When App Lock is off, viewing the Recovery Phrase asks for the phone's authentication: strong biometrics, with fallback to the Device Passcode. If the phone has neither, the words are shown as today. On Android 9 and 10 (API 28-29), androidx.biometric refuses strong biometrics with the Device Passcode, so this prompt accepts any enrolled biometric there (`biometricsSecurityLevel: 'weak'`). _Decided in review, 2026-11-16._
 28. For the Recovery Phrase, one successful authentication grants access for 5 minutes, or until the app goes to the background. The user authenticates once per backup, not on each of the two screens. Only an authentication asked for the Recovery Phrase grants this access: unlocking the Lock Screen does not. _Decided 2026-11-01._
 29. Cancelling or failing the prompt keeps the protected content hidden. On the Recovery Phrase screens, the app goes back.
 
@@ -160,13 +160,13 @@ App Lock is a UI gate: the Recovery Phrase stays stored as today and the PIN is 
 
 All App Lock state lives in expo-secure-store, next to the Recovery Phrase. On iOS the Keychain survives an uninstall, so App Lock follows the Recovery Phrase if the app is reinstalled.
 
-| Key                       | Content                                                       |
-| ------------------------- | ------------------------------------------------------------- |
-| `appLockPinHash`          | hex SHA-256 of `salt + PIN` (expo-crypto `digestStringAsync`) |
-| `appLockPinSalt`          | 16 random bytes, hex (expo-crypto `getRandomBytes`)           |
-| `appLockBiometricEnabled` | `'true'` or absent                                            |
-| `appLockFailedAttempts`   | number of wrong PINs in a row                                 |
-| `appLockLockoutUntil`     | end of the current Lockout, ms timestamp                      |
+| Key                       | Content                                                                                                              |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `appLockPinHash`          | hex SHA-256 of `salt + PIN` (expo-crypto `digestStringAsync`)                                                        |
+| `appLockPinSalt`          | 16 random bytes, hex (expo-crypto `getRandomBytes`); kept on a PIN change, so a change is a single write of the hash |
+| `appLockBiometricEnabled` | `'true'` or absent                                                                                                   |
+| `appLockFailedAttempts`   | number of wrong PINs in a row                                                                                        |
+| `appLockLockoutUntil`     | end of the current Lockout, ms timestamp                                                                             |
 
 App Lock is on when `appLockPinHash` exists. The home card's dismissed flag is the AsyncStorage key `appLockCardDismissed` (JSON helpers in `lib/storage.tsx`).
 
@@ -202,7 +202,7 @@ A 6-digit PIN hash is trivial to brute-force for someone who can read the secure
 
 **Wallet Reset**
 
-- `src/lib/hooks/use-wallet-reset.ts` runs what `handleLogout` in `(app)/settings.tsx` does today (`resetAppData`, `disconnectBreez`, `disconnectBdk`, navigate to `/`), plus `resetAppLock()` and clearing `appLockCardDismissed`.
+- `src/lib/hooks/use-wallet-reset.ts` runs what `handleLogout` in `(app)/settings.tsx` does today (`resetAppData`, `disconnectBreez`, `disconnectBdk`), plus `resetAppLock()` and clearing `appLockCardDismissed`, then `router.dismissAll()` (when there is a stack) and `router.replace('/')`: Forgot PIN can run on any screen, and Back must not return to the deleted wallet.
 - Settings' Sign Out and the Lock Screen's Forgot PIN both use it.
 
 **Screens**
@@ -214,7 +214,7 @@ A 6-digit PIN hash is trivial to brute-force for someone who can read the secure
   - remove the commented PIN and Face ID code;
   - use `useWalletReset`.
 - `src/app/settings/app-lock/index.tsx`: the management screen.
-- `src/app/settings/app-lock/set-pin.tsx`: enter and confirm a PIN, in `create` or `change` mode.
+- `src/app/settings/app-lock/set-pin.tsx`: enter and confirm a PIN. Without App Lock it creates the PIN; with App Lock it calls `authorizeSensitiveAction('changePin')` first and changes it.
 - `src/app/settings/backup-seed-phrase/recovery-seed-phrase.tsx` and `verify.tsx`: call `authorizeSensitiveAction('recoveryPhrase')` before reading the Recovery Phrase, and go back when it resolves `false`.
 
 **Translations**

@@ -39,11 +39,7 @@ export default function AppLockSettingsScreen() {
               {isAppLockEnabled ? t('appLock.settings.onDescription') : t('appLock.settings.offDescription')}
             </Text>
           </View>
-          {isAppLockEnabled ? (
-            <AppLockOnOptions />
-          ) : (
-            <Button testID="app-lock-turn-on" label={t('appLock.settings.turnOn')} size="lg" fullWidth onPress={() => router.push({ pathname: '/settings/app-lock/set-pin', params: { mode: 'create' } })} />
-          )}
+          {isAppLockEnabled ? <AppLockOnOptions /> : <Button testID="app-lock-turn-on" label={t('appLock.settings.turnOn')} size="lg" fullWidth onPress={() => router.push('/settings/app-lock/set-pin')} />}
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -62,9 +58,8 @@ const AppLockOnOptions = () => {
     if (await authorizeSensitiveAction('biometricUnlock')) await setBiometricUnlockEnabled(!isBiometricUnlockEnabled);
   };
 
-  const changePin = async () => {
-    if (await authorizeSensitiveAction('changePin')) router.push({ pathname: '/settings/app-lock/set-pin', params: { mode: 'change' } });
-  };
+  // The Set PIN screen asks for the current PIN itself (a link can open it too)
+  const changePin = () => router.push('/settings/app-lock/set-pin');
 
   const turnOff = async () => {
     if (await authorizeSensitiveAction('disableAppLock')) await disableAppLock();

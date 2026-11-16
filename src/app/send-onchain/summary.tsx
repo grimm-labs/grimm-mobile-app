@@ -65,13 +65,14 @@ export default function OnchainSummaryTransactionScreen() {
 
   const { selectedCountry, bitcoinUnit } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { wallet, sendTransaction, calculateTransactionFee } = useBdk();
+  const { wallet, isConnected, balance, sendTransaction, calculateTransactionFee } = useBdk();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [estimatedFeeSats, setEstimatedFeeSats] = useState(0);
   const [feeEstimation, setFeeEstimation] = useState<FeeEstimation>('pending');
 
-  // BdkProvider gives a new function on every render (every sync): estimate again only when the transaction changes
+  // BdkProvider gives a new function on every render (every sync): estimate again only when the transaction changes,
+  // or when the indexer connection comes back or a sync changes the balance (a failure there is not final)
   const calculateTransactionFeeRef = useRef(calculateTransactionFee);
   calculateTransactionFeeRef.current = calculateTransactionFee;
 
@@ -152,7 +153,7 @@ export default function OnchainSummaryTransactionScreen() {
     return () => {
       isCancelled = true;
     };
-  }, [recipientAddress, satsValue, feeSatsPerVbyteNum, wallet]);
+  }, [recipientAddress, satsValue, feeSatsPerVbyteNum, wallet, isConnected, balance]);
 
   return (
     <SafeAreaProvider>

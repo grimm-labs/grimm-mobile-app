@@ -15,12 +15,11 @@ import { act, cleanup, fireEvent, screen } from '@/lib/test-utils';
 import SetPinScreen from '../set-pin';
 
 const mockBack = jest.fn();
-let mockMode = 'create';
+const mockRouter = { back: mockBack, push: jest.fn(), replace: jest.fn(), canGoBack: jest.fn(() => true) };
 jest.mock('expo-router', () => {
   const React = require('react');
   return {
-    useRouter: () => ({ back: mockBack, push: jest.fn() }),
-    useLocalSearchParams: () => ({ mode: mockMode }),
+    useRouter: () => mockRouter,
     Stack: { Screen: ({ children }: { children?: React.ReactNode }) => <>{children}</> },
   };
 });
@@ -80,7 +79,6 @@ describe('Set PIN screen (settings/app-lock/set-pin)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockMode = 'create';
     fakeSecureStore.reset();
     fakeLocalAuthentication.reset();
     consoleSpy = spyOnConsole();
@@ -184,12 +182,16 @@ describe('Set PIN screen (settings/app-lock/set-pin)', () => {
     expect(mockBack).toHaveBeenCalledTimes(1);
   });
 
-  it('change: asks for the new PIN twice, then the new PIN unlocks and the old one is refused', async () => {
-    mockMode = 'change';
+  it('change: asks for the current PIN first, then the new PIN twice; the new PIN unlocks and the old one is refused', async () => {
     fakeLocalAuthentication.enrollStrongBiometrics();
     await seedAppLock({ pin: PIN });
     await startAppWithAppLock(<SetPinScreen />);
     await typePin(PIN, 'lock-screen-pin-pad');
+    // Unlocked: the screen itself asks for the current PIN (Sensitive Action prompt, with Cancel)
+    expect(screen.getByTestId('lock-screen-cancel')).toBeOnTheScreen();
+    expect(screen.queryByTestId('app-lock-set-pin-title')).not.toBeOnTheScreen();
+    await typePin(PIN, 'lock-screen-pin-pad');
+    expect(screen.queryByTestId('lock-screen')).not.toBeOnTheScreen();
     expect(title()).toHaveTextContent('Choose your new 6-digit PIN');
 
     await typePin(OTHER_PIN);
@@ -201,10 +203,51 @@ describe('Set PIN screen (settings/app-lock/set-pin)', () => {
 
     // Restart: the old PIN is refused, the new one unlocks
     cleanup();
-    await startAppWithAppLock(<SetPinScreen />);
+    await startAppWithAppLock(<React.Fragment />);
     await typePin(PIN, 'lock-screen-pin-pad');
     expect(screen.getByTestId('lock-screen-error')).toBeOnTheScreen();
     await typePin(OTHER_PIN, 'lock-screen-pin-pad');
     expect(screen.queryByTestId('lock-screen')).not.toBeOnTheScreen();
+  });
+
+  it('change keeps the salt: the new PIN is a single write of the hash', async () => {
+    await seedAppLock({ pin: PIN });
+    await startAppWithAppLock(<SetPinScreen />);
+    await typePin(PIN, 'lock-screen-pin-pad');
+    await typePin(PIN, 'lock-screen-pin-pad');
+    const before = fakeSecureStore.snapshot();
+
+    await typePin(OTHER_PIN);
+    await typePin(OTHER_PIN);
+
+    expect(fakeSecureStore.get('appLockPinSalt')).toBe(before.appLockPinSalt);
+    expect(fakeSecureStore.get('appLockPinHash')).not.toBe(before.appLockPinHash);
+  });
+
+  it('opened by a link while App Lock is on: Cancel on the PIN prompt goes back and keeps the PIN', async () => {
+    await seedAppLock({ pin: PIN });
+    await startAppWithAppLock(<SetPinScreen />);
+    await typePin(PIN, 'lock-screen-pin-pad');
+    const before = fakeSecureStore.snapshot();
+
+    fireEvent.press(screen.getByTestId('lock-screen-cancel'));
+    await flushPromises();
+
+    expect(mockBack).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId('app-lock-set-pin-pad-key-1')).not.toBeOnTheScreen();
+    expect(fakeSecureStore.snapshot()).toEqual(before);
+  });
+
+  it('opened by a link with no screen to go back to: Cancel replaces it with the start', async () => {
+    mockRouter.canGoBack.mockReturnValueOnce(false);
+    await seedAppLock({ pin: PIN });
+    await startAppWithAppLock(<SetPinScreen />);
+    await typePin(PIN, 'lock-screen-pin-pad');
+
+    fireEvent.press(screen.getByTestId('lock-screen-cancel'));
+    await flushPromises();
+
+    expect(mockBack).not.toHaveBeenCalled();
+    expect(mockRouter.replace).toHaveBeenCalledWith('/');
   });
 });

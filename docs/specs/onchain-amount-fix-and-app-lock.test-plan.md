@@ -215,3 +215,18 @@ Each line was changed on its own, the App Lock suites were run, then the line wa
 | Home card ignores App Lock on / dismissed / backed up | `home-card` › exactly one of the 8 combinations; `card` › the matching combination |
 | Storage writes `'0'`; grant valid when the clock moved back; native errors propagate; FR says "wallet"; no plural form | the matching `storage`, `grant`, `biometrics`, `i18n`, `lock-screen` test |
 | Clock-back rule `>` → `>=` | none: equivalent mutant (at equality, restarting gives the same end) |
+
+### Review fixes (2026-11-16)
+
+Found in the review of #254. Each fix has its tests, and each one was undone on its own to check that a test catches it.
+
+| Fix | Tests | Undone, caught by |
+| --- | --- | --- |
+| The set-PIN screen asks for the current PIN itself when App Lock is on (a link can open it) | `set-pin` › change: asks for the current PIN first…; opened by a link while App Lock is on: Cancel … keeps the PIN; … no screen to go back to: Cancel replaces it with the start; `app-lock-screen` › Change PIN opens the Set PIN screen … | skipping the prompt: 4 `set-pin` tests |
+| Phone authentication on Android 9 and 10 asks for `'weak'` (androidx refuses strong + Device Passcode on API 28-29) | `biometrics` › phone authentication on Android 8.1 / 9 / 10 / 11 / iOS …; Biometric Unlock stays strong-only on Android 9 and 10 | `'strong'` on API 28-29: 2 `biometrics` tests |
+| The Wallet Reset drops the navigation stack (`dismissAll`, then `replace('/')`) | `reset` › drops the screens of the deleted wallet…; with no screen to drop … only replaces; `lock-screen` › Reset wallet runs the Wallet Reset … | no `dismissAll`: 2 `reset` tests |
+| The on-chain summary estimates the fee again when the indexer connection comes back or a sync changes the balance | `summary` › estimates again when the indexer connection comes back…; … when a sync changes the balance | without the two deps: 2 `summary` tests |
+| A PIN attempt is saved as wrong before the check, then cleared if right | `ctx` › saves the attempt before checking the PIN…; the right PIN clears the attempt saved before the check | no save before the check: 6 `ctx` tests |
+| A PIN change keeps the salt (one write of the hash) | `set-pin` › change keeps the salt… | a new salt on change: 1 `set-pin` test |
+
+Not changed, on purpose: if reading the App Lock state fails at a cold start, the app opens unlocked (logged). Failing closed would leave Forgot PIN, so a Wallet Reset, as the only way out of a transient keystore error.

@@ -45,10 +45,14 @@ export const readAppLockState = async (): Promise<StoredAppLockState> => {
 
 const setOrDelete = (key: string, value: string | null) => (value === null ? SecureStore.deleteItemAsync(key) : SecureStore.setItemAsync(key, value));
 
+/** The salt first: App Lock is on only once the hash exists, so a crash between the two writes leaves it off. */
 export const savePin = async ({ hash, salt }: StoredPin) => {
   await SecureStore.setItemAsync(APP_LOCK_KEYS.pinSalt, salt);
   await SecureStore.setItemAsync(APP_LOCK_KEYS.pinHash, hash);
 };
+
+/** A PIN change with the same salt: one write, so the stored salt and hash always match. */
+export const savePinHash = (hash: string) => SecureStore.setItemAsync(APP_LOCK_KEYS.pinHash, hash);
 
 export const saveBiometricUnlockEnabled = (enabled: boolean) => setOrDelete(APP_LOCK_KEYS.biometricEnabled, enabled ? 'true' : null);
 

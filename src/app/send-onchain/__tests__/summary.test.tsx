@@ -65,6 +65,8 @@ jest.mock('@/lib/context', () => {
     // Like the real BdkProvider, a new function identity on every render
     useBdk: () => ({
       wallet: mockWallet,
+      isConnected: mockBdkState.isConnected,
+      balance: mockBdkState.balance,
       sendTransaction: (...args: unknown[]) => mockSendTransaction(...args),
       calculateTransactionFee: (...args: unknown[]) => mockCalculateTransactionFee(...args),
     }),
@@ -72,6 +74,7 @@ jest.mock('@/lib/context', () => {
 });
 
 const mockWallet = {};
+const mockBdkState = { isConnected: true, balance: 50_000 };
 
 jest.mock('@/lib/context/bitcoin-prices-context', () => ({
   useBitcoin: () => ({ bitcoinPrices: { BTC: { USD: 50000 } } }),
@@ -119,6 +122,8 @@ async function waitForEstimation() {
 
 beforeEach(() => {
   mockBitcoinUnit = 'SATS';
+  mockBdkState.isConnected = true;
+  mockBdkState.balance = 50_000;
   mockCalculateTransactionFee.mockResolvedValue(1410);
   mockSendTransaction.mockResolvedValue('txid-123');
 });
@@ -206,6 +211,42 @@ describe('OnchainSummaryTransactionScreen (send-onchain/summary)', () => {
       expect(await screen.findByText('onchainSend.summary.errors.insufficientFunds')).toBeOnTheScreen();
       expect(screen.queryByText('onchainSend.summary.errors.feeEstimationFailed')).not.toBeOnTheScreen();
       expect(screen.getByTestId('slide-to-confirm')).toBeDisabled();
+    });
+
+    function rerenderSummary(rerender: (element: React.ReactElement) => void) {
+      const { AppContext } = require('@/lib/context');
+      rerender(
+        <AppContext.Provider value={{ bitcoinUnit: mockBitcoinUnit, selectedCountry: { currency: 'USD' } }}>
+          <OnchainSummaryTransactionScreen />
+        </AppContext.Provider>,
+      );
+    }
+
+    it('estimates again when the indexer connection comes back after a failed estimation', async () => {
+      mockBdkState.isConnected = false;
+      mockCalculateTransactionFee.mockRejectedValueOnce(new Error('Wallet ou blockchain not initialized'));
+      const { rerender } = renderSummary();
+      expect(await screen.findByText('onchainSend.summary.errors.feeEstimationFailed')).toBeOnTheScreen();
+
+      mockBdkState.isConnected = true;
+      rerenderSummary(rerender);
+
+      await waitForEstimation();
+      expect(mockCalculateTransactionFee).toHaveBeenCalledTimes(2);
+      expect(screen.queryByText('onchainSend.summary.errors.feeEstimationFailed')).not.toBeOnTheScreen();
+    });
+
+    it('estimates again when a sync changes the balance (insufficient funds before the first sync)', async () => {
+      mockBdkState.balance = 0;
+      mockCalculateTransactionFee.mockRejectedValueOnce(bdkCreateTxError('InsufficientFunds', { needed: 30000n, available: 0n }));
+      const { rerender } = renderSummary();
+      expect(await screen.findByText('onchainSend.summary.errors.insufficientFunds')).toBeOnTheScreen();
+
+      mockBdkState.balance = 50_000;
+      rerenderSummary(rerender);
+
+      await waitForEstimation();
+      expect(mockCalculateTransactionFee).toHaveBeenCalledTimes(2);
     });
 
     it('shows the generic estimation message and keeps the slider disabled when the estimation fails for another reason', async () => {
