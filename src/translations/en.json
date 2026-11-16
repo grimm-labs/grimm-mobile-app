@@ -22,6 +22,62 @@
     "closeButton": "Close",
     "title": "Bitcoin Address"
   },
+  "appLock": {
+    "biometricPrompt": {
+      "cancel": "Cancel",
+      "enable": "Confirm to turn on biometric unlock",
+      "recoveryPhrase": "Confirm it's you to view your recovery phrase",
+      "unlock": "Unlock Grimm App"
+    },
+    "homeCard": {
+      "close": "Close",
+      "cta": "Turn on App Lock",
+      "description": "Turn on App Lock so that only you can open Grimm App and see your recovery phrase.",
+      "title": "Protect your wallet"
+    },
+    "lockScreen": {
+      "biometric": "Unlock with biometrics",
+      "cancel": "Cancel",
+      "forgotPin": "Forgot PIN?",
+      "lockout": "Too many wrong PINs. Try again in {{time}}.",
+      "nextWrongPinLocksOut": "Wrong PIN. Another wrong PIN starts a longer wait.",
+      "promptSubtitle": "Confirm it's you to continue.",
+      "resetCancel": "Cancel",
+      "resetConfirm": "Reset wallet",
+      "resetDescription": "Your PIN cannot be recovered. The only way forward is to delete your wallet from this phone, then restore it with your recovery phrase. Without your recovery phrase, your funds are lost.",
+      "resetTitle": "Reset your wallet?",
+      "title": "Enter your PIN",
+      "wrongPin": "Wrong PIN. {{count}} attempt left before a 30-second wait.",
+      "wrongPin_plural": "Wrong PIN. {{count}} attempts left before a 30-second wait."
+    },
+    "pinPad": {
+      "delete": "Delete"
+    },
+    "setPin": {
+      "biometricOfferAccept": "Turn on",
+      "biometricOfferDecline": "Not now",
+      "biometricOfferDescription": "Unlock Grimm App with your fingerprint or your face. Your PIN keeps working.",
+      "biometricOfferTitle": "Turn on biometric unlock?",
+      "changeHeaderTitle": "Change PIN",
+      "changeTitle": "Choose your new 6-digit PIN",
+      "confirmTitle": "Enter your PIN again",
+      "createHeaderTitle": "Create a PIN",
+      "createTitle": "Choose a 6-digit PIN",
+      "mismatch": "The PINs do not match. Try again."
+    },
+    "settings": {
+      "biometricUnavailable": "Not available: this phone has no strong biometrics enrolled",
+      "biometricUnlock": "Biometric unlock",
+      "biometricUnlockSubtitle": "Unlock with your fingerprint or your face instead of the PIN",
+      "changePin": "Change PIN",
+      "description": "Hide Grimm App behind a PIN. It is asked when you open the app, and before you view your recovery phrase.",
+      "headerTitle": "App Lock",
+      "offDescription": "App Lock is off. Anyone holding your unlocked phone can open Grimm App.",
+      "onDescription": "App Lock is on.",
+      "turnOff": "Turn off App Lock",
+      "turnOn": "Turn on App Lock"
+    }
+  },
   "bitcoinUnit": {
     "btc": {
       "description": "Standard unit of Bitcoin, 1 BTC = 100,000,000 Satoshis",
@@ -406,6 +462,11 @@
     },
     "summary": {
       "amount": "Amount",
+      "errors": {
+        "feeEstimationFailed": "Unable to estimate the network fee",
+        "insufficientFunds": "Insufficient funds to cover the amount and the network fee",
+        "sendFailed": "The transaction could not be sent. Please try again."
+      },
       "feeSpeed": {
         "fast": "Fast (Priority)",
         "low": "Slow (Economy)",
@@ -610,6 +671,10 @@
       "security": "Security"
     },
     "security": {
+      "appLock": {
+        "subtitle": "PIN and biometric unlock",
+        "title": "App Lock"
+      },
       "backup": {
         "subtitle": "Secure and manage your wallet recovery key",
         "title": "Backup Key"

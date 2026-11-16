@@ -22,6 +22,62 @@
     "closeButton": "Fermer",
     "title": "Adresse Bitcoin"
   },
+  "appLock": {
+    "biometricPrompt": {
+      "cancel": "Annuler",
+      "enable": "Confirmez pour activer le déverrouillage biométrique",
+      "recoveryPhrase": "Confirmez votre identité pour voir votre phrase de récupération",
+      "unlock": "Déverrouiller Grimm App"
+    },
+    "homeCard": {
+      "close": "Fermer",
+      "cta": "Activer le verrouillage de l'app",
+      "description": "Activez le verrouillage de l'app pour être la seule personne à pouvoir ouvrir Grimm App et voir votre phrase de récupération.",
+      "title": "Protégez votre portefeuille"
+    },
+    "lockScreen": {
+      "biometric": "Déverrouiller avec la biométrie",
+      "cancel": "Annuler",
+      "forgotPin": "Code PIN oublié ?",
+      "lockout": "Trop de codes PIN incorrects. Réessayez dans {{time}}.",
+      "nextWrongPinLocksOut": "Code PIN incorrect. Un autre code PIN incorrect entraîne une attente plus longue.",
+      "promptSubtitle": "Confirmez votre identité pour continuer.",
+      "resetCancel": "Annuler",
+      "resetConfirm": "Réinitialiser le portefeuille",
+      "resetDescription": "Votre code PIN ne peut pas être récupéré. La seule solution est de supprimer votre portefeuille de ce téléphone, puis de le restaurer avec votre phrase de récupération. Sans votre phrase de récupération, vos fonds sont perdus.",
+      "resetTitle": "Réinitialiser votre portefeuille ?",
+      "title": "Saisissez votre code PIN",
+      "wrongPin": "Code PIN incorrect. Encore {{count}} essai avant une attente de 30 secondes.",
+      "wrongPin_plural": "Code PIN incorrect. Encore {{count}} essais avant une attente de 30 secondes."
+    },
+    "pinPad": {
+      "delete": "Effacer"
+    },
+    "setPin": {
+      "biometricOfferAccept": "Activer",
+      "biometricOfferDecline": "Plus tard",
+      "biometricOfferDescription": "Déverrouillez Grimm App avec votre empreinte ou votre visage. Votre code PIN reste valable.",
+      "biometricOfferTitle": "Activer le déverrouillage biométrique ?",
+      "changeHeaderTitle": "Modifier le code PIN",
+      "changeTitle": "Choisissez votre nouveau code PIN à 6 chiffres",
+      "confirmTitle": "Saisissez de nouveau votre code PIN",
+      "createHeaderTitle": "Créer un code PIN",
+      "createTitle": "Choisissez un code PIN à 6 chiffres",
+      "mismatch": "Les codes PIN ne correspondent pas. Réessayez."
+    },
+    "settings": {
+      "biometricUnavailable": "Indisponible : aucune biométrie forte n'est enregistrée sur ce téléphone",
+      "biometricUnlock": "Déverrouillage biométrique",
+      "biometricUnlockSubtitle": "Déverrouillez avec votre empreinte ou votre visage au lieu du code PIN",
+      "changePin": "Modifier le code PIN",
+      "description": "Cachez Grimm App derrière un code PIN. Il est demandé à l'ouverture de l'app et avant d'afficher votre phrase de récupération.",
+      "headerTitle": "Verrouillage de l'app",
+      "offDescription": "Le verrouillage de l'app est désactivé. Toute personne qui tient votre téléphone déverrouillé peut ouvrir Grimm App.",
+      "onDescription": "Le verrouillage de l'app est activé.",
+      "turnOff": "Désactiver le verrouillage de l'app",
+      "turnOn": "Activer le verrouillage de l'app"
+    }
+  },
   "bitcoinUnit": {
     "btc": {
       "description": "Unité standard de Bitcoin, 1 BTC = 100 000 000 Satoshis",
@@ -406,6 +462,11 @@
     },
     "summary": {
       "amount": "Montant",
+      "errors": {
+        "feeEstimationFailed": "Impossible d'estimer les frais de réseau",
+        "insufficientFunds": "Fonds insuffisants pour couvrir le montant et les frais de réseau",
+        "sendFailed": "La transaction n'a pas pu être envoyée. Veuillez réessayer."
+      },
       "feeSpeed": {
         "fast": "Rapide (Prioritaire)",
         "low": "Lent (Économique)",
@@ -610,6 +671,10 @@
       "security": "Sécurité"
     },
     "security": {
+      "appLock": {
+        "subtitle": "Code PIN et déverrouillage biométrique",
+        "title": "Verrouillage de l'app"
+      },
       "backup": {
         "subtitle": "Sécurisez et gérez votre clé de récupération de portefeuille",
         "title": "Clé de sauvegarde"

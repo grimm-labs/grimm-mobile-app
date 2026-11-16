@@ -1,0 +1,34 @@
+# From Home: Settings › App Lock › Turn on App Lock, PIN 123456 twice. The emulator has no strong biometrics, so the
+# Biometric Unlock offer is skipped and the App Lock screen comes back with App Lock on.
+appId: ${APP_ID}
+---
+- runFlow:
+    file: open-settings-item.yaml
+    env:
+      ITEM_ID: settings-app-lock
+- extendedWaitUntil:
+    visible:
+      id: 'app-lock-turn-on'
+    timeout: 10000
+- tapOn:
+    id: 'app-lock-turn-on'
+- extendedWaitUntil:
+    visible:
+      id: 'app-lock-set-pin-title'
+    timeout: 10000
+- assertVisible: 'Choose a 6-digit PIN'
+- runFlow:
+    file: enter-pin.yaml
+    env:
+      PIN_PAD: app-lock-set-pin-pad
+      PIN: '123456'
+- assertVisible: 'Enter your PIN again'
+- runFlow:
+    file: enter-pin.yaml
+    env:
+      PIN_PAD: app-lock-set-pin-pad
+      PIN: '123456'
+- extendedWaitUntil:
+    visible:
+      id: 'app-lock-turn-off'
+    timeout: 10000

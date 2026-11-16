@@ -15,11 +15,12 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { APIProvider } from '@/api';
+import { LockScreen } from '@/components/lock-screen';
 import { PrivacyOverlay } from '@/components/privacy-overlay';
 import { ScreenCaptureGuard } from '@/components/screen-capture-guard';
 import { WalletErrorBoundary } from '@/components/wallet-error-boundary';
 import { loadSelectedTheme } from '@/lib';
-import { AppContextProvider, BdkProvider, BitcoinPriceProvider, BreezProvider, NotificationProvider } from '@/lib/context';
+import { AppContextProvider, AppLockProvider, BdkProvider, BitcoinPriceProvider, BreezProvider, NotificationProvider } from '@/lib/context';
 import { useThemeConfig } from '@/lib/use-theme-config';
 
 export { ErrorBoundary } from 'expo-router';
@@ -64,33 +65,37 @@ function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContextProvider>
-      <NotificationProvider>
-        <WalletErrorBoundary name="Lightning (Breez)">
-          <BreezProvider>
-            <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
-              <KeyboardProvider>
-                <ThemeProvider value={theme}>
-                  <APIProvider>
-                    <BitcoinPriceProvider>
-                      <WalletErrorBoundary name="On-chain (BDK)">
-                        <BdkProvider>
-                          <BottomSheetModalProvider>
-                            <ReanimatedKickstart />
-                            <ScreenCaptureGuard />
-                            {children}
-                            <FlashMessage position="top" />
-                          </BottomSheetModalProvider>
-                        </BdkProvider>
-                      </WalletErrorBoundary>
-                    </BitcoinPriceProvider>
-                  </APIProvider>
-                </ThemeProvider>
-              </KeyboardProvider>
-              <PrivacyOverlay />
-            </GestureHandlerRootView>
-          </BreezProvider>
-        </WalletErrorBoundary>
-      </NotificationProvider>
+      <AppLockProvider>
+        <NotificationProvider>
+          <WalletErrorBoundary name="Lightning (Breez)">
+            <BreezProvider>
+              <GestureHandlerRootView style={styles.container} className={theme.dark ? `dark` : undefined}>
+                <KeyboardProvider>
+                  <ThemeProvider value={theme}>
+                    <APIProvider>
+                      <BitcoinPriceProvider>
+                        <WalletErrorBoundary name="On-chain (BDK)">
+                          <BdkProvider>
+                            <BottomSheetModalProvider>
+                              <ReanimatedKickstart />
+                              <ScreenCaptureGuard />
+                              {children}
+                              <FlashMessage position="top" />
+                              {/* Covers every route and sheet; inside the Breez and BDK providers for the Wallet Reset of Forgot PIN */}
+                              <LockScreen />
+                            </BottomSheetModalProvider>
+                          </BdkProvider>
+                        </WalletErrorBoundary>
+                      </BitcoinPriceProvider>
+                    </APIProvider>
+                  </ThemeProvider>
+                </KeyboardProvider>
+                <PrivacyOverlay />
+              </GestureHandlerRootView>
+            </BreezProvider>
+          </WalletErrorBoundary>
+        </NotificationProvider>
+      </AppLockProvider>
     </AppContextProvider>
   );
 }
