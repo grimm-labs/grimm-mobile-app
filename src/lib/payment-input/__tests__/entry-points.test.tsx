@@ -124,7 +124,7 @@ const CASES: Case[] = [
   { name: 'Invoice of another network (Bitcoin on testnet)', input: INVOICE, network: AppNetwork.TESTNET, error: 'paymentInput.errors.otherNetworkInvoice' },
   { name: 'invalid Bitcoin URI', input: `bitcoin:${MAINNET_ADDRESS}?amount=1,5`, error: 'paymentInput.errors.unsupported' },
   { name: 'LNURL-withdraw', input: 'lnurlwithdraw', destination: { pathname: '/receive/withdrawal', params: { paymentInput: 'lnurlwithdraw' } } },
-  { name: 'LNURL-auth (until Part 4)', input: 'lnurlauth', error: 'paymentInput.errors.unsupported' },
+  { name: 'LNURL-auth', input: 'lnurlauth', destination: { pathname: '/lightning-login', params: { paymentInput: 'lnurlauth' } } },
   { name: 'BOLT12 offer', input: 'lno1bolt12offer', error: 'paymentInput.errors.unsupported' },
   { name: 'unknown text', input: 'not-an-invoice', error: 'paymentInput.errors.unsupported' },
 ];
@@ -223,6 +223,7 @@ describe.each(ENTRY_POINTS)('$name', ({ name, navigation, submit, expectError })
       // Opening a Payment Input never pays (P2-20)
       expect(fakeBreez.executeSend).not.toHaveBeenCalled();
       expect(fakeBreez.executeLnurlPay).not.toHaveBeenCalled();
+      expect(fakeBreez.lnurlAuth).not.toHaveBeenCalled();
     });
   });
 

@@ -97,8 +97,9 @@ describe.each([
     expect(await route('LIGHTNING:lnurlwithdraw')).toEqual({ kind: 'withdrawal', paymentInput: 'lnurlwithdraw' });
   });
 
-  it('LNURL-auth → unsupported (replaced in Part 4)', async () => {
-    expect(await route('lnurlauth')).toEqual({ kind: 'error', reason: 'unsupported' });
+  it('LNURL-auth → lightningLogin', async () => {
+    expect(await route('lnurlauth')).toEqual({ kind: 'lightningLogin', paymentInput: 'lnurlauth' });
+    expect(await route('lightning:lnurlauth')).toEqual({ kind: 'lightningLogin', paymentInput: 'lnurlauth' });
   });
 
   it('an address of the other network → otherNetworkAddress', async () => {

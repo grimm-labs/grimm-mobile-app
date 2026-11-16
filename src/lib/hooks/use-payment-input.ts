@@ -24,6 +24,8 @@ function destinationOf(route: PaymentInputRoute): Href | null {
       };
     case 'withdrawal':
       return { pathname: '/receive/withdrawal', params: { paymentInput: route.paymentInput } };
+    case 'lightningLogin':
+      return { pathname: '/lightning-login', params: { paymentInput: route.paymentInput } };
     default:
       return null;
   }

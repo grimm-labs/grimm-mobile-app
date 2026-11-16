@@ -205,6 +205,21 @@
     "header_title": "Languages",
     "info_text": "Language changes will be applied immediately to the interface"
   },
+  "lightningLogin": {
+    "cancel": "Cancel",
+    "confirm": "Sign in",
+    "errors": {
+      "failed": "The sign-in could not be completed. Please try again.",
+      "refused": "{{domain}} refused the sign-in: {{reason}}"
+    },
+    "note": "{{domain}} will receive an identity that Grimm App creates for this website only. It cannot see your funds or your other logins.",
+    "success": "Signed in to {{domain}}",
+    "title": {
+      "link": "Link your account on {{domain}}?",
+      "register": "Create an account on {{domain}}?",
+      "signIn": "Sign in to {{domain}}?"
+    }
+  },
   "lightningPayment": {
     "errors": {
       "invalidInvoice": "Please enter a valid Lightning invoice",
