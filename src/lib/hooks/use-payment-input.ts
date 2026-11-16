@@ -1,4 +1,5 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -8,21 +9,23 @@ import type { PaymentInputDeps, PaymentInputError, PaymentInputRoute } from '@/l
 import { routeLightningInput, routePaymentInput } from '@/lib/payment-input/route-payment-input';
 
 type ChooseMethodRoute = Extract<PaymentInputRoute, { kind: 'chooseMethod' }>;
-type ScreenRoute = Extract<PaymentInputRoute, { kind: 'lightningDetails' | 'lightningAmount' | 'onchainAmount' }>;
-type Go = (href: Parameters<ReturnType<typeof useRouter>['push']>[0]) => void;
 
-/** Opens the screen of a destination. */
-function goToScreen(route: ScreenRoute, go: Go) {
+/** The screen a route leads to; null for the method sheet and the errors. */
+function destinationOf(route: PaymentInputRoute): Href | null {
   switch (route.kind) {
     case 'lightningDetails':
-      return go({ pathname: '/send/transaction-details', params: { rawInvoice: route.rawInvoice } });
+      return { pathname: '/send/transaction-details', params: { rawInvoice: route.rawInvoice } };
     case 'lightningAmount':
-      return go({ pathname: '/send/enter-amount', params: { paymentInput: route.paymentInput } });
+      return { pathname: '/send/enter-amount', params: { paymentInput: route.paymentInput } };
     case 'onchainAmount':
-      return go({
+      return {
         pathname: '/send-onchain/enter-amount',
         params: route.amountSats === undefined ? { recipientAddress: route.address } : { recipientAddress: route.address, amountSats: String(route.amountSats) },
-      });
+      };
+    case 'withdrawal':
+      return { pathname: '/receive/withdrawal', params: { paymentInput: route.paymentInput } };
+    default:
+      return null;
   }
 }
 
@@ -57,19 +60,17 @@ export function usePaymentInput({ navigation, onError, onSheetDismiss }: UsePaym
 
   const handleRoute = useCallback(
     (route: PaymentInputRoute) => {
-      const go: Go = (href) => (navigation === 'push' ? router.push(href) : router.replace(href));
-      switch (route.kind) {
-        case 'chooseMethod':
-          choiceRef.current = route;
-          setIsSheetOpen(true);
-          sheetRef.current?.present();
-          break;
-        case 'error':
-          // "Starting, try again" is wrong once Breez failed: it will not start by itself
-          callbacksRef.current.onError(route.reason === 'lightningNotReady' && breezErrorRef.current ? 'lightningFailed' : route.reason);
-          break;
-        default:
-          goToScreen(route, go);
+      const destination = destinationOf(route);
+      if (destination) {
+        if (navigation === 'push') router.push(destination);
+        else router.replace(destination);
+      } else if (route.kind === 'chooseMethod') {
+        choiceRef.current = route;
+        setIsSheetOpen(true);
+        sheetRef.current?.present();
+      } else if (route.kind === 'error') {
+        // "Starting, try again" is wrong once Breez failed: it will not start by itself
+        callbacksRef.current.onError(route.reason === 'lightningNotReady' && breezErrorRef.current ? 'lightningFailed' : route.reason);
       }
     },
     [navigation, router],

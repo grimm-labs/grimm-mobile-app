@@ -9,6 +9,7 @@ import type {
   InputType,
   ListPaymentsRequest,
   LnurlPayRequestDetails,
+  LnurlWithdrawRequestDetails,
   Payment,
   PrepareLnurlPayResponse,
   PrepareSendPaymentResponse,
@@ -20,6 +21,7 @@ import {
   connect,
   defaultConfig,
   LnurlPayRequest,
+  LnurlWithdrawRequest,
   MaxFee,
   Network,
   PaymentStatus,
@@ -43,6 +45,7 @@ import { logUnclaimedDeposits } from '../breez/unclaimed-deposits-log';
 import { DEFAULT_LN_INVOICE_EXPIRY_SECS, GRIMM_APP_LN_URL_DOMAIN } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { PAYMENT_COMPLETION_TIMEOUT_MS, waitWhilePending } from '../lightning/wait-for-payment';
+import { toWithdrawRequest } from '../lightning/withdrawal-request';
 
 export enum AppNetwork {
   MAINNET = 'mainnet',
@@ -81,6 +84,8 @@ interface BreezContextType {
   prepareLnurlPay: (amountSats: number, payRequest: LnurlPayRequestDetails) => Promise<PrepareLnurlPayResponse>;
   /** Waits up to 60 s for the payment to leave Pending (`lnurlPay` itself returns as soon as it starts). */
   executeLnurlPay: (prepareResponse: PrepareLnurlPayResponse, idempotencyKey?: string) => Promise<Payment | undefined>;
+  /** Asks the service to pay an Invoice for the Amount; resolves with the Payment, or undefined if it is not received after 60 s */
+  lnurlWithdraw: (amountSats: number, withdrawRequest: LnurlWithdrawRequestDetails) => Promise<Payment | undefined>;
   unclaimedDeposits: DepositInfo[];
   listUnclaimedDeposits: () => Promise<DepositInfo[]>;
   refreshUnclaimedDeposits: () => Promise<DepositInfo[]>;
@@ -133,6 +138,9 @@ const defaultContext: BreezContextType = {
     throw new Error('Breez not initialized');
   },
   executeLnurlPay: async () => {
+    throw new Error('Breez not initialized');
+  },
+  lnurlWithdraw: async () => {
     throw new Error('Breez not initialized');
   },
   unclaimedDeposits: [],
@@ -479,6 +487,12 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     });
   }, []);
 
+  const lnurlWithdraw = useCallback(async (amountSats: number, withdrawRequest: LnurlWithdrawRequestDetails): Promise<Payment | undefined> => {
+    if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    const response = await sdkRef.current.lnurlWithdraw(LnurlWithdrawRequest.new(toWithdrawRequest(amountSats, withdrawRequest)));
+    return response.payment;
+  }, []);
+
   const initializeBreez = useCallback(async (): Promise<void> => {
     if (isInitializingRef.current || isBreezInitialized) return;
 
@@ -666,6 +680,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     executeSend,
     prepareLnurlPay,
     executeLnurlPay,
+    lnurlWithdraw,
     unclaimedDeposits,
     listUnclaimedDeposits,
     refreshUnclaimedDeposits,
@@ -684,5 +699,18 @@ export const useBreez = (): BreezContextType => {
 };
 
 // Re-export types and enums that consumers need
-export type { Bolt11InvoiceDetails, DepositInfo, GetInfoResponse, InputType, LnurlPayRequestDetails, Payment, PrepareLnurlPayResponse, PrepareSendPaymentResponse, ReceivePaymentResponse, SendPaymentResponse };
+export type {
+  Bolt11InvoiceDetails,
+  DepositInfo,
+  GetInfoResponse,
+  InputType,
+  LnurlPayRequestDetails,
+  LnurlWithdrawRequest,
+  LnurlWithdrawRequestDetails,
+  Payment,
+  PrepareLnurlPayResponse,
+  PrepareSendPaymentResponse,
+  ReceivePaymentResponse,
+  SendPaymentResponse,
+};
 export { BitcoinNetwork, InputType_Tags, PaymentStatus, PaymentType, SendPaymentMethod_Tags } from '@breeztech/breez-sdk-spark-react-native';

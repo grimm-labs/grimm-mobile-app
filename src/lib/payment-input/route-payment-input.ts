@@ -14,6 +14,7 @@ export type PaymentInputRoute =
   | { kind: 'lightningAmount'; paymentInput: string }
   | ({ kind: 'onchainAmount' } & OnchainDestination)
   | { kind: 'chooseMethod'; onchain: OnchainDestination; lightning: string }
+  | { kind: 'withdrawal'; paymentInput: string }
   | { kind: 'error'; reason: PaymentInputError };
 
 export type PaymentInputDeps = {
@@ -39,7 +40,7 @@ const error = (reason: PaymentInputError): PaymentInputRoute => ({ kind: 'error'
 const clean = (text: string) => text.trim().replace(LIGHTNING_PREFIX, '').trim();
 
 // The Breez SDK throws an SdkError; its tag is SdkError_Tags.NetworkError when the service could not be reached
-const isNetworkError = (thrown: unknown) => (thrown as { tag?: unknown } | null)?.tag === 'NetworkError';
+export const isNetworkError = (thrown: unknown) => (thrown as { tag?: unknown } | null)?.tag === 'NetworkError';
 
 /**
  * The rules every entry point applies, in order: empty, Bitcoin URI, Bitcoin address (all three without Breez), then
@@ -80,6 +81,8 @@ export async function routeLightningInput(text: string, deps: PaymentInputDeps):
     case InputType_Tags.LightningAddress:
     case InputType_Tags.LnurlPay:
       return { kind: 'lightningAmount', paymentInput: input };
+    case InputType_Tags.LnurlWithdraw:
+      return { kind: 'withdrawal', paymentInput: input };
     default:
       // On-chain formats are decided before the Breez parse: a BitcoinAddress or Bip21 result here is unsupported
       return error('unsupported');
