@@ -1,12 +1,16 @@
+jest.mock('bdk-rn', () => require('@/lib/bdk/__tests__/helpers/mock-bdk-rn'));
+
 import React from 'react';
 
-import { cleanup, fireEvent, screen, setup, waitFor } from '@/lib/test-utils';
+import { fakeBreez } from '@/lib/payment-input/__tests__/helpers/fake-breez-context';
+import { fakeRouter } from '@/lib/payment-input/__tests__/helpers/fake-expo-router';
+import { act, cleanup, fireEvent, render, screen } from '@/lib/test-utils';
+
 import LightningPaymentScreen from '../enter-address';
 
-const mockPush = jest.fn();
-const mockBack = jest.fn();
-const mockParseInput = jest.fn();
-const mockShowErrorMessage = jest.fn();
+// The routing of this screen is tested with the other entry points in src/lib/payment-input/__tests__/entry-points.test.tsx
+
+const mockT = (key: string) => key;
 
 jest.mock('react-native-safe-area-context', () => {
   const React = require('react');
@@ -16,6 +20,12 @@ jest.mock('react-native-safe-area-context', () => {
     SafeAreaView: ({ children, ...props }: { children: React.ReactNode }) => <View {...props}>{children}</View>,
     useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
   };
+});
+
+jest.mock('@expo/vector-icons', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return { Ionicons: (props: Record<string, unknown>) => <View {...props} /> };
 });
 
 jest.mock('@expo/vector-icons/Ionicons', () => {
@@ -29,220 +39,58 @@ jest.mock('@/components/ui/focus-aware-status-bar', () => ({
 }));
 
 jest.mock('react-i18next', () => ({
-  initReactI18next: {
-    type: '3rdParty',
-    init: jest.fn(),
-  },
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  initReactI18next: { type: '3rdParty', init: jest.fn() },
+  useTranslation: () => ({ t: mockT }),
 }));
 
 jest.mock('@/lib/i18n', () => ({
   translate: (key: string) => key,
 }));
 
-jest.mock('expo-router', () => {
-  const React = require('react');
-  return {
-    useRouter: () => ({
-      push: mockPush,
-      back: mockBack,
-    }),
-    useLocalSearchParams: () => ({}),
-    Stack: {
-      Screen: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
-    },
-  };
+jest.mock('expo-router', () => require('@/lib/payment-input/__tests__/helpers/fake-expo-router'));
+jest.mock('@/lib/context/breez-context', () => require('@/lib/payment-input/__tests__/helpers/fake-breez-context'));
+
+beforeEach(() => {
+  fakeBreez.reset();
+  fakeRouter.reset();
 });
 
-jest.mock('@/lib/context/breez-context', () => ({
-  useBreez: () => ({
-    parseInput: mockParseInput,
-  }),
-  InputType_Tags: {
-    BitcoinAddress: 'BitcoinAddress',
-    Bolt11Invoice: 'Bolt11Invoice',
-    LnurlPay: 'LnurlPay',
-    LightningAddress: 'LightningAddress',
-  },
-}));
+afterEach(cleanup);
 
-jest.mock('@/components/ui/utils', () => ({
-  showErrorMessage: (...args: unknown[]) => mockShowErrorMessage(...args),
-}));
+describe('LightningPaymentScreen (send/enter-address)', () => {
+  it('renders the input field and button', () => {
+    render(<LightningPaymentScreen />);
 
-afterEach(() => {
-  cleanup();
-  jest.clearAllMocks();
-});
-
-describe('LightningPaymentScreen (enter-address)', () => {
-  describe('Rendering', () => {
-    it('renders the input field and button', () => {
-      setup(<LightningPaymentScreen />);
-
-      expect(screen.getByPlaceholderText('lightningPayment.placeholder')).toBeOnTheScreen();
-      expect(screen.getByText('lightningPayment.payButton')).toBeOnTheScreen();
-    });
+    expect(screen.getByPlaceholderText('lightningPayment.placeholder')).toBeOnTheScreen();
+    expect(screen.getByText('lightningPayment.payButton')).toBeOnTheScreen();
   });
 
-  describe('Empty input', () => {
-    it('shows error when input is empty and button is pressed', async () => {
-      const { user } = setup(<LightningPaymentScreen />);
+  it('updates input value when typing', () => {
+    render(<LightningPaymentScreen />);
+    const input = screen.getByTestId('send-ln-address-input');
 
-      const button = screen.getByText('lightningPayment.payButton');
-      await user.press(button);
+    fireEvent.changeText(input, 'new-input-value');
 
-      expect(mockShowErrorMessage).toHaveBeenCalledWith('lightningPayment.errors.invalidInvoice');
-      expect(mockParseInput).not.toHaveBeenCalled();
-    });
+    expect(input.props.value).toBe('new-input-value');
   });
 
-  describe('Bolt11 Invoice', () => {
-    it('navigates to transaction-details for valid Bolt11 invoice', async () => {
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [{ amountMsat: 5000000n, invoice: { bolt11: 'lnbc1...' } }],
-      });
+  it('is pre-filled with the input param', () => {
+    fakeRouter.setParams({ input: 'alice@pay.usegrimm.app' });
+    render(<LightningPaymentScreen />);
 
-      const { user } = setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
-
-      fireEvent.changeText(input, 'lnbc1...');
-      await user.press(screen.getByText('lightningPayment.payButton'));
-
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith({
-          pathname: '/send/transaction-details',
-          params: { rawInvoice: 'lnbc1...' },
-        });
-      });
-    });
-
-    it('shows error for zero-amount Bolt11 invoice', async () => {
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'Bolt11Invoice',
-        inner: [{ amountMsat: undefined, invoice: { bolt11: 'lnbc1...' } }],
-      });
-
-      const { user } = setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
-
-      fireEvent.changeText(input, 'lnbc1...');
-      await user.press(screen.getByText('lightningPayment.payButton'));
-
-      await waitFor(() => {
-        expect(mockShowErrorMessage).toHaveBeenCalledWith('lightningPayment.errors.zeroAmountNotSupported');
-      });
-      expect(mockPush).not.toHaveBeenCalled();
-    });
+    expect(screen.getByTestId('send-ln-address-input').props.value).toBe('alice@pay.usegrimm.app');
   });
 
-  describe('Lightning Address', () => {
-    it('navigates to enter-amount for LightningAddress type', async () => {
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LightningAddress',
-        inner: [{ address: 'alice@pay.usegrimm.app', payRequest: {} }],
-      });
+  it('shows "Processing..." while the Payment Input is read', async () => {
+    let resolveParse: (value: unknown) => void = () => {};
+    fakeBreez.parseInput.mockReturnValue(new Promise((resolve) => (resolveParse = resolve)));
+    render(<LightningPaymentScreen />);
 
-      const { user } = setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
+    fireEvent.changeText(screen.getByTestId('send-ln-address-input'), 'alice@pay.usegrimm.app');
+    fireEvent.press(screen.getByTestId('send-ln-address-continue'));
 
-      fireEvent.changeText(input, 'alice@pay.usegrimm.app');
-      await user.press(screen.getByText('lightningPayment.payButton'));
-
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith({
-          pathname: '/send/enter-amount',
-          params: { paymentInput: 'alice@pay.usegrimm.app' },
-        });
-      });
-    });
-
-    it('navigates to enter-amount for LnurlPay type', async () => {
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'LnurlPay',
-        inner: [{ callback: 'https://usegrimm.app' }],
-      });
-
-      const { user } = setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
-
-      fireEvent.changeText(input, 'lnurl1...');
-      await user.press(screen.getByText('lightningPayment.payButton'));
-
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith({
-          pathname: '/send/enter-amount',
-          params: { paymentInput: 'lnurl1...' },
-        });
-      });
-    });
-  });
-
-  describe('Bitcoin Address', () => {
-    it('shows error for bitcoin address', async () => {
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'BitcoinAddress',
-        inner: [{ address: 'bc1q...' }],
-      });
-
-      const { user } = setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
-
-      fireEvent.changeText(input, 'bc1q...');
-      await user.press(screen.getByText('lightningPayment.payButton'));
-
-      await waitFor(() => {
-        expect(mockShowErrorMessage).toHaveBeenCalledWith('lightningPayment.errors.bitcoinNotSupported');
-      });
-    });
-  });
-
-  describe('Unsupported input', () => {
-    it('shows error for unsupported address type', async () => {
-      mockParseInput.mockResolvedValueOnce({
-        tag: 'UnknownType',
-        inner: [],
-      });
-
-      const { user } = setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
-
-      fireEvent.changeText(input, 'something-unknown');
-      await user.press(screen.getByText('lightningPayment.payButton'));
-
-      await waitFor(() => {
-        expect(mockShowErrorMessage).toHaveBeenCalledWith('lightningPayment.errors.unsupportedAddress');
-      });
-    });
-  });
-
-  describe('Error handling', () => {
-    it('shows error when parseInput throws', async () => {
-      mockParseInput.mockRejectedValueOnce(new Error('Network error'));
-
-      const { user } = setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
-
-      fireEvent.changeText(input, 'some-invalid-input');
-      await user.press(screen.getByText('lightningPayment.payButton'));
-
-      await waitFor(() => {
-        expect(mockShowErrorMessage).toHaveBeenCalledWith('lightningPayment.errors.preparePaymentFailed');
-      });
-    });
-  });
-
-  describe('Input change', () => {
-    it('updates input value when typing', () => {
-      setup(<LightningPaymentScreen />);
-      const input = screen.getByPlaceholderText('lightningPayment.placeholder');
-
-      fireEvent.changeText(input, 'new-input-value');
-
-      expect(input.props.value).toBe('new-input-value');
-    });
+    expect(await screen.findByText('lightningPayment.processing')).toBeOnTheScreen();
+    await act(async () => resolveParse({ tag: 'LightningAddress', inner: [{ address: 'alice@pay.usegrimm.app', payRequest: {} }] }));
+    expect(screen.getByText('lightningPayment.payButton')).toBeOnTheScreen();
   });
 });

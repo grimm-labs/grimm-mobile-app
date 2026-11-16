@@ -12,9 +12,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
+import { PaymentMethodBottomSheet } from '@/components/modal/payment-method-bottom-sheet';
 import { ScreenTitle } from '@/components/screen-title';
 import { Button, colors, FocusAwareStatusBar, SafeAreaView, showErrorMessage, Text, TouchableOpacity, View } from '@/components/ui';
-import { InputType_Tags, useBreez } from '@/lib/context/breez-context';
+import { usePaymentInput } from '@/lib/hooks/use-payment-input';
+import { paymentInputErrorKey } from '@/lib/payment-input/error-messages';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const SCAN_FRAME_SIZE = screenWidth * 0.6;
@@ -26,9 +28,24 @@ export default function ScanQrScreen() {
   const [flashEnabled, setFlashEnabled] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const router = useRouter();
-  const { parseInput, isBreezInitialized } = useBreez();
+  // Scanning stays paused while the method sheet is open; it resumes once the sheet closes
+  const { routeInput, isSheetOpen, methodSheet } = usePaymentInput({
+    navigation: 'push',
+    onError: (reason) => showErrorMessage(t(paymentInputErrorKey(reason, 'paymentInput.errors.unsupported'))),
+  });
 
   const scanTimeoutRef = useRef<number | null>(null);
+
+  // The same 3-second pause after the method sheet closes: the QR code is often still in front of the camera
+  const wasSheetOpenRef = useRef(false);
+  useEffect(() => {
+    if (wasSheetOpenRef.current && !isSheetOpen) {
+      setIsScanning(false);
+      if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+      scanTimeoutRef.current = setTimeout(() => setIsScanning(true), 3000);
+    }
+    wasSheetOpenRef.current = isSheetOpen;
+  }, [isSheetOpen]);
 
   const checkCameraPermission = useCallback(async () => {
     await requestPermission();
@@ -37,57 +54,6 @@ export default function ScanQrScreen() {
   useEffect(() => {
     checkCameraPermission();
   }, [checkCameraPermission]);
-
-  const handleQrCodeDetected = useCallback(
-    async (qrData: string) => {
-      const trimmed = qrData.trim();
-      if (!trimmed) return;
-
-      if (!isBreezInitialized) {
-        showErrorMessage(t('lightningPayment.errors.preparePaymentFailed'));
-        return;
-      }
-
-      try {
-        const parsed = await parseInput(trimmed);
-
-        if (parsed.tag === InputType_Tags.Bolt11Invoice) {
-          if (parsed.inner[0].amountMsat === undefined) {
-            showErrorMessage(t('lightningPayment.errors.zeroAmountNotSupported'));
-            return;
-          }
-
-          router.push({
-            pathname: '/send/transaction-details',
-            params: {
-              rawInvoice: parsed.inner[0].invoice.bolt11,
-            },
-          });
-          return;
-        }
-
-        if (parsed.tag === InputType_Tags.LightningAddress || parsed.tag === InputType_Tags.LnurlPay) {
-          router.push({
-            pathname: '/send/enter-amount',
-            params: {
-              paymentInput: trimmed,
-            },
-          });
-          return;
-        }
-      } catch (error) {
-        console.error('QR code parsing error:', error);
-      }
-
-      router.push({
-        pathname: '/send/enter-address',
-        params: {
-          input: trimmed,
-        },
-      });
-    },
-    [isBreezInitialized, parseInput, router, t],
-  );
 
   const handleQrCodeScanned = useCallback(
     async ({ data }: { data: string }) => {
@@ -99,13 +65,13 @@ export default function ScanQrScreen() {
         clearTimeout(scanTimeoutRef.current);
       }
 
-      await handleQrCodeDetected(data);
+      await routeInput(data);
 
       scanTimeoutRef.current = setTimeout(() => {
         setIsScanning(true);
       }, 3000);
     },
-    [handleQrCodeDetected, isScanning],
+    [routeInput, isScanning],
   );
 
   useEffect(() => {
@@ -231,7 +197,7 @@ export default function ScanQrScreen() {
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
             }}
-            onBarcodeScanned={isScanning ? handleQrCodeScanned : undefined}
+            onBarcodeScanned={isScanning && !isSheetOpen ? handleQrCodeScanned : undefined}
           />
           {/* CameraView does not support children (expo-camera warns it can crash): the overlay is a sibling drawn on top */}
           <View style={StyleSheet.absoluteFill}>
@@ -327,6 +293,7 @@ export default function ScanQrScreen() {
             </View>
           </View>
         </View>
+        <PaymentMethodBottomSheet ref={methodSheet.ref} mode="send" onSelect={methodSheet.onSelect} onDismiss={methodSheet.onDismiss} />
       </SafeAreaView>
     </SafeAreaProvider>
   );

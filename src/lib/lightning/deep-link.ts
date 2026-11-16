@@ -1,12 +1,9 @@
-const LIGHTNING_SCHEME = 'lightning:';
+// lightning: and bitcoin: links, in any case, as the OS hands them to the app
+const PAYMENT_SCHEME = /^(lightning|bitcoin):/i;
 
-export function extractBolt11FromLightningUri(rawUrl: string): string | null {
-  const trimmed = rawUrl.trim();
-  if (!trimmed.toLowerCase().startsWith(LIGHTNING_SCHEME)) return null;
-
-  const withoutScheme = trimmed.slice(LIGHTNING_SCHEME.length);
-  const invoice = withoutScheme.split('?')[0].trim();
-
-  if (!invoice) return null;
-  return invoice;
+/** The /payment-input path for a lightning: or bitcoin: link (the whole URL, encoded), or null for any other path. */
+export function toPaymentInputPath(url: string): string | null {
+  const trimmed = url.trim();
+  if (!PAYMENT_SCHEME.test(trimmed)) return null;
+  return `/payment-input?input=${encodeURIComponent(trimmed)}`;
 }

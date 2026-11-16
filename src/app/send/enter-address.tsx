@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable max-lines-per-function */
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView } from 'react-native';
@@ -8,9 +8,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
+import { PaymentMethodBottomSheet } from '@/components/modal/payment-method-bottom-sheet';
 import { Button, colors, FocusAwareStatusBar, Input, SafeAreaView, showErrorMessage, View } from '@/components/ui';
-import { useBreez } from '@/lib/context/breez-context';
-import { InputType_Tags } from '@/lib/context/breez-context';
+import { usePaymentInput } from '@/lib/hooks/use-payment-input';
+import { paymentInputErrorKey } from '@/lib/payment-input/error-messages';
 
 const LightningPaymentScreenHeaderTitle = (title: string) => <HeaderTitle title={title} />;
 
@@ -21,8 +22,11 @@ type SearchParams = {
 export default function LightningPaymentScreen() {
   const { t } = useTranslation();
   const { input } = useLocalSearchParams<SearchParams>();
-  const router = useRouter();
-  const { parseInput } = useBreez();
+  const { routeInput, methodSheet } = usePaymentInput({
+    navigation: 'push',
+    // The screen stays as it is, with the input, so the user can correct it
+    onError: (reason) => showErrorMessage(t(paymentInputErrorKey(reason, 'lightningPayment.errors.invalidInvoice'))),
+  });
 
   const [invoiceInput, setInvoiceInput] = useState(input || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,46 +36,9 @@ export default function LightningPaymentScreen() {
   };
 
   const handlePayment = async () => {
-    if (!invoiceInput.trim()) {
-      showErrorMessage(t('lightningPayment.errors.invalidInvoice'));
-      return;
-    }
-
     try {
       setIsLoading(true);
-      const parsed = await parseInput(invoiceInput.trim());
-      switch (parsed.tag) {
-        case InputType_Tags.BitcoinAddress:
-          showErrorMessage(t('lightningPayment.errors.bitcoinNotSupported'));
-          break;
-        case InputType_Tags.Bolt11Invoice:
-          if (parsed.inner[0].amountMsat === undefined) {
-            showErrorMessage(t('lightningPayment.errors.zeroAmountNotSupported'));
-            return;
-          }
-          router.push({
-            pathname: '/send/transaction-details',
-            params: {
-              rawInvoice: parsed.inner[0].invoice.bolt11,
-            },
-          });
-          break;
-        case InputType_Tags.LnurlPay:
-        case InputType_Tags.LightningAddress:
-          router.push({
-            pathname: '/send/enter-amount',
-            params: {
-              paymentInput: invoiceInput.trim(),
-            },
-          });
-          break;
-        default:
-          showErrorMessage(t('lightningPayment.errors.unsupportedAddress'));
-          break;
-      }
-    } catch (error) {
-      console.error('Payment preparation error:', error);
-      showErrorMessage(t('lightningPayment.errors.preparePaymentFailed'));
+      await routeInput(invoiceInput);
     } finally {
       setIsLoading(false);
     }
@@ -121,6 +88,7 @@ export default function LightningPaymentScreen() {
             />
           </View>
         </ScrollView>
+        <PaymentMethodBottomSheet ref={methodSheet.ref} mode="send" onSelect={methodSheet.onSelect} onDismiss={methodSheet.onDismiss} />
       </SafeAreaView>
     </SafeAreaProvider>
   );

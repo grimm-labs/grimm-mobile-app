@@ -1,5 +1,5 @@
 appId: ${APP_ID}
-name: Send via Lightning - input validation
+name: Send via Lightning - input validation and an address pasted on the Lightning screen
 tags:
   - send
   - lightning
@@ -25,8 +25,8 @@ tags:
 - hideKeyboard
 - tapOn:
     id: 'send-ln-address-continue'
-- assertVisible: '(Unable to prepare payment. Invalid address|Sorry, we do not support this Bitcoin or Lightning address)'
-# A Bitcoin address is recognized but can't be paid from the Lightning flow (BIP173 test vector)
+- assertVisible: 'Sorry, we do not support this Bitcoin or Lightning address'
+# A Bitcoin address pasted on the Lightning screen opens the on-chain amount screen (BIP173 test vector)
 - tapOn:
     id: 'send-ln-address-input'
 - eraseText: 30
@@ -34,6 +34,7 @@ tags:
 - hideKeyboard
 - tapOn:
     id: 'send-ln-address-continue'
-- assertVisible: 'Sorry, payment to a Bitcoin address is not supported yet'
-- assertVisible:
-    id: 'send-ln-address-screen'
+- extendedWaitUntil:
+    visible:
+      id: 'send-onchain-amount-screen'
+    timeout: 20000
