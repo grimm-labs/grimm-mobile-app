@@ -64,6 +64,13 @@ Items are numbered per part; a test plan refers to them as `P1-1`, `P2-1`…
 - `src/app/transaction-result/__tests__/pending-screen.test.tsx`: both modes, and the OK button.
 - `src/app/send/__tests__/enter-amount.test.tsx` (extend): the limit boundaries in sats and in BTC, equal limits, Continue disabled while the parse is pending and after it fails, "Send to" for both kinds.
 
+#### Clarifications decided in review (2026-11-16)
+
+- `lnurlPay` has no completion timeout and returns as soon as the payment starts, so a Lightning Address or LNURL-pay send would nearly always come back `Pending`. `executeLnurlPay` reads the payment again every second (`getPayment`) until it leaves `Pending`, for 60 s at most (`waitWhilePending`, `src/lib/lightning/wait-for-payment.ts`), like `completionTimeoutSecs: 60` on `sendPayment`.
+- Every slide on one `send/transaction-details` screen sends with the same `idempotencyKey` (a UUID from expo-crypto), so a retry after an error can never make a second payment, Spark transfers included (item 2).
+- The pending screen sends the hardware back button home too, and turns off the iOS swipe back: the payment screen behind still has its slider.
+- `send/enter-amount` shows `preparePaymentFailed` when Breez could not start (`breezError`), and for limits with no whole sat inside (`hasPayableAmount`). A new parse clears the previous recipient and error.
+
 ## Part 2: Payment Input routing (PR 2)
 
 ### Behaviour

@@ -16,7 +16,7 @@ import { useBitcoin } from '@/lib/context/bitcoin-prices-context';
 import type { InputType } from '@/lib/context/breez-context';
 import { InputType_Tags, useBreez } from '@/lib/context/breez-context';
 import type { SatLimits } from '@/lib/lightning/amount-limits';
-import { isFixedAmount, isWithinLimits, toSatLimits } from '@/lib/lightning/amount-limits';
+import { hasPayableAmount, isFixedAmount, isWithinLimits, toSatLimits } from '@/lib/lightning/amount-limits';
 import { BitcoinUnit } from '@/types/enum';
 
 type SearchParams = {
@@ -30,15 +30,16 @@ type Recipient = {
 
 // What the recipient accepts, read from the Breez parse: undefined for anything this screen cannot pay
 function readRecipient(parsed: InputType): Recipient | undefined {
+  let recipient: Recipient | undefined;
   if (parsed.tag === InputType_Tags.LightningAddress) {
     const { address, payRequest } = parsed.inner[0];
-    return { sendTo: address, limits: toSatLimits(payRequest.minSendable, payRequest.maxSendable) };
-  }
-  if (parsed.tag === InputType_Tags.LnurlPay) {
+    recipient = { sendTo: address, limits: toSatLimits(payRequest.minSendable, payRequest.maxSendable) };
+  } else if (parsed.tag === InputType_Tags.LnurlPay) {
     const payRequest = parsed.inner[0];
-    return { sendTo: payRequest.domain, limits: toSatLimits(payRequest.minSendable, payRequest.maxSendable) };
+    recipient = { sendTo: payRequest.domain, limits: toSatLimits(payRequest.minSendable, payRequest.maxSendable) };
   }
-  return undefined;
+  // Limits with no whole sat inside (for example 1 500 msat to 1 500 msat) cannot be paid
+  return recipient && hasPayableAmount(recipient.limits) ? recipient : undefined;
 }
 
 export default function LightningAddressAmountScreen() {
@@ -47,7 +48,7 @@ export default function LightningAddressAmountScreen() {
   const { paymentInput } = useLocalSearchParams<SearchParams>();
   const { bitcoinUnit, selectedCountry } = useContext(AppContext);
   const { bitcoinPrices } = useBitcoin();
-  const { balance, parseInput, isBreezInitialized } = useBreez();
+  const { balance, parseInput, isBreezInitialized, breezError } = useBreez();
 
   const [amount, setAmount] = useState('0');
   const [fiatAmount, setFiatAmount] = useState('0');
@@ -67,10 +68,12 @@ export default function LightningAddressAmountScreen() {
 
     let cancelled = false;
     const parseRecipient = async () => {
+      setParseFailed(false);
       try {
         const parsed = readRecipient(await parseInput(paymentInput.trim()));
         if (cancelled) return;
         if (!parsed) {
+          setRecipient(undefined);
           setParseFailed(true);
           return;
         }
@@ -81,7 +84,10 @@ export default function LightningAddressAmountScreen() {
         }
       } catch (error) {
         console.error('Error parsing the Lightning recipient:', (error as Error)?.message);
-        if (!cancelled) setParseFailed(true);
+        if (!cancelled) {
+          setRecipient(undefined);
+          setParseFailed(true);
+        }
       }
     };
     parseRecipient();
@@ -155,7 +161,7 @@ export default function LightningAddressAmountScreen() {
               <Text className="ml-2 text-2xl font-light text-gray-400 dark:text-charcoal-500">{bitcoinUnit}</Text>
             </View>
             {validationError && <Text className="mt-2 text-center text-sm text-red-500">{validationError}</Text>}
-            {parseFailed && (
+            {(parseFailed || (!isBreezInitialized && !!breezError)) && (
               <Text testID="send-ln-amount-error" className="mt-2 text-center text-sm text-red-500">
                 {t('lightningPayment.errors.preparePaymentFailed')}
               </Text>

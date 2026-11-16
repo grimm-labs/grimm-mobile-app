@@ -1,4 +1,5 @@
 import React from 'react';
+import { BackHandler } from 'react-native';
 
 import { fakeRouter, router } from '@/lib/payment-input/__tests__/helpers/fake-expo-router';
 import { cleanup, fireEvent, render, screen } from '@/lib/test-utils';
@@ -91,5 +92,26 @@ describe('PendingScreen (transaction-result/pending-screen)', () => {
     expect(router.replace).toHaveBeenCalledWith('/');
     expect(router.dismissAll.mock.invocationCallOrder[0]).toBeLessThan(router.replace.mock.invocationCallOrder[0]);
     expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('the hardware back button goes home too, never back to the payment and its slider', () => {
+    const handlers: (() => boolean)[] = [];
+    const remove = jest.fn();
+    const addListener = jest.spyOn(BackHandler, 'addEventListener').mockImplementation((_event, handler) => {
+      handlers.push(handler as () => boolean);
+      return { remove };
+    });
+    const { unmount } = renderPending({ transactionType: 'sent', satsAmount: '21000' });
+
+    // Like React Native: the last registered handler first, until one handles the press (the test NavigationContainer adds its own)
+    const pressBack = () => [...handlers].reverse().some((handler) => handler());
+    expect(pressBack()).toBe(true);
+    expect(router.dismissAll).toHaveBeenCalledTimes(1);
+    expect(router.replace).toHaveBeenCalledWith('/');
+    expect(router.back).not.toHaveBeenCalled();
+
+    unmount();
+    expect(remove).toHaveBeenCalled();
+    addListener.mockRestore();
   });
 });

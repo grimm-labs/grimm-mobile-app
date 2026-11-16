@@ -189,6 +189,8 @@ describe('LightningAddressAmountScreen (enter-amount)', () => {
     it.each([
       ['a failed parse', () => fakeBreez.parseInput.mockRejectedValue(new Error('invalid input'))],
       ['a parse result that is neither a Lightning Address nor LNURL-pay', () => fakeBreez.parseInput.mockResolvedValue(aBitcoinAddress())],
+      ['limits with no whole sat inside (1 500 msat to 1 500 msat)', () => fakeBreez.parseInput.mockResolvedValue(aLightningAddress({ minSendableMsat: 1_500n, maxSendableMsat: 1_500n }))],
+      ['a sub-sat range (1 100 msat to 1 900 msat)', () => fakeBreez.parseInput.mockResolvedValue(anLnurlPay({ minSendableMsat: 1_100n, maxSendableMsat: 1_900n }))],
     ])('%s shows preparePaymentFailed and Continue stays disabled', async (_case, arrange) => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
       arrange();
@@ -198,6 +200,41 @@ describe('LightningAddressAmountScreen (enter-amount)', () => {
       typeAmount('5');
       expect(screen.getByTestId('send-ln-amount-continue')).toBeDisabled();
       expect(screen.queryByTestId('send-ln-amount-send-to')).not.toBeOnTheScreen();
+    });
+  });
+
+  describe('Breez down or parsed again', () => {
+    it('Breez could not start: shows preparePaymentFailed instead of a Continue that never enables', () => {
+      fakeBreez.set({ isBreezInitialized: false, breezError: 'connect failed' });
+      renderAmount();
+
+      expect(screen.getByTestId('send-ln-amount-error')).toHaveTextContent('lightningPayment.errors.preparePaymentFailed');
+      typeAmount('5');
+      expect(screen.getByTestId('send-ln-amount-continue')).toBeDisabled();
+      expect(fakeBreez.parseInput).not.toHaveBeenCalled();
+    });
+
+    it('Breez starting (no error yet): no message while it waits', () => {
+      fakeBreez.set({ isBreezInitialized: false, breezError: null });
+      renderAmount();
+
+      expect(screen.queryByTestId('send-ln-amount-error')).not.toBeOnTheScreen();
+    });
+
+    it('a parse that fails after a successful one clears the recipient: never both the recipient and the error', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      await renderParsed();
+      expect(screen.getByTestId('send-ln-amount-send-to')).toBeOnTheScreen();
+
+      // Breez restarts and the new parse fails
+      fakeBreez.parseInput.mockRejectedValue(new Error('timeout'));
+      act(() => fakeBreez.set({ isBreezInitialized: false }));
+      act(() => fakeBreez.set({ isBreezInitialized: true }));
+
+      expect(await screen.findByTestId('send-ln-amount-error')).toBeOnTheScreen();
+      expect(screen.queryByTestId('send-ln-amount-send-to')).not.toBeOnTheScreen();
+      typeAmount('5');
+      expect(screen.getByTestId('send-ln-amount-continue')).toBeDisabled();
     });
   });
 

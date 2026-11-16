@@ -1,4 +1,4 @@
-import { isFixedAmount, isWithinLimits, toSatLimits } from '../amount-limits';
+import { hasPayableAmount, isFixedAmount, isWithinLimits, toSatLimits } from '../amount-limits';
 
 describe('amount-limits', () => {
   it('converts a 1 500 msat minimum to 2 sats (rounds up)', () => {
@@ -31,5 +31,13 @@ describe('amount-limits', () => {
     expect(isWithinLimits(21, limits)).toBe(true);
     expect(isWithinLimits(22, limits)).toBe(false);
     expect(isFixedAmount(toSatLimits(21_000n, 22_000n))).toBe(false);
+  });
+
+  it('has a payable amount only when a whole sat fits the limits', () => {
+    expect(hasPayableAmount(toSatLimits(1_000n, 1_000n))).toBe(true);
+    expect(hasPayableAmount(toSatLimits(1_000n, 1_999n))).toBe(true);
+    // 1 500 msat fixed: rounds to 2..1 sats, nothing to pay
+    expect(hasPayableAmount(toSatLimits(1_500n, 1_500n))).toBe(false);
+    expect(hasPayableAmount(toSatLimits(1_100n, 1_900n))).toBe(false);
   });
 });

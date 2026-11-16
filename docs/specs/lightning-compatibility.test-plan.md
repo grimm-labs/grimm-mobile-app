@@ -58,6 +58,19 @@ In `details`, the outcome rows run once per kind of Lightning payment (`describe
 | Translations | Unit | `i18n` › EN and FR have the same Part 1 keys, with the spec copy | green |
 | Translations | Unit | `i18n` › fills in the limits in both languages | green |
 
+### Review fixes (2026-11-16)
+
+Each fix was undone on its own to check a test catches it.
+
+| Fix                                                              | Caught by                                                                     |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| One idempotency key for every slide on the screen                | `details` › {kind}: every slide sends with the same idempotency key (3 tests) |
+| `lnurlPay` waits while the payment is `Pending` (60 s at most)   | `wait` › reads the payment again every second until it completes, and 3 more  |
+| The pending screen sends the hardware back button home           | `pending` › the hardware back button goes home too…                           |
+| `breezError` shows `preparePaymentFailed` on `send/enter-amount` | `ln-amount` › Breez could not start: shows preparePaymentFailed…              |
+| Limits with no whole sat inside are refused                      | `ln-amount` › limits with no whole sat inside…; a sub-sat range…              |
+| A failed new parse clears the old recipient                      | `ln-amount` › a parse that fails after a successful one clears the recipient… |
+
 ## Part 2: Payment Input routing
 
 Short names: `uri` = `src/lib/payment-input/__tests__/bitcoin-uri.test.ts`; `route` = `src/lib/payment-input/__tests__/route-payment-input.test.ts`; `entry` = `src/lib/payment-input/__tests__/entry-points.test.tsx`; `link-route` = `src/app/__tests__/payment-input.test.tsx`; `deep-link` = `src/lib/lightning/__tests__/deep-link.test.ts`; `intent` = `src/app/__tests__/native-intent.test.ts`; `schemes` = `src/lib/payment-input/__tests__/url-schemes.test.ts`; `onchain-amount` = `src/app/send-onchain/__tests__/enter-amount.test.tsx`; `lock-screen` = `src/components/__tests__/lock-screen.test.tsx`; plus `details`, `ln-amount` and `i18n` from Part 1.

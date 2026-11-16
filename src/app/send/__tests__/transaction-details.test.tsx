@@ -7,6 +7,9 @@ import { cleanup, screen, setup, waitFor } from '@/lib/test-utils';
 
 import PaymentDetailsScreen from '../transaction-details';
 
+// The real expo-crypto is native: Node's randomUUID gives real v4 UUIDs
+jest.mock('expo-crypto', () => ({ randomUUID: () => require('crypto').randomUUID() }));
+
 const mockShowErrorMessage = jest.fn();
 const mockT = (key: string) => key;
 
@@ -222,6 +225,21 @@ describe('PaymentDetailsScreen (transaction-details)', () => {
       expect(execute).toHaveBeenCalledTimes(2);
       expect(execute.mock.calls[0][0]).toBe(prepared);
       expect(execute.mock.calls[1][0]).toBe(prepared);
+    });
+
+    it(`${kind}: every slide sends with the same idempotency key (a UUID), so a retry can never pay twice`, async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      execute.mockRejectedValueOnce(new Error('connection lost')).mockResolvedValueOnce(answer(aPayment({ status: PaymentStatus.Completed, amountSats: 1000 })));
+      const { user } = renderDetails(params);
+
+      await slide(user);
+      await waitFor(() => expect(mockShowErrorMessage).toHaveBeenCalledWith(SEND_ERROR));
+      await slide(user);
+
+      await waitFor(() => expect(execute).toHaveBeenCalledTimes(2));
+      const [firstKey, secondKey] = execute.mock.calls.map((call: unknown[]) => call[1]);
+      expect(firstKey).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+      expect(secondKey).toBe(firstKey);
     });
   });
 

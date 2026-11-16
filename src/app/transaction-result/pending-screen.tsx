@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { BackHandler, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { colors, Image, SafeAreaView } from '@/components/ui';
+import { Button, colors, Image, SafeAreaView, Text, View } from '@/components/ui';
 import { formatBalance } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
@@ -29,6 +29,16 @@ export default function PendingScreen() {
     router.replace('/');
   };
 
+  // The hardware back button goes home too: the payment screen behind still has its slider, and the payment is in flight
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      router.dismissAll();
+      router.replace('/');
+      return true;
+    });
+    return () => subscription.remove();
+  }, [router]);
+
   const headerLeft = () => (
     <TouchableOpacity onPress={goHome}>
       <Ionicons name="close-sharp" size={32} color={colors.primary[600]} />
@@ -38,7 +48,7 @@ export default function PendingScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView testID="transaction-pending-screen" className="flex-1 bg-white dark:bg-charcoal-950">
-        <Stack.Screen options={{ headerTitle: '', headerShown: true, headerShadowVisible: false, headerLeft, ...stackScreenOptions }} />
+        <Stack.Screen options={{ headerTitle: '', headerShown: true, headerShadowVisible: false, headerLeft, gestureEnabled: false, ...stackScreenOptions }} />
         <View className="flex-1 items-center justify-center px-6">
           <View className="mb-8 size-24 items-center justify-center rounded-full bg-primary-100">
             <Ionicons name="time-outline" size={56} color={colors.primary[600]} />
@@ -61,9 +71,7 @@ export default function PendingScreen() {
         </View>
 
         <View className="mb-4 px-6">
-          <TouchableOpacity testID="transaction-pending-ok" onPress={goHome} className="items-center rounded-full bg-primary-600 px-6 py-4">
-            <Text className="text-lg font-normal text-white">{t('transaction.okButton')}</Text>
-          </TouchableOpacity>
+          <Button testID="transaction-pending-ok" label={t('transaction.okButton')} size="lg" fullWidth onPress={goHome} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

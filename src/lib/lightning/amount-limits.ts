@@ -18,3 +18,8 @@ export function isWithinLimits(amountSats: number, { minSats, maxSats }: SatLimi
 export function isFixedAmount({ minSats, maxSats }: SatLimits): boolean {
   return minSats === maxSats;
 }
+
+/** False when no whole sat fits the limits (a sub-sat range, or a fractional fixed amount such as 1 500 msat). */
+export function hasPayableAmount({ minSats, maxSats }: SatLimits): boolean {
+  return minSats <= maxSats;
+}
