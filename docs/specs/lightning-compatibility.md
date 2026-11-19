@@ -376,10 +376,10 @@ The flows run against Breez mainnet with an empty wallet, so they cover routing 
 
 ### Part 1
 
-The flow needs a real Lightning Address: `admin-test@pay.usegrimm.app`, registered once by the team from a wallet it keeps, and never paid by the flows. Its LNURL-pay form is `LNURL1DP68GURN8GHJ7URP0YH82UM9VAEXJMTD9ESHQUP09EMK2MRV944KUMMHDCHKCMN4WFK8QTMPV3KKJM3DW3JHXAQJA9KPP` (the bech32 encoding of `https://pay.usegrimm.app/.well-known/lnurlp/admin-test`).
+The flow needs a real Lightning Address: `admin-staging@pay.usegrimm.app`, registered once by the team from a wallet it keeps, and never paid by the flows. Its LNURL-pay form is `LNURL1DP68GURN8GHJ7URP0YH82UM9VAEXJMTD9ESHQUP09EMK2MRV944KUMMHDCHKCMN4WFK8QTMPV3KKJM3DWD6XZEMFDENSNYSMKS` (the bech32 encoding of `https://pay.usegrimm.app/.well-known/lnurlp/admin-staging`).
 
 - `.maestro/send-lightning-address.yaml` (new, tags `send`, `lightning`), from the Lightning paste screen:
-  - the Lightning Address opens `send-ln-amount-screen`, with `Send to admin-test@pay.usegrimm.app` in `send-ln-amount-send-to`, the limits message in `send-ln-amount-limits` from the start, and Continue disabled;
+  - the Lightning Address opens `send-ln-amount-screen`, with `Send to admin-staging@pay.usegrimm.app` in `send-ln-amount-send-to`, the limits message in `send-ln-amount-limits` from the start, and Continue disabled;
   - an Amount of 1 000 sats hides the limits message and shows `send-ln-amount-insufficient` (empty wallet); Continue stays disabled;
   - the LNURL-pay form shows "Send to pay.usegrimm.app".
 - Not reachable without funds: the outcomes of item 1 and the pending screen (manual checklist).
