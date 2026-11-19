@@ -55,6 +55,20 @@ function wrapper({ children }: { children: React.ReactNode }) {
   return <BdkProvider>{children}</BdkProvider>;
 }
 
+/** A sync that stays pending until the test settles it, and rejects like the real one when its signal aborts. */
+function pendingSync() {
+  const controls = { signal: undefined as AbortSignal | undefined, finish: () => {} };
+  mockSyncWalletWithEsplora.mockImplementationOnce(
+    ({ signal }: { signal: AbortSignal }) =>
+      new Promise<void>((resolve, reject) => {
+        controls.signal = signal;
+        controls.finish = resolve;
+        signal.addEventListener('abort', () => reject(new Error('Esplora synchronization aborted')));
+      }),
+  );
+  return controls;
+}
+
 describe('BdkProvider', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -116,6 +130,8 @@ describe('BdkProvider', () => {
     });
 
     await waitFor(() => expect(mockSyncWalletWithEsplora).toHaveBeenCalled());
+    // The sync started by the init must be over: a sync requested while it runs would wait for it instead of running
+    await waitFor(() => expect(result.current.isSyncing).toBe(false));
 
     await act(async () => {
       await result.current.syncWallet(undefined, { skipServerFallback: true, rethrowOnError: true });
@@ -222,6 +238,8 @@ describe('BdkProvider', () => {
     });
 
     await waitFor(() => expect(mockSyncWalletWithEsplora).toHaveBeenCalled());
+    // The sync started by the init must be over: a sync requested while it runs would wait for it instead of running
+    await waitFor(() => expect(result.current.isSyncing).toBe(false));
 
     await act(async () => {
       await result.current.syncWallet(undefined, { rethrowOnError: true });
@@ -233,5 +251,87 @@ describe('BdkProvider', () => {
       expect(result.current.balance).toBe(55000);
       expect(result.current.error).toBeNull();
     });
+  });
+
+  it('runs one sync at a time: a sync requested meanwhile waits for the running one', async () => {
+    const running = pendingSync();
+    const { result } = renderHook(() => useBdk(), { wrapper });
+
+    await act(async () => {
+      await result.current.initializeBdk(true);
+    });
+    await waitFor(() => expect(mockSyncWalletWithEsplora).toHaveBeenCalledTimes(1));
+
+    let waitingSyncsDone = 0;
+    act(() => {
+      void result.current.syncWallet().then(() => waitingSyncsDone++);
+      void result.current.syncWallet().then(() => waitingSyncsDone++);
+    });
+    expect(mockSyncWalletWithEsplora).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      running.finish();
+    });
+    await waitFor(() => expect(waitingSyncsDone).toBe(2));
+    expect(mockSyncWalletWithEsplora).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(result.current.isSyncing).toBe(false));
+
+    await act(async () => {
+      await result.current.syncWallet();
+    });
+    expect(mockSyncWalletWithEsplora).toHaveBeenCalledTimes(2);
+  });
+
+  it('gives the sync a signal, and a reconnection aborts the running sync and starts a new one', async () => {
+    const stale = pendingSync();
+    const { result } = renderHook(() => useBdk(), { wrapper });
+
+    await act(async () => {
+      await result.current.initializeBdk(true);
+    });
+    await waitFor(() => expect(mockSyncWalletWithEsplora).toHaveBeenCalledTimes(1));
+    expect(stale.signal?.aborted).toBe(false);
+
+    await act(async () => {
+      await result.current.initializeBdk(true);
+    });
+
+    expect(stale.signal?.aborted).toBe(true);
+    await waitFor(() => expect(mockSyncWalletWithEsplora).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current.isSyncing).toBe(false));
+    expect(result.current.error).toBeNull();
+    expect(result.current.isConnected).toBe(true);
+  });
+
+  it('aborts the running sync when the wallet disconnects', async () => {
+    const running = pendingSync();
+    const { result } = renderHook(() => useBdk(), { wrapper });
+
+    await act(async () => {
+      await result.current.initializeBdk(true);
+    });
+    await waitFor(() => expect(mockSyncWalletWithEsplora).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      await result.current.disconnectBdk();
+    });
+
+    expect(running.signal?.aborted).toBe(true);
+    expect(result.current.isSyncing).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('ends the syncing state with an error when the sync times out, without switching server', async () => {
+    mockSyncWalletWithEsplora.mockRejectedValueOnce(new Error('The Esplora indexer did not complete the synchronization within 90 s'));
+    const { result } = renderHook(() => useBdk(), { wrapper });
+
+    await act(async () => {
+      await result.current.initializeBdk(true);
+    });
+
+    await waitFor(() => expect(result.current.isSyncing).toBe(false));
+    expect(result.current.error).toContain('did not complete the synchronization');
+    expect(result.current.isConnected).toBe(true);
+    expect(mockConnectEsploraBackend).toHaveBeenCalledTimes(1);
   });
 });

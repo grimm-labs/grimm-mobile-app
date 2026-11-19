@@ -195,10 +195,12 @@ interface BdkState {
   wallet: WalletInterface | null;
 }
 
+type SyncOptions = { rethrowOnError?: boolean; skipServerFallback?: boolean };
+
 interface BdkContextType extends BdkState {
   initializeBdk: (force?: boolean, serverIdOverride?: string | null) => Promise<boolean>;
   retryBdkConnection: () => Promise<void>;
-  syncWallet: (walletParam?: WalletInterface, opts?: { rethrowOnError?: boolean; skipServerFallback?: boolean }) => Promise<void>;
+  syncWallet: (walletParam?: WalletInterface, opts?: SyncOptions) => Promise<void>;
   disconnectBdk: () => Promise<void>;
   sendTransaction: (address: string, amount: number, feeRate: number) => Promise<string>;
   calculateTransactionFee: (address: string, amount: number, feeRate: number) => Promise<number>;
@@ -241,7 +243,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
   const currentNetworkRef = useRef<string | null>(null);
   const isBdkInitializedRef = useRef<boolean>(false);
   const errorRef = useRef<string | null>(null);
+  const runningSyncRef = useRef<{ promise: Promise<void>; controller: AbortController } | null>(null);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
+
+  /** Stops the running sync and cancels its indexer calls: its wallet or indexer is being replaced. */
+  const abortRunningSync = useCallback(() => {
+    runningSyncRef.current?.controller.abort();
+    runningSyncRef.current = null;
+  }, []);
 
   useEffect(() => {
     isBdkInitializedRef.current = state.isBdkInitialized;
@@ -312,6 +321,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     try {
       console.log('Disconnecting BDK...');
 
+      abortRunningSync();
       esploraClientRef.current = null;
 
       esploraBaseUrlRef.current = null;
@@ -341,7 +351,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  }, [updateState, getOnchainNetwork]);
+  }, [abortRunningSync, updateState, getOnchainNetwork]);
 
   const validateWalletAndClient = () => {
     if (!state.wallet || !esploraClientRef.current || !persisterRef.current) {
@@ -403,8 +413,9 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
     return fetchIndexerFeeRates(esploraBaseUrlRef.current);
   };
 
-  const syncWallet = useCallback(
-    async (walletParam?: WalletInterface, opts?: { rethrowOnError?: boolean; skipServerFallback?: boolean }): Promise<void> => {
+  const runSync = useCallback(
+    async (walletParam: WalletInterface | undefined, opts: SyncOptions & { signal: AbortSignal }): Promise<void> => {
+      const { signal } = opts;
       const walletToUse = walletParam || walletRef.current;
       const persisterToUse = persisterRef.current;
 
@@ -423,7 +434,10 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
         updateState({ isSyncing: true });
 
-        await syncWalletWithEsplora(walletToUse, persisterToUse, esploraClientRef.current);
+        await syncWalletWithEsplora({ wallet: walletToUse, persister: persisterToUse, client: esploraClientRef.current, signal });
+        if (signal.aborted) {
+          return;
+        }
         const snapshot = readWalletSnapshot(walletToUse);
         console.log('[BDK sync] Completed', {
           confirmed: snapshot.confirmedBalance,
@@ -443,13 +457,21 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
       try {
         await applySyncResult();
       } catch (error) {
-        const canFallback = !opts?.skipServerFallback && isEsploraRateLimitError(error) && walletToUse;
+        if (signal.aborted) {
+          // Replaced by another sync (reconnection) or stopped by a disconnection: the state is theirs now
+          console.log('[BDK sync] Aborted');
+          return;
+        }
+        const canFallback = !opts.skipServerFallback && isEsploraRateLimitError(error) && walletToUse;
         if (canFallback) {
           const onchainNetwork = getOnchainNetwork();
           const currentId = selectedServerId ?? (await getStoredServerId(onchainNetwork)) ?? getDefaultServerId();
           const fallbackServers = DEFAULT_ESPLORA_SERVERS.filter((server) => server.id !== currentId);
 
           for (const server of fallbackServers) {
+            if (signal.aborted) {
+              return;
+            }
             try {
               console.warn(`[BDK sync] Rate limited on ${currentId} — switching to ${server.id}`);
               const connectResult = await connectEsploraBackend([server], onchainNetwork, { manualSelection: true });
@@ -460,11 +482,14 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
               await applySyncResult();
               return;
             } catch (fallbackError) {
+              if (signal.aborted) {
+                return;
+              }
               if (!isEsploraRateLimitError(fallbackError)) {
                 console.error('Error during synchronization:', fallbackError);
                 const message = formatUnknownError(fallbackError);
                 updateState({ error: message, isSyncing: false });
-                if (opts?.rethrowOnError) {
+                if (opts.rethrowOnError) {
                   throw fallbackError;
                 }
                 return;
@@ -479,12 +504,38 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
           error: message,
           isSyncing: false,
         });
-        if (opts?.rethrowOnError) {
+        if (opts.rethrowOnError) {
           throw error;
         }
       }
     },
     [_getSeedPhrase, disconnectBdk, updateState, getOnchainNetwork, selectedServerId, getStoredServerId, persistServerId],
+  );
+
+  /**
+   * One sync at a time: the 60 s interval used to start a second full scan while the first one was still running
+   * against a slow indexer, doubling the requests to an indexer that was already rate limiting us. A sync requested
+   * while another one runs (interval, pull-to-refresh) waits for the running one instead.
+   * A reconnection or a disconnection aborts the running sync (see abortRunningSync).
+   */
+  const syncWallet = useCallback(
+    (walletParam?: WalletInterface, opts?: SyncOptions): Promise<void> => {
+      const running = runningSyncRef.current;
+      if (running) {
+        console.log('[BDK sync] A synchronization is already running — waiting for it');
+        return running.promise;
+      }
+
+      const controller = new AbortController();
+      const promise = runSync(walletParam, { ...opts, signal: controller.signal }).finally(() => {
+        if (runningSyncRef.current?.controller === controller) {
+          runningSyncRef.current = null;
+        }
+      });
+      runningSyncRef.current = { promise, controller };
+      return promise;
+    },
+    [runSync],
   );
 
   const initializeBdk = useCallback(
@@ -500,6 +551,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
 
       try {
         isInitializingRef.current = true;
+        abortRunningSync();
         updateState({ isSyncing: true, error: null, isConnected: false, isBdkInitialized: false, wallet: null });
 
         esploraClientRef.current = null;
@@ -614,7 +666,7 @@ export const BdkProvider: React.FC<BdkProviderProps> = ({ children }) => {
         isInitializingRef.current = false;
       }
     },
-    [state.isBdkInitialized, updateState, _getSeedPhrase, getOnchainNetwork, network, syncWallet, getStoredServerId, persistServerId],
+    [state.isBdkInitialized, abortRunningSync, updateState, _getSeedPhrase, getOnchainNetwork, network, syncWallet, getStoredServerId, persistServerId],
   );
 
   const setSelectedServer = useCallback(
