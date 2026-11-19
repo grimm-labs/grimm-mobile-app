@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![React Native](https://img.shields.io/badge/React%20Native-0.73-blue.svg)](https://reactnative.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![React Native](https://img.shields.io/badge/React%20Native-0.79-blue.svg)](https://reactnative.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
 
 <h1 align="center">
   <img alt="Grimm App Logo" src="./assets/icon.png" width="124px" style="border-radius:10px"/>
@@ -6,7 +6,7 @@
 
 Grimm App is a self-custodial Bitcoin wallet that empowers users to take full control of their Bitcoin while maintaining ease of use. Built on the principle that "not your keys, not your coins," Grimm App ensures that you—and only you—have access to your funds at all times.
 
-Currently supporting Lightning payments via the Breez SDK Spark, Grimm App is actively expanding to include comprehensive on-chain Bitcoin capabilities. Our mission is to create a wallet that serves both newcomers to Bitcoin and experienced users who demand advanced features and maximum control.
+Grimm App holds two wallets backed by the same 12-word recovery phrase: a Lightning wallet for instant, low-fee payments, powered by the Breez SDK Spark, and an on-chain Bitcoin wallet, powered by BDK. Our mission is to create a wallet that serves both newcomers to Bitcoin and experienced users who demand advanced features and maximum control.
 
 Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and trustless. We believe that financial sovereignty should be accessible to everyone, and that transparency in code is essential for building trust in Bitcoin software.
 
@@ -20,7 +20,7 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 
 **Lightning Native**: Experience instant Bitcoin payments with minimal fees through our Lightning Network integration powered by Breez SDK Spark. Send and receive payments in seconds, not hours.
 
-**Future-Ready**: With upcoming support for on-chain Bitcoin, Grimm App is designed to be your all-in-one Bitcoin solution, capable of handling everything from small everyday payments to large, secure transfers.
+**Lightning and On-Chain**: One recovery phrase gives you a Lightning wallet for everyday payments and an on-chain wallet for larger transfers, so Grimm App handles everything from small purchases to large, secure transfers.
 
 **Privacy-Focused**: We don't collect user data, don't require KYC, and implement best practices for maintaining your financial privacy.
 
@@ -36,6 +36,12 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 - Minimal transaction fees, typically less than a penny
 - Perfect for everyday purchases and micro-transactions
 - QR code scanning for easy payment initiation
+- Invoices with an amount, a description and an adjustable expiry
+
+**Lightning Addresses and LNURL**
+
+- Pay any Lightning address, and claim your own `@pay.usegrimm.app` address to receive payments
+- LNURL-pay, LNURL-withdraw (pull funds from a service or a voucher) and LNURL-auth (Lightning Login: sign in to a website without a password, with an identity that only works for that website)
 
 **Lightning Benefits**
 
@@ -44,6 +50,18 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 - Enhanced privacy through payment channel routing
 - Scalable solution for global Bitcoin adoption
 
+### On-Chain Bitcoin (BDK)
+
+- Native SegWit (bech32) addresses, derived with BIP84
+- Low, medium and fast fee presets, with the fees shown before you confirm
+- Choose the Esplora server the wallet syncs with; the wallet switches to another server when one is overloaded
+
+### Payment Links and QR Codes
+
+- Scan or paste an invoice, a Lightning address, an LNURL, a Bitcoin address or a Bitcoin URI (BIP21): Grimm App opens the right wallet
+- Open `lightning:` and `bitcoin:` links from other apps and websites
+- When a Bitcoin URI also carries a Lightning invoice, choose to pay over Lightning or on-chain
+
 ### Wallet Basics
 
 **Non-Custodial Architecture**
@@ -51,13 +69,18 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 - Private keys generated securely on your device using industry-standard cryptographic libraries
 - Keys never transmitted over the network or stored on external servers
 - You maintain complete control over your Bitcoin at all times
+- Create a new wallet or restore one from its 12-word recovery phrase (BIP39)
+- Back up the recovery phrase, then confirm the backup with a verification step
 
 **User-Friendly Interface**
 
 - Clean, intuitive design suitable for both beginners and experts
 - Clear transaction history with detailed information
+- Private notes on transactions, stored only on your device
 - Real-time balance updates
-- Support for both Bitcoin and Satoshi denominations
+- Amounts in bitcoin or sats, with their value in your local currency (more than 100 fiat currencies)
+- Push notifications for important transactions and security updates
+- English and French, with a light, dark or system theme
 
 ### Wallet Security
 
@@ -65,12 +88,21 @@ Following the cypherpunk ethos, Grimm App is fully open-source, auditable, and t
 
 - Private keys stored in platform-specific secure storage (Keychain on iOS, Keystore on Android)
 - Keys only accessed when absolutely necessary (signing transactions, viewing backup)
+- App Lock: an optional 6-digit PIN with biometric unlock. The app locks when it starts and after 30 seconds in the background, and makes you wait longer and longer after 5 wrong PINs in a row
+- Viewing the recovery phrase and changing the App Lock settings ask you to authenticate first
+
+**Privacy**
+
+- Hide your balance
+- Block screenshots and screen recordings
+- Hide the app's content in the app switcher
 
 ## Core Dependencies and Technology Stack
 
 ### Bitcoin and Lightning
 
 - **[Breez SDK Spark](https://github.com/breez/spark-sdk)**: Lightning Network implementation (used for all Lightning features)
+- **[BDK](https://bitcoindevkit.org)**: on-chain Bitcoin wallet (descriptors, signing and Esplora sync)
 
 ### Mobile Development
 
@@ -155,7 +187,7 @@ pnpm run android
 
 Suggestions and contributions to this roadmap are welcome through GitHub issues and discussions.
 
-### Phase 1: Lightning Foundation (Current)
+### Phase 1: Foundation (Done)
 
 - [x] Lightning Network integration via Breez SDK Spark
 - [x] Send and receive Lightning payments
@@ -164,6 +196,10 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 - [x] Transaction history and balance display
 - [x] LNURL support (pay, withdraw, auth)
 - [x] Lightning address support (pay any Lightning address, claim your own `@pay.usegrimm.app` address)
+- [x] Recovery phrase backup with a verification step
+- [x] Amounts in bitcoin or sats, with prices in more than 100 fiat currencies
+- [x] Push notifications
+- [x] English and French, light and dark themes
 
 ### Phase 2: On-Chain Bitcoin (In Progress)
 
@@ -173,21 +209,22 @@ Suggestions and contributions to this roadmap are welcome through GitHub issues 
 - [ ] Custom fee rate and RBF fee bumping (transactions already signal opt-in RBF)
 - [x] Transaction labeling for privacy (notes stored on the device)
 
-### Phase 4: Advanced Features
+### Phase 3: Advanced Features
 
 - [ ] Watch-only wallet support
 - [ ] Hardware wallet integration (Coldcard, Ledger, Trezor)
 - [ ] Multi-signature wallet support (future)
 
-### Phase 5: Privacy and Security Enhancements
+### Phase 4: Privacy and Security Enhancements
 
 - [ ] Tor support for network privacy
 - [ ] Coin mixing integration (Whirlpool, JoinMarket)
 - [ ] Encrypted cloud backups with key server
-- [x] Biometric authentication
+- [x] App Lock with a 6-digit PIN and biometric authentication
+- [x] Hide the balance, block screenshots and hide the app's content in the app switcher
 - [ ] Enhanced transaction privacy features
 
-### Phase 6: Integration and Interoperability
+### Phase 5: Integration and Interoperability
 
 - [ ] BOLT12 offers support
 - [ ] Nostr integration for social payments
