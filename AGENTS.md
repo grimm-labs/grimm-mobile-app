@@ -104,7 +104,7 @@ prompts/          template AI prompts (partly stale)
 | `lib/context/app-lock-context.tsx` (`useAppLock`) | `isAppLockLoaded`, `isAppLockEnabled`, `isLocked`, Biometric Unlock state, `failedAttempts`/`lockoutUntil`/`isLockedOut`, the PIN actions, `authorizeSensitiveAction(kind)`, `resetAppLock()` |
 | `lib/context/app-context-provider.tsx` (`AppContext`, `useAppContext`) | `hasSeedPhrase`, `isDataLoaded`, `hideBalance`, `preventScreenCapture`, `selectedCountry` (default Cameroon/XAF), `bitcoinUnit`, `isSeedPhraseBackup`, `resetAppData()` |
 | `lib/context/breez-context.tsx` (`useBreez`) | Breez SDK lifecycle, balances, payments, LN address, unclaimed deposits, `network` (`AppNetwork.MAINNET/TESTNET`), polls every 10 s |
-| `lib/context/bdk-context.tsx` (`useBdk`) | BDK wallet lifecycle, Esplora server selection/fallback, sync every 60 s, send/fee estimation, cached snapshot |
+| `lib/context/bdk-context.tsx` (`useBdk`) | BDK wallet lifecycle, Esplora server selection/fallback, sync every 60 s (one at a time; a reconnection aborts the running one), send/fee estimation, cached snapshot |
 | `lib/context/bitcoin-prices-context.tsx` (`useBitcoin`) | Yadio prices, polled every 20 s while the app is active |
 | `lib/context/notification-context.tsx` (`useNotifications`) | Permission status, device registration with the notification service |
 
@@ -120,6 +120,7 @@ prompts/          template AI prompts (partly stale)
 - The UI exposes `mainnet` and `testnet`. **Testnet means Breez `Regtest` and BDK `Network.Testnet`.** The Esplora testnet URLs in `lib/constant.ts` mix testnet4 and testnet3 servers. Check this before touching network code.
 - Esplora servers are listed in `DEFAULT_ESPLORA_SERVERS` (`lib/constant.ts`), with the default server first. On HTTP 429 the app falls back to the other servers.
 - BDK wallet DB: `${documentDirectory}bdk-wallet-<network enum>.db`. `estimateTransactionFee` builds and signs a real transaction to measure its size.
+- The native Esplora client has no timeout. `syncWalletWithEsplora` (`lib/bdk/esplora.ts`) gives a sync a deadline (90 s for a wallet's first sync, which runs the full scan, 60 s after that), then cancels the native calls through their `AbortSignal` and never applies a late answer. A timeout is a sync error (banner, retried by the next tick), not a reason to switch indexer: only HTTP 429 does that.
 - `bdk-rn` is imported at module load by `BdkProvider`. Its native library exists **only for `arm64-v8a`** on Android (see "Gotchas").
 
 ### API and environment variables
@@ -223,7 +224,7 @@ In CI, `e2e-android.yml` is the only E2E pipeline (we don't use Maestro Cloud). 
 
 - Job 1 builds a **staging release APK for `arm64-v8a` only** with `.github/actions/setup-jdk-generate-apk`.
 - Job 2 runs the flows on a GitHub-hosted emulator: API 35 `google_apis` x86_64 with KVM, which translates ARM code. The emulator has 3 cores and an emulated back camera, and system error dialogs are hidden.
-- Reports go in the `e2e-android-report` artifact: JUnit, Maestro debug output, and logcat on failure.
+- Reports go in the `e2e-android-report` artifact: JUnit, Maestro debug output, `logcat-app.txt` (the app's logs for the whole run: JS console, crashes, ANRs; start there) and, on failure, `logcat.txt` (full logcat, last ~3 minutes only: the Maestro driver fills the buffer).
 - A full run takes about 40 minutes: about 12 for the Gradle build and about 25 for the flows.
 
 ## Builds, environments and CI

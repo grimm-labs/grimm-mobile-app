@@ -15,7 +15,8 @@
 # A second run started on the same branch waits for the first one to finish.
 # A run can reuse the APK of a previous run (`apk-run-id`, skips the ~16 min Gradle build when only flows changed)
 # and run a subset of the flows (`include-tags`).
-# Reports: the JUnit report, Maestro debug output (screenshots, logs) and a logcat dump on failure are uploaded as the `e2e-android-report` artifact.
+# Reports: the JUnit report, Maestro debug output (screenshots, logs), the app's logs for the whole run (logcat-app.txt)
+# and a full logcat dump on failure (logcat.txt, last minutes only) are uploaded as the `e2e-android-report` artifact.
 
 # GITHUB SECRETS REQUIRED: None
 # GITHUB SECRETS OPTIONAL:
@@ -171,6 +172,9 @@ jobs:
           script: echo "Generated AVD snapshot for caching."
 
       # Each line of `script` runs in its own shell: keep multi-command logic on one line
+      # The logcat ring buffer only keeps the last ~3 minutes of a run (the Maestro driver logs fill it), so the app's
+      # logs are recorded for the whole run in the background: JS console, React Native errors, Java and native crashes,
+      # ANRs. The full logcat is still dumped on failure for the last minutes of system logs.
       - name: Run tests with Maestro
         uses: reactivecircus/android-emulator-runner@v2
         env:
@@ -192,6 +196,7 @@ jobs:
             adb shell device_config put systemui clipboard_overlay_enabled false
             adb install -r "$APK_PATH"
             adb logcat -c
+            nohup stdbuf -oL adb logcat -v threadtime -s ReactNativeJS:V ReactNative:V AndroidRuntime:V DEBUG:V libc:V ActivityManager:W > e2e-report/logcat-app.txt 2>&1 < /dev/null &
             maestro test .maestro/ --env APP_ID="$APP_ID" ${INCLUDE_TAGS:+--include-tags "$INCLUDE_TAGS"} --format junit --output e2e-report/report.xml --debug-output e2e-report/debug --flatten-debug-output || { adb logcat -d > e2e-report/logcat.txt; exit 1; }
 
       - name: Upload E2E report
