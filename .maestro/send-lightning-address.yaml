@@ -4,10 +4,10 @@ tags:
   - send
   - lightning
 # A real Lightning Address registered by the team on pay.usegrimm.app, never paid (empty wallet).
-# LNURL_PAY is the same address as LNURL-pay: the bech32 encoding of https://pay.usegrimm.app/.well-known/lnurlp/admin-test
+# LNURL_PAY is the same address as LNURL-pay: the bech32 encoding of https://pay.usegrimm.app/.well-known/lnurlp/admin-staging
 env:
-  LN_ADDRESS: admin-test@pay.usegrimm.app
-  LNURL_PAY: LNURL1DP68GURN8GHJ7URP0YH82UM9VAEXJMTD9ESHQUP09EMK2MRV944KUMMHDCHKCMN4WFK8QTMPV3KKJM3DW3JHXAQJA9KPP
+  LN_ADDRESS: admin-staging@pay.usegrimm.app
+  LNURL_PAY: LNURL1DP68GURN8GHJ7URP0YH82UM9VAEXJMTD9ESHQUP09EMK2MRV944KUMMHDCHKCMN4WFK8QTMPV3KKJM3DWD6XZEMFDENSNYSMKS
 ---
 - runFlow: subflows/create-wallet.yaml
 - runFlow: subflows/wait-for-lightning.yaml
