@@ -74,7 +74,7 @@ Features that need a funded wallet (sending, transaction lists and details, tran
 | Receive      | On-chain: address, copy (pasted in the send screen), new address (address settings sheet disabled for now)                         | `receive-onchain`          |
 | Receive      | Lightning account on-chain deposit address                                                                                         | `receive-onchain`          |
 | Send         | Lightning: empty input, unsupported input, a Bitcoin address opens the on-chain amount screen                                      | `send-lightning`           |
-| Send         | Lightning Address and LNURL-pay: "Send to", limits, insufficient balance (needs `admin-staging@pay.usegrimm.app`)                  | `send-lightning-address`   |
+| Send         | Lightning Address and LNURL-pay: "Send to", limits, insufficient balance (needs `admin@pay.usegrimm.app`)                          | `send-lightning-address`   |
 | Send         | Payment Input routing: Bitcoin URI with an amount, method sheet, Invoice without an Amount, other networks                         | `send-routing`             |
 | Links        | `bitcoin:` and `lightning:` links open the on-chain and Lightning amount screens                                                   | `deep-links`               |
 | Lightning    | Lightning Login: LNURL-auth pasted and opened as a link, title by action, Cancel (never signs in)                                  | `lightning-login`          |
