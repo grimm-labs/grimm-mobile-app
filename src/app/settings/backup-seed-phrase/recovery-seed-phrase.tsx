@@ -1,23 +1,53 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable max-lines-per-function */
-import Ionicons from '@expo/vector-icons/Ionicons';
-import * as ExpoClipboard from 'expo-clipboard';
+
 import { Stack, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { showMessage } from 'react-native-flash-message';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
+import { Button, FocusAwareStatusBar, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
 import { useAppLock } from '@/lib/context/app-lock-context';
 import { useSecureStorage } from '@/lib/hooks';
 import { useStackScreenOptions } from '@/lib/stack-screen-options';
+import { theme } from '@/lib/theme-classes';
 
-const CLIPBOARD_CLEAR_DELAY = 60_000;
+const WORDS_PER_ROW = 3;
+
+const WordCell = ({ word, position }: { word: string; position: number }) => (
+  <View className="mx-1 flex-1 rounded-lg border border-neutral-300 px-3 pb-3 pt-4 dark:border-charcoal-700">
+    <Text className={`absolute right-2 top-1 text-xs ${theme.textMuted}`}>{position}</Text>
+    <Text testID={`recovery-phrase-word-${position}`} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} className={`text-base font-semibold ${theme.textPrimary}`}>
+      {word}
+    </Text>
+  </View>
+);
+
+const WordGrid = ({ words }: { words: string[] }) => {
+  const rows = useMemo(() => {
+    const result: string[][] = [];
+    for (let i = 0; i < words.length; i += WORDS_PER_ROW) {
+      result.push(words.slice(i, i + WORDS_PER_ROW));
+    }
+    return result;
+  }, [words]);
+
+  return (
+    <View>
+      {rows.map((row, rowIndex) => (
+        <View key={rowIndex} className="my-1 flex-row">
+          {row.map((word, columnIndex) => {
+            const position = rowIndex * WORDS_PER_ROW + columnIndex + 1;
+            return <WordCell key={position} word={word} position={position} />;
+          })}
+        </View>
+      ))}
+    </View>
+  );
+};
 
 export default function SeedPhraseScreen() {
   const { isSeedPhraseBackup } = useContext(AppContext);
@@ -46,42 +76,18 @@ export default function SeedPhraseScreen() {
     };
   }, [authorizeSensitiveAction, getSeedPhrase, router]);
 
-  const organizedWords = useMemo(() => {
-    if (!seedPhrase) return [];
-    const words = seedPhrase.split(' ');
-    const rows = [];
-    for (let i = 0; i < words.length; i += 3) {
-      const row = words.slice(i, i + 3).map((word, index) => ({
-        word,
-        index: i + index,
-      }));
-      rows.push(row);
-    }
-    return rows;
-  }, [seedPhrase]);
+  const words = useMemo(() => (seedPhrase ? seedPhrase.split(' ') : []), [seedPhrase]);
 
-  const continueToVerifyScreen = async () => {
-    router.push('/settings/backup-seed-phrase/verify');
-  };
+  const continueToVerifyScreen = () => router.push('/settings/backup-seed-phrase/verify');
 
-  const copyToClipboard = async () => {
-    if (seedPhrase) {
-      await ExpoClipboard.setStringAsync(seedPhrase);
-      showMessage({
-        message: t('seedPhraseScreen.copiedMessage'),
-        type: 'success',
-        duration: 2000,
-        icon: 'success',
-      });
-      setTimeout(async () => {
-        await ExpoClipboard.setStringAsync('');
-      }, CLIPBOARD_CLEAR_DELAY);
-    }
+  const handleCancel = () => {
+    router.dismissAll();
+    router.replace('/');
   };
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView testID="recovery-phrase-screen" className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="recovery-phrase-screen" className={`flex-1 ${theme.screen}`}>
         <Stack.Screen
           options={{
             headerTitleAlign: 'center',
@@ -92,38 +98,33 @@ export default function SeedPhraseScreen() {
             ...stackScreenOptions,
           }}
         />
-        <View className="flex-1 px-6">
-          <View className="mt-8 items-center">
-            <View className="mb-4 rounded-full bg-amber-100 p-4">
-              <Ionicons name="shield-checkmark-outline" size={48} color="#f59e0b" />
-            </View>
-            <Text className="text-xl font-bold text-gray-900 dark:text-charcoal-100">{t('seedPhraseScreen.title')}</Text>
-            <Text className="mt-3 text-center text-base leading-6 text-gray-600 dark:text-charcoal-300">{t('seedPhraseScreen.description')}</Text>
+        <FocusAwareStatusBar />
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <WordGrid words={words} />
+          <View className="mt-12">
+            <Text testID="recovery-phrase-description" className={`text-center text-base leading-7 ${theme.textPrimary}`}>
+              {t('seedPhraseScreen.description')}
+            </Text>
+            <Text className={`mt-6 text-center text-base leading-7 ${theme.textPrimary}`}>{isSeedPhraseBackup ? t('seedPhraseScreen.notes') : `${t('seedPhraseScreen.notes')} ${t('seedPhraseScreen.verifyNotice')}`}</Text>
           </View>
-          <ScrollView className="mt-8 flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
-            <View className="p-3">
-              <View className="space-y-4">
-                {organizedWords.map((row, rowIndex) => (
-                  <View key={rowIndex} className="mb-3 flex-row justify-between">
-                    {row.map(({ word, index }) => (
-                      <View key={index} className="mx-1 flex-1 rounded-xl border border-gray-200 py-2">
-                        <Text className="text-center text-xs font-semibold text-gray-500 dark:text-charcoal-400">{index + 1}</Text>
-                        <Text testID={`recovery-phrase-word-${index + 1}`} className="mt-1 text-center text-xs font-semibold text-gray-900 dark:text-charcoal-100">
-                          {word}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                ))}
-              </View>
-            </View>
-          </ScrollView>
-          <View className="space-y-3 pb-4">
-            <Button testID="copy-button" label={t('seedPhraseScreen.copyButton')} fullWidth size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={copyToClipboard} />
-            {!isSeedPhraseBackup && <Button testID="saved-button" label={t('seedPhraseScreen.verify')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={continueToVerifyScreen} />}
+        </ScrollView>
+        {/* Once backed up, the phrase can still be viewed (back arrow) but not verified again */}
+        {!isSeedPhraseBackup && (
+          <View className="px-6 pb-4">
+            <Button testID="saved-button" label={t('seedPhraseScreen.writtenDown')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={continueToVerifyScreen} />
+            <Button testID="recovery-phrase-cancel-button" label={t('seedPhraseScreen.cancel')} fullWidth variant="link" textClassName={`text-base font-medium ${theme.textMuted}`} onPress={handleCancel} />
           </View>
-        </View>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+  },
+});

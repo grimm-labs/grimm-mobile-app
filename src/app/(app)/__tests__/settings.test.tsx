@@ -60,6 +60,7 @@ jest.mock('@expo/vector-icons', () => {
   return { Ionicons: (props: Record<string, unknown>) => <View {...props} /> };
 });
 
+jest.mock('@/lib/env', () => ({ Env: { ...jest.requireActual('@/lib/env').Env, VERSION: '9.9.9' } }));
 jest.mock('@/components/ui/focus-aware-status-bar', () => ({
   FocusAwareStatusBar: () => null,
 }));
@@ -96,6 +97,34 @@ describe('Settings tab', () => {
     fireEvent.press(screen.getByTestId('settings-app-lock'));
 
     expect(mockPush).toHaveBeenCalledWith('/settings/app-lock');
+  });
+
+  it('tapping the Hide balance row or its switch toggles the setting', async () => {
+    const { appContext } = await startAppWithAppLock(<Settings />, { appContext: { hideBalance: false } });
+
+    fireEvent.press(screen.getByTestId('settings-hide-balance'));
+    expect(appContext.setHideBalance).toHaveBeenLastCalledWith(true);
+
+    fireEvent.press(screen.getByTestId('settings-hide-balance-switch'));
+    expect(appContext.setHideBalance).toHaveBeenLastCalledWith(true);
+  });
+
+  it('tapping the Block screenshots row turns the protection off when it is on', async () => {
+    const { appContext } = await startAppWithAppLock(<Settings />, { appContext: { preventScreenCapture: true } });
+
+    fireEvent.press(screen.getByTestId('settings-block-screenshots'));
+
+    expect(appContext.setPreventScreenCapture).toHaveBeenCalledWith(false);
+  });
+
+  it('About, Help & Support and the app version are listed', async () => {
+    await startAppWithAppLock(<Settings />);
+
+    fireEvent.press(screen.getByTestId('settings-about'));
+    expect(mockPush).toHaveBeenCalledWith('/settings/about');
+    fireEvent.press(screen.getByTestId('settings-help'));
+    expect(mockPush).toHaveBeenCalledWith('/need-help');
+    expect(screen.getByTestId('settings-version')).toHaveTextContent('Version 9.9.9');
   });
 
   it('Sign Out runs the Wallet Reset without asking for the PIN', async () => {

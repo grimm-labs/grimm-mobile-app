@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +8,7 @@ import { Pressable, View } from 'react-native';
 
 import { colors, Modal, Text, useModal } from '@/components/ui';
 import { theme } from '@/lib/theme-classes';
-import { useModalBottomInset } from '@/lib/use-modal-bottom-inset';
+import { useSheetBottomPadding } from '@/lib/use-sheet-bottom-padding';
 
 type PaymentMethod = 'onchain' | 'lightning';
 
@@ -49,7 +50,7 @@ const PaymentMethodOption = ({ icon, iconBgClass, title, description, onPress, c
 export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, PaymentMethodBottomSheetProps>(({ mode, onSelect, onDismiss }, forwardedRef) => {
   const { ref, present, dismiss } = useModal();
   const { t } = useTranslation();
-  const bottomInset = useModalBottomInset();
+  const bottomPadding = useSheetBottomPadding();
   // The sheet also reports a dismiss after a choice: only a close without a choice reaches onDismiss
   const hasChosenRef = React.useRef(false);
 
@@ -80,26 +81,29 @@ export const PaymentMethodBottomSheet = React.forwardRef<BottomSheetModal, Payme
   };
 
   return (
-    <Modal ref={ref} snapPoints={['34%']} title="" showCloseButton={false} bottomInset={bottomInset} onDismiss={handleDismiss}>
-      <View className="flex-1 px-6 pb-4 pt-2">
-        <PaymentMethodOption
-          icon="flash"
-          iconBgClass="bg-warning-400"
-          title={t(`lnPaymentMethod.${mode}Title`)}
-          description={t('lnPaymentMethod.lightningDescription')}
-          onPress={() => handleSelect('lightning')}
-          testID={`${mode}-method-lightning`}
-        />
-        <PaymentMethodOption
-          icon="link"
-          iconBgClass="bg-primary-600"
-          title={t(`onchainPaymentMethod.${mode}Title`)}
-          description={t('onchainPaymentMethod.onchainDescription')}
-          onPress={() => handleSelect('onchain')}
-          className=""
-          testID={`${mode}-method-onchain`}
-        />
-      </View>
+    // The sheet fits its two options instead of a fixed height
+    <Modal ref={ref} enableDynamicSizing title="" showCloseButton={false} onDismiss={handleDismiss}>
+      <BottomSheetView style={{ paddingBottom: bottomPadding }}>
+        <View className="px-6 pt-2">
+          <PaymentMethodOption
+            icon="flash"
+            iconBgClass="bg-warning-400"
+            title={t(`lnPaymentMethod.${mode}Title`)}
+            description={t('lnPaymentMethod.lightningDescription')}
+            onPress={() => handleSelect('lightning')}
+            testID={`${mode}-method-lightning`}
+          />
+          <PaymentMethodOption
+            icon="link"
+            iconBgClass="bg-primary-600"
+            title={t(`onchainPaymentMethod.${mode}Title`)}
+            description={t('onchainPaymentMethod.onchainDescription')}
+            onPress={() => handleSelect('onchain')}
+            className=""
+            testID={`${mode}-method-onchain`}
+          />
+        </View>
+      </BottomSheetView>
     </Modal>
   );
 });

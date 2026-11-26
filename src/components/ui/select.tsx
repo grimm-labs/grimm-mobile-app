@@ -12,6 +12,7 @@ import { tv } from 'tailwind-variants';
 
 import colors from '@/components/ui/colors';
 import { CaretDown } from '@/components/ui/icons';
+import { useSheetBottomPadding } from '@/lib/use-sheet-bottom-padding';
 
 import type { InputControllerType } from './input';
 import { useModal } from './modal';
@@ -67,8 +68,11 @@ function keyExtractor(item: OptionType) {
 }
 
 export const Options = React.forwardRef<BottomSheetModal, OptionsProps>(({ options, onSelect, value, testID }, ref) => {
-  const height = options.length * 70 + 100;
+  const bottomPadding = useSheetBottomPadding();
+  // The sheet starts at the bottom edge of the screen: the list ends above the home indicator
+  const height = options.length * 70 + 100 + bottomPadding;
   const snapPoints = React.useMemo(() => [height], [height]);
+  const listContentStyle = React.useMemo(() => ({ paddingBottom: bottomPadding }), [bottomPadding]);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -88,7 +92,7 @@ export const Options = React.forwardRef<BottomSheetModal, OptionsProps>(({ optio
         backgroundColor: isDark ? colors.neutral[800] : colors.white,
       }}
     >
-      <List data={options} keyExtractor={keyExtractor} renderItem={renderSelectItem} testID={testID ? `${testID}-modal` : undefined} estimatedItemSize={52} />
+      <List data={options} keyExtractor={keyExtractor} renderItem={renderSelectItem} testID={testID ? `${testID}-modal` : undefined} estimatedItemSize={52} contentContainerStyle={listContentStyle} />
     </Modal>
   );
 });

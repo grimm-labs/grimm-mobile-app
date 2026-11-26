@@ -56,38 +56,38 @@ gh workflow run e2e-android.yml --ref <branch> -f apk-run-id=<run id> -f include
 
 Features that need a funded wallet (sending, transaction lists and details, transaction notes, unclaimed deposits), a real camera (scanning a QR code) or biometrics (Biometric Unlock, see the manual checklist of the App Lock spec) are out of scope.
 
-| Area         | Feature                                                                                                                            | Flow                       |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| Onboarding   | Onboarding screen, Need help screen                                                                                                | `onboarding`, `need-help`  |
-| Wallet       | Create a new wallet (Home with an empty balance and the backup banner)                                                             | `wallet-create`            |
-| Wallet       | Import: word counter, disabled button, invalid phrase rejected                                                                     | `wallet-import-validation` |
-| Wallet       | Backup: warning (cancel/proceed), phrase display and copy, wrong words rejected, verification, banner gone, no second verification | `wallet-backup-restore`    |
-| Wallet       | Log out and restore the same wallet from its recovery phrase                                                                       | `wallet-backup-restore`    |
-| Home         | App Lock card shown right after the backup                                                                                         | `wallet-backup-restore`    |
-| App Lock     | Turn on, Lock Screen at launch, wrong PIN, auto-lock after 30 s in background, PIN asked for the backup, change PIN, turn off      | `app-lock`                 |
-| App Lock     | 30 s Lockout after 5 wrong PINs, Forgot PIN resets the wallet                                                                      | `app-lock-forgot-pin`      |
-| Wallet       | Bitcoin and Lightning account details (balance, hide toggle, empty history, Send/Receive, LN address row)                          | `wallet-details`           |
-| Home         | Hide/show balance, Send and Receive sheets, tabs                                                                                   | `home`                     |
-| Transactions | Empty history and every filter                                                                                                     | `home`                     |
-| Receive      | Lightning: keypad, delete, note add/clear, invoice (amount, note, QR, countdown), copy, close                                      | `receive-lightning`        |
-| Send         | Lightning: paste an invoice → payment details, insufficient balance                                                                | `receive-lightning`        |
-| Receive      | On-chain: address, copy (pasted in the send screen), new address (address settings sheet disabled for now)                         | `receive-onchain`          |
-| Receive      | Lightning account on-chain deposit address                                                                                         | `receive-onchain`          |
-| Send         | Lightning: empty input, unsupported input, a Bitcoin address opens the on-chain amount screen                                      | `send-lightning`           |
-| Send         | Lightning Address and LNURL-pay: "Send to", limits, insufficient balance (needs `admin@pay.usegrimm.app`)                          | `send-lightning-address`   |
-| Send         | Payment Input routing: Bitcoin URI with an amount, method sheet, Invoice without an Amount, other networks                         | `send-routing`             |
-| Links        | `bitcoin:` and `lightning:` links open the on-chain and Lightning amount screens                                                   | `deep-links`               |
-| Lightning    | Lightning Login: LNURL-auth pasted and opened as a link, title by action, Cancel (never signs in)                                  | `lightning-login`          |
-| Send         | On-chain: empty and invalid address, valid address, fee options, insufficient balance                                              | `send-onchain`             |
-| Scan         | Camera screen and close; camera permission denied                                                                                  | `scan-qr`                  |
-| Settings     | Network switch to testnet (warning banner) and back to mainnet (confirmation, cancel)                                              | `settings-network`         |
-| Settings     | Esplora indexer: default in use, select, save, reconnect                                                                           | `settings-esplora`         |
-| Settings     | Country: search, no result, select, fiat currency on Home                                                                          | `settings-country`         |
-| Settings     | Language: English ↔ French                                                                                                         | `settings-language`        |
-| Settings     | Bitcoin unit: BTC ↔ SATS on Home                                                                                                   | `settings-bitcoin-unit`    |
-| Settings     | Invoice expiry: options, applied to a new invoice                                                                                  | `settings-invoice-expiry`  |
-| Settings     | LN address: empty state, validation messages, random name, availability check (cancelled)                                          | `settings-ln-address`      |
-| Settings     | Hide balance and block screenshots switches                                                                                        | `settings-security`        |
-| Settings     | Notifications screen, appearance (system/dark/light)                                                                               | `settings-preferences`     |
-| Settings     | Breez SDK details, About, Help & Support                                                                                           | `settings-about`           |
-| Settings     | Log out: warning, cancel, back up first, confirm                                                                                   | `logout`                   |
+| Area         | Feature                                                                                                                          | Flow                       |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Onboarding   | Onboarding screen, Need help screen                                                                                              | `onboarding`, `need-help`  |
+| Wallet       | Create a new wallet (Home with an empty balance and the backup banner)                                                           | `wallet-create`            |
+| Wallet       | Import: word counter, disabled button, invalid phrase rejected                                                                   | `wallet-import-validation` |
+| Wallet       | Backup: warning (cancel/proceed), phrase display/cancel, wrong words rejected, verification, banner gone, no second verification | `wallet-backup-restore`    |
+| Wallet       | Log out and restore the same wallet from its recovery phrase                                                                     | `wallet-backup-restore`    |
+| Home         | App Lock card shown right after the backup                                                                                       | `wallet-backup-restore`    |
+| App Lock     | Turn on, Lock Screen at launch, wrong PIN, auto-lock after 30 s in background, PIN asked for the backup, change PIN, turn off    | `app-lock`                 |
+| App Lock     | 30 s Lockout after 5 wrong PINs, Forgot PIN resets the wallet                                                                    | `app-lock-forgot-pin`      |
+| Wallet       | Bitcoin and Lightning account details (balance, hide toggle, empty history, Send/Receive, LN address row)                        | `wallet-details`           |
+| Home         | Hide/show balance, Send and Receive sheets, tabs                                                                                 | `home`                     |
+| Transactions | Empty history and every filter                                                                                                   | `home`                     |
+| Receive      | Lightning: keypad, delete, note add/clear, invoice (amount, note, QR, countdown), copy, close                                    | `receive-lightning`        |
+| Send         | Lightning: paste an invoice → payment details, insufficient balance                                                              | `receive-lightning`        |
+| Receive      | On-chain: address, copy (pasted in the send screen), new address (address settings sheet disabled for now)                       | `receive-onchain`          |
+| Receive      | Lightning account on-chain deposit address                                                                                       | `receive-onchain`          |
+| Send         | Lightning: empty input, unsupported input, a Bitcoin address opens the on-chain amount screen                                    | `send-lightning`           |
+| Send         | Lightning Address and LNURL-pay: "Send to", limits, insufficient balance (needs `admin@pay.usegrimm.app`)                        | `send-lightning-address`   |
+| Send         | Payment Input routing: Bitcoin URI with an amount, method sheet, Invoice without an Amount, other networks                       | `send-routing`             |
+| Links        | `bitcoin:` and `lightning:` links open the on-chain and Lightning amount screens                                                 | `deep-links`               |
+| Lightning    | Lightning Login: LNURL-auth pasted and opened as a link, title by action, Cancel (never signs in)                                | `lightning-login`          |
+| Send         | On-chain: empty and invalid address, valid address, fee options, insufficient balance                                            | `send-onchain`             |
+| Scan         | Camera screen and close; camera permission denied                                                                                | `scan-qr`                  |
+| Settings     | Network switch to testnet (warning banner) and back to mainnet (confirmation, cancel)                                            | `settings-network`         |
+| Settings     | Esplora indexer: default in use, select, save, reconnect                                                                         | `settings-esplora`         |
+| Settings     | Country: search, no result, select, fiat currency on Home                                                                        | `settings-country`         |
+| Settings     | Language: English ↔ French                                                                                                       | `settings-language`        |
+| Settings     | Bitcoin unit: BTC ↔ SATS on Home                                                                                                 | `settings-bitcoin-unit`    |
+| Settings     | Invoice expiry: options, applied to a new invoice                                                                                | `settings-invoice-expiry`  |
+| Settings     | LN address: empty state, validation messages, random name, availability check (cancelled)                                        | `settings-ln-address`      |
+| Settings     | Hide balance and block screenshots switches                                                                                      | `settings-security`        |
+| Settings     | Notifications screen, appearance (system/dark/light)                                                                             | `settings-preferences`     |
+| Settings     | Breez SDK details, About, Help & Support, app version at the end of the list                                                     | `settings-about`           |
+| Settings     | Log out: warning, cancel, back up first, confirm                                                                                 | `logout`                   |

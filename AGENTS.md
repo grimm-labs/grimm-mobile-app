@@ -155,6 +155,7 @@ prompts/          template AI prompts (partly stale)
 - Use the primitives from `@/components/ui`: `Text` (supports `tx` for translation keys), `Button` (variants `default|secondary|outline|destructive|ghost|link`, sizes `default|lg|sm|icon`, `loading`, `fullWidth`), `Input`/`ControlledInput`, `Select`, `Modal`, `Checkbox/Radio/Switch`, `Image`, `SafeAreaView`, `colors`.
 - Style with `className`. For theme-aware class sets use `theme` from `@/lib/theme-classes` (`theme.screen`, `theme.textPrimary`, `theme.textSecondary`…). Dark mode is class-based. For non-className APIs (icons, tab bar), use `useColorScheme()` from nativewind with `colors`.
 - Typical screen: `SafeAreaProvider` › `SafeAreaView` (class `flex-1` + `theme.screen`), then `Stack.Screen` (options `headerTitle` rendering `HeaderTitle`, `headerLeft: HeaderLeft`…) and `FocusAwareStatusBar`. `need-help.tsx` is a good reference.
+- Bottom sheets (`Modal` from `@/components/ui`, gorhom) start at the bottom edge of the screen and cover the tab bar, like Material 3 and Apple sheets: never pass a `bottomInset` to lift them. Pad their content with `useSheetBottomPadding()` (`@/lib/use-sheet-bottom-padding`: safe area + 16), and prefer `enableDynamicSizing` with a `BottomSheetView` for short sheets. `BottomSheetView` is not registered with NativeWind: put `className` on a `View` inside it.
 - **testIDs**: kebab-case, prefixed with the screen (`onboarding-get-started`, `need-help-item-call`). `Button` and `Input` derive `${testID}-label` and `${testID}-error`. Maestro flows depend on these ids: don't rename them without updating `.maestro/`. Add testIDs to anything a future E2E flow will need to tap or assert.
 
 ## Code style (enforced by ESLint)
@@ -171,7 +172,7 @@ prompts/          template AI prompts (partly stale)
 ## Unit tests (Jest)
 
 - Tests live in `__tests__/` folders next to the code, or as colocated `*.test.tsx` files. `.eslintignore` excludes `__tests__/`, so only colocated tests are linted.
-- `jest-setup.ts` mocks AsyncStorage and `useModalBottomInset`. `src/lib/test-utils.tsx` provides `render`/`setup` wrapped in `NavigationContainer` + `BottomSheetModalProvider`.
+- `jest-setup.ts` mocks AsyncStorage and `useSheetBottomPadding`. `src/lib/test-utils.tsx` provides `render`/`setup` wrapped in `NavigationContainer` + `BottomSheetModalProvider`.
 - Screen tests mock their dependencies inline:
   - `react-i18next` (assertions then use raw keys such as `'onboarding.title'`)
   - `expo-router`

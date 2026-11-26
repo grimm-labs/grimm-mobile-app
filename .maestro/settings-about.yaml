@@ -60,3 +60,12 @@ tags:
 - back
 - assertVisible:
     id: 'settings-screen'
+# The app version closes the Settings list
+- scrollUntilVisible:
+    element:
+      id: 'settings-version'
+    direction: DOWN
+    timeout: 20000
+- assertVisible:
+    id: 'settings-version'
+    text: 'Version \d+\.\d+\.\d+.*'

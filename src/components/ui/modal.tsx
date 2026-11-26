@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 /**
  * Modal
  * Dependencies:
@@ -30,14 +29,13 @@
  */
 
 import type { BottomSheetBackdropProps, BottomSheetModalProps } from '@gorhom/bottom-sheet';
-import { BottomSheetModal, useBottomSheet } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { BackHandler, Pressable, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 
-import { useModalBottomInset } from '@/lib/use-modal-bottom-inset';
+import { useSheetBottomPadding } from '@/lib/use-sheet-bottom-padding';
 
 import colors from './colors';
 import { Text } from './text';
@@ -105,13 +103,16 @@ export const Modal = React.forwardRef(
     const modal = useModal();
     const snapPoints = React.useMemo(() => _snapPoints, [_snapPoints]);
     const { colorScheme } = useColorScheme();
-    const defaultBottomInset = useModalBottomInset();
+    const sheetBottomPadding = useSheetBottomPadding();
 
-    const resolvedBottomInset = bottomInset ?? (detached ? Math.max(46, defaultBottomInset) : defaultBottomInset);
+    // An attached sheet starts at the bottom edge of the screen, over the tab bar (Material 3 and Apple HIG): its content
+    // keeps clear of the home indicator with useSheetBottomPadding. Only a detached sheet floats above the bottom edge.
+    const resolvedBottomInset = bottomInset ?? (detached ? Math.max(46, sheetBottomPadding) : 0);
 
     const themedBackgroundStyle = React.useMemo(() => {
       const baseStyle = {
         backgroundColor: colorScheme === 'dark' ? colors.charcoal[900] : colors.white,
+        borderRadius: SHEET_CORNER_RADIUS,
       };
 
       if (backgroundStyle && typeof backgroundStyle === 'object' && !Array.isArray(backgroundStyle)) {
@@ -125,12 +126,13 @@ export const Modal = React.forwardRef(
 
     const { handleChange, handleDismiss } = useDismissOnBackPress(modal.dismiss, props.onChange, props.onDismiss);
 
-    const handleBottomMargin = title || showCloseButton ? 'mb-8' : 'mb-2';
+    const handleBottomMargin = title || showCloseButton ? 'mb-6' : 'mb-4';
 
     const renderHandleComponent = React.useCallback(
       () => (
         <>
-          <View className={`mt-4 h-2 w-16 self-center rounded-lg bg-gray-300 dark:bg-gray-700 ${handleBottomMargin}`} />
+          {/* Grabber: a discreet cue that the sheet can be dragged down to close */}
+          <View className={`mt-3 h-1 w-9 self-center rounded-full bg-gray-300 dark:bg-charcoal-600 ${handleBottomMargin}`} />
           <ModalHeader title={title} dismiss={modal.dismiss} showCloseButton={showCloseButton} />
         </>
       ),
@@ -156,18 +158,14 @@ export const Modal = React.forwardRef(
   },
 );
 
+const SHEET_CORNER_RADIUS = 24;
+const SCRIM_OPACITY = 0.4;
+
 /**
- * Custom Backdrop
+ * Scrim behind the sheet: covers the whole screen (tab bar included), follows the sheet while it is dragged, and closes
+ * it on tap.
  */
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-const CustomBackdrop = ({ style }: BottomSheetBackdropProps) => {
-  const { close } = useBottomSheet();
-  return <AnimatedPressable onPress={() => close()} entering={FadeIn.duration(50)} exiting={FadeOut.duration(20)} style={[style, { backgroundColor: 'rgba(0, 0, 0, 0.4)' }]} />;
-};
-
-export const renderBackdrop = (props: BottomSheetBackdropProps) => <CustomBackdrop {...props} />;
+export const renderBackdrop = (props: BottomSheetBackdropProps) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={SCRIM_OPACITY} pressBehavior="close" />;
 
 /**
  *

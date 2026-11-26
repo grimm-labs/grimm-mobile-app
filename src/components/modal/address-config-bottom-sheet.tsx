@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useColorScheme } from 'nativewind';
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +11,7 @@ import { Button, colors, Input, Modal, Text, useModal } from '@/components/ui';
 import { convertBtcToSats, convertSatsToBtc } from '@/lib';
 import { AppContext } from '@/lib/context';
 import { theme } from '@/lib/theme-classes';
-import { useModalBottomInset } from '@/lib/use-modal-bottom-inset';
+import { useSheetBottomPadding } from '@/lib/use-sheet-bottom-padding';
 import { BitcoinUnit } from '@/types/enum';
 
 export interface AddressConfig {
@@ -33,7 +34,7 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
   const [amount, setAmount] = useState<number | undefined>(defaultAmount);
   const [note, setNote] = useState<string>(defaultNote);
   const { bitcoinUnit } = useContext(AppContext);
-  const bottomInset = useModalBottomInset();
+  const bottomPadding = useSheetBottomPadding();
 
   React.useEffect(() => {
     if (defaultAmount && bitcoinUnit === BitcoinUnit.Sats) {
@@ -77,14 +78,14 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
   return (
     <Modal
       ref={ref}
-      snapPoints={['44%']}
-      bottomInset={bottomInset}
+      // The sheet fits its fields and the Save button instead of a fixed height
+      enableDynamicSizing
       keyboardBehavior="interactive"
       // On Android, "restore" moved the sheet down and up again when the focus went from one field to the other
       keyboardBlurBehavior={Platform.OS === 'ios' ? 'restore' : 'none'}
     >
-      <View className="flex-1 px-6 pb-4">
-        <View className="flex-1">
+      <BottomSheetView style={{ paddingBottom: bottomPadding }}>
+        <View className="px-6">
           <Text testID="address-config-title" className={`mb-4 text-2xl font-bold ${theme.textPrimary}`}>
             {t('addressConfig.title')}
           </Text>
@@ -119,12 +120,10 @@ export const AddressConfigBottomSheet = React.forwardRef<BottomSheetModal, Addre
               prefix={<Ionicons name="document-text" size={18} color={iconColor} />}
             />
           </View>
-        </View>
 
-        <View>
           <Button testID="address-config-save" label={t('addressConfig.saveButton')} fullWidth size="lg" variant="secondary" onPress={handleSave} />
         </View>
-      </View>
+      </BottomSheetView>
     </Modal>
   );
 });

@@ -231,10 +231,10 @@
     "title": "Paiement Lightning"
   },
   "lnAddressScreen": {
-    "addDetails": "Détails",
+    "addDetails": "Ajouter des détails",
     "addressLabel": "Adresse Lightning",
     "copy": "Copier",
-    "getCustomAddress": "obtenir une adresse lightning personnalisée",
+    "getCustomAddress": "Obtenir une adresse Lightning personnalisée",
     "title": "Recevoir"
   },
   "lnAddressSettings": {
@@ -368,14 +368,11 @@
     "title": "Supprimer le compte ?"
   },
   "mnemonicWarning": {
-    "attention": "Attention",
-    "cancel": "Annuler",
-    "header": "Avertissement Phrase de Récupération",
-    "intro": "Veuillez lire attentivement ce qui suit avant de visualiser votre phrase de récupération.",
-    "proceed": "Continuer",
-    "warning1": "Toute personne possédant la phrase de récupération a un accès complet et irrévocable à tous les fonds associés au portefeuille.",
-    "warning2": "L'équipe de support de Grimm App ne vous demandera jamais votre phrase de récupération ou votre clé privée.",
-    "warning3": "Ne saisissez jamais votre phrase de récupération ou votre clé privée dans un formulaire ou une application. Les applications n’en ont pas besoin pour fonctionner."
+    "cancel": "Annuler, je le ferai plus tard",
+    "header": "Sauvegarde du portefeuille",
+    "important": "<label>IMPORTANT :</label> Grimm App n’a pas accès aux fonds de votre portefeuille. Vous en avez la garde exclusive grâce à la phrase de récupération. Si vous perdez votre phrase de récupération, <underline>Grimm App ne pourra pas restaurer vos fonds.</underline>",
+    "intro": "Nous allons afficher la phrase de récupération de votre portefeuille sur l’écran suivant.",
+    "proceed": "J’ai compris, sauvegarder mon portefeuille"
   },
   "networkSwitcher": {
     "alerts": {
@@ -604,12 +601,12 @@
     "title": "Sauvegardez votre phrase de récupération"
   },
   "seedPhraseScreen": {
-    "copiedMessage": "Phrase de récupération copiée dans le presse-papiers",
-    "copyButton": "Copier dans le presse-papiers",
-    "description": "Écrivez ces 12 mots dans l’ordre exact indiqué. Conservez-les en lieu sûr hors ligne : toute personne ayant accès à ces mots peut contrôler votre portefeuille.",
-    "header": "Phrase de récupération",
-    "title": "Sécurisez votre portefeuille",
-    "verify": "Verifier"
+    "cancel": "Annuler, je le ferai plus tard",
+    "description": "Voici la phrase de récupération de votre portefeuille. Pour le sauvegarder, notez simplement ces mots dans le bon ordre.",
+    "header": "Sauvegarde du portefeuille",
+    "notes": "Les mots ne sont pas sensibles à la casse et sont séparés par des espaces.",
+    "verifyNotice": "Nous vous demanderons de les vérifier sur l’écran suivant.",
+    "writtenDown": "Je les ai notés"
   },
   "seedPhraseVerification": {
     "description": "Pour confirmer que vous avez bien sauvegardé votre phrase, veuillez entrer les mots suivants :",
