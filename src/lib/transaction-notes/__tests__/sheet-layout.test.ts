@@ -10,6 +10,10 @@ describe('getTransactionNoteSheetContentHeight', () => {
   it('computes height from header, input, button and padding', () => {
     expect(getTransactionNoteSheetContentHeight(NOTE_MIN_HEIGHT)).toBe(48 + 16 + NOTE_MIN_HEIGHT + 16 + 56 + 16);
   });
+
+  it('makes room for the bottom padding below the button (home indicator + 16)', () => {
+    expect(getTransactionNoteSheetContentHeight(NOTE_MIN_HEIGHT, 50)).toBe(48 + 16 + NOTE_MIN_HEIGHT + 16 + 56 + 50);
+  });
 });
 
 describe('clampTransactionNoteInputHeight', () => {

@@ -1,16 +1,17 @@
 /* eslint-disable max-lines-per-function */
-/* eslint-disable react-native/no-inline-styles */
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { LogoutBottomSheet } from '@/components/logout-bottom-sheet';
-import { SettingsItem } from '@/components/settings-item';
-import { FocusAwareStatusBar, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from '@/components/ui';
+import { SettingsItem, SettingsSection, SettingsToggleItem } from '@/components/settings-item';
+import { FocusAwareStatusBar, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
 import { AppContext } from '@/lib/context';
+import { Env } from '@/lib/env';
 import { useWalletReset } from '@/lib/hooks/use-wallet-reset';
+import { theme } from '@/lib/theme-classes';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -32,159 +33,127 @@ export default function Settings() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView testID="settings-screen" className="flex-1 bg-white dark:bg-charcoal-950">
+      <SafeAreaView testID="settings-screen" className={`flex-1 ${theme.screen}`}>
         <FocusAwareStatusBar />
         {/* flex-1 bounds the ScrollView to the screen height, otherwise it grows with its content and cannot scroll */}
         <View className="flex-1">
-          <View className="flex border-b border-neutral-100 px-4 py-3 dark:border-charcoal-700">
+          <View className="border-b border-neutral-200 px-4 py-3 dark:border-charcoal-700">
             <Text className="text-2xl font-bold text-gray-800 dark:text-charcoal-100">{t('settings.title')}</Text>
           </View>
 
-          <ScrollView testID="settings-scroll" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-            {/* General Section */}
-            <View className="mb-6 mt-3">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-700 dark:text-charcoal-200">{t('settings.sections.general')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                <SettingsItem icon="build" title={t('settings.general.networks.title')} subtitle={t('settings.general.networks.subtitle')} onPress={() => router.push('/settings/network')} testID="settings-networks" />
-                <SettingsItem
-                  icon="server"
-                  title={t('settings.general.esploraServer.title')}
-                  subtitle={t('settings.general.esploraServer.subtitle')}
-                  onPress={() => router.push('/settings/esplora-server')}
-                  testID="settings-esplora-server"
-                />
-                <SettingsItem icon="globe" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} testID="settings-country" />
-                <SettingsItem
-                  icon="language"
-                  title={t('settings.general.language.title')}
-                  subtitle={t('settings.general.language.subtitle')}
-                  onPress={() => router.push('/settings/language')}
-                  testID="settings-language"
-                />
-                <SettingsItem
-                  icon="options-sharp"
-                  title={t('settings.general.bitcoinUnit.title')}
-                  subtitle={t('settings.general.bitcoinUnit.subtitle')}
-                  onPress={() => router.push('/settings/bitcoin-unit')}
-                  testID="settings-bitcoin-unit"
-                />
-                <SettingsItem
-                  icon="time-outline"
-                  title={t('settings.general.lnInvoiceExpiry.title')}
-                  subtitle={t('settings.general.lnInvoiceExpiry.subtitle')}
-                  onPress={() => router.push('/settings/ln-invoice-expiry')}
-                  testID="settings-ln-invoice-expiry"
-                />
-                <SettingsItem
-                  icon="at"
-                  title={t('settings.general.lnAddress.title')}
-                  subtitle={t('settings.general.lnAddress.subtitle')}
-                  onPress={() => router.push('/settings/ln-address')}
-                  testID="settings-ln-address"
-                />
-              </View>
-            </View>
+          <ScrollView testID="settings-scroll" showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+            <SettingsSection title={t('settings.sections.general')}>
+              <SettingsItem
+                icon="git-network-outline"
+                title={t('settings.general.networks.title')}
+                subtitle={t('settings.general.networks.subtitle')}
+                onPress={() => router.push('/settings/network')}
+                testID="settings-networks"
+              />
+              <SettingsItem
+                icon="server-outline"
+                title={t('settings.general.esploraServer.title')}
+                subtitle={t('settings.general.esploraServer.subtitle')}
+                onPress={() => router.push('/settings/esplora-server')}
+                testID="settings-esplora-server"
+              />
+              <SettingsItem icon="flag-outline" title={t('settings.general.country.title')} subtitle={t('settings.general.country.subtitle')} onPress={() => router.push('/settings/country')} testID="settings-country" />
+              <SettingsItem
+                icon="language-outline"
+                title={t('settings.general.language.title')}
+                subtitle={t('settings.general.language.subtitle')}
+                onPress={() => router.push('/settings/language')}
+                testID="settings-language"
+              />
+              <SettingsItem
+                icon="logo-bitcoin"
+                title={t('settings.general.bitcoinUnit.title')}
+                subtitle={t('settings.general.bitcoinUnit.subtitle')}
+                onPress={() => router.push('/settings/bitcoin-unit')}
+                testID="settings-bitcoin-unit"
+              />
+              <SettingsItem
+                icon="time-outline"
+                title={t('settings.general.lnInvoiceExpiry.title')}
+                subtitle={t('settings.general.lnInvoiceExpiry.subtitle')}
+                onPress={() => router.push('/settings/ln-invoice-expiry')}
+                testID="settings-ln-invoice-expiry"
+              />
+              <SettingsItem
+                icon="at-outline"
+                title={t('settings.general.lnAddress.title')}
+                subtitle={t('settings.general.lnAddress.subtitle')}
+                onPress={() => router.push('/settings/ln-address')}
+                testID="settings-ln-address"
+              />
+            </SettingsSection>
 
-            {/* Security Section */}
-            <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.security')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                <SettingsItem
-                  icon="lock-closed"
-                  title={t('settings.security.appLock.title')}
-                  subtitle={t('settings.security.appLock.subtitle')}
-                  onPress={() => router.push('/settings/app-lock')}
-                  testID="settings-app-lock"
-                />
-                <SettingsItem icon="key" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} testID="settings-backup" />
-                <Pressable testID="settings-hide-balance" className="mb-1 flex-row items-center rounded py-2" onPress={() => setHideBalance(!hideBalance)}>
-                  <View className="mr-1 rounded-full p-2">
-                    <Ionicons name="eye" size={20} color="gray" />
-                  </View>
-                  <View className="ml-2 flex-1">
-                    <Text className="text-base font-semibold text-gray-700 dark:text-charcoal-200">{t('settings.security.hideBalance.title')}</Text>
-                    <Text className="text-xs text-gray-500 dark:text-charcoal-400">{t('settings.security.hideBalance.subtitle')}</Text>
-                  </View>
-                  <View>
-                    <Switch.Root testID="settings-hide-balance-switch" checked={hideBalance} onChange={setHideBalance} accessibilityLabel="switch" className="pb-2">
-                      <Switch.Icon checked={hideBalance} />
-                    </Switch.Root>
-                  </View>
-                </Pressable>
-                <Pressable testID="settings-block-screenshots" className="mb-1 flex-row items-center rounded py-2" onPress={() => setPreventScreenCapture(!preventScreenCapture)}>
-                  <View className="mr-1 rounded-full p-2">
-                    <Ionicons name="eye-off" size={20} color="gray" />
-                  </View>
-                  <View className="ml-2 flex-1">
-                    <Text className="text-base font-semibold text-gray-700 dark:text-charcoal-200">{t('settings.security.preventScreenCapture.title')}</Text>
-                    <Text className="text-xs text-gray-500 dark:text-charcoal-400">{t('settings.security.preventScreenCapture.subtitle')}</Text>
-                  </View>
-                  <View>
-                    <Switch.Root
-                      testID="settings-block-screenshots-switch"
-                      checked={preventScreenCapture}
-                      onChange={setPreventScreenCapture}
-                      accessibilityLabel={t('settings.security.preventScreenCapture.title')}
-                      className="pb-2"
-                    >
-                      <Switch.Icon checked={preventScreenCapture} />
-                    </Switch.Root>
-                  </View>
-                </Pressable>
-              </View>
-            </View>
+            <SettingsSection title={t('settings.sections.security')}>
+              <SettingsItem
+                icon="lock-closed-outline"
+                title={t('settings.security.appLock.title')}
+                subtitle={t('settings.security.appLock.subtitle')}
+                onPress={() => router.push('/settings/app-lock')}
+                testID="settings-app-lock"
+              />
+              <SettingsItem icon="key-outline" title={t('settings.security.backup.title')} subtitle={t('settings.security.backup.subtitle')} onPress={redirectToBackupSeedPhrase} testID="settings-backup" />
+              <SettingsToggleItem
+                icon="eye-off-outline"
+                title={t('settings.security.hideBalance.title')}
+                subtitle={t('settings.security.hideBalance.subtitle')}
+                value={hideBalance}
+                onValueChange={setHideBalance}
+                testID="settings-hide-balance"
+              />
+              <SettingsToggleItem
+                icon="camera-outline"
+                title={t('settings.security.preventScreenCapture.title')}
+                subtitle={t('settings.security.preventScreenCapture.subtitle')}
+                value={preventScreenCapture}
+                onValueChange={setPreventScreenCapture}
+                testID="settings-block-screenshots"
+              />
+            </SettingsSection>
 
-            {/* Preferences Section */}
-            <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.preferences')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                <SettingsItem
-                  icon="notifications"
-                  title={t('settings.preferences.notifications.title')}
-                  subtitle={t('settings.preferences.notifications.subtitle')}
-                  onPress={() => router.push('/settings/notifications')}
-                  testID="settings-notifications"
-                />
-                <SettingsItem
-                  icon="color-palette"
-                  title={t('settings.preferences.appearance.title')}
-                  subtitle={t('settings.preferences.appearance.subtitle')}
-                  onPress={() => router.push('/settings/appearance')}
-                  testID="settings-appearance"
-                />
-              </View>
-            </View>
+            <SettingsSection title={t('settings.sections.preferences')}>
+              <SettingsItem
+                icon="notifications-outline"
+                title={t('settings.preferences.notifications.title')}
+                subtitle={t('settings.preferences.notifications.subtitle')}
+                onPress={() => router.push('/settings/notifications')}
+                testID="settings-notifications"
+              />
+              <SettingsItem
+                icon="color-palette-outline"
+                title={t('settings.preferences.appearance.title')}
+                subtitle={t('settings.preferences.appearance.subtitle')}
+                onPress={() => router.push('/settings/appearance')}
+                testID="settings-appearance"
+              />
+            </SettingsSection>
 
-            {/* Developers Section */}
-            <View className="mb-6">
-              <Text className="mx-4 mb-3 text-lg font-bold uppercase text-gray-600 dark:text-charcoal-300">{t('settings.sections.developers')}</Text>
-              <View className="mx-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-2 dark:border-charcoal-700 dark:bg-charcoal-900">
-                <SettingsItem
-                  icon="code-slash"
-                  title={t('settings.developers.breez.title')}
-                  subtitle={t('settings.developers.breez.subtitle')}
-                  onPress={() => router.push('/settings/developers/breez-sdk')}
-                  testID="settings-breez-sdk"
-                />
-              </View>
-            </View>
+            <SettingsSection title={t('settings.sections.developers')}>
+              <SettingsItem
+                icon="code-slash-outline"
+                title={t('settings.developers.breez.title')}
+                subtitle={t('settings.developers.breez.subtitle')}
+                onPress={() => router.push('/settings/developers/breez-sdk')}
+                testID="settings-breez-sdk"
+              />
+            </SettingsSection>
 
-            {/* Help & Sign Out */}
-            <View className="mx-4">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/settings/about')} testID="settings-about">
-                <Text className="text-center font-bold text-gray-600 dark:text-charcoal-300">{t('settings.aboutApp')}</Text>
-              </Pressable>
-            </View>
-            <View className="m-4">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={() => router.push('/need-help')} testID="settings-help">
-                <Text className="text-center font-bold text-primary-600">{t('settings.help')}</Text>
-              </Pressable>
-            </View>
-            <View className="mx-4 mb-8">
-              <Pressable className="rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-charcoal-700 dark:bg-charcoal-900" onPress={signOut} testID="settings-logout">
-                <Text className="text-center font-bold text-red-600">{t('settings.signOut')}</Text>
-              </Pressable>
-            </View>
+            <SettingsSection>
+              <SettingsItem icon="information-circle-outline" title={t('settings.aboutApp')} onPress={() => router.push('/settings/about')} testID="settings-about" />
+              <SettingsItem icon="help-buoy-outline" title={t('settings.help')} onPress={() => router.push('/need-help')} testID="settings-help" />
+            </SettingsSection>
+
+            <SettingsSection>
+              <SettingsItem icon="log-out-outline" title={t('settings.signOut')} onPress={signOut} tone="danger" testID="settings-logout" />
+            </SettingsSection>
+
+            <Text testID="settings-version" className={`mt-8 text-center text-xs ${theme.textMuted}`}>
+              {t('about.version', { version: Env.VERSION })}
+            </Text>
             <LogoutBottomSheet ref={logoutModalRef} onLogout={resetWallet} hasSeedBackup={isSeedPhraseBackup} onBackupSeed={redirectToBackupSeedPhrase} />
           </ScrollView>
         </View>
@@ -192,3 +161,9 @@ export default function Settings() {
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    paddingBottom: 48,
+  },
+});

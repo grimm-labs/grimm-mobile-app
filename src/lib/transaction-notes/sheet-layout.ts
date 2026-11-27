@@ -11,8 +11,9 @@ const SECTION_GAP = 16;
 const ACTION_BUTTON_HEIGHT = 56;
 const CONTENT_BOTTOM_PADDING = 16;
 
-export function getTransactionNoteSheetContentHeight(inputHeight: number): number {
-  return SHEET_HEADER_HEIGHT + INPUT_CONTAINER_PADDING + inputHeight + SECTION_GAP + ACTION_BUTTON_HEIGHT + CONTENT_BOTTOM_PADDING;
+/** `bottomPadding`: the space below the button (useSheetBottomPadding when the keyboard is hidden). */
+export function getTransactionNoteSheetContentHeight(inputHeight: number, bottomPadding: number = CONTENT_BOTTOM_PADDING): number {
+  return SHEET_HEADER_HEIGHT + INPUT_CONTAINER_PADDING + inputHeight + SECTION_GAP + ACTION_BUTTON_HEIGHT + bottomPadding;
 }
 
 export function clampTransactionNoteInputHeight(contentHeight: number): number {

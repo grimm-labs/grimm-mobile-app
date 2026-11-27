@@ -12,7 +12,7 @@ import { useKeyboardState } from 'react-native-keyboard-controller';
 import { Button, colors, Modal, useModal } from '@/components/ui';
 import { MAX_TRANSACTION_NOTE_LENGTH } from '@/lib/sqlite/transaction-notes';
 import { clampTransactionNoteInputHeight, getTransactionNoteSheetBottomInset, getTransactionNoteSheetContentHeight, NOTE_MAX_HEIGHT, NOTE_MIN_HEIGHT, NOTE_VERTICAL_PADDING } from '@/lib/transaction-notes/sheet-layout';
-import { useModalBottomInset } from '@/lib/use-modal-bottom-inset';
+import { SHEET_CONTENT_SPACING, useSheetBottomPadding } from '@/lib/use-sheet-bottom-padding';
 
 interface TransactionNoteBottomSheetProps {
   initialNote?: string;
@@ -32,7 +32,7 @@ export const TransactionNoteBottomSheet = React.forwardRef<BottomSheetModal, Tra
   const { t } = useTranslation();
   const { colorScheme } = useColorScheme();
   const iconColor = colorScheme === 'dark' ? colors.charcoal[300] : colors.neutral[500];
-  const bottomInset = useModalBottomInset();
+  const sheetBottomPadding = useSheetBottomPadding();
   const { height: keyboardHeight, isVisible: isKeyboardVisible } = useKeyboardState();
   const [note, setNote] = useState(initialNote);
   const [inputHeight, setInputHeight] = useState(NOTE_MIN_HEIGHT);
@@ -40,7 +40,10 @@ export const TransactionNoteBottomSheet = React.forwardRef<BottomSheetModal, Tra
   const isEditing = Boolean(initialNote);
   const isIOS = Platform.OS === 'ios';
 
-  const snapPoints = useMemo(() => [getTransactionNoteSheetContentHeight(inputHeight)], [inputHeight]);
+  // The sheet starts at the bottom edge of the screen: its content keeps clear of the home indicator, except when the
+  // keyboard covers it
+  const contentBottomPadding = isKeyboardVisible ? SHEET_CONTENT_SPACING : sheetBottomPadding;
+  const snapPoints = useMemo(() => [getTransactionNoteSheetContentHeight(inputHeight, contentBottomPadding)], [inputHeight, contentBottomPadding]);
 
   const effectiveBottomInset = useMemo(
     () =>
@@ -48,9 +51,9 @@ export const TransactionNoteBottomSheet = React.forwardRef<BottomSheetModal, Tra
         isIOS,
         isKeyboardVisible,
         keyboardHeight,
-        bottomInset,
+        bottomInset: 0,
       }),
-    [bottomInset, isIOS, isKeyboardVisible, keyboardHeight],
+    [isIOS, isKeyboardVisible, keyboardHeight],
   );
 
   React.useEffect(() => {
@@ -127,7 +130,7 @@ export const TransactionNoteBottomSheet = React.forwardRef<BottomSheetModal, Tra
       bottomInset={effectiveBottomInset}
       {...(isIOS ? { keyboardBehavior: 'interactive' as const, keyboardBlurBehavior: 'restore' as const } : { keyboardBlurBehavior: 'none' as const, android_keyboardInputMode: 'adjustResize' as const })}
     >
-      <View className="px-6 pb-4">
+      <View className="px-6" style={{ paddingBottom: contentBottomPadding }}>
         <View className="mb-4 flex-row items-start rounded-xl bg-neutral-200 p-2 dark:bg-neutral-800">
           <View className="ml-2 pt-4">
             <Ionicons name="document-text" size={18} color={iconColor} />

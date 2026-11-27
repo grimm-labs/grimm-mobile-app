@@ -4,8 +4,9 @@ import mockAsyncStorage from '@react-native-async-storage/async-storage/jest/asy
 
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
-jest.mock('@/lib/use-modal-bottom-inset', () => ({
-  useModalBottomInset: () => 0,
+jest.mock('@/lib/use-sheet-bottom-padding', () => ({
+  SHEET_CONTENT_SPACING: 16,
+  useSheetBottomPadding: () => 16,
 }));
 
 // react-hook form setup for testing

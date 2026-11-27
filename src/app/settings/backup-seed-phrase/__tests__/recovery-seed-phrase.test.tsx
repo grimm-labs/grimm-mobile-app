@@ -16,7 +16,7 @@ import SeedPhraseScreen from '../recovery-seed-phrase';
 
 const mockBack = jest.fn();
 // Stable, like expo-router's (a singleton): the screen has the router in its effect deps
-const mockRouter = { back: mockBack, push: jest.fn() };
+const mockRouter = { back: mockBack, push: jest.fn(), dismissAll: jest.fn(), replace: jest.fn() };
 jest.mock('expo-router', () => {
   const React = require('react');
   return {
@@ -37,9 +37,8 @@ jest.mock('@/lib/context/bdk-context', () => ({
   useBdk: () => ({ disconnectBdk: jest.fn() }),
 }));
 
-jest.mock('expo-clipboard', () => ({ setStringAsync: jest.fn() }));
-jest.mock('react-native-flash-message', () => ({ showMessage: jest.fn() }));
 jest.mock('@/lib/stack-screen-options', () => ({ useStackScreenOptions: () => ({}) }));
+jest.mock('@/components/ui/focus-aware-status-bar', () => ({ FocusAwareStatusBar: () => null }));
 jest.mock('@/components/back-button', () => ({ HeaderLeft: () => null }));
 
 jest.mock('react-native-safe-area-context', () => {
@@ -152,5 +151,45 @@ describe('Recovery Phrase screen (backup-seed-phrase/recovery-seed-phrase)', () 
 
     expect(fakeLocalAuthentication.promptOptions()).toEqual([]);
     expect(screen.getByTestId('recovery-phrase-word-1')).toHaveTextContent('abandon');
+  });
+
+  describe('not backed up yet', () => {
+    beforeEach(async () => {
+      fakeLocalAuthentication.removeScreenLock();
+      await startAppWithAppLock(<SeedPhraseScreen />);
+      await flushPromises();
+    });
+
+    it('shows the 12 words in order and announces the verification', () => {
+      expect(screen.getByTestId('recovery-phrase-word-1')).toHaveTextContent('abandon');
+      expect(screen.getByTestId('recovery-phrase-word-6')).toHaveTextContent('absent');
+      expect(screen.getByTestId('recovery-phrase-word-12')).toHaveTextContent('accident');
+      expect(screen.getByText('The words are not case sensitive and they are separated by spaces. We will ask you to verify on the next screen.')).toBeOnTheScreen();
+    });
+
+    it('"I have written it down" opens the verification', () => {
+      fireEvent.press(screen.getByTestId('saved-button'));
+
+      expect(mockRouter.push).toHaveBeenCalledWith('/settings/backup-seed-phrase/verify');
+    });
+
+    it('"Cancel, I’ll do this later" goes back home', () => {
+      fireEvent.press(screen.getByTestId('recovery-phrase-cancel-button'));
+
+      expect(mockRouter.dismissAll).toHaveBeenCalledTimes(1);
+      expect(mockRouter.replace).toHaveBeenCalledWith('/');
+    });
+  });
+
+  it('already backed up: shows the words, without the verification nor the cancel link', async () => {
+    fakeLocalAuthentication.removeScreenLock();
+
+    await startAppWithAppLock(<SeedPhraseScreen />, { appContext: { isSeedPhraseBackup: true } });
+    await flushPromises();
+
+    expect(screen.getByTestId('recovery-phrase-word-12')).toHaveTextContent('accident');
+    expect(screen.getByText('The words are not case sensitive and they are separated by spaces.')).toBeOnTheScreen();
+    expect(screen.queryByTestId('saved-button')).not.toBeOnTheScreen();
+    expect(screen.queryByTestId('recovery-phrase-cancel-button')).not.toBeOnTheScreen();
   });
 });

@@ -6,7 +6,7 @@ import { Dimensions, View } from 'react-native';
 
 import { Button, Modal, Text, useModal } from '@/components/ui';
 import { theme } from '@/lib/theme-classes';
-import { useModalBottomInset } from '@/lib/use-modal-bottom-inset';
+import { useSheetBottomPadding } from '@/lib/use-sheet-bottom-padding';
 
 interface LogoutBottomSheetProps {
   onLogout: () => void;
@@ -19,7 +19,7 @@ const MAX_MODAL_HEIGHT = Dimensions.get('window').height * 0.85;
 export const LogoutBottomSheet = React.forwardRef<BottomSheetModal, LogoutBottomSheetProps>(({ onLogout, hasSeedBackup, onBackupSeed }, forwardedRef) => {
   const { ref, present, dismiss } = useModal();
   const { t } = useTranslation();
-  const bottomInset = useModalBottomInset();
+  const bottomPadding = useSheetBottomPadding();
 
   React.useImperativeHandle(
     forwardedRef,
@@ -47,9 +47,9 @@ export const LogoutBottomSheet = React.forwardRef<BottomSheetModal, LogoutBottom
   };
 
   return (
-    <Modal ref={ref} enableDynamicSizing maxDynamicContentSize={MAX_MODAL_HEIGHT} showCloseButton={false} bottomInset={bottomInset}>
+    <Modal ref={ref} enableDynamicSizing maxDynamicContentSize={MAX_MODAL_HEIGHT} showCloseButton={false}>
       <BottomSheetView>
-        <View className="px-6 pb-4">
+        <View className="px-6" style={{ paddingBottom: bottomPadding }}>
           <View className="mb-4">
             <Text testID="logout-sheet-title" className={`mb-2 text-2xl font-bold ${theme.textPrimary}`}>
               {t('logoutBottomSheet.title')}

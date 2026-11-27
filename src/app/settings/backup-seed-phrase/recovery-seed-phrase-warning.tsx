@@ -1,17 +1,35 @@
 /* eslint-disable react/no-unstable-nested-components */
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { HeaderLeft } from '@/components/back-button';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, colors, FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { Button, FocusAwareStatusBar, SafeAreaView, ScrollView, Text, View } from '@/components/ui';
+import { useStackScreenOptions } from '@/lib/stack-screen-options';
+import { theme } from '@/lib/theme-classes';
+
+const PLACEHOLDER_ROWS = 4;
+const PLACEHOLDER_COLUMNS = 3;
+
+/** The 12 words, hidden: shows what the next screen holds without revealing anything. */
+const RecoveryPhrasePlaceholder = () => (
+  <View testID="recovery-warning-placeholder" className="items-center" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    {Array.from({ length: PLACEHOLDER_ROWS }, (_, row) => (
+      <View key={row} className="my-3 flex-row">
+        {Array.from({ length: PLACEHOLDER_COLUMNS }, (__, column) => (
+          <View key={column} className="mx-3 h-3 w-20 rounded-full bg-gray-900 dark:bg-charcoal-100" />
+        ))}
+      </View>
+    ))}
+  </View>
+);
 
 export default function MnemonicWarning() {
   const router = useRouter();
   const { t } = useTranslation();
+  const stackScreenOptions = useStackScreenOptions();
 
   const handleCancel = () => {
     router.dismissAll();
@@ -19,46 +37,51 @@ export default function MnemonicWarning() {
   };
   const handleProceed = () => router.push('/settings/backup-seed-phrase/recovery-seed-phrase');
 
-  const warnings = [t('mnemonicWarning.warning1'), t('mnemonicWarning.warning2'), t('mnemonicWarning.warning3')];
-
   return (
     <SafeAreaProvider>
-      <SafeAreaView testID="recovery-warning-screen">
-        <View className="flex h-full justify-between px-4">
-          <Stack.Screen
-            options={{
-              headerTitleAlign: 'center',
-              headerTitle: () => <HeaderTitle title={t('mnemonicWarning.header')} />,
-              headerShown: true,
-              headerShadowVisible: false,
-              headerLeft: HeaderLeft,
-            }}
-          />
-          <FocusAwareStatusBar />
-          <View>
-            <View className="mt-6 items-center">
-              <Ionicons name="warning-outline" size={64} color={colors.danger[500]} />
-              <Text className="mt-6 text-center text-xl font-medium text-red-500">{t('mnemonicWarning.attention')}</Text>
-              <Text className="mt-4 text-center text-sm text-gray-600 dark:text-charcoal-300">{t('mnemonicWarning.intro')}</Text>
-            </View>
-            <View className="mt-8 border-t-[0.5px] border-gray-300" />
-            <View className="mt-6 space-y-6">
-              {warnings.map((text, index) => (
-                <View key={index} className="my-3 flex flex-row items-center space-x-4">
-                  <View className="m-3">
-                    <Ionicons name={index === 0 ? 'alert-circle-outline' : index === 1 ? 'help-circle-outline' : 'lock-closed-outline'} size={32} color="gray" />
-                  </View>
-                  <Text className="flex-1 text-sm text-gray-700 dark:text-charcoal-200">{text}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-          <View className="flex-col justify-between pb-4">
-            <Button testID="cancel-button" label={t('mnemonicWarning.cancel')} fullWidth size="lg" variant="outline" className="mb-4" textClassName="text-base" onPress={handleCancel} />
-            <Button testID="proceed-button" label={t('mnemonicWarning.proceed')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleProceed} />
-          </View>
+      <SafeAreaView testID="recovery-warning-screen" className={`flex-1 ${theme.screen}`}>
+        <Stack.Screen
+          options={{
+            headerTitleAlign: 'center',
+            headerTitle: () => <HeaderTitle title={t('mnemonicWarning.header')} />,
+            headerShown: true,
+            headerShadowVisible: false,
+            // "Cancel, I'll do this later" is the way out of this screen
+            headerBackVisible: false,
+            headerLeft: () => null,
+            ...stackScreenOptions,
+          }}
+        />
+        <FocusAwareStatusBar />
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <Text testID="recovery-warning-intro" className={`text-center text-lg leading-7 ${theme.textPrimary}`}>
+            {t('mnemonicWarning.intro')}
+          </Text>
+          <RecoveryPhrasePlaceholder />
+          <Text testID="recovery-warning-important" className={`text-center text-base leading-7 ${theme.textPrimary}`}>
+            <Trans
+              i18nKey="mnemonicWarning.important"
+              components={{
+                label: <Text className={`text-base font-bold underline ${theme.textPrimary}`} />,
+                underline: <Text className={`text-base underline ${theme.textPrimary}`} />,
+              }}
+            />
+          </Text>
+        </ScrollView>
+        <View className="px-6 pb-4">
+          <Button testID="proceed-button" label={t('mnemonicWarning.proceed')} fullWidth size="lg" variant="secondary" textClassName="text-base text-white" onPress={handleProceed} />
+          <Button testID="cancel-button" label={t('mnemonicWarning.cancel')} fullWidth variant="link" textClassName={`text-base font-medium ${theme.textMuted}`} onPress={handleCancel} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    flexGrow: 1,
+    justifyContent: 'space-around',
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+  },
+});

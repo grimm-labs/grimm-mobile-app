@@ -12,7 +12,8 @@ tags:
     visible:
       id: 'recovery-warning-screen'
     timeout: 10000
-- assertVisible: 'Attention'
+- assertVisible:
+    id: 'recovery-warning-important'
 - tapOn:
     id: 'cancel-button'
 - extendedWaitUntil:
@@ -21,7 +22,24 @@ tags:
     timeout: 10000
 - assertVisible:
     id: 'seed-backup-banner'
-# Banner -> warning -> Proceed shows the 12 words
+# Banner -> warning -> Proceed shows the 12 words; "Cancel, I'll do this later" goes back home
+- tapOn:
+    id: 'seed-backup-banner-cta'
+- tapOn:
+    id: 'proceed-button'
+- extendedWaitUntil:
+    visible:
+      id: 'recovery-phrase-word-12'
+    timeout: 10000
+- tapOn:
+    id: 'recovery-phrase-cancel-button'
+- extendedWaitUntil:
+    visible:
+      id: 'home-screen'
+    timeout: 10000
+- assertVisible:
+    id: 'seed-backup-banner'
+# Banner -> warning -> Proceed shows the 12 words again
 - tapOn:
     id: 'seed-backup-banner-cta'
 - tapOn:
@@ -31,9 +49,6 @@ tags:
       id: 'recovery-phrase-screen'
     timeout: 10000
 - runFlow: subflows/read-recovery-phrase.yaml
-# The copy confirmation only lasts 2 s, less than a tap takes on the CI emulator: it is not asserted
-- tapOn:
-    id: 'copy-button'
 # Wrong words are rejected
 - tapOn:
     id: 'saved-button'
@@ -89,6 +104,8 @@ tags:
     timeout: 10000
 - assertNotVisible:
     id: 'saved-button'
+- assertNotVisible:
+    id: 'recovery-phrase-cancel-button'
 - back
 - back
 # Log out: no "not backed up" warning anymore

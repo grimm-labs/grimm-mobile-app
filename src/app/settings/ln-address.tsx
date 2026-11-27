@@ -2,6 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Clipboard from 'expo-clipboard';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -14,6 +15,7 @@ import { HeaderTitle } from '@/components/header-title';
 import { Button, colors, FocusAwareStatusBar, Input, Modal, Pressable, SafeAreaView, ScrollView, Text, useModal, View } from '@/components/ui';
 import { GRIMM_APP_LN_URL_DOMAIN } from '@/lib/constant';
 import { useBreez } from '@/lib/context/breez-context';
+import { useSheetBottomPadding } from '@/lib/use-sheet-bottom-padding';
 import { generateRandomUsername, LN_USERNAME_MIN_LENGTH, validateLnUsername } from '@/lib/utils';
 
 type ScreenMode = 'view' | 'create' | 'edit';
@@ -30,6 +32,7 @@ export default function LnAddressScreen() {
 
   const confirmModal = useModal();
   const deleteModal = useModal();
+  const sheetBottomPadding = useSheetBottomPadding();
 
   const fullAddress = useMemo(() => (username ? `${username}@${GRIMM_APP_LN_URL_DOMAIN}` : ''), [username]);
 
@@ -252,39 +255,43 @@ export default function LnAddressScreen() {
         </View>
 
         {/* Confirmation Modal - Create/Edit */}
-        <Modal ref={confirmModal.ref} snapPoints={['35%']} showCloseButton={false}>
-          <View className="flex-1 px-6 pb-8">
-            <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.confirm.title')}</Text>
-            <Text className="mb-2 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.confirm.message')}</Text>
-            <Text testID="ln-address-confirm-address" className="mb-6 text-lg font-bold text-primary-600">
-              {fullAddress}
-            </Text>
-            <View>
-              <Button
-                testID="ln-address-confirm-button"
-                label={t('lnAddressSettings.confirm.confirmButton')}
-                fullWidth
-                size="lg"
-                variant="secondary"
-                textClassName="text-base text-white"
-                loading={isSubmitting}
-                onPress={handleConfirmCreate}
-              />
-              <Button testID="ln-address-confirm-cancel" label={t('lnAddressSettings.confirm.cancelButton')} fullWidth size="lg" variant="outline" onPress={confirmModal.dismiss} />
+        <Modal ref={confirmModal.ref} enableDynamicSizing showCloseButton={false}>
+          <BottomSheetView style={{ paddingBottom: sheetBottomPadding }}>
+            <View className="px-6">
+              <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.confirm.title')}</Text>
+              <Text className="mb-2 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.confirm.message')}</Text>
+              <Text testID="ln-address-confirm-address" className="mb-6 text-lg font-bold text-primary-600">
+                {fullAddress}
+              </Text>
+              <View>
+                <Button
+                  testID="ln-address-confirm-button"
+                  label={t('lnAddressSettings.confirm.confirmButton')}
+                  fullWidth
+                  size="lg"
+                  variant="secondary"
+                  textClassName="text-base text-white"
+                  loading={isSubmitting}
+                  onPress={handleConfirmCreate}
+                />
+                <Button testID="ln-address-confirm-cancel" label={t('lnAddressSettings.confirm.cancelButton')} fullWidth size="lg" variant="outline" onPress={confirmModal.dismiss} />
+              </View>
             </View>
-          </View>
+          </BottomSheetView>
         </Modal>
 
         {/* Delete Confirmation Modal */}
-        <Modal ref={deleteModal.ref} snapPoints={['35%']} showCloseButton={false}>
-          <View className="flex-1 px-6 pb-8">
-            <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.delete.title')}</Text>
-            <Text className="mb-6 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.delete.message')}</Text>
-            <View>
-              <Button testID="ln-address-delete-confirm" label={t('lnAddressSettings.delete.confirmButton')} fullWidth size="lg" variant="destructive" loading={isSubmitting} onPress={handleConfirmDelete} />
-              <Button testID="ln-address-delete-cancel" label={t('lnAddressSettings.delete.cancelButton')} fullWidth size="lg" variant="outline" onPress={deleteModal.dismiss} />
+        <Modal ref={deleteModal.ref} enableDynamicSizing showCloseButton={false}>
+          <BottomSheetView style={{ paddingBottom: sheetBottomPadding }}>
+            <View className="px-6">
+              <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-charcoal-100">{t('lnAddressSettings.delete.title')}</Text>
+              <Text className="mb-6 text-base text-gray-600 dark:text-charcoal-300">{t('lnAddressSettings.delete.message')}</Text>
+              <View>
+                <Button testID="ln-address-delete-confirm" label={t('lnAddressSettings.delete.confirmButton')} fullWidth size="lg" variant="destructive" loading={isSubmitting} onPress={handleConfirmDelete} />
+                <Button testID="ln-address-delete-cancel" label={t('lnAddressSettings.delete.cancelButton')} fullWidth size="lg" variant="outline" onPress={deleteModal.dismiss} />
+              </View>
             </View>
-          </View>
+          </BottomSheetView>
         </Modal>
       </SafeAreaView>
     </SafeAreaProvider>

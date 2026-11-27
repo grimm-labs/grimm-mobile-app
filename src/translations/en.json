@@ -368,14 +368,11 @@
     "title": "Delete account?"
   },
   "mnemonicWarning": {
-    "attention": "Attention",
-    "cancel": "Cancel",
-    "header": "Recovery Phrase Warning",
-    "intro": "Please read the following carefully before viewing your recovery phrase.",
-    "proceed": "Proceed",
-    "warning1": "Anyone with the recovery phrase has full, irrevocable access to all associated wallet funds.",
-    "warning2": "Grimm App Support team will never ask you for your recovery phrase or private key.",
-    "warning3": "Never enter your recovery phrase or private key into a form or application. Apps don’t need them to function."
+    "cancel": "Cancel, I’ll do this later",
+    "header": "Backup Wallet",
+    "important": "<label>IMPORTANT:</label> Grimm App does not have access to the funds in your wallet. You have sole custody of your wallet via the recovery phrase. If you lose your recovery phrase, <underline>Grimm App will not be able to restore your funds.</underline>",
+    "intro": "We are going to display your wallet recovery phrase on the next screen.",
+    "proceed": "I understand, back up my wallet"
   },
   "networkSwitcher": {
     "alerts": {
@@ -604,12 +601,12 @@
     "title": "Back up your recovery phrase"
   },
   "seedPhraseScreen": {
-    "copiedMessage": "Recovery phrase copied to clipboard",
-    "copyButton": "Copy to Clipboard",
-    "description": "Write down these 12 words in the exact order shown. Store them safely offline - anyone with access to these words can control your wallet.",
-    "header": "Recovery Phrase",
-    "title": "Secure Your Wallet",
-    "verify": "Verify"
+    "cancel": "Cancel, I’ll do this later",
+    "description": "This is your wallet recovery phrase. To back up your wallet, simply write these words down in the correct order.",
+    "header": "Backup Wallet",
+    "notes": "The words are not case sensitive and they are separated by spaces.",
+    "verifyNotice": "We will ask you to verify on the next screen.",
+    "writtenDown": "I have written it down"
   },
   "seedPhraseVerification": {
     "description": "To confirm that you have properly saved your phrase, please enter the following words:",
