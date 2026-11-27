@@ -3,8 +3,26 @@ import fs from 'node:fs';
 
 import type { ConfigContext, ExpoConfig } from '@expo/config';
 import type { AppIconBadgeConfig } from 'app-icon-badge/types';
+import { type ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 
 import { ClientEnv, Env } from './env.js';
+
+// Google Play requires API 36 (Android 16) for every update since August 31, 2026.
+const ANDROID_SDK_VERSION = 36;
+
+/**
+ * Apps targeting API 36 get predictive back on Android 16: the system stops calling onBackPressed,
+ * which React Native 0.79 relies on, so Back would close the app instead of going back a screen.
+ * Opting out keeps the classic Back (Expo SDK 54+ does the same with predictiveBackGestureEnabled: false).
+ */
+const withPredictiveBackDisabled: ConfigPlugin = (config) =>
+  withAndroidManifest(config, (mod) => {
+    const application = mod.modResults.manifest.application?.[0];
+    if (application) {
+      application.$['android:enableOnBackInvokedCallback'] = 'false';
+    }
+    return mod;
+  });
 
 const GOOGLE_SERVICES_CREDENTIALS_PATH = './credentials/firebase/google-services.json';
 const GOOGLE_SERVICES_LEGACY_PATH = './google-services.json';
@@ -41,7 +59,7 @@ const appIconBadgeConfig: AppIconBadgeConfig = {
   ],
 };
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
+const appConfig = ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.NAME,
   description: `${Env.NAME}`,
@@ -104,6 +122,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         android: {
           minSdkVersion: 26,
+          compileSdkVersion: ANDROID_SDK_VERSION,
+          targetSdkVersion: ANDROID_SDK_VERSION,
+          buildToolsVersion: `${ANDROID_SDK_VERSION}.0.0`,
           useLegacyPackaging: true,
         },
       },
@@ -176,3 +197,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
   },
 });
+
+export default (context: ConfigContext): ExpoConfig => withPredictiveBackDisabled(appConfig(context));
