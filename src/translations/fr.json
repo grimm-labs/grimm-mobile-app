@@ -93,6 +93,14 @@
   "breezDetails": {
     "balance": "Solde",
     "bitcoin_tip": "Bitcoin Tip",
+    "exportLogs": {
+      "button": "Exporter les logs du SDK",
+      "description": "Partagez les logs du SDK Breez avec le support de Grimm ou de Breez pour diagnostiquer un problème de paiement ou de dépôt. Ils contiennent des détails de paiements et d'adresses, mais jamais votre phrase de récupération.",
+      "dialogTitle": "Logs du SDK Breez",
+      "empty": "Aucun log du SDK pour le moment",
+      "error": "Impossible d'exporter les logs du SDK",
+      "unavailable": "Le partage n'est pas disponible sur cet appareil"
+    },
     "fingerprint": "Empreinte",
     "header_title": "Détails du SDK Breez",
     "liquid_tip": "Liquid Tip",
@@ -129,6 +137,31 @@
     "no_countries": "Aucun pays disponible",
     "no_results": "Aucun pays trouvé pour \"{{searchTerm}}\"",
     "search_placeholder": "Rechercher un pays..."
+  },
+  "deposits": {
+    "description": "Bitcoin envoyés à l'adresse on-chain de votre portefeuille Lightning. Un dépôt arrive sur votre solde une fois claimé.",
+    "empty": "Aucun dépôt on-chain en cours.",
+    "rowLabel": "Dépôt on-chain",
+    "state": {
+      "awaitingClaim": "Claim en cours",
+      "claiming": "Crédit en cours",
+      "confirming": "En attente de confirmations",
+      "failed": "Échec du claim",
+      "needsFeeApproval": "Frais à approuver",
+      "refunding": "Remboursement en cours",
+      "tooSmall": "Trop petit pour être claimé"
+    },
+    "stateDescription": {
+      "awaitingClaim": "Confirmé. Il sera claimé automatiquement dans quelques minutes.",
+      "claiming": "Claimé. Le montant arrive sur votre solde dans quelques instants.",
+      "confirming": "Il sera crédité automatiquement après 3 confirmations on-chain.",
+      "failed": "La dernière tentative de claim a échoué. Elle sera relancée automatiquement.",
+      "needsFeeApproval": "Les frais de claim dépassent la limite automatique. Approuvez-les pour créditer votre solde.",
+      "refunding": "Ce dépôt est renvoyé vers une adresse Bitcoin.",
+      "tooSmall": "Ce montant ne couvre pas les frais de claim."
+    },
+    "title": "Dépôts on-chain",
+    "transaction": "Transaction {{txid}} · sortie {{vout}}"
   },
   "emptyTransactions": {
     "ln": {
@@ -317,6 +350,13 @@
   "lnWallet": {
     "actions": "Actions",
     "available": "Bitcoin Lightning disponible",
+    "claimResult": {
+      "crediting": "Claim envoyé. Le montant arrive sur votre solde dans quelques instants.",
+      "feeChanged": "Les frais de claim sont maintenant de {{fee}} sats. Vérifiez les nouveaux frais et confirmez à nouveau.",
+      "inProgress": "Ce dépôt est déjà en cours de claim.",
+      "notYet": "Rien n'a encore été claimé. Le dépôt sera crédité automatiquement après plus de confirmations.",
+      "tooSmall": "Ce dépôt est trop petit pour couvrir les frais de claim."
+    },
     "createInvoice": "Créer une facture Lightning BTC",
     "currentPrice": "Prix actuel du Bitcoin",
     "lnAddressCreatePrompt": "Créez votre adresse Lightning",
@@ -337,7 +377,6 @@
       "title": "Confirmer le claim du dépôt"
     },
     "manualClaimModal": {
-      "amount": "Montant",
       "cancelButton": "Annuler",
       "claimFee": "Frais de claim",
       "confirmButton": "Confirmer",
@@ -348,10 +387,7 @@
       "title": "Confirmer le dépôt"
     },
     "manualClaimPage": {
-      "claimButton": "Claim le dépôt",
-      "description": "Ces dépôts on-chain n'ont pas pu être claimés automatiquement car les frais réseau dépassent la limite. Confirmez chaque dépôt individuellement.",
-      "empty": "Aucun dépôt ne nécessite de confirmation manuelle.",
-      "title": "Dépôts en attente"
+      "claimButton": "Claim le dépôt"
     },
     "payInvoice": "Payer une facture Lightning",
     "receiveOnchain": "Recevoir via BTC on-chain",

@@ -54,7 +54,7 @@ gh workflow run e2e-android.yml --ref <branch> -f apk-run-id=<run id> -f include
 
 ## Coverage
 
-Features that need a funded wallet (sending, transaction lists and details, transaction notes, unclaimed deposits), a real camera (scanning a QR code) or biometrics (Biometric Unlock, see the manual checklist of the App Lock spec) are out of scope.
+Features that need a funded wallet (sending, transaction lists and details, transaction notes, deposit rows, claims and their messages), a real camera (scanning a QR code) or biometrics (Biometric Unlock, see the manual checklist of the App Lock spec) are out of scope.
 
 | Area         | Feature                                                                                                                          | Flow                       |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
@@ -78,6 +78,7 @@ Features that need a funded wallet (sending, transaction lists and details, tran
 | Send         | Payment Input routing: Bitcoin URI with an amount, method sheet, Invoice without an Amount, other networks                       | `send-routing`             |
 | Links        | `bitcoin:` and `lightning:` links open the on-chain and Lightning amount screens                                                 | `deep-links`               |
 | Lightning    | Lightning Login: LNURL-auth pasted and opened as a link, title by action, Cancel (never signs in)                                | `lightning-login`          |
+| Lightning    | On-chain deposits screen without a deposit (opened by its link), no deposit row or claim banner on the Lightning account         | `deposits`                 |
 | Send         | On-chain: empty and invalid address, valid address, fee options, insufficient balance                                            | `send-onchain`             |
 | Scan         | Camera screen and close; camera permission denied                                                                                | `scan-qr`                  |
 | Settings     | Network switch to testnet (warning banner) and back to mainnet (confirmation, cancel)                                            | `settings-network`         |
@@ -89,5 +90,5 @@ Features that need a funded wallet (sending, transaction lists and details, tran
 | Settings     | LN address: empty state, validation messages, random name, availability check (cancelled)                                        | `settings-ln-address`      |
 | Settings     | Hide balance and block screenshots switches                                                                                      | `settings-security`        |
 | Settings     | Notifications screen, appearance (system/dark/light)                                                                             | `settings-preferences`     |
-| Settings     | Breez SDK details, About, Help & Support, app version at the end of the list                                                     | `settings-about`           |
+| Settings     | Breez SDK details (refresh, export the SDK logs), About, Help & Support, app version at the end of the list                      | `settings-about`           |
 | Settings     | Log out: warning, cancel, back up first, confirm                                                                                 | `logout`                   |

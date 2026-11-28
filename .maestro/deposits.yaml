@@ -1,0 +1,35 @@
+appId: ${APP_ID}
+name: On-chain deposits - empty deposits screen, no deposit row or claim banner
+tags:
+  - lightning
+  - onchain
+---
+# A deposit needs funds (manual checklist of the spec). Without one, the screen and the Lightning account show nothing to claim.
+- runFlow: subflows/create-wallet.yaml
+- runFlow: subflows/wait-for-lightning.yaml
+- tapOn:
+    id: 'home-lightning-wallet-card'
+- extendedWaitUntil:
+    visible:
+      id: 'ln-wallet-screen'
+    timeout: 10000
+- assertNotVisible:
+    id: 'manual-claim-banner'
+- assertNotVisible:
+    id: 'transaction-deposit-.*'
+# The deposits screen opens from a deposit row or the claim banner; with no deposit, reach it through its link
+- openLink: 'GrimmApp://wallets/unclaimed-deposits'
+- extendedWaitUntil:
+    visible:
+      id: 'deposits-screen'
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: 'deposits-empty'
+    timeout: 30000
+- assertVisible: 'No on-chain deposit in progress.'
+- back
+- extendedWaitUntil:
+    visible:
+      id: 'ln-wallet-screen'
+    timeout: 10000

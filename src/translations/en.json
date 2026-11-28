@@ -93,6 +93,14 @@
   "breezDetails": {
     "balance": "Balance",
     "bitcoin_tip": "Bitcoin Tip",
+    "exportLogs": {
+      "button": "Export SDK logs",
+      "description": "Share the Breez SDK logs with Grimm or Breez support to diagnose a payment or deposit issue. They contain payment and address details, but never your recovery phrase.",
+      "dialogTitle": "Breez SDK logs",
+      "empty": "No SDK logs yet",
+      "error": "Could not export the SDK logs",
+      "unavailable": "Sharing is not available on this device"
+    },
     "fingerprint": "Fingerprint",
     "header_title": "Breez SDK Details",
     "liquid_tip": "Liquid Tip",
@@ -129,6 +137,31 @@
     "no_countries": "No countries available",
     "no_results": "No countries found for \"{{searchTerm}}\"",
     "search_placeholder": "Search country..."
+  },
+  "deposits": {
+    "description": "Bitcoin sent to the on-chain address of your Lightning wallet. A deposit reaches your balance once it is claimed.",
+    "empty": "No on-chain deposit in progress.",
+    "rowLabel": "On-chain deposit",
+    "state": {
+      "awaitingClaim": "Being claimed",
+      "claiming": "Being credited",
+      "confirming": "Waiting for confirmations",
+      "failed": "Claim failed",
+      "needsFeeApproval": "Fee approval needed",
+      "refunding": "Being refunded",
+      "tooSmall": "Too small to claim"
+    },
+    "stateDescription": {
+      "awaitingClaim": "Confirmed. It will be claimed automatically within a few minutes.",
+      "claiming": "Claimed. The amount will reach your balance in a few moments.",
+      "confirming": "It will be credited automatically after 3 on-chain confirmations.",
+      "failed": "The last claim attempt failed. It will be tried again automatically.",
+      "needsFeeApproval": "The claim fee is above the automatic limit. Approve it to credit your balance.",
+      "refunding": "This deposit is being sent back to a Bitcoin address.",
+      "tooSmall": "This amount cannot cover the claim fee."
+    },
+    "title": "On-chain deposits",
+    "transaction": "Transaction {{txid}} · output {{vout}}"
   },
   "emptyTransactions": {
     "ln": {
@@ -317,6 +350,13 @@
   "lnWallet": {
     "actions": "Actions",
     "available": "Available Bitcoin Lightning",
+    "claimResult": {
+      "crediting": "Claim sent. The amount will reach your balance in a few moments.",
+      "feeChanged": "The claim fee is now {{fee}} sats. Check the new fee and confirm again.",
+      "inProgress": "This deposit is already being claimed.",
+      "notYet": "Nothing was claimed yet. The deposit will be credited automatically after more confirmations.",
+      "tooSmall": "This deposit is too small to cover the claim fee."
+    },
     "createInvoice": "Create BTC lightning invoice",
     "currentPrice": "Current Bitcoin price",
     "lnAddressCreatePrompt": "Create your Lightning address",
@@ -337,7 +377,6 @@
       "title": "Confirm deposit claim"
     },
     "manualClaimModal": {
-      "amount": "Amount",
       "cancelButton": "Cancel",
       "claimFee": "Claim fee",
       "confirmButton": "Confirm",
@@ -348,10 +387,7 @@
       "title": "Confirm deposit"
     },
     "manualClaimPage": {
-      "claimButton": "Claim deposit",
-      "description": "These on-chain deposits could not be claimed automatically because network fees exceeded the limit. Confirm each deposit individually.",
-      "empty": "No deposits require manual confirmation.",
-      "title": "Pending deposits"
+      "claimButton": "Claim deposit"
     },
     "payInvoice": "Pay a lightning invoice",
     "receiveOnchain": "Receive via BTC on-chain",

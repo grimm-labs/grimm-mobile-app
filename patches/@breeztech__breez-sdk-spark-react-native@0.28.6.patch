@@ -1,10 +1,10 @@
 diff --git a/BreezSdkSparkReactNative.podspec b/BreezSdkSparkReactNative.podspec
-index 5cfe1ef859a3b8b537ec7da621cac81199162d64..134321f031e8248f7751f91dd98c6747289bf405 100644
+index 3ef9b26b9324b30b68d88c43d2d18e9f2c1f548e..7aee5f3199d2cd0a7fc90f96aefa4ea1cd76b7cd 100644
 --- a/BreezSdkSparkReactNative.podspec
 +++ b/BreezSdkSparkReactNative.podspec
-@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
- 
-   s.source_files = "ios/*.{h,m,mm,swift}", "ios/generated/**/*.{h}", "cpp/**/*.{hpp,cpp,c,h}", "cpp/generated/**/*.{hpp,cpp,c,h}"
+@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
+   # Swift sources need is public.
+   s.public_header_files = "ios/PasskeyPRFHelper.h"
    s.vendored_frameworks = "build/RnBreezSdkSpark.xcframework"
 -  s.dependency    "uniffi-bindgen-react-native", "0.29.3-1"
 +  s.dependency    "uniffi-bindgen-react-native", "0.30.0-1"

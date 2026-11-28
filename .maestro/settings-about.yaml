@@ -30,6 +30,24 @@ tags:
       id: 'breez-sdk-deposits-status-value'
       text: 'Last refresh at .*'
     timeout: 60000
+# Export the SDK logs: the SDK has written them since it connected, so the share sheet opens (no message)
+- scrollUntilVisible:
+    element:
+      id: 'breez-sdk-export-logs'
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: 'breez-sdk-export-logs'
+    waitToSettleTimeoutMs: 500
+- assertNotVisible: 'No SDK logs yet'
+- assertNotVisible: 'Could not export the SDK logs'
+- assertNotVisible: 'Sharing is not available on this device'
+# Back closes the share sheet
+- back
+- extendedWaitUntil:
+    visible:
+      id: 'breez-sdk-screen'
+    timeout: 10000
 - back
 # About
 - runFlow:

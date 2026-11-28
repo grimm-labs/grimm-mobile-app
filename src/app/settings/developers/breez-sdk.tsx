@@ -1,17 +1,56 @@
 /* eslint-disable react/no-unstable-nested-components */
+import { Env } from '@env';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Application from 'expo-application';
 import { Stack } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HeaderLeft } from '@/components/back-button';
 import DetailRow from '@/components/detail-row';
 import { HeaderTitle } from '@/components/header-title';
-import { Button, FocusAwareStatusBar, SafeAreaView } from '@/components/ui';
+import { Button, FocusAwareStatusBar, SafeAreaView, Text } from '@/components/ui';
+import { exportSdkLogs } from '@/lib/breez/sdk-logs';
 import { formatDepositsSummary, logUnclaimedDeposits } from '@/lib/breez/unclaimed-deposits-log';
 import { useBreez } from '@/lib/context';
+
+function useExportSdkLogs() {
+  const { t } = useTranslation();
+  const { network } = useBreez();
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportLogs = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const buildVersion = Application.nativeBuildVersion ? ` (${Application.nativeBuildVersion})` : '';
+      const result = await exportSdkLogs({ appVersion: `${Env.VERSION}${buildVersion}`, platform: `${Platform.OS} ${Platform.Version}`, network, exportedAt: new Date() }, t('breezDetails.exportLogs.dialogTitle'));
+      if (result === 'empty') showMessage({ message: t('breezDetails.exportLogs.empty'), type: 'info' });
+      if (result === 'unavailable') showMessage({ message: t('breezDetails.exportLogs.unavailable'), type: 'danger' });
+    } catch (error) {
+      console.warn('[Breez SDK] Could not export the SDK logs:', error);
+      showMessage({ message: t('breezDetails.exportLogs.error'), type: 'danger' });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [network, t]);
+
+  return { exportLogs, isExporting };
+}
+
+function ExportLogsSection() {
+  const { t } = useTranslation();
+  const { exportLogs, isExporting } = useExportSdkLogs();
+
+  return (
+    <View className="mb-6">
+      <Text className="mb-3 text-sm text-gray-500 dark:text-charcoal-400">{t('breezDetails.exportLogs.description')}</Text>
+      <Button testID="breez-sdk-export-logs" label={t('breezDetails.exportLogs.button')} fullWidth size="lg" variant="outline" loading={isExporting} onPress={exportLogs} />
+    </View>
+  );
+}
 
 export default function BreezSdkDetailsScreen() {
   const { t } = useTranslation();
@@ -77,6 +116,7 @@ export default function BreezSdkDetailsScreen() {
             <DetailRow testID="breez-sdk-deposits" label={t('breezDetails.unclaimedDeposits')} value={unclaimedDepositsSummary || t('breezDetails.unclaimedDepositsEmpty')} expandable />
             <Button testID="breez-sdk-refresh" label={t('breezDetails.unclaimedDepositsRefresh')} fullWidth size="lg" variant="secondary" onPress={fetchUnclaimedDeposits} />
           </View>
+          <ExportLogsSection />
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>

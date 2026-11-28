@@ -1,4 +1,3 @@
-/* eslint-disable max-params */
 /* eslint-disable max-lines-per-function */
 import type {
   Bolt11InvoiceDetails,
@@ -24,8 +23,8 @@ import {
   defaultConfig,
   LnurlPayRequest,
   LnurlWithdrawRequest,
-  MaxFee,
   Network,
+  PaymentRequest,
   PaymentStatus,
   PaymentType,
   PrepareLnurlPayRequest,
@@ -42,8 +41,13 @@ import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 
+import type { ClaimResult } from '../breez/deposits';
+import { approvedClaimMaxFee, autoClaimMaxFee, claimErrorToResult, toClaimResult } from '../breez/deposits';
+import { startSdkLogging } from '../breez/sdk-logs';
 import { logUnclaimedDeposits } from '../breez/unclaimed-deposits-log';
+import { paymentsFingerprint, syncSparkWallet } from '../breez/wallet-sync';
 import { DEFAULT_LN_INVOICE_EXPIRY_SECS, GRIMM_APP_LN_URL_DOMAIN } from '../constant';
 import { useSecureStorage } from '../hooks/use-secure-storage';
 import { PAYMENT_COMPLETION_TIMEOUT_MS, waitWhilePending } from '../lightning/wait-for-payment';
@@ -55,6 +59,18 @@ export enum AppNetwork {
 }
 
 const SYNC_INTERVAL = 10000;
+
+const LIST_ALL_PAYMENTS: ListPaymentsRequest = {
+  typeFilter: [PaymentType.Send, PaymentType.Receive],
+  statusFilter: undefined,
+  assetFilter: undefined,
+  paymentDetailsFilter: undefined,
+  fromTimestamp: undefined,
+  toTimestamp: undefined,
+  offset: undefined,
+  limit: undefined,
+  sortAscending: undefined,
+};
 
 interface BreezContextType {
   isConnected: boolean;
@@ -73,6 +89,7 @@ interface BreezContextType {
   getLightningAddressInfo: () => Promise<any>;
   deleteLightningAddress: () => Promise<void>;
   initializeBreez: () => Promise<void>;
+  /** Asks Spark for a full sync (at most 30 s), then shows the balance and payments the SDK stored */
   refreshWalletInfo: () => Promise<void>;
   disconnectBreez: () => Promise<void>;
   setNetwork: (network: AppNetwork) => Promise<void>;
@@ -93,7 +110,8 @@ interface BreezContextType {
   unclaimedDeposits: DepositInfo[];
   listUnclaimedDeposits: () => Promise<DepositInfo[]>;
   refreshUnclaimedDeposits: () => Promise<DepositInfo[]>;
-  claimDeposit: (txid: string, vout: number, maxFeeSats: bigint) => Promise<void>;
+  /** Claims a deposit for at most the fee the user approved. Resolves with what the claim did; rejects only on an unexpected error. */
+  claimDeposit: (txid: string, vout: number, maxFeeSats: bigint) => Promise<ClaimResult>;
 }
 
 const defaultContext: BreezContextType = {
@@ -166,36 +184,38 @@ interface BreezProviderProps {
   children: ReactNode;
 }
 
+type BreezEventHandlers = {
+  onSynced: () => void;
+  /** A payment succeeded, is pending or failed */
+  onPaymentChanged: (event: SdkEvent) => void;
+  onDepositsChanged: (event: SdkEvent) => void;
+};
+
 // Event listener implementation
 class BreezEventListener implements EventListener {
-  private onSynced: () => void;
-  private onPaymentSucceeded: (event: SdkEvent) => void;
-  private onPaymentFailed: (event: SdkEvent) => void;
-  private onDepositsChanged: (event: SdkEvent) => void;
+  private handlers: BreezEventHandlers;
 
-  constructor(onSynced: () => void, onPaymentSucceeded: (event: SdkEvent) => void, onPaymentFailed: (event: SdkEvent) => void, onDepositsChanged: (event: SdkEvent) => void) {
-    this.onSynced = onSynced;
-    this.onPaymentSucceeded = onPaymentSucceeded;
-    this.onPaymentFailed = onPaymentFailed;
-    this.onDepositsChanged = onDepositsChanged;
+  constructor(handlers: BreezEventHandlers) {
+    this.handlers = handlers;
   }
 
   async onEvent(event: SdkEvent): Promise<void> {
     switch (event.tag) {
-      case SdkEvent_Tags.PaymentSucceeded:
-        this.onPaymentSucceeded(event);
-        break;
       case SdkEvent_Tags.PaymentFailed:
         console.error('Payment failed:', event);
-        this.onPaymentFailed(event);
+        this.handlers.onPaymentChanged(event);
+        break;
+      case SdkEvent_Tags.PaymentSucceeded:
+      case SdkEvent_Tags.PaymentPending:
+        this.handlers.onPaymentChanged(event);
         break;
       case SdkEvent_Tags.Synced:
-        this.onSynced();
+        this.handlers.onSynced();
         break;
       case SdkEvent_Tags.UnclaimedDeposits:
       case SdkEvent_Tags.ClaimedDeposits:
       case SdkEvent_Tags.NewDeposits:
-        this.onDepositsChanged(event);
+        this.handlers.onDepositsChanged(event);
         break;
       default:
         break;
@@ -227,6 +247,15 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   const sdkRef = useRef<BreezSdkInterface | null>(null);
   const eventListenerRef = useRef<string | null>(null);
   const isInitializingRef = useRef<boolean>(false);
+  // Reads of the stored wallet state can overlap (poll, SDK events, syncs): only the most recently started one may be shown
+  const lastReadStartedRef = useRef(0);
+  const lastReadShownRef = useRef(0);
+  // null until the first read of the connected wallet
+  const paymentsFingerprintRef = useRef<string | null>(null);
+  // Callbacks used by the SDK event listener, the poll and the AppState listener, which outlive a render
+  const readWalletStateRef = useRef<() => Promise<void>>(async () => {});
+  const refreshWalletInfoRef = useRef<() => Promise<void>>(async () => {});
+  const refreshUnclaimedDepositsRef = useRef<() => Promise<DepositInfo[]>>(async () => []);
 
   useEffect(() => {
     // Load the Lightning address from storage on startup
@@ -314,6 +343,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         sdkRef.current = null;
       }
 
+      paymentsFingerprintRef.current = null;
       _setIsConnected(false);
       _setIsSyncing(false);
       _setBalance(0);
@@ -336,7 +366,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
   }, []);
 
   const refreshUnclaimedDeposits = useCallback(async (): Promise<DepositInfo[]> => {
-    if (!isConnected || !isBreezInitialized || !sdkRef.current) {
+    // The SDK ref, not the connection state: initializeBreez calls this right after connecting, before a render
+    if (!sdkRef.current) {
       _setUnclaimedDeposits([]);
       return [];
     }
@@ -354,63 +385,87 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       console.warn('[Breez SDK] Failed to refresh unclaimed deposits:', error);
       throw error;
     }
-  }, [isBreezInitialized, isConnected, listUnclaimedDeposits]);
+  }, [listUnclaimedDeposits]);
 
-  const refreshWalletInfo = useCallback(async (): Promise<void> => {
+  /**
+   * Shows the balance and payments that the SDK stored (no network call). The SDK updates them on its own
+   * (payment events, a sync every minute), so a payment can show up while the stored balance is still the old one:
+   * when a payment appears or changes status, this asks Spark for a sync, which corrects the balance.
+   */
+  const readWalletState = useCallback(async (): Promise<void> => {
+    const sdk = sdkRef.current;
+    if (!sdk) return;
+
+    const readId = ++lastReadStartedRef.current;
     try {
-      _setIsSyncing(true);
-      if (!isConnected || !isBreezInitialized || !sdkRef.current) {
-        _setIsSyncing(false);
-        return;
-      }
-
       const seedPhrase = await _getSeedPhrase();
       if (!seedPhrase) {
         await disconnectBreez();
-        _setIsSyncing(false);
         return;
       }
 
-      const info = await sdkRef.current.getInfo({ ensureSynced: false });
-      const listPaymentsRequest: ListPaymentsRequest = {
-        typeFilter: [PaymentType.Send, PaymentType.Receive],
-        statusFilter: undefined,
-        assetFilter: undefined,
-        paymentDetailsFilter: undefined,
-        fromTimestamp: undefined,
-        toTimestamp: undefined,
-        offset: undefined,
-        limit: undefined,
-        sortAscending: undefined,
-      };
-      const paymentsList = await sdkRef.current.listPayments(listPaymentsRequest);
-      const newBalance = Number(info.balanceSats) || 0;
+      const [info, paymentsList] = await Promise.all([sdk.getInfo({ ensureSynced: false }), sdk.listPayments(LIST_ALL_PAYMENTS)]);
+      // A read that started earlier, or that read a wallet disconnected since, must not replace newer values
+      if (sdkRef.current !== sdk || readId < lastReadShownRef.current) return;
+      lastReadShownRef.current = readId;
+
+      const storedPayments = paymentsList.payments || [];
+      const fingerprint = paymentsFingerprint(storedPayments);
+      const paymentsChanged = paymentsFingerprintRef.current !== null && paymentsFingerprintRef.current !== fingerprint;
+      paymentsFingerprintRef.current = fingerprint;
 
       _setBreezWalletInfos(info);
-      _setPayments(paymentsList.payments || []);
-      _setBalance(newBalance);
+      _setPayments(storedPayments);
+      _setBalance(Number(info.balanceSats) || 0);
 
-      await refreshUnclaimedDeposits().catch(() => {});
+      if (paymentsChanged) {
+        refreshWalletInfoRef.current().catch(console.error);
+      }
     } catch (error) {
-      console.error('Error refreshing wallet info:', error);
+      console.error('Error reading wallet info:', error);
       _setBreezError(error?.toString() || 'Refresh error');
+    }
+
+    await refreshUnclaimedDepositsRef.current().catch(() => {});
+  }, [_getSeedPhrase, disconnectBreez]);
+
+  const refreshWalletInfo = useCallback(async (): Promise<void> => {
+    const sdk = sdkRef.current;
+    if (!sdk) return;
+
+    _setIsSyncing(true);
+    try {
+      // The SDK batches syncs requested at the same time, so overlapping calls cost a single sync
+      await syncSparkWallet(sdk);
+      await readWalletState();
     } finally {
       _setIsSyncing(false);
     }
-  }, [_getSeedPhrase, disconnectBreez, isBreezInitialized, isConnected, refreshUnclaimedDeposits]);
+  }, [readWalletState]);
+
+  readWalletStateRef.current = readWalletState;
+  refreshWalletInfoRef.current = refreshWalletInfo;
+  refreshUnclaimedDepositsRef.current = refreshUnclaimedDeposits;
 
   const claimDeposit = useCallback(
-    async (txid: string, vout: number, maxFeeSats: bigint): Promise<void> => {
-      if (!sdkRef.current) throw new Error('Breez SDK not initialized');
+    async (txid: string, vout: number, maxFeeSats: bigint): Promise<ClaimResult> => {
+      const sdk = sdkRef.current;
+      if (!sdk) throw new Error('Breez SDK not initialized');
 
-      await sdkRef.current.claimDeposit({
-        txid,
-        vout,
-        maxFee: new MaxFee.Fixed({ amount: maxFeeSats }),
-      });
+      let result: ClaimResult;
+      try {
+        result = toClaimResult(await sdk.claimDeposit({ txid, vout, maxFee: approvedClaimMaxFee(maxFeeSats) }));
+      } catch (error) {
+        const answer = claimErrorToResult(error);
+        if (!answer) throw error;
+        result = answer;
+      }
 
-      await refreshUnclaimedDeposits();
-      await refreshWalletInfo();
+      // The SDK updated the deposit (claimed, new fee, or claim in progress): show its stored state
+      await refreshUnclaimedDeposits().catch(() => []);
+      // A sync claims the incoming transfer and corrects the balance; it can take up to 30 s, so it does not hold the result
+      refreshWalletInfo().catch(console.error);
+      return result;
     },
     [refreshUnclaimedDeposits, refreshWalletInfo],
   );
@@ -424,6 +479,8 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
         amountSats: amountSats !== undefined ? BigInt(amountSats) : undefined,
         expirySecs: expirySecs ?? DEFAULT_LN_INVOICE_EXPIRY_SECS,
         paymentHash: undefined,
+        receiverIdentityPublicKey: undefined,
+        preimage: undefined,
       }),
     });
   }, []);
@@ -446,7 +503,7 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
 
     return sdkRef.current.prepareSendPayment(
       PrepareSendPaymentRequest.new({
-        paymentRequest,
+        paymentRequest: new PaymentRequest.Input({ input: paymentRequest }),
         amount: amountSats !== undefined ? BigInt(amountSats) : undefined,
       }),
     );
@@ -516,10 +573,14 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       const seedPhrase = await _getSeedPhrase();
       if (!seedPhrase) throw new Error('No recovery phrase found');
 
+      // Before connecting, so the logs cover the SDK's startup sync and claims
+      await startSdkLogging();
+
       const sparkNetwork = network === AppNetwork.MAINNET ? Network.Mainnet : Network.Regtest;
       const config = defaultConfig(sparkNetwork);
       config.apiKey = Env.BREEZ_API_KEY;
       config.lnurlDomain = GRIMM_APP_LN_URL_DOMAIN;
+      config.maxDepositClaimFee = autoClaimMaxFee();
 
       // Get the storage directory path
       const baseDir = (FileSystem.documentDirectory || '').replace('file://', '');
@@ -549,13 +610,14 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       }
 
       if (sdkRef.current && !eventListenerRef.current) {
-        const eventListener = new BreezEventListener(
-          () => {
+        const eventListener = new BreezEventListener({
+          onSynced: () => {
             _setIsSyncing(false);
-            setTimeout(() => refreshWalletInfoRef.current(), 0);
+            // Read only: a sync here would emit Synced again
+            setTimeout(() => readWalletStateRef.current().catch(console.error), 0);
           },
-          (event) => {
-            refreshWalletInfoRef.current();
+          onPaymentChanged: (event) => {
+            readWalletStateRef.current().catch(console.error);
             if (event.tag === SdkEvent_Tags.PaymentSucceeded) {
               const payment = (event as any).inner?.payment;
               if (payment && payment.paymentType === PaymentType.Receive) {
@@ -567,16 +629,13 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
               }
             }
           },
-          (event) => {
-            console.error('Payment failed:', event);
-          },
-          (event) => {
+          onDepositsChanged: (event) => {
             refreshUnclaimedDepositsRef.current().catch(console.error);
             if (event.tag === SdkEvent_Tags.ClaimedDeposits) {
-              refreshWalletInfoRef.current().catch(console.error);
+              readWalletStateRef.current().catch(console.error);
             }
           },
-        );
+        });
 
         const listenerId = await sdkRef.current.addEventListener(eventListener);
         eventListenerRef.current = listenerId;
@@ -587,12 +646,9 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
       _setIsBreezInitialized(true);
       _setIsSyncing(false);
 
-      // Get initial wallet info
+      // Show the stored wallet state: the SDK syncs with Spark at startup, and its Synced event reads the result
       if (sdkRef.current) {
-        const info = await sdkRef.current.getInfo({ ensureSynced: false });
-        const initialBalance = Number(info.balanceSats) || 0;
-        _setBreezWalletInfos(info);
-        _setBalance(initialBalance);
+        await readWalletStateRef.current();
         // Load the Lightning address from the SDK and persist it
         try {
           const lnInfo = await sdkRef.current.getLightningAddress();
@@ -646,21 +702,34 @@ export const BreezProvider: React.FC<BreezProviderProps> = ({ children }) => {
     return network;
   }, [network]);
 
-  const refreshWalletInfoRef = useRef(refreshWalletInfo);
-  refreshWalletInfoRef.current = refreshWalletInfo;
-
-  const refreshUnclaimedDepositsRef = useRef(refreshUnclaimedDeposits);
-  refreshUnclaimedDepositsRef.current = refreshUnclaimedDeposits;
-
   useEffect(() => {
     const syncInterval = setInterval(() => {
-      refreshWalletInfoRef.current().catch((err) => {
+      readWalletStateRef.current().catch((err) => {
         console.error('Periodic Breez wallet refresh failed:', err);
       });
     }, SYNC_INTERVAL);
 
     return () => {
       clearInterval(syncInterval);
+    };
+  }, []);
+
+  useEffect(() => {
+    // While the app was in the background, the SDK may have missed payments: sync with Spark on return
+    let wasInBackground = false;
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'background') {
+        wasInBackground = true;
+      } else if (nextState === 'active' && wasInBackground) {
+        wasInBackground = false;
+        refreshWalletInfoRef.current().catch((err) => {
+          console.error('Breez wallet sync on return to the app failed:', err);
+        });
+      }
+    });
+
+    return () => {
+      subscription.remove();
     };
   }, []);
 

@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.24.1",
-    "@breeztech/breez-sdk-spark-react-native": "^0.15.1",
+    "@breeztech/breez-sdk-spark-react-native": "0.28.6",
     "@expo/metro-runtime": "^5.0.5",
     "@gorhom/bottom-sheet": "^5.2.14",
     "@hookform/resolvers": "^3.10.0",
@@ -72,6 +72,7 @@
     "expo-router": "~5.1.11",
     "expo-screen-capture": "~7.2.0",
     "expo-secure-store": "~14.2.4",
+    "expo-sharing": "~13.1.5",
     "expo-splash-screen": "~0.30.10",
     "expo-sqlite": "~15.2.14",
     "expo-status-bar": "~2.2.3",
@@ -203,8 +204,8 @@
       "ajv@>=8.0.0 <8.18.0": "8.20.0"
     },
     "patchedDependencies": {
-      "@breeztech/breez-sdk-spark-react-native@0.15.1": "patches/@breeztech__breez-sdk-spark-react-native@0.15.1.patch",
-      "brace-expansion@5.0.12": "patches/brace-expansion@5.0.12.patch"
+      "brace-expansion@5.0.12": "patches/brace-expansion@5.0.12.patch",
+      "@breeztech/breez-sdk-spark-react-native@0.28.6": "patches/@breeztech__breez-sdk-spark-react-native@0.28.6.patch"
     },
     "auditConfig": {
       "ignoreGhsas": [

@@ -163,10 +163,12 @@ jest.mock('@/components/back-button', () => ({
 }));
 
 let mockActionableDeposits: any[] = [];
+let mockDeposits: any[] = [];
 const mockClaimDeposit = jest.fn();
 
 jest.mock('@/lib/hooks/use-unclaimed-deposits', () => ({
   useUnclaimedDeposits: () => ({
+    deposits: mockDeposits,
     actionableDeposits: mockActionableDeposits,
     isLoading: false,
     claimDeposit: mockClaimDeposit,
@@ -203,6 +205,7 @@ afterEach(() => {
   mockLightningAddress = null;
   mockHideBalance = false;
   mockActionableDeposits = [];
+  mockDeposits = [];
 });
 
 describe('LnWalletDetails', () => {
@@ -409,6 +412,16 @@ describe('LnWalletDetails', () => {
       renderWithContext();
 
       expect(screen.queryByTestId('manual-claim-banner')).not.toBeOnTheScreen();
+    });
+
+    it('lists the deposits not credited yet with the payments', () => {
+      const { mergeAndSortTransactions } = jest.requireMock('@/lib');
+      mockDeposits = [{ txid: 'dep', vout: 0 }];
+      mockPayments = [{ id: 'payment-1' }];
+
+      renderWithContext();
+
+      expect(mergeAndSortTransactions).toHaveBeenLastCalledWith(mockPayments, [], mockDeposits);
     });
 
     it('navigates to unclaimed deposits page when banner is pressed', async () => {

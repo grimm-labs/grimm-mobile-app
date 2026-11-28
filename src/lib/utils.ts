@@ -1,6 +1,6 @@
 /* eslint-disable security/detect-object-injection */
 /* eslint-disable max-params */
-import type { Payment } from '@breeztech/breez-sdk-spark-react-native';
+import type { DepositInfo, Payment } from '@breeztech/breez-sdk-spark-react-native';
 import { PaymentStatus, PaymentType } from '@breeztech/breez-sdk-spark-react-native';
 import * as Crypto from 'expo-crypto';
 import { Linking } from 'react-native';
@@ -110,9 +110,24 @@ export const mapOnchainToUnified = (tx: OnchainTransaction): UnifiedTransaction 
   };
 };
 
-export const mergeAndSortTransactions = (lightningPayments: Payment[], onchainTransactions: OnchainTransaction[]): UnifiedTransaction[] => {
+/** An on-chain deposit to the Lightning wallet that is not in the balance yet. */
+export const mapDepositToUnified = (deposit: DepositInfo, nowSecs: number): UnifiedTransaction => ({
+  id: `deposit:${deposit.txid}:${deposit.vout}`,
+  // A deposit record carries no date: this is when it was read, and the list never shows it
+  timestamp: nowSecs,
+  amountSat: Number(deposit.amountSats),
+  feesSat: 0,
+  type: UnifiedTransactionType.RECEIVE,
+  status: UnifiedTransactionStatus.PENDING,
+  source: TransactionSource.LIGHTNING,
+  depositData: deposit,
+});
+
+/** Payments and on-chain transactions, newest first, after the deposits that are not in the balance yet. */
+export const mergeAndSortTransactions = (lightningPayments: Payment[], onchainTransactions: OnchainTransaction[], deposits: DepositInfo[] = []): UnifiedTransaction[] => {
   const unified = [...lightningPayments.map(mapLightningToUnified), ...onchainTransactions.map(mapOnchainToUnified)];
-  return unified.sort((a, b) => b.timestamp - a.timestamp);
+  const nowSecs = Math.floor(Date.now() / 1000);
+  return [...deposits.map((deposit) => mapDepositToUnified(deposit, nowSecs)), ...unified.sort((a, b) => b.timestamp - a.timestamp)];
 };
 
 export const splitStringIntoChunks = (input: string, chunkSize: number): string[] => {
