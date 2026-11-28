@@ -115,14 +115,13 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
-            // 16 KB page size compliance: exclude x86/x86_64 from distributed builds only.
-            // The x86_64 variant of libjnidispatch.so (JNA, pulled in by the Breez SDK
-            // UniFFI bindings) is still 4 KB-aligned and trips Play's "16 KB compliant"
-            // scanner. x86/x86_64 only run on emulators (never on physical 16 KB devices),
-            // so dropping them from release is safe. Debug keeps all ABIs (see defaultConfig)
-            // so x86_64 emulators (Intel Mac / CI) still work.
+            // Release builds ship arm64-v8a only. bdk-rn has no native library for any other ABI,
+            // so the app crashed at startup on 32-bit devices; building one ABI also keeps the
+            // EAS builder (15.6 GB) from running out of memory. Leaving out x86/x86_64 also keeps
+            // the 4 KB-aligned x86_64 libjnidispatch.so (JNA, Breez SDK) out of Play's 16 KB scan.
+            // Debug keeps all ABIs (see defaultConfig) so x86_64 emulators still work.
             ndk {
-                abiFilters 'arm64-v8a', 'armeabi-v7a'
+                abiFilters 'arm64-v8a'
             }
         }
     }
