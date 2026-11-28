@@ -55,15 +55,15 @@ export default function LnWalletDetails() {
   const { bitcoinPrices } = useBitcoin();
   const { selectedCountry, bitcoinUnit, hideBalance, setHideBalance } = useContext(AppContext);
   const { balance, payments, network, lightningAddress } = useBreez();
-  const { actionableDeposits } = useUnclaimedDeposits();
+  const { deposits, actionableDeposits } = useUnclaimedDeposits();
   const selectedFiatCurrency = getFiatCurrency(selectedCountry);
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
   const stackScreenOptions = useStackScreenOptions();
 
   useEffect(() => {
-    const unified = mergeAndSortTransactions(payments, []);
+    const unified = mergeAndSortTransactions(payments, [], deposits);
     setTransactions(unified);
-  }, [payments]);
+  }, [deposits, payments]);
 
   return (
     <SafeAreaProvider>

@@ -28,6 +28,10 @@ A self-custodial Bitcoin wallet for Android and iOS. One Recovery Phrase on the 
 
 **Withdrawal**: Bringing into the Lightning wallet funds that a service offers (a voucher, an ATM, a faucet), within the limits that service sets. _Avoid_: LNURL-withdraw, claim, redeem
 
+**Deposit**: Bitcoin sent on-chain to the Lightning wallet's Bitcoin address. It joins the Lightning balance only once claimed, minus a Claim Fee. _Avoid_: unclaimed deposit, top-up, UTXO
+
+**Claim Fee**: What the Lightning wallet's provider keeps to bring a Deposit into the Lightning balance. A small one is paid automatically; a larger one waits for the user's approval. _Avoid_: Network Fee (the user never pays the network for a Deposit), claim cost
+
 ### Access
 
 **App Lock**: An optional protection, off until the user creates a PIN, that keeps the app hidden until the user proves they are the owner. _Avoid_: security, passcode lock

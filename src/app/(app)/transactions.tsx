@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TransactionItem } from '@/components/transaction';
 import { FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
 import { mergeAndSortTransactions } from '@/lib';
+import { getVisibleDeposits } from '@/lib/breez/deposits';
 import { useBdk } from '@/lib/context';
 import { useBreez } from '@/lib/context/breez-context';
 import { TransactionSource, type UnifiedTransaction, UnifiedTransactionStatus } from '@/types/transaction';
@@ -16,7 +17,7 @@ type FilterType = 'All' | 'Confirmed' | 'Pending' | 'Lightning' | 'OnChain';
 
 export default function Transactions() {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('All');
-  const { payments } = useBreez();
+  const { payments, unclaimedDeposits } = useBreez();
   const { transactions: bdkTransactions } = useBdk();
   const { t } = useTranslation();
   const [transactions, setTransactions] = React.useState<UnifiedTransaction[]>([]);
@@ -69,9 +70,9 @@ export default function Transactions() {
   );
 
   useEffect(() => {
-    const unified = mergeAndSortTransactions(payments, bdkTransactions);
+    const unified = mergeAndSortTransactions(payments, bdkTransactions, getVisibleDeposits(unclaimedDeposits));
     setTransactions(unified);
-  }, [bdkTransactions, payments]);
+  }, [bdkTransactions, payments, unclaimedDeposits]);
 
   return (
     <SafeAreaProvider>

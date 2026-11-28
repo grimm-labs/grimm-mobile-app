@@ -7,6 +7,7 @@ import { TouchableOpacity } from 'react-native';
 
 import { Text, View } from '@/components/ui';
 import { convertSatsToBtc } from '@/lib';
+import { getDepositState } from '@/lib/breez/deposits';
 import { AppContext } from '@/lib/context';
 import { theme } from '@/lib/theme-classes';
 import { BitcoinUnit } from '@/types/enum';
@@ -74,13 +75,19 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
     }
   };
 
+  const deposit = transaction.depositData;
+
   const getTransactionLabel = () => {
+    if (deposit) return t('deposits.rowLabel');
     return transaction.type === UnifiedTransactionType.RECEIVE ? t('transactionItem.received') : t('transactionItem.sent');
   };
 
   const getStatusLabel = () => {
     return transaction.status === UnifiedTransactionStatus.PENDING ? t('transactionItem.status.pending') : t('transactionItem.status.confirmed');
   };
+
+  // A deposit has no date: its state says what the user is waiting for
+  const getSubtitle = () => (deposit ? t(`deposits.state.${getDepositState(deposit)}`) : `${formatDate(transaction.timestamp)} • ${getStatusLabel()}`);
 
   const getSourceIcon = () => {
     return transaction.source === TransactionSource.LIGHTNING ? '⚡' : '🔗';
@@ -89,6 +96,11 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
   const bitcoinAmount = bitcoinUnit === BitcoinUnit.Sats ? transaction.amountSat.toLocaleString() : convertSatsToBtc(transaction.amountSat);
 
   const handlePress = () => {
+    if (deposit) {
+      router.push('/wallets/unclaimed-deposits');
+      return;
+    }
+
     const data = transaction.source === TransactionSource.LIGHTNING ? transaction.lightningData : transaction.onchainData;
     const serialized = encodeURIComponent(JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? Number(v) : v)));
     if (transaction.source === TransactionSource.LIGHTNING) {
@@ -103,7 +115,7 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
   };
 
   return (
-    <TouchableOpacity className="flex-row items-center py-4" activeOpacity={0.7} onPress={handlePress}>
+    <TouchableOpacity testID={deposit ? `transaction-deposit-${deposit.txid}-${deposit.vout}` : undefined} className="flex-row items-center py-4" activeOpacity={0.7} onPress={handlePress}>
       <View className="relative mr-4">
         <View className="size-12 items-center justify-center rounded-full" style={{ backgroundColor: `${getTransactionColor()}15` }}>
           <Ionicons name={getTransactionIcon() as any} size={20} color={getTransactionColor()} />
@@ -115,9 +127,7 @@ export const TransactionItem: React.FC<{ transaction: UnifiedTransaction }> = ({
       <View className="flex-1 flex-row items-center justify-between">
         <View>
           <Text className={`text-left text-base font-semibold ${theme.textPrimary}`}>{getTransactionLabel()}</Text>
-          <Text className={`text-left text-xs ${theme.textSecondary}`}>
-            {formatDate(transaction.timestamp)} • {getStatusLabel()}
-          </Text>
+          <Text className={`text-left text-xs ${theme.textSecondary}`}>{getSubtitle()}</Text>
         </View>
         {hideBalance ? (
           <Text className="my-2 text-center text-base font-bold">{t('walletOverview.hiddenBalance')}</Text>

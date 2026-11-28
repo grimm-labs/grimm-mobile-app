@@ -1,4 +1,4 @@
-import type { Payment } from '@breeztech/breez-sdk-spark-react-native';
+import type { DepositInfo, Payment } from '@breeztech/breez-sdk-spark-react-native';
 
 import type { OnchainTransaction } from '@/lib/bdk';
 
@@ -27,4 +27,6 @@ export interface UnifiedTransaction {
   source: TransactionSource;
   lightningData?: Payment;
   onchainData?: OnchainTransaction;
+  /** Set for an on-chain deposit to the Lightning wallet that is not in the balance yet */
+  depositData?: DepositInfo;
 }

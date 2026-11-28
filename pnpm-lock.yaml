@@ -39,9 +39,9 @@ overrides:
   ajv@>=8.0.0 <8.18.0: 8.20.0
 
 patchedDependencies:
-  '@breeztech/breez-sdk-spark-react-native@0.15.1':
-    hash: 5s3xcy4sq2fjunrs5bstm5t3u4
-    path: patches/@breeztech__breez-sdk-spark-react-native@0.15.1.patch
+  '@breeztech/breez-sdk-spark-react-native@0.28.6':
+    hash: jqtg5zifg7ixznbhnb2dnliwv4
+    path: patches/@breeztech__breez-sdk-spark-react-native@0.28.6.patch
   brace-expansion@5.0.12:
     hash: ahqnoctiqkadlpzydihmaltx5q
     path: patches/brace-expansion@5.0.12.patch
@@ -54,8 +54,8 @@ importers:
         specifier: 7.24.1
         version: 7.24.1
       '@breeztech/breez-sdk-spark-react-native':
-        specifier: ^0.15.1
-        version: 0.15.1(patch_hash=5s3xcy4sq2fjunrs5bstm5t3u4)(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+        specifier: 0.28.6
+        version: 0.28.6(patch_hash=jqtg5zifg7ixznbhnb2dnliwv4)(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       '@expo/metro-runtime':
         specifier: ^5.0.5
         version: 5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))
@@ -137,6 +137,9 @@ importers:
       expo-secure-store:
         specifier: ~14.2.4
         version: 14.2.4(expo@53.0.27(@babel/core@7.29.7)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))
+      expo-sharing:
+        specifier: ~13.1.5
+        version: 13.1.5(expo@53.0.27(@babel/core@7.29.7)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))
       expo-splash-screen:
         specifier: ~0.30.10
         version: 0.30.10(expo@53.0.27(@babel/core@7.29.7)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))
@@ -920,8 +923,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@breeztech/breez-sdk-spark-react-native@0.15.1':
-    resolution: {integrity: sha512-Ckzt71+HRScm6Ep3ZXdnvAxiaoHK50siScU7IMwBwS1hSlBwjwscF9Z5ZzUvD7OMJvdapBqQiDyEy2eXlHqZxg==}
+  '@breeztech/breez-sdk-spark-react-native@0.28.6':
+    resolution: {integrity: sha512-1hD2Mo6kK19+9j8tcnp8Bc8dPj7w/nJ+f8Ogao11FDh/VGNZ4LOiNC9KKOn7IbfTLvRNPYYzeUM0VOu04x379g==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -3764,6 +3767,11 @@ packages:
 
   expo-secure-store@14.2.4:
     resolution: {integrity: sha512-ePaz4fnTitJJZjAiybaVYGfLWWyaEtepZC+vs9ZBMhQMfG5HUotIcVsDaSo3FnwpHmgwsLVPY2qFeryI6AtULw==}
+    peerDependencies:
+      expo: '*'
+
+  expo-sharing@13.1.5:
+    resolution: {integrity: sha512-X/5sAEiWXL2kdoGE3NO5KmbfcmaCWuWVZXHu8OQef7Yig4ZgHFkGD11HKJ5KqDrDg+SRZe4ISd6MxE7vGUgm4w==}
     peerDependencies:
       expo: '*'
 
@@ -8013,7 +8021,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@breeztech/breez-sdk-spark-react-native@0.15.1(patch_hash=5s3xcy4sq2fjunrs5bstm5t3u4)(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)':
+  '@breeztech/breez-sdk-spark-react-native@0.28.6(patch_hash=jqtg5zifg7ixznbhnb2dnliwv4)(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)':
     dependencies:
       react: 19.0.0
       react-native: 0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)
@@ -11623,6 +11631,10 @@ snapshots:
       react: 19.0.0
 
   expo-secure-store@14.2.4(expo@53.0.27(@babel/core@7.29.7)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)):
+    dependencies:
+      expo: 53.0.27(@babel/core@7.29.7)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+
+  expo-sharing@13.1.5(expo@53.0.27(@babel/core@7.29.7)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)):
     dependencies:
       expo: 53.0.27(@babel/core@7.29.7)(@expo/metro-runtime@5.0.5(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.6(@babel/core@7.29.7)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
 

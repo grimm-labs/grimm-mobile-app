@@ -1,93 +1,62 @@
-jest.mock('@breeztech/breez-sdk-spark-react-native', () => ({
-  DepositClaimError_Tags: {
-    MaxDepositClaimFeeExceeded: 'MaxDepositClaimFeeExceeded',
-    MissingUtxo: 'MissingUtxo',
-    Generic: 'Generic',
-  },
-}));
+jest.mock('@breeztech/breez-sdk-spark-react-native', () => require('@/lib/breez/__tests__/helpers/fake-breez-sdk'));
 
-import type { DepositInfo } from '@breeztech/breez-sdk-spark-react-native';
-import { DepositClaimError_Tags } from '@breeztech/breez-sdk-spark-react-native';
+import { formatDepositsSummary, logUnclaimedDeposits, UNCLAIMED_DEPOSITS_LOG_PREFIX } from '../unclaimed-deposits-log';
+import { fakeDeposit, feeTooHigh, genericClaimError, instantStatus, InstantClaimStatus_Tags, tooSmall } from './helpers/fake-breez-sdk';
 
-import {
-  formatDepositsSummary,
-  getActionableDeposits,
-  getDepositKey,
-  getDepositStatus,
-  getRequiredClaimFeeSats,
-} from '../unclaimed-deposits-log';
-
-const actionableDeposit = {
-  txid: 'abc123def456',
-  vout: 1,
-  amountSats: BigInt(100_000),
-  isMature: true,
-  claimError: {
-    tag: DepositClaimError_Tags.MaxDepositClaimFeeExceeded,
-    inner: { requiredFeeSats: BigInt(500), requiredFeeRateSatPerVbyte: BigInt(10) },
-  },
-} as DepositInfo;
-
-describe('getDepositKey', () => {
-  it('builds a stable key from txid and vout', () => {
-    expect(getDepositKey(actionableDeposit)).toBe('abc123def456:1');
-  });
-});
-
-describe('getDepositStatus', () => {
-  it('returns pending when the deposit is not mature', () => {
-    expect(getDepositStatus({ ...actionableDeposit, isMature: false, claimError: undefined })).toBe('pending_confirmations');
-  });
-
-  it('returns claim_failed when mature with a claim error', () => {
-    expect(getDepositStatus(actionableDeposit)).toBe('claim_failed');
-  });
-
-  it('returns awaiting auto claim when mature without error', () => {
-    expect(getDepositStatus({ ...actionableDeposit, claimError: undefined })).toBe('mature_awaiting_auto_claim');
-  });
-});
-
-describe('getRequiredClaimFeeSats', () => {
-  it('returns the required fee for MaxDepositClaimFeeExceeded', () => {
-    expect(getRequiredClaimFeeSats(actionableDeposit)).toBe(BigInt(500));
-  });
-
-  it('returns null for other claim errors', () => {
-    expect(
-      getRequiredClaimFeeSats({
-        ...actionableDeposit,
-        claimError: { tag: DepositClaimError_Tags.MissingUtxo, inner: { tx: 'tx', vout: 0 } },
-      } as DepositInfo),
-    ).toBeNull();
-  });
-});
-
-describe('getActionableDeposits', () => {
-  it('returns only mature deposits with MaxDepositClaimFeeExceeded', () => {
-    const deposits = [
-      actionableDeposit,
-      { ...actionableDeposit, isMature: false } as DepositInfo,
-      {
-        ...actionableDeposit,
-        claimError: { tag: DepositClaimError_Tags.MissingUtxo, inner: { tx: 'tx', vout: 0 } },
-      } as DepositInfo,
-    ];
-
-    expect(getActionableDeposits(deposits)).toEqual([actionableDeposit]);
-  });
-});
+const needsFee = fakeDeposit({ txid: 'abc123def456', vout: 1, claimError: feeTooHigh(800) });
 
 describe('formatDepositsSummary', () => {
   it('returns a friendly empty message', () => {
     expect(formatDepositsSummary([])).toBe('No unclaimed deposits');
   });
 
-  it('formats actionable deposits with status and truncated txid', () => {
-    const summary = formatDepositsSummary([actionableDeposit]);
+  it('lists each deposit with its amount, state and truncated outpoint', () => {
+    const summary = formatDepositsSummary([needsFee, fakeDeposit({ txid: 'fedcba987654', isMature: false })]);
 
-    expect(summary).toContain('100000 sats');
-    expect(summary).toContain('claim failed');
-    expect(summary).toContain('abc123de');
+    expect(summary).toBe(['1. 100000 sats (needs fee approval) — abc123de…:1', '2. 100000 sats (waiting for confirmations) — fedcba98…:0'].join('\n'));
+  });
+
+  it('names every state', () => {
+    const states = [
+      fakeDeposit(),
+      fakeDeposit({ claimError: tooSmall() }),
+      fakeDeposit({ claimError: genericClaimError('boom') }),
+      fakeDeposit({ instantClaimStatus: instantStatus(InstantClaimStatus_Tags.Submitted) }),
+    ];
+
+    const summary = formatDepositsSummary(states);
+
+    expect(summary).toContain('(awaiting auto claim)');
+    expect(summary).toContain('(too small to claim)');
+    expect(summary).toContain('(claim failed)');
+    expect(summary).toContain('(being credited)');
+  });
+});
+
+describe('logUnclaimedDeposits', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
+  it('logs nothing for an empty list', () => {
+    logUnclaimedDeposits([], 'test');
+
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('logs the count, then one line per deposit with its state and claim error', () => {
+    logUnclaimedDeposits([needsFee], 'test');
+
+    expect(warnSpy).toHaveBeenNthCalledWith(1, `${UNCLAIMED_DEPOSITS_LOG_PREFIX} [test] count: 1`);
+    const line = warnSpy.mock.calls[1][0] as string;
+    expect(line).toContain('abc123def456:1');
+    expect(line).toContain('state=needsFeeApproval');
+    expect(line).toContain('MaxDepositClaimFeeExceeded (required: 800 sats, max: 500 sats)');
   });
 });

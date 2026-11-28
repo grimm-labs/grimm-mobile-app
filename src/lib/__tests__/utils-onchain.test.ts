@@ -12,7 +12,7 @@ jest.mock('@/api', () => ({
 import { PaymentStatus, PaymentType } from '@breeztech/breez-sdk-spark-react-native';
 
 import type { OnchainTransaction } from '@/lib/bdk';
-import { mapOnchainToUnified, mergeAndSortTransactions } from '@/lib/utils';
+import { mapDepositToUnified, mapOnchainToUnified, mergeAndSortTransactions } from '@/lib/utils';
 import { TransactionSource, UnifiedTransactionStatus, UnifiedTransactionType } from '@/types/transaction';
 
 describe('mapOnchainToUnified', () => {
@@ -72,5 +72,31 @@ describe('mergeAndSortTransactions', () => {
 
     const merged = mergeAndSortTransactions(lightning, onchain);
     expect(merged.map((tx) => tx.id)).toEqual(['onchain-new', 'ln-1', 'onchain-old']);
+  });
+
+  it('lists the deposits not credited yet first, then the transactions newest first', () => {
+    const onchain: OnchainTransaction[] = [{ txid: 'onchain-new', received: 2000, sent: 0, confirmationTime: { timestamp: 300 } }];
+    const deposits = [{ txid: 'dep', vout: 1, amountSats: 7_000n, isMature: false }] as never;
+
+    const merged = mergeAndSortTransactions([], onchain, deposits);
+
+    expect(merged.map((tx) => tx.id)).toEqual(['deposit:dep:1', 'onchain-new']);
+  });
+});
+
+describe('mapDepositToUnified', () => {
+  it('maps a deposit to a pending receive of the Lightning wallet, keeping the deposit', () => {
+    const deposit = { txid: 'dep', vout: 1, amountSats: 7_000n, isMature: false } as never;
+
+    expect(mapDepositToUnified(deposit, 1_700_000_000)).toEqual({
+      id: 'deposit:dep:1',
+      timestamp: 1_700_000_000,
+      amountSat: 7_000,
+      feesSat: 0,
+      type: UnifiedTransactionType.RECEIVE,
+      status: UnifiedTransactionStatus.PENDING,
+      source: TransactionSource.LIGHTNING,
+      depositData: deposit,
+    });
   });
 });

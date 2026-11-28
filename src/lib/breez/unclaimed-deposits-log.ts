@@ -1,16 +1,31 @@
 import type { DepositInfo } from '@breeztech/breez-sdk-spark-react-native';
 import { DepositClaimError_Tags } from '@breeztech/breez-sdk-spark-react-native';
 
+import type { DepositState } from './deposits';
+import { getDepositKey, getDepositState } from './deposits';
+
 export const UNCLAIMED_DEPOSITS_LOG_PREFIX = '[Breez SDK] Unclaimed deposits';
+
+const STATE_LABELS: Record<DepositState, string> = {
+  confirming: 'waiting for confirmations',
+  awaitingClaim: 'awaiting auto claim',
+  needsFeeApproval: 'needs fee approval',
+  claiming: 'being credited',
+  tooSmall: 'too small to claim',
+  failed: 'claim failed',
+  refunding: 'refunding',
+};
 
 function formatClaimError(claimError: DepositInfo['claimError']): string {
   if (!claimError) return 'none';
 
   switch (claimError.tag) {
     case DepositClaimError_Tags.MaxDepositClaimFeeExceeded:
-      return `MaxDepositClaimFeeExceeded (required: ${claimError.inner.requiredFeeSats.toString()} sats, rate: ${claimError.inner.requiredFeeRateSatPerVbyte.toString()} sat/vB)`;
+      return `MaxDepositClaimFeeExceeded (required: ${claimError.inner.requiredFeeSats.toString()} sats, max: ${claimError.inner.maxFeeSats?.toString() ?? 'none'} sats)`;
     case DepositClaimError_Tags.MissingUtxo:
       return 'MissingUtxo';
+    case DepositClaimError_Tags.DepositTooSmall:
+      return 'DepositTooSmall';
     case DepositClaimError_Tags.Generic:
       return `Generic: ${claimError.inner.message}`;
     default: {
@@ -20,48 +35,22 @@ function formatClaimError(claimError: DepositInfo['claimError']): string {
   }
 }
 
-export function getDepositStatus(deposit: DepositInfo): string {
-  if (!deposit.isMature) return 'pending_confirmations';
-  if (deposit.claimError) return 'claim_failed';
-  return 'mature_awaiting_auto_claim';
-}
-
-export function getDepositKey(deposit: DepositInfo): string {
-  return `${deposit.txid}:${deposit.vout}`;
-}
-
-export function getRequiredClaimFeeSats(deposit: DepositInfo): bigint | null {
-  if (deposit.claimError?.tag !== DepositClaimError_Tags.MaxDepositClaimFeeExceeded) {
-    return null;
-  }
-
-  return deposit.claimError.inner.requiredFeeSats;
-}
-
-export function getActionableDeposits(deposits: DepositInfo[]): DepositInfo[] {
-  return deposits.filter((deposit) => deposit.isMature && deposit.claimError?.tag === DepositClaimError_Tags.MaxDepositClaimFeeExceeded);
-}
-
 function formatDepositForLog(deposit: DepositInfo, index: number): string {
   return [
-    `#${index + 1} ${deposit.txid}:${deposit.vout}`,
+    `#${index + 1} ${getDepositKey(deposit)}`,
     `amount=${deposit.amountSats.toString()} sats`,
-    `status=${getDepositStatus(deposit)}`,
+    `state=${getDepositState(deposit)}`,
     `isMature=${deposit.isMature}`,
     `claimError=${formatClaimError(deposit.claimError)}`,
+    `instantClaimStatus=${deposit.instantClaimStatus?.tag ?? 'none'}`,
+    `refundState=${deposit.refundState?.tag ?? 'none'}`,
   ].join(' | ');
 }
 
 export function formatDepositsSummary(deposits: DepositInfo[]): string {
   if (deposits.length === 0) return 'No unclaimed deposits';
 
-  return deposits
-    .map((deposit, index) => {
-      const status = getDepositStatus(deposit);
-      const statusLabel = status === 'pending_confirmations' ? 'pending' : status === 'claim_failed' ? 'claim failed' : 'awaiting auto claim';
-      return `${index + 1}. ${deposit.amountSats.toString()} sats (${statusLabel}) — ${deposit.txid.slice(0, 8)}…:${deposit.vout}`;
-    })
-    .join('\n');
+  return deposits.map((deposit, index) => `${index + 1}. ${deposit.amountSats.toString()} sats (${STATE_LABELS[getDepositState(deposit)]}) — ${deposit.txid.slice(0, 8)}…:${deposit.vout}`).join('\n');
 }
 
 export function logUnclaimedDeposits(deposits: DepositInfo[], source: string): void {
@@ -69,14 +58,7 @@ export function logUnclaimedDeposits(deposits: DepositInfo[], source: string): v
   if (deposits.length === 0) return;
 
   console.warn(`${UNCLAIMED_DEPOSITS_LOG_PREFIX} [${source}] count: ${deposits.length}`);
-
   deposits.forEach((deposit, index) => {
     console.warn(`${UNCLAIMED_DEPOSITS_LOG_PREFIX} [${source}] ${formatDepositForLog(deposit, index)}`);
   });
-
-  const pending = deposits.filter((deposit) => !deposit.isMature);
-  const failed = deposits.filter((deposit) => deposit.isMature && deposit.claimError);
-  const awaitingAutoClaim = deposits.filter((deposit) => deposit.isMature && !deposit.claimError);
-
-  console.warn(`${UNCLAIMED_DEPOSITS_LOG_PREFIX} [${source}] summary — pending: ${pending.length}, claim failed: ${failed.length}, awaiting auto claim: ${awaitingAutoClaim.length}`);
 }
